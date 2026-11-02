@@ -6,7 +6,7 @@ Deadline: official 2026-11-08 20:00 JST. Internal: submit by 2026-11-07 21:00 JS
 
 ## 1. The one demo scenario
 
-Everything (fixtures, known places, prompts, seed, recording) is built around this chain on the 武蔵小杉 board. The shelter named in steps 1 to 4 is the same real designated shelter, spelled the way each platform would spell it.
+Everything (fixtures, known places, prompts, seed, recording) is built around this chain on the 武蔵小杉 board. The shelter in steps 1 to 4 is 小杉小学校 (Kosugi Elementary School, 小杉町2-295-1), the designated shelter for 小杉町2丁目 and 3丁目 per the city's list as of 2025-04-01, spelled the way each platform would spell it. The real emergency water point nearest the station is 中原区役所 (小杉町3-245).
 
 1. 佐藤さん photographs the water distribution notice at a shelter entrance (Japanese paper) and drops it in.
 2. Within about 15 to 25 seconds, the same card appears in Japanese, English and Chinese on three screens: place, time, "bring your own container", source type "official notice (unconfirmed)".
@@ -90,7 +90,7 @@ Owner for implementation: Claude Code with `claude-opus-5-5`. Planning, prompt d
 - [ ] Create the Supabase project (Tokyo region), put URL, anon key and service role key in `.env.local`
 - [ ] Put the hackathon Anthropic API key in `.env.local`
 - [ ] Create the Vercel project from the GitHub repo (Hobby), add the environment variables, confirm the first deploy
-- [ ] Verify the shelter list for 武蔵小杉 against 川崎市 指定避難所一覧 and correct `supabase/seed/boards.json`
+- [x] Shelter list verified against 川崎市地域防災計画 資料編 2-06 (as of 2025-04-01) and 2-18 water points; `supabase/seed/boards.json` updated
 - [ ] Prepare fixture inputs (paper notices, chat screenshots with fake names and avatars, text) into `fixtures/inputs/` with a note on which real shelter they name
 
 ### 2026-11-03 (Tue, holiday): board live, drop-in to card

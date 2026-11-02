@@ -23,7 +23,9 @@ One entry per working day. What Claude Code did, which model did what, and what 
 - Area badge is "self-reported area", never "verified".
 - Implementation from tomorrow runs on `claude-opus-5-5`; Fable returns for prompt tuning and the 11/6 review.
 
+**Also done**
+- Verified the shelters for the board against the city's designated shelter list (資料編 2-06, as of 2025-04-01) and the emergency water points (2-18), read from the city's PDFs. 小杉小学校 (opened 2019) is the designated shelter for 小杉町2丁目 and 3丁目 and becomes the demo shelter. Seed updated with addresses and target areas.
+
 **Open for the human**
-- Supabase project and keys, Anthropic API key, `wrangler login`, Workers plan.
-- Verify the shelter list against the city's designated shelter list.
+- Supabase project and keys, Anthropic API key, Vercel project from the GitHub repo.
 - Fixture inputs with fake names and avatars.

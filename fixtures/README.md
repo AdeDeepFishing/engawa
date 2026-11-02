@@ -15,7 +15,7 @@ Test inputs for the extraction and reconciliation pipeline, and for the eval scr
 fixtures/
   inputs/
     p01-water-outage-notice.jpg        paper, ja, peacetime
-    p02-water-distribution-notice.jpg  paper, ja, shelter, 14:00 to 16:00, bring containers
+    p02-water-distribution-notice.jpg  paper, ja, 小杉小学校 shelter, 14:00 to 16:00, bring containers
     p03-wechat-konbini.png             screenshot, zh, secondhand
     p04-line-water-same-fact.png       screenshot, ja, same fact as p02, fake names and avatars
     p05-facebook-water-vi.txt          text, vi, same fact as p02
