@@ -9,6 +9,10 @@ Test inputs for the extraction and reconciliation pipeline, and for the eval scr
 - `expected/` holds the expected key fields for each input, written during the event.
 - No municipal crests or logos are used. Nothing here should be mistaken for an official notice.
 
+## Status
+
+The text fixtures in `inputs/` were written during the event by Claude Code on 2026-11-03 (fictional names, numbers and handles). `t02` and `t03` are text stand-ins for the paper photo `p02` and the WeChat screenshot `p03`, used to measure latency before the photographed fixtures exist. The image fixtures are still to be prepared by the human.
+
 ## Layout
 
 ```
@@ -16,7 +20,9 @@ fixtures/
   inputs/
     p01-water-outage-notice.jpg        paper, ja, peacetime
     p02-water-distribution-notice.jpg  paper, ja, 小杉小学校 shelter, 14:00 to 16:00, bring containers
+    t02-water-distribution-notice-ja.txt  text stand-in for p02
     p03-wechat-konbini.png             screenshot, zh, secondhand
+    t03-wechat-konbini-zh.txt          text stand-in for p03, includes a room number to strip
     p04-line-water-same-fact.png       screenshot, ja, same fact as p02, fake names and avatars
     p05-facebook-water-vi.txt          text, vi, same fact as p02
     p06-rumour-aftershock.txt          text, ja or zh, rumour

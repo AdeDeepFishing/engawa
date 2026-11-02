@@ -15,6 +15,13 @@ export async function getBoardBySlug(slug: string): Promise<Board | null> {
   return (data as Board | null) ?? null;
 }
 
+export async function getBoardById(id: string): Promise<Board | null> {
+  if (!hasDb()) return localBoards().find((b) => b.id === id) ?? null;
+  const { data, error } = await db().from("boards").select(BOARD_COLUMNS).eq("id", id).maybeSingle();
+  if (error) throw error;
+  return (data as Board | null) ?? null;
+}
+
 export async function listBoards(): Promise<Board[]> {
   if (!hasDb()) return localBoards();
   const { data, error } = await db().from("boards").select(BOARD_COLUMNS).order("slug");

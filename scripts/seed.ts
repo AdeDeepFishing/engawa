@@ -4,16 +4,22 @@
  *   pnpm db:seed                 create or update the board, keep its admin token
  *   pnpm db:seed --rotate-token  issue a new admin token for an existing board
  *   pnpm db:seed --reset-cards   delete this board's cards and re-insert the samples
+ *   pnpm db:seed --token-file .env.admin-token.local
+ *                                write the token to that file (mode 600) instead of stdout
  *
- * The admin token is printed exactly once. Only its sha256 hex is stored.
+ * The admin token is shown exactly once. Only its sha256 hex is stored.
  */
 import { createHash, randomBytes } from "node:crypto";
+import { appendFileSync, chmodSync } from "node:fs";
 import boardsSeed from "../supabase/seed/boards.json";
 import cardsSeed from "../supabase/seed/sample_cards.json";
 import { db, hasDb } from "../lib/db/client";
 import { seedCardToCard, seedPurgeAfter } from "../lib/db/local";
 
-const args = new Set(process.argv.slice(2));
+const argv = process.argv.slice(2);
+const args = new Set(argv);
+const tokenFileIdx = argv.indexOf("--token-file");
+const tokenFile = tokenFileIdx >= 0 ? argv[tokenFileIdx + 1] : null;
 
 function sha256Hex(s: string): string {
   return createHash("sha256").update(s).digest("hex");
@@ -62,11 +68,21 @@ async function main() {
     }
 
     if (token) {
-      console.log("");
-      console.log(`ADMIN TOKEN for ${b.slug} (shown once, store it in a password manager):`);
-      console.log(`  ${token}`);
-      console.log(`  admin URL: /b/${b.slug}/admin?token=${token}`);
-      console.log("");
+      const lines = [
+        `# admin token for board ${b.slug}, generated ${now.toISOString()}`,
+        `ADMIN_TOKEN_${b.slug.toUpperCase().replace(/[^A-Z0-9]/g, "_")}=${token}`,
+        `# admin URL: /b/${b.slug}/admin?token=${token}`,
+        "",
+      ];
+      if (tokenFile) {
+        appendFileSync(tokenFile, lines.join("\n"));
+        chmodSync(tokenFile, 0o600);
+        console.log(`admin token for ${b.slug} written to ${tokenFile} (shown nowhere else)`);
+      } else {
+        console.log("");
+        console.log(`ADMIN TOKEN for ${b.slug} (shown once, store it in a password manager):`);
+        console.log(lines.join("\n"));
+      }
     }
 
     const samples = cardsSeed.cards.filter((c) => c.board_slug === b.slug);

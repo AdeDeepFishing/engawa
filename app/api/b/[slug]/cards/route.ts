@@ -1,5 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getBoardBySlug, listPublicCards } from "@/lib/db/boards";
+import { hasDb } from "@/lib/db/client";
+import { failStuckSubmissions } from "@/lib/db/submissions";
 
 export const dynamic = "force-dynamic";
 
@@ -11,6 +13,7 @@ export async function GET(
   const { slug } = await params;
   const board = await getBoardBySlug(slug);
   if (!board) return NextResponse.json({ error: "board_not_found" }, { status: 404 });
+  if (hasDb()) await failStuckSubmissions(board.id);
   const cards = await listPublicCards(board);
   return NextResponse.json(
     { cards, now: new Date().toISOString() },
