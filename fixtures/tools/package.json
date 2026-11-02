@@ -1,0 +1,13 @@
+{
+  "name": "engawa-fixture-tools",
+  "private": true,
+  "type": "module",
+  "description": "Renders the image fixtures in fixtures/inputs and the masking boxes in fixtures/masking.",
+  "scripts": {
+    "render": "node render.mjs"
+  },
+  "devDependencies": {
+    "playwright": "1.62.0"
+  },
+  "packageManager": "pnpm@10.12.1"
+}
