@@ -91,8 +91,10 @@ export function ShareButton({ boardSlug, boardName }: { boardSlug: string; board
   const action =
     "flex min-h-12 w-full items-center gap-3 rounded-xl border border-line bg-surface px-4 text-left text-base font-semibold hover:border-accent";
 
+  // Not positioned on purpose: the panel anchors to the top bar's content
+  // column, so it stays on screen when the button wraps to a second row.
   return (
-    <div className="relative">
+    <div>
       <button
         ref={buttonRef}
         type="button"
@@ -110,7 +112,7 @@ export function ShareButton({ boardSlug, boardName }: { boardSlug: string; board
           id="share-panel"
           role="group"
           aria-label={t("share.title")}
-          className="absolute right-0 top-full z-30 mt-2 w-[min(20rem,calc(100vw-2rem))] rounded-2xl border border-line bg-surface p-3 shadow-2xl"
+          className="absolute right-4 top-full z-30 mt-2 w-[min(20rem,calc(100vw-2rem))] rounded-2xl border border-line bg-surface p-3 shadow-2xl"
         >
           <p className="px-1 pb-2 text-base font-bold">{t("share.title")}</p>
           <div className="flex flex-col gap-2">

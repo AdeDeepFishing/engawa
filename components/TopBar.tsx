@@ -10,7 +10,7 @@ export function TopBar({ title, actions }: { title?: string; actions?: ReactNode
   const { t } = useLang();
   return (
     <header className="sticky top-0 z-10 border-b border-line bg-surface/95 backdrop-blur">
-      <div className="mx-auto flex w-full max-w-2xl flex-wrap items-center gap-x-3 gap-y-2 px-4 py-2">
+      <div className="relative mx-auto flex w-full max-w-2xl flex-wrap items-center gap-x-3 gap-y-2 px-4 py-2">
         <Link href="/" className="tap flex items-center font-bold" aria-label={t("app.name")}>
           <span aria-hidden="true" className="mr-1 text-xl">縁</span>
           {t("app.name")}
