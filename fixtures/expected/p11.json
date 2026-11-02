@@ -1,0 +1,33 @@
+{
+  "input": "p11-x-shelter-full.png",
+  "source_platform": "x",
+  "facts": [
+    {
+      "category": "shelter",
+      "place_id": "kosugi-es",
+      "status": "full",
+      "source_type": "firsthand"
+    },
+    {
+      "category": "shelter",
+      "place_id": "nakahara-jhs",
+      "status": "open"
+    }
+  ],
+  "must_not_contain": [
+    "あやの",
+    "@ayano_test01",
+    "ayano_test01",
+    "Kenta",
+    "@kenta_test02",
+    "kenta_test02",
+    "まりな",
+    "@marina_test03",
+    "marina_test03"
+  ],
+  "risk_flags": [],
+  "merges_with": [
+    "p12"
+  ],
+  "notes": "Timeline with three posts. あやの's post holds two facts: the 小杉小学校 shelter gym is full and has stopped taking people (seen firsthand), and staff say 中原中学校 still has room (its source type is not checked). The other two posts are chatter. The 1時間 old battery post must not become a power_comms fact."
+}

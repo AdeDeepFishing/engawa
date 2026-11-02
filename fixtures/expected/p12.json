@@ -1,0 +1,28 @@
+{
+  "input": "p12-xhs-shelter-full-zh.png",
+  "source_platform": "xiaohongshu",
+  "facts": [
+    {
+      "category": "shelter",
+      "place_id": "kosugi-es",
+      "status": "full",
+      "source_type": "firsthand"
+    },
+    {
+      "category": "shelter",
+      "place_id": "nakahara-jhs",
+      "status": "open"
+    }
+  ],
+  "must_not_contain": [
+    "林晓晓的日常",
+    "林晓晓",
+    "糖糖",
+    "阿Ken"
+  ],
+  "risk_flags": [],
+  "merges_with": [
+    "p11"
+  ],
+  "notes": "Chinese note with a text cover image, the same two facts as p11. Both facts must merge with p11's. 姐妹们 addresses readers and is not a person."
+}

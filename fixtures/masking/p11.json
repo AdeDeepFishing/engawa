@@ -1,0 +1,88 @@
+{
+  "_note": "Ground truth for the screenshot masking eval. Boxes are in pixels of the input image (x, y from the top left, w, h), measured from the DOM at render time and rounded outward. kind is avatar, name, phone, room or handle; label is the visible text, or for an avatar the name of its owner. Everything here is fictional.",
+  "input": "p11-x-shelter-full.png",
+  "width": 1170,
+  "height": 2532,
+  "boxes": [
+    {
+      "kind": "avatar",
+      "label": "(self)",
+      "x": 48,
+      "y": 162,
+      "w": 96,
+      "h": 96
+    },
+    {
+      "kind": "avatar",
+      "label": "あやの",
+      "x": 48,
+      "y": 450,
+      "w": 120,
+      "h": 120
+    },
+    {
+      "kind": "name",
+      "label": "あやの",
+      "x": 198,
+      "y": 450,
+      "w": 135,
+      "h": 69
+    },
+    {
+      "kind": "handle",
+      "label": "@ayano_test01",
+      "x": 345,
+      "y": 462,
+      "w": 341,
+      "h": 45
+    },
+    {
+      "kind": "avatar",
+      "label": "Kenta",
+      "x": 48,
+      "y": 954,
+      "w": 120,
+      "h": 120
+    },
+    {
+      "kind": "name",
+      "label": "Kenta",
+      "x": 198,
+      "y": 954,
+      "w": 140,
+      "h": 69
+    },
+    {
+      "kind": "handle",
+      "label": "@kenta_test02",
+      "x": 349,
+      "y": 966,
+      "w": 333,
+      "h": 45
+    },
+    {
+      "kind": "avatar",
+      "label": "まりな",
+      "x": 48,
+      "y": 1323,
+      "w": 120,
+      "h": 120
+    },
+    {
+      "kind": "name",
+      "label": "まりな",
+      "x": 198,
+      "y": 1323,
+      "w": 135,
+      "h": 69
+    },
+    {
+      "kind": "handle",
+      "label": "@marina_test03",
+      "x": 345,
+      "y": 1335,
+      "w": 360,
+      "h": 45
+    }
+  ]
+}
