@@ -1,0 +1,462 @@
+import { db } from "./client";
+import { addDays, addHours, CARD_RETENTION_DAYS, DEFAULT_VALID_HOURS } from "@/lib/cards/categories";
+import { contentTime } from "@/lib/cards/display";
+import type { ExtractFact } from "@/lib/claude/extract";
+import { trustRank } from "@/lib/cards/trust";
+import type { ReconcileCandidate, ReconcileDecision } from "@/lib/claude/reconcile";
+import type {
+  Board,
+  Card,
+  CardFacts,
+  CardSource,
+  ConflictStatement,
+  Platform,
+  ReconcileAction,
+  Submission,
+  Visibility,
+} from "@/lib/types";
+
+/** At most this many candidates go to the model (lib/claude/README.md). */
+const CANDIDATE_LIMIT = 20;
+/** Expired cards stay candidates for this long after creation. */
+const CANDIDATE_RECENT_HOURS = 24;
+/** Statements kept per card; older ones are dropped first. */
+const MAX_STATEMENTS = 6;
+
+/** Columns readers get with each card: card_sources without submission ids. */
+export const CARD_WITH_SOURCES = "*, sources:card_sources(relation, source_type, platform, created_at)";
+
+/** Sorts embedded sources oldest first; PostgREST returns them unordered. */
+export function withSortedSources(card: Card): Card {
+  if (!card.sources) return card;
+  return { ...card, sources: [...card.sources].sort((a, b) => a.created_at.localeCompare(b.created_at)) };
+}
+
+/** What a submission says about itself, shared by every fact in it. */
+export interface SourceContext {
+  board: Board;
+  sub: Submission;
+  platform: Platform;
+  inputLanguage: string;
+}
+
+export interface AppliedCard {
+  id: string;
+  visibility: Visibility;
+  purge_after: string;
+  action: ReconcileAction;
+  reason: string;
+}
+
+// --- candidates -------------------------------------------------------------
+
+/**
+ * Cards a new fact could merge with, update or contradict. Same board and
+ * category, public, still valid or created in the last 24 hours, and at the
+ * same place or with no place. Most recent first, at most 20.
+ */
+export async function listReconcileCandidates(
+  board: Board,
+  fact: ExtractFact,
+  now = new Date(),
+): Promise<ReconcileCandidate[]> {
+  let query = db()
+    .from("cards")
+    .select("id, place_id, place_text_ja, facts, valid_from, valid_until, source_type, official_confirmed, source_count, title, created_at, updated_at")
+    .eq("board_id", board.id)
+    .eq("category", fact.category)
+    .eq("visibility", "public");
+  query = fact.place_id
+    ? query.or(`place_id.eq."${fact.place_id}",place_id.is.null`)
+    : query.is("place_id", null);
+  // The time window is applied below: a few extra rows are cheaper than an or() over timestamps.
+  const { data, error } = await query.order("created_at", { ascending: false }).limit(CANDIDATE_LIMIT * 5);
+  if (error) throw error;
+
+  const recentSince = now.getTime() - CANDIDATE_RECENT_HOURS * 3_600_000;
+  return ((data ?? []) as Card[])
+    .filter(
+      (c) =>
+        c.valid_until === null ||
+        new Date(c.valid_until).getTime() > now.getTime() ||
+        new Date(c.created_at).getTime() > recentSince,
+    )
+    .slice(0, CANDIDATE_LIMIT)
+    .map((c) => ({
+      id: c.id,
+      place_id: c.place_id,
+      place_text_ja: c.place_text_ja,
+      status: c.facts?.status ?? null,
+      valid_from: c.valid_from,
+      valid_until: c.valid_until,
+      conditions: c.facts?.conditions ?? [],
+      source_type: c.source_type,
+      official_confirmed: c.official_confirmed,
+      source_count: c.source_count,
+      title_ja: c.title.ja,
+      created_at: c.created_at,
+      updated_at: c.updated_at,
+    }));
+}
+
+// --- applying decisions ----------------------------------------------------------
+
+/** Card validity: the stated end, else the category default from the start (or now). */
+function validity(fact: ExtractFact, now: Date): { validUntil: string; stated: boolean } {
+  if (fact.valid_until) return { validUntil: fact.valid_until, stated: true };
+  const from = fact.valid_from && new Date(fact.valid_from) > now ? fact.valid_from : now;
+  return { validUntil: addHours(from, DEFAULT_VALID_HOURS[fact.category]), stated: false };
+}
+
+function factsOf(fact: ExtractFact, platform: Platform, validUntilStated: boolean): CardFacts {
+  return {
+    status: fact.status,
+    conditions: fact.conditions,
+    confidence: fact.confidence,
+    platform,
+    valid_until_stated: validUntilStated,
+  };
+}
+
+/**
+ * Applies one checked decision. Merge, update and conflict fall back to a
+ * new card when the target is gone or no longer public by the time we get here.
+ */
+export async function applyDecision(
+  ctx: SourceContext,
+  fact: ExtractFact,
+  decision: ReconcileDecision,
+  now = new Date(),
+): Promise<AppliedCard> {
+  if (decision.action === "create") return insertCard(ctx, fact, { visibility: "public", heldReason: null }, decision, now);
+  if (decision.action === "hold") {
+    return insertCard(ctx, fact, { visibility: "held", heldReason: `reconcile: ${decision.reason}` }, decision, now);
+  }
+  const target = decision.target_card_id ? await getCard(ctx.board, decision.target_card_id) : null;
+  if (!target || target.visibility !== "public") {
+    console.warn(`reconcile target ${decision.target_card_id} unavailable, creating instead`);
+    return insertCard(
+      ctx,
+      fact,
+      { visibility: "public", heldReason: null },
+      { action: "create", reason: `target gone: ${decision.reason}` },
+      now,
+    );
+  }
+  if (decision.action === "merge") return mergeIntoCard(ctx, fact, target, decision, now);
+  if (decision.action === "update") return updateCard(ctx, fact, target, decision, now);
+  return conflictCard(ctx, fact, target, decision, now);
+}
+
+/** Inserts a new card and its `created` source row. Facts with risk flags arrive here as held. */
+export async function insertCard(
+  ctx: SourceContext,
+  fact: ExtractFact,
+  opts: { visibility: "public" | "held"; heldReason: string | null },
+  decision: Pick<ReconcileDecision, "action" | "reason">,
+  now = new Date(),
+): Promise<AppliedCard> {
+  const { validUntil, stated } = validity(fact, now);
+  const row = {
+    board_id: ctx.board.id,
+    category: fact.category,
+    place_id: fact.place_id,
+    place_text_ja: fact.place_text_ja,
+    area_code: ctx.sub.uploader_area_code,
+    title: fact.title,
+    body: fact.body,
+    facts: factsOf(fact, ctx.platform, stated),
+    original_text: fact.original_excerpt || null,
+    original_lang: ctx.inputLanguage,
+    source_type: fact.source_type,
+    official_confirmed: false,
+    source_count: 1,
+    risk_flags: fact.risk_flags,
+    visibility: opts.visibility,
+    held_reason: opts.heldReason,
+    valid_from: fact.valid_from,
+    valid_until: validUntil,
+    mode_at_creation: ctx.board.mode,
+    purge_after: addDays(validUntil, CARD_RETENTION_DAYS),
+  };
+  const { data, error } = await db().from("cards").insert(row).select("id, visibility, purge_after").single();
+  if (error) throw error;
+  const card = data as { id: string; visibility: Visibility; purge_after: string };
+  await insertSource(ctx, card.id, fact, "created");
+  return { ...card, action: decision.action, reason: decision.reason };
+}
+
+/** Another source says the same thing: count it, and fill gaps if the model said so. */
+async function mergeIntoCard(
+  ctx: SourceContext,
+  fact: ExtractFact,
+  card: Card,
+  decision: ReconcileDecision,
+  now: Date,
+): Promise<AppliedCard> {
+  await insertSource(ctx, card.id, fact, "confirmed");
+  const { error: rpcErr } = await db().rpc("bump_card_source", { p_card: card.id });
+  if (rpcErr) throw rpcErr;
+
+  const patch: Record<string, unknown> = {};
+  // A stronger source backing the same statement raises the card's label.
+  // official_confirmed is never touched here: only the admin route sets it.
+  if (trustRank(fact.source_type) > trustRank(card.source_type)) patch.source_type = fact.source_type;
+  if (decision.fill_missing) {
+    if (!card.place_id && fact.place_id) patch.place_id = fact.place_id;
+    if (!card.place_text_ja && fact.place_text_ja) patch.place_text_ja = fact.place_text_ja;
+    if (!card.valid_from && fact.valid_from) patch.valid_from = fact.valid_from;
+    const facts: CardFacts = { ...card.facts };
+    let factsChanged = false;
+    if (!facts.conditions?.length && fact.conditions.length) {
+      facts.conditions = fact.conditions;
+      factsChanged = true;
+    }
+    if ((!facts.status || facts.status === "unknown") && fact.status !== "unknown") {
+      facts.status = fact.status;
+      factsChanged = true;
+    }
+    // Only a default end time is replaced; a time some source stated stays.
+    if (card.facts?.valid_until_stated === false && fact.valid_until) {
+      patch.valid_until = fact.valid_until;
+      patch.purge_after = addDays(fact.valid_until, CARD_RETENTION_DAYS);
+      facts.valid_until_stated = true;
+      factsChanged = true;
+    }
+    if (factsChanged) patch.facts = facts;
+  }
+  let purgeAfter = (patch.purge_after as string | undefined) ?? cardPurgeAfter(card, now);
+  if (Object.keys(patch).length) {
+    const { data, error } = await db()
+      .from("cards")
+      .update(patch)
+      .eq("id", card.id)
+      .select("purge_after")
+      .single();
+    if (error) throw error;
+    purgeAfter = (data as { purge_after: string }).purge_after;
+  }
+  return { id: card.id, visibility: "public", purge_after: purgeAfter, action: "merge", reason: decision.reason };
+}
+
+/**
+ * Same thing, newer value from a source at least as trusted (checked in
+ * code). The card keeps its id and its source rows; the old content moves
+ * into the statement history so readers see "previously: ...". The count
+ * starts again at one: it says how many sources stand behind what the card
+ * says now, and the superseded statement keeps its own count.
+ */
+async function updateCard(
+  ctx: SourceContext,
+  fact: ExtractFact,
+  card: Card,
+  decision: ReconcileDecision,
+  now: Date,
+): Promise<AppliedCard> {
+  const result = await writeWithRetry(card, (current) => {
+    const { validUntil, stated } = validity(fact, now);
+    const superseded: ConflictStatement = {
+      ...statementFromCard(current, "superseded"),
+      replaced_at: now.toISOString(),
+    };
+    // An update settles any open disagreement, so only the history is kept.
+    const history = (current.conflict?.statements ?? []).filter((s) => s.kind === "superseded");
+    const purge = addDays(validUntil, CARD_RETENTION_DAYS);
+    return {
+      title: fact.title,
+      body: fact.body,
+      facts: factsOf(fact, ctx.platform, stated),
+      place_id: fact.place_id ?? current.place_id,
+      place_text_ja: fact.place_text_ja ?? current.place_text_ja,
+      original_text: fact.original_excerpt || null,
+      original_lang: ctx.inputLanguage,
+      source_type: fact.source_type,
+      official_confirmed: false,
+      source_count: 1,
+      valid_from: fact.valid_from,
+      valid_until: validUntil,
+      conflict: { statements: [...history, superseded].slice(-MAX_STATEMENTS) },
+      purge_after: laterOf(purge, cardPurgeAfter(current, now)),
+    };
+  });
+  await insertSource(ctx, card.id, fact, "updated");
+  return { id: card.id, visibility: "public", purge_after: result.purge_after, action: "update", reason: decision.reason };
+}
+
+/** Same attribute, different value, new source not more trusted: keep the card, show both statements. */
+async function conflictCard(
+  ctx: SourceContext,
+  fact: ExtractFact,
+  card: Card,
+  decision: ReconcileDecision,
+  now: Date,
+): Promise<AppliedCard> {
+  const result = await writeWithRetry(card, (current) => {
+    const statements = [...(current.conflict?.statements ?? [])];
+    if (!statements.some((s) => s.kind === "conflict")) statements.push(statementFromCard(current, "conflict"));
+    statements.push(statementFromFact(fact, ctx.sub.id, now));
+    return { conflict: { statements: trimStatements(statements) } };
+  });
+  await insertSource(ctx, card.id, fact, "conflict");
+  return { id: card.id, visibility: "public", purge_after: result.purge_after, action: "conflict", reason: decision.reason };
+}
+
+function statementFromCard(card: Card, kind: "superseded" | "conflict"): ConflictStatement {
+  return {
+    kind,
+    text: card.body.ja,
+    title: card.title,
+    body: card.body,
+    status: card.facts?.status ?? null,
+    valid_from: card.valid_from,
+    valid_until: card.valid_until,
+    source_type: card.source_type,
+    official_confirmed: card.official_confirmed,
+    source_count: card.source_count,
+    submission_id: null,
+    at: contentTime(card),
+  };
+}
+
+function statementFromFact(fact: ExtractFact, submissionId: string, now: Date): ConflictStatement {
+  return {
+    kind: "conflict",
+    text: fact.body.ja,
+    title: fact.title,
+    body: fact.body,
+    status: fact.status,
+    valid_from: fact.valid_from,
+    valid_until: fact.valid_until,
+    source_type: fact.source_type,
+    official_confirmed: false,
+    source_count: 1,
+    submission_id: submissionId,
+    at: now.toISOString(),
+  };
+}
+
+/** Drops the oldest statements first, but never the first side of an open conflict. */
+function trimStatements(statements: ConflictStatement[]): ConflictStatement[] {
+  if (statements.length <= MAX_STATEMENTS) return statements;
+  const firstConflict = statements.findIndex((s) => s.kind === "conflict");
+  const rest = statements.filter((_, i) => i !== firstConflict).slice(-(MAX_STATEMENTS - 1));
+  return firstConflict >= 0 ? [statements[firstConflict], ...rest] : statements.slice(-MAX_STATEMENTS);
+}
+
+/**
+ * Read-modify-write guarded by updated_at, so two submissions touching the
+ * same card cannot silently drop each other's statements. One retry on a
+ * lost race, with the patch rebuilt from the fresh row.
+ */
+async function writeWithRetry(
+  card: Card,
+  build: (current: Card) => Record<string, unknown>,
+): Promise<{ purge_after: string }> {
+  let current = card;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const { data, error } = await db()
+      .from("cards")
+      .update(build(current))
+      .eq("id", current.id)
+      .eq("updated_at", current.updated_at)
+      .select("purge_after");
+    if (error) throw error;
+    if (data && data.length > 0) return data[0] as { purge_after: string };
+    const fresh = await getCard({ id: current.board_id }, current.id);
+    if (!fresh) throw new Error(`card ${current.id} disappeared during reconcile`);
+    current = fresh;
+  }
+  throw new Error(`card ${card.id} kept changing during reconcile`);
+}
+
+async function insertSource(
+  ctx: SourceContext,
+  cardId: string,
+  fact: ExtractFact,
+  relation: CardSource["relation"],
+): Promise<void> {
+  const { error } = await db().from("card_sources").insert({
+    card_id: cardId,
+    submission_id: ctx.sub.id,
+    relation,
+    source_type: fact.source_type,
+    platform: ctx.platform,
+    uploader_area_code: ctx.sub.uploader_area_code,
+  });
+  if (error) throw error;
+}
+
+function cardPurgeAfter(card: Card & { purge_after?: string | null }, now: Date): string {
+  return card.purge_after ?? addDays(card.valid_until ?? now, CARD_RETENTION_DAYS);
+}
+
+function laterOf(a: string, b: string): string {
+  return new Date(a) > new Date(b) ? a : b;
+}
+
+// --- reads and admin writes -----------------------------------------------------
+
+/** Any card on the board, whatever its visibility. Server only. */
+export async function getCard(board: Pick<Board, "id">, cardId: string): Promise<Card | null> {
+  const { data, error } = await db()
+    .from("cards")
+    .select("*")
+    .eq("board_id", board.id)
+    .eq("id", cardId)
+    .maybeSingle();
+  if (error) throw error;
+  return (data as Card | null) ?? null;
+}
+
+export interface AdminCardLists {
+  held: Card[];
+  public: Card[];
+  hidden: Card[];
+}
+
+/** Everything the admin page shows: the held queue, then public and hidden cards, newest first. */
+export async function listCardsForAdmin(board: Board): Promise<AdminCardLists> {
+  const lists = await Promise.all(
+    (["held", "public", "hidden"] as const).map(async (visibility) => {
+      const { data, error } = await db()
+        .from("cards")
+        .select(CARD_WITH_SOURCES)
+        .eq("board_id", board.id)
+        .eq("visibility", visibility)
+        .order("created_at", { ascending: false })
+        .limit(visibility === "public" ? 200 : 100);
+      if (error) throw error;
+      return ((data ?? []) as Card[]).map(withSortedSources);
+    }),
+  );
+  return { held: lists[0], public: lists[1], hidden: lists[2] };
+}
+
+export const ADMIN_ACTIONS = ["publish", "hide", "confirm_official", "unconfirm_official"] as const;
+export type AdminAction = (typeof ADMIN_ACTIONS)[number];
+
+/**
+ * The only writes the admin route can make. `confirm_official` is the only
+ * code path in the app that sets official_confirmed to true.
+ */
+export async function applyAdminAction(
+  board: Board,
+  cardId: string,
+  action: AdminAction,
+): Promise<{ id: string; visibility: Visibility; official_confirmed: boolean } | null> {
+  const patch =
+    action === "publish"
+      ? { visibility: "public" }
+      : action === "hide"
+        ? { visibility: "hidden" }
+        : { official_confirmed: action === "confirm_official" };
+  const { data, error } = await db()
+    .from("cards")
+    .update(patch)
+    .eq("board_id", board.id)
+    .eq("id", cardId)
+    .select("id, visibility, official_confirmed")
+    .maybeSingle();
+  if (error) throw error;
+  return (data as { id: string; visibility: Visibility; official_confirmed: boolean } | null) ?? null;
+}

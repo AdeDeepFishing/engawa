@@ -1,8 +1,10 @@
 import { randomUUID } from "node:crypto";
 import { db, SUBMISSIONS_BUCKET } from "./client";
-import { addDays, addHours, CARD_RETENTION_DAYS, DEFAULT_VALID_HOURS } from "@/lib/cards/categories";
-import type { ExtractResult } from "@/lib/claude/extract";
-import type { Board, Platform, Submission } from "@/lib/types";
+import { applyDecision, insertCard, listReconcileCandidates, type AppliedCard, type SourceContext } from "./cards";
+import { addDays, addHours } from "@/lib/cards/categories";
+import type { ExtractFact, ExtractResult } from "@/lib/claude/extract";
+import type { ReconcileCandidate, ReconcileDecision } from "@/lib/claude/reconcile";
+import type { Board, Platform, ReconcileAction, Submission } from "@/lib/types";
 
 /** Submissions stuck in processing longer than this are marked failed on the next read. */
 export const STUCK_AFTER_MS = 120_000;
@@ -163,75 +165,55 @@ export interface WrittenCards {
   publicIds: string[];
   heldIds: string[];
   latestPurgeAfter: string | null;
+  /** One entry per fact, in order: what reconcile did and to which card. */
+  decisions: { action: ReconcileAction; card_id: string; reason: string }[];
 }
 
+/** Proposes a checked decision for one fact against its candidates (the route wires in Claude). */
+export type DecideFn = (fact: ExtractFact, candidates: ReconcileCandidate[]) => Promise<ReconcileDecision>;
+
 /**
- * Turns validated facts into card rows. Any risk flag holds the card.
- * Reconcile (merge, update, conflict) arrives on 2026-11-04; today every
- * fact becomes its own card.
+ * Turns validated facts into card changes. Facts with any risk flag skip
+ * reconcile and are inserted as held. Every other fact is compared with the
+ * candidates code selects, and `decide` says whether it creates, merges,
+ * updates, contradicts or is held. Without `decide`, every fact becomes its
+ * own card (the day 1 behaviour, kept for scripts).
+ * Facts are applied one after another so a later fact sees an earlier one.
  */
 export async function writeCardsForSubmission(
   board: Board,
   sub: Submission,
   result: ExtractResult,
-  now = new Date(),
+  options: { decide?: DecideFn; now?: Date } = {},
 ): Promise<WrittenCards> {
-  const client = db();
-  const out: WrittenCards = { publicIds: [], heldIds: [], latestPurgeAfter: null };
-  if (result.facts.length === 0) return out;
+  const now = options.now ?? new Date();
+  const out: WrittenCards = { publicIds: [], heldIds: [], latestPurgeAfter: null, decisions: [] };
+  const ctx: SourceContext = { board, sub, platform: result.source_platform, inputLanguage: result.input_language };
 
-  const rows = result.facts.map((f) => {
-    const held = f.risk_flags.length > 0;
-    const validFrom = f.valid_from;
-    const validUntil =
-      f.valid_until ?? addHours(validFrom && new Date(validFrom) > now ? validFrom : now, DEFAULT_VALID_HOURS[f.category]);
-    const purgeAfter = addDays(validUntil, CARD_RETENTION_DAYS);
-    return {
-      board_id: board.id,
-      category: f.category,
-      place_id: f.place_id,
-      place_text_ja: f.place_text_ja,
-      area_code: sub.uploader_area_code,
-      title: f.title,
-      body: f.body,
-      facts: {
-        status: f.status,
-        conditions: f.conditions,
-        confidence: f.confidence,
-        platform: result.source_platform,
-      },
-      original_text: f.original_excerpt || null,
-      original_lang: result.input_language,
-      source_type: f.source_type,
-      official_confirmed: false,
-      source_count: 1,
-      risk_flags: f.risk_flags,
-      visibility: held ? "held" : "public",
-      valid_from: validFrom,
-      valid_until: validUntil,
-      mode_at_creation: board.mode,
-      purge_after: purgeAfter,
-    };
-  });
-
-  const { data: inserted, error } = await client.from("cards").insert(rows).select("id, visibility, purge_after");
-  if (error) throw error;
-  const cards = (inserted ?? []) as { id: string; visibility: string; purge_after: string }[];
-  for (const c of cards) {
-    (c.visibility === "held" ? out.heldIds : out.publicIds).push(c.id);
-    if (!out.latestPurgeAfter || c.purge_after > out.latestPurgeAfter) out.latestPurgeAfter = c.purge_after;
+  for (const fact of result.facts) {
+    let applied: AppliedCard;
+    if (fact.risk_flags.length > 0) {
+      applied = await insertCard(
+        ctx,
+        fact,
+        { visibility: "held", heldReason: Array.from(new Set(fact.risk_flags)).join(",") },
+        { action: "hold", reason: "risk flags" },
+        now,
+      );
+    } else if (options.decide) {
+      const candidates = await listReconcileCandidates(board, fact, now);
+      const decision = await options.decide(fact, candidates);
+      applied = await applyDecision(ctx, fact, decision, now);
+    } else {
+      applied = await insertCard(ctx, fact, { visibility: "public", heldReason: null }, { action: "create", reason: "no reconcile" }, now);
+    }
+    const ids = applied.visibility === "held" ? out.heldIds : out.publicIds;
+    if (!ids.includes(applied.id)) ids.push(applied.id);
+    if (!out.latestPurgeAfter || new Date(applied.purge_after) > new Date(out.latestPurgeAfter)) {
+      out.latestPurgeAfter = applied.purge_after;
+    }
+    out.decisions.push({ action: applied.action, card_id: applied.id, reason: applied.reason });
   }
-
-  const sources = cards.map((c, i) => ({
-    card_id: c.id,
-    submission_id: sub.id,
-    relation: "created",
-    source_type: rows[i].source_type,
-    platform: result.source_platform,
-    uploader_area_code: sub.uploader_area_code,
-  }));
-  const { error: srcErr } = await client.from("card_sources").insert(sources);
-  if (srcErr) throw srcErr;
   return out;
 }
 

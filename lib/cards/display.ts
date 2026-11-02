@@ -1,5 +1,5 @@
 import { INTL_LOCALE, t, type Lang } from "@/lib/i18n";
-import type { Board, Card } from "@/lib/types";
+import type { Board, Card, ConflictStatement } from "@/lib/types";
 
 /** Place as shown to a reader: translated name plus the Japanese name, because signs are in Japanese. */
 export function placeLabel(card: Pick<Card, "place_id" | "place_text_ja">, board: Board, lang: Lang): string | null {
@@ -43,4 +43,27 @@ export function formatTime(iso: string, lang: Lang): string {
     minute: "2-digit",
     hour12: false,
   }).format(new Date(iso));
+}
+
+type StatementCard = Pick<Card, "conflict" | "created_at">;
+
+/** Earlier versions an update replaced, newest first. */
+export function supersededStatements(card: Pick<Card, "conflict">): ConflictStatement[] {
+  return (card.conflict?.statements ?? []).filter((s) => s.kind === "superseded").reverse();
+}
+
+/** Both sides of an open disagreement, oldest first. Empty when there is none. */
+export function conflictStatements(card: Pick<Card, "conflict">): ConflictStatement[] {
+  return (card.conflict?.statements ?? []).filter((s) => s.kind === "conflict");
+}
+
+/** When the card's current content reached the board: the last update, else creation. */
+export function contentTime(card: StatementCard): string {
+  const last = supersededStatements(card)[0];
+  return last?.replaced_at ?? card.created_at;
+}
+
+/** A statement in the reader's language; rows from before multilingual statements fall back to the Japanese text. */
+export function statementText(s: ConflictStatement, lang: Lang): string {
+  return s.body?.[lang] || s.text;
 }
