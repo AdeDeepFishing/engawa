@@ -151,7 +151,11 @@ function decideWithClaude(board: Board, submissionId: string): DecideFn {
       const d = outcome.decision;
       console.log(
         `reconcile ${submissionId}: ${d.action} ${d.target_card_id ?? "-"} over ${candidates.length} candidates` +
-          (outcome.model ? ` in ${outcome.latencyMs} ms on ${outcome.model}` : "") +
+          (outcome.model
+            ? ` in ${outcome.latencyMs} ms on ${outcome.model}` +
+              ` (tokens in ${outcome.usage.inputTokens}, cache read ${outcome.usage.cacheReadTokens},` +
+              ` cache write ${outcome.usage.cacheWriteTokens}, out ${outcome.usage.outputTokens})`
+            : "") +
           (outcome.override ? ` (code override: ${outcome.override})` : "") +
           `: ${d.reason}`,
       );
