@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TranslateResult",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["items"],
+  "properties": {
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["index", "title", "body"],
+        "properties": {
+          "index": { "type": "integer", "description": "Position of the source item in the request, starting at 0." },
+          "title": { "$ref": "#/$defs/targets" },
+          "body": { "$ref": "#/$defs/targets" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "targets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["zh", "ko", "vi", "easy_ja"],
+      "properties": {
+        "zh": { "type": "string" },
+        "ko": { "type": "string" },
+        "vi": { "type": "string" },
+        "easy_ja": { "type": "string" }
+      }
+    }
+  }
+}

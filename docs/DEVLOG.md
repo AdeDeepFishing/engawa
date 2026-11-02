@@ -1,0 +1,29 @@
+# Development log
+
+One entry per working day. What Claude Code did, which model did what, and what needed a human decision. This log is the source for the "how we used Claude" section of the README and the submission form.
+
+## 2026-11-02 (Sun), kickoff day, evening session
+
+**Model:** `claude-fable-5-1` in Claude Code, planning role.
+
+**Done**
+- Read the pre-event planning notes (kept outside the repo) and reviewed them critically: scope versus time, logical holes, judge questions.
+- Created this private repository after the 12:00 JST kickoff and committed the `create-next-app` scaffold (Next.js 16, React 19, Tailwind 4, pnpm).
+- Wrote `CLAUDE.md`, `docs/PLAN.md` (scope, architecture decisions, day-by-day task board), `docs/PRIVACY.md` (retention table), `.env.example`.
+- Wrote the initial database migration (`supabase/migrations/0001_init.sql`) and seed drafts for the 武蔵小杉 board.
+- Wrote the Claude prompts (`lib/claude/prompts/`) and JSON schemas (`lib/claude/schemas/`) for extract, translate, reconcile and ask.
+
+**Decisions made today (human)**
+- Product name: Engawa (縁側).
+- Hosting on Cloudflare Workers via OpenNext instead of Vercel, with a time-boxed fallback.
+- No alert or early-warning features. The board starts where alerts stop.
+- Pilot board: 武蔵小杉 (中原区, 川崎市).
+- Reconcile is a single structured call over code-selected candidates, not an agent loop.
+- Minimal admin page and the purge job are in the must list; pink masking of screenshots is a time-boxed experiment at the end.
+- Area badge is "self-reported area", never "verified".
+- Implementation from tomorrow runs on `claude-opus-5-5`; Fable returns for prompt tuning and the 11/6 review.
+
+**Open for the human**
+- Supabase project and keys, Anthropic API key, `wrangler login`, Workers plan.
+- Verify the shelter list against the city's designated shelter list.
+- Fixture inputs with fake names and avatars.

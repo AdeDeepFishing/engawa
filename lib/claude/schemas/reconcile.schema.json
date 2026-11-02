@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ReconcileDecision",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["action", "target_card_id", "fill_missing", "reason"],
+  "properties": {
+    "action": {
+      "type": "string",
+      "enum": ["create", "merge", "update", "conflict", "hold"]
+    },
+    "target_card_id": {
+      "type": ["string", "null"],
+      "description": "One of the candidate card ids. Null only when action is create."
+    },
+    "fill_missing": {
+      "type": "boolean",
+      "description": "For merge: whether the new fact supplies values (time, conditions) that the existing card lacks and should be filled in."
+    },
+    "reason": {
+      "type": "string",
+      "description": "One sentence in English for the log."
+    }
+  }
+}

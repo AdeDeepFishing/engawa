@@ -1,0 +1,63 @@
+{
+  "_note": "Sample cards for the empty board on day one and for the demo seed (an older card that will show as expired). Korean and Vietnamese need a native check before the demo. Times are relative to seed time via minutes_ago.",
+  "cards": [
+    {
+      "board_slug": "musashikosugi",
+      "category": "daily_notice",
+      "place_id": null,
+      "place_text_ja": "〇〇マンション（管理会社からのお知らせ）",
+      "source_type": "official",
+      "official_confirmed": false,
+      "original_lang": "ja",
+      "original_text": "断水のお知らせ　11月〔X〕日（〔曜〕）10:00〜15:00　配管点検のため断水します。ご不便をおかけしますがご協力をお願いいたします。管理会社",
+      "minutes_ago": 60,
+      "valid_hours": 720,
+      "title": {
+        "ja": "断水のお知らせ：11月〔X〕日 10:00〜15:00",
+        "en": "Water outage: Nov X, 10:00 to 15:00",
+        "zh": "停水通知：11月X日 10:00至15:00",
+        "ko": "단수 안내: 11월 X일 10:00~15:00",
+        "vi": "Thông báo cắt nước: ngày X tháng 11, 10:00 đến 15:00",
+        "easy_ja": "11月〔X〕日の 10時から 15時まで、水が 出ません"
+      },
+      "body": {
+        "ja": "配管点検のため断水します。管理会社からのお知らせです。",
+        "en": "Water will be cut off for pipe inspection. Notice from the building management company.",
+        "zh": "因管道检查暂停供水。来自管理公司的通知。",
+        "ko": "배관 점검으로 단수됩니다. 관리회사의 안내입니다.",
+        "vi": "Cắt nước để kiểm tra đường ống. Thông báo từ công ty quản lý tòa nhà.",
+        "easy_ja": "水道の 管（くだ）を しらべるためです。マンションの 管理会社からの お知らせです。"
+      },
+      "facts": { "status": "open", "conditions": [] }
+    },
+    {
+      "board_slug": "musashikosugi",
+      "category": "shops",
+      "place_id": "musashikosugi-sta",
+      "place_text_ja": "武蔵小杉駅前のコンビニ",
+      "source_type": "secondhand",
+      "official_confirmed": false,
+      "original_lang": "zh",
+      "original_text": "武藏小杉站前的便利店开着，还有水。",
+      "minutes_ago": 200,
+      "valid_hours": 3,
+      "title": {
+        "ja": "武蔵小杉駅前のコンビニ 営業中、水あり",
+        "en": "Convenience store in front of Musashi-Kosugi Station (武蔵小杉駅) is open, has water",
+        "zh": "武藏小杉站前的便利店营业中，有水",
+        "ko": "무사시코스기역 앞 편의점 영업 중, 물 있음",
+        "vi": "Cửa hàng tiện lợi trước ga Musashi-Kosugi (武蔵小杉駅) đang mở, có nước",
+        "easy_ja": "武蔵小杉駅（むさしこすぎえき）の 前の コンビニが 開いています。水が あります"
+      },
+      "body": {
+        "ja": "WeChat のグループからの情報です。本人が見たかどうかは不明です。",
+        "en": "From a WeChat group. Not confirmed firsthand.",
+        "zh": "来自微信群的信息，未经本人确认。",
+        "ko": "WeChat 그룹에서 전해 들은 정보입니다. 직접 확인되지 않았습니다.",
+        "vi": "Thông tin từ một nhóm WeChat. Chưa được xác nhận trực tiếp.",
+        "easy_ja": "WeChat の グループで 聞いた 話です。見た人は わかりません。"
+      },
+      "facts": { "status": "open", "conditions": [] }
+    }
+  ]
+}
