@@ -47,11 +47,11 @@ Summaries, peace/disaster mode switch, safety check-in, follow-up questions, And
 
 ## 3. Architecture decisions
 
-**Hosting: Cloudflare Workers via `@opennextjs/cloudflare`.** The author already hosts on Cloudflare and prefers it. Consequences: no native modules (no sharp), Workers Paid plan recommended because the free plan's 10 ms CPU limit per request is too tight for SSR, secrets via `wrangler secret put`, and a cron trigger. Time box: if a deploy is not serving the board by 2026-11-03 11:00 JST, switch to Vercel and move on. Follow the official OpenNext Cloudflare "get started" docs when setting up; do not guess config shapes. Set `cacheComponents: false` in `next.config.ts` so dynamic server rendering behaves classically.
+**Hosting: Vercel Hobby (free).** Cloudflare Workers was the first choice, but its free plan allows 10 ms of CPU per request (waiting on I/O does not count), which is too tight for Next.js server rendering, and `waitUntil` stops 30 seconds after the client disconnects. There is no budget for the paid plan this week. Vercel Hobby gives functions up to 300 seconds, one cron job per day, and automatic deploys from GitHub at no cost. Nothing in the code depends on Vercel except `vercel.json`, so a later move to a paid Workers plan stays possible. Set `cacheComponents: false` in `next.config.ts` so dynamic server rendering behaves classically. Keep the pure JS image stripping anyway; it keeps the app portable.
 
 **Database and files: Supabase Postgres and Storage** through `@supabase/supabase-js` over HTTP. Service role key only on the server. RLS enabled on all tables with no policies. One private bucket `submissions`. Uploads go browser to Storage via signed upload URLs; the server downloads the object to send it to Claude.
 
-**Processing is client-driven.** `POST /api/b/[slug]/submissions` creates the row and returns the id. The client then calls `POST /api/process/[id]` and keeps the connection open while the server streams stage events (`stripping`, `extracting`, `reconciling`, `translating`, `done`, `failed`). The Worker runs as long as the client stays connected, so no platform background limit applies. If the client disconnects, the submission is left in `processing` and the watchdog (checked on read) marks it `failed` after 120 seconds with a retry button. A later upgrade path is Cloudflare Queues or Workflows; not this week.
+**Processing is client-driven.** `POST /api/b/[slug]/submissions` creates the row and returns the id. The client then calls `POST /api/process/[id]` and keeps the connection open while the server streams stage events (`stripping`, `extracting`, `reconciling`, `translating`, `done`, `failed`). The route runs while the client stays connected, within the 300 second function limit, which is far above the pipeline's 30 to 60 seconds. If the client disconnects, the submission is left in `processing` and the watchdog (checked on read) marks it `failed` after 120 seconds with a retry button. A later upgrade path is Cloudflare Queues or Workflows; not this week.
 
 **Image handling without sharp.** Browser: `canvas` re-encode to JPEG (drops EXIF, applies orientation). Server: a small pure JS stripper that removes JPEG APPn and COM segments and PNG ancillary text and eXIf chunks before storing or sending to Claude. Base64 size stays under the vision limits.
 
@@ -62,7 +62,7 @@ Summaries, peace/disaster mode switch, safety check-in, follow-up questions, And
 - `ask`: Citations with one document per public card (title and body in the reader's language, with Japanese place names kept). Start with `claude-sonnet-5-5` for speed; switch to Opus if answers are weaker on the fixtures. Non-streaming first.
 - No fallbacks beta, no Managed Agents unless the eval shows refusals.
 
-**Deletion.** `purge_after`: chat screenshot originals right after processing (24h at most); paper photos and cards `valid_until + 30 days`; devices last seen + 90 days. Purge runs daily. On Cloudflare: a cron trigger on a tiny separate Worker that calls `/api/cron/purge` with `CRON_SECRET`, or Supabase `pg_cron` doing the same. On Vercel: `vercel.json` cron. "Disaster ended" has no switch this week; everything is time based and the README says so. No zero-data-retention claim about the Claude API.
+**Deletion.** `purge_after`: chat screenshot originals right after processing (24h at most); paper photos and cards `valid_until + 30 days`; devices last seen + 90 days. Purge runs daily: a `vercel.json` cron (Hobby allows one run per day, executed some time within the scheduled hour) calls `/api/cron/purge` with `CRON_SECRET`. Supabase `pg_cron` is the alternative if the platform ever changes. "Disaster ended" has no switch this week; everything is time based and the README says so. No zero-data-retention claim about the Claude API.
 
 **Identity and abuse.** Random `device_id` in localStorage. Admin token hashed in the database. Rate limits are Postgres counts. Daily Claude cap in `usage_daily`. Cloudflare Turnstile is a later add.
 
@@ -89,7 +89,7 @@ Owner for implementation: Claude Code with `claude-opus-5-5`. Planning, prompt d
 ### Human, before 2026-11-03 morning
 - [ ] Create the Supabase project (Tokyo region), put URL, anon key and service role key in `.env.local`
 - [ ] Put the hackathon Anthropic API key in `.env.local`
-- [ ] `wrangler login`; decide on the Workers Paid plan
+- [ ] Create the Vercel project from the GitHub repo (Hobby), add the environment variables, confirm the first deploy
 - [ ] Verify the shelter list for 武蔵小杉 against 川崎市 指定避難所一覧 and correct `supabase/seed/boards.json`
 - [ ] Prepare fixture inputs (paper notices, chat screenshots with fake names and avatars, text) into `fixtures/inputs/` with a note on which real shelter they name
 
@@ -98,7 +98,7 @@ Owner for implementation: Claude Code with `claude-opus-5-5`. Planning, prompt d
 - [ ] Supabase: link project, apply `0001_init.sql`, create bucket, run seed
 - [ ] `lib/i18n` dictionary with the key UI strings in five languages; language switch; locale persistence
 - [ ] `/b/[slug]` SSR card list from seed; card detail sheet; text size toggle
-- [ ] OpenNext Cloudflare setup and first deploy (time box ends 11:00; fallback Vercel)
+- [ ] First Vercel deploy from `main`; `maxDuration` set on the process and ask routes; the deployed board renders the seed cards
 - [ ] Drop-in UI: camera, image, text; browser compression and EXIF removal; signed upload; purpose notice
 - [ ] `POST /api/b/[slug]/submissions`; `POST /api/process/[id]` with SSE stages; server metadata strip
 - [ ] `lib/claude/extract.ts` using the prompt and schema; cards written; placeholder replaced; polling
@@ -150,7 +150,7 @@ Never cut: S2, S3, S4 merge, S5, S9, S10.
 
 | Risk | Response |
 |---|---|
-| OpenNext on Cloudflare does not deploy cleanly with Next 16 | 11/3 11:00 time box, then Vercel |
+| Vercel Hobby limits (300 s functions, daily cron, hobby use only) | Fine for the event; the pipeline is client-driven and finishes well under 300 s |
 | Extract over 20 seconds | Split extract and translate; try `claude-sonnet-5-5`; placeholder card already covers the wait; the video shows the real time |
 | Reconcile misses the merge in the demo | Fixtures name the same shelter; candidates filtered by `place_id`; known places carry aliases in six languages |
 | Public URL burns the API budget | Daily cap and per-board limits from day one |

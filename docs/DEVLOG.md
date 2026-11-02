@@ -15,7 +15,7 @@ One entry per working day. What Claude Code did, which model did what, and what 
 
 **Decisions made today (human)**
 - Product name: Engawa (縁側).
-- Hosting on Cloudflare Workers via OpenNext instead of Vercel, with a time-boxed fallback.
+- Hosting: Cloudflare Workers was the first choice, revised the same evening to Vercel Hobby. The Workers free plan allows 10 ms of CPU per request, too tight for server rendering, and there is no budget for the paid plan. Vercel Hobby covers 300 second functions and a daily cron for free.
 - No alert or early-warning features. The board starts where alerts stop.
 - Pilot board: 武蔵小杉 (中原区, 川崎市).
 - Reconcile is a single structured call over code-selected candidates, not an agent loop.
