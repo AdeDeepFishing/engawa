@@ -273,6 +273,7 @@ async function updateCard(
       source_type: fact.source_type,
       official_confirmed: false,
       source_count: 1,
+      last_confirmed_at: null,
       valid_from: fact.valid_from,
       valid_until: validUntil,
       conflict: { statements: [...history, superseded].slice(-MAX_STATEMENTS) },
