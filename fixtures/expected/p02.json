@@ -1,0 +1,29 @@
+{
+  "input": "p02-water-distribution-notice.jpg",
+  "variants": [
+    "p02-water-distribution-notice.png"
+  ],
+  "source_platform": "paper",
+  "facts": [
+    {
+      "category": "water",
+      "place_id": "kosugi-es",
+      "valid_from": "T14:00",
+      "valid_until": "T16:00",
+      "conditions_include": [
+        "container",
+        "10"
+      ],
+      "source_type": "official"
+    }
+  ],
+  "must_not_contain": [],
+  "risk_flags": [],
+  "merges_with": [
+    "p04",
+    "p05",
+    "s02",
+    "t02"
+  ],
+  "notes": "Demo step 1. 本日 carries no date, so only the times are checked."
+}

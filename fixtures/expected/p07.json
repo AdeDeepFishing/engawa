@@ -1,0 +1,26 @@
+{
+  "input": "p07-water-time-change.jpg",
+  "variants": [
+    "p07-water-time-change.png"
+  ],
+  "source_platform": "paper",
+  "facts": [
+    {
+      "category": "water",
+      "place_id": "kosugi-es",
+      "valid_from": "T15:00",
+      "valid_until": "T16:00",
+      "conditions_include": [
+        "container"
+      ],
+      "source_type": "official"
+    }
+  ],
+  "must_not_contain": [],
+  "risk_flags": [],
+  "merges_with": [],
+  "updates": [
+    "p02"
+  ],
+  "notes": "Update of p02: the start moves from 14:00 to 15:00 and the end stays 16:00. The old time 14:00 is printed in the notice and must not become valid_from. Dropped after the p02 group, it must update that card (reconcile update), not create a second one."
+}

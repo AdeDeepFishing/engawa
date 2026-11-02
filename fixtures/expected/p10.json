@@ -1,0 +1,27 @@
+{
+  "input": "p10-supplies-distribution-notice.jpg",
+  "variants": [
+    "p10-supplies-distribution-notice.png"
+  ],
+  "source_platform": "paper",
+  "facts": [
+    {
+      "category": "supplies",
+      "place_id": "kosugi-es",
+      "valid_from": "T17:00",
+      "valid_until": "T19:00",
+      "conditions_include": [
+        "household"
+      ],
+      "en_include": [
+        "diaper",
+        "blanket"
+      ],
+      "source_type": "official"
+    }
+  ],
+  "must_not_contain": [],
+  "risk_flags": [],
+  "merges_with": [],
+  "notes": "Diapers, formula and blankets, one blanket and one pack of diapers per household, families with infants first. Same shelter as the water card but a different category: it must not merge into it."
+}

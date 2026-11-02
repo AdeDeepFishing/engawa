@@ -1,0 +1,28 @@
+{
+  "input": "p09-shelter-rules-notice.jpg",
+  "variants": [
+    "p09-shelter-rules-notice.png"
+  ],
+  "source_platform": "paper",
+  "facts": [
+    {
+      "category": [
+        "shelter",
+        "official_notice"
+      ],
+      "place_id": "kosugi-es",
+      "conditions_include": [
+        "pet",
+        "22:00"
+      ],
+      "en_include": [
+        "pet"
+      ],
+      "source_type": "official"
+    }
+  ],
+  "must_not_contain": [],
+  "risk_flags": [],
+  "merges_with": [],
+  "notes": "Shelter rules: pets stay in the pet area north of the school building, not in the gym; lights out at 22:00, quiet from 22:00 to 6:00. The rule hours are not validity times, so valid_from and valid_until are not checked. Not part of the demo chain: on a board that has this card, demo step 5 (can I bring my cat) gets an answer instead of no information yet."
+}

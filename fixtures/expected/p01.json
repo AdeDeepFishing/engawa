@@ -1,0 +1,24 @@
+{
+  "input": "p01-water-outage-notice.jpg",
+  "variants": [
+    "p01-water-outage-notice.png"
+  ],
+  "source_platform": "paper",
+  "facts": [
+    {
+      "category": "daily_notice",
+      "place_id": null,
+      "status": "planned",
+      "valid_from": "2026-11-19T10:00",
+      "valid_until": "2026-11-19T15:00",
+      "conditions_include": [
+        "toilet"
+      ],
+      "source_type": "official"
+    }
+  ],
+  "must_not_contain": [],
+  "risk_flags": [],
+  "merges_with": [],
+  "notes": "Peacetime notice from a building management office: water outage for a pipe inspection. The building has no name, so place_id stays null. The date is printed, so the times include it. The posting date 2026年11月5日 is not a validity time."
+}
