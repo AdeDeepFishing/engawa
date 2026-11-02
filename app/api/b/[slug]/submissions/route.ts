@@ -1,9 +1,11 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getBoardBySlug } from "@/lib/db/boards";
+import { assertUnderCap, BusyError } from "@/lib/claude/usage";
 import { hasDb } from "@/lib/db/client";
 import {
   assertRateLimits,
   createSubmission,
+  RATE_LIMITS,
   RateLimitError,
   touchDevice,
 } from "@/lib/db/submissions";
@@ -14,7 +16,23 @@ export const maxDuration = 60;
 
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
 const MAX_TEXT_CHARS = 8000;
+/** Room for the multipart envelope and the other fields around the image. */
+const MAX_BODY_BYTES = MAX_IMAGE_BYTES + 256 * 1024;
 const DEVICE_RE = /^[0-9a-f-]{36}$/;
+
+/**
+ * Error responses with stable codes the client maps to messages:
+ *   400 bad_request       malformed form
+ *   404 board_not_found
+ *   413 too_large         image over 8 MB (max_bytes in the body)
+ *   415 unsupported_image not JPEG or PNG
+ *   429 rate_limited      scope "device" (3 a minute) or "board" (30 a minute), Retry-After 60
+ *   503 busy              daily Claude call cap reached, Retry-After 3600
+ *   503 no_database       server runs without a database
+ */
+function tooLarge() {
+  return NextResponse.json({ error: "too_large", max_bytes: MAX_IMAGE_BYTES }, { status: 413 });
+}
 
 /**
  * Creates a submission. multipart/form-data with:
@@ -31,6 +49,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
   const { slug } = await params;
   const board = await getBoardBySlug(slug);
   if (!board) return NextResponse.json({ error: "board_not_found" }, { status: 404 });
+  if (Number(req.headers.get("content-length") ?? 0) > MAX_BODY_BYTES) return tooLarge();
 
   let form: FormData;
   try {
@@ -49,7 +68,21 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
     await assertRateLimits(board.id, deviceId);
   } catch (e) {
     if (e instanceof RateLimitError) {
-      return NextResponse.json({ error: "rate_limited", scope: e.scope }, { status: 429 });
+      const limit = e.scope === "device" ? RATE_LIMITS.perDevicePerMinute : RATE_LIMITS.perBoardPerMinute;
+      return NextResponse.json(
+        { error: "rate_limited", scope: e.scope, limit_per_minute: limit },
+        { status: 429, headers: { "Retry-After": "60" } },
+      );
+    }
+    throw e;
+  }
+
+  // Refuse before storing anything when processing could not run today.
+  try {
+    await assertUnderCap();
+  } catch (e) {
+    if (e instanceof BusyError) {
+      return NextResponse.json({ error: "busy" }, { status: 503, headers: { "Retry-After": "3600" } });
     }
     throw e;
   }
@@ -65,7 +98,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
   } else {
     const file = form.get("image");
     if (!(file instanceof Blob)) return NextResponse.json({ error: "bad_request" }, { status: 400 });
-    if (file.size > MAX_IMAGE_BYTES) return NextResponse.json({ error: "too_large" }, { status: 413 });
+    if (file.size > MAX_IMAGE_BYTES) return tooLarge();
     const bytes = new Uint8Array(await file.arrayBuffer());
     try {
       const stripped = stripImageMetadata(bytes);
