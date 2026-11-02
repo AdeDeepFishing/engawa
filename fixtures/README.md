@@ -11,7 +11,7 @@ Test inputs for the extraction and reconciliation pipeline, and for the eval scr
 
 ## Status
 
-The text fixtures in `inputs/` were written during the event by Claude Code on 2026-11-03 (fictional names, numbers and handles). `t02` and `t03` are text stand-ins for the paper photo `p02` and the WeChat screenshot `p03`, used to measure latency before the photographed fixtures exist. The image fixtures are still to be prepared by the human.
+The text fixtures in `inputs/` were written during the event by Claude Code on 2026-11-03 (fictional names, numbers and handles). `t02` and `t03` are text stand-ins for the paper photo `p02` and the WeChat screenshot `p03`, used to measure latency before the photographed fixtures exist. `s02` is a synthetic notice: the `t02` text rendered as HTML and screenshotted (800 by 600), used to measure the vision path. The photographed and screenshot fixtures are still to be prepared by the human.
 
 ## Layout
 
@@ -21,6 +21,7 @@ fixtures/
     p01-water-outage-notice.jpg        paper, ja, peacetime
     p02-water-distribution-notice.jpg  paper, ja, 小杉小学校 shelter, 14:00 to 16:00, bring containers
     t02-water-distribution-notice-ja.txt  text stand-in for p02
+    s02-water-distribution-notice-synthetic.jpg  rendered stand-in for p02 (vision path)
     p03-wechat-konbini.png             screenshot, zh, secondhand
     t03-wechat-konbini-zh.txt          text stand-in for p03, includes a room number to strip
     p04-line-water-same-fact.png       screenshot, ja, same fact as p02, fake names and avatars

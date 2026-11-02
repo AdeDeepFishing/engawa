@@ -23,7 +23,7 @@ Everything (fixtures, known places, prompts, seed, recording) is built around th
 | # | Feature | Cut to |
 |---|---|---|
 | S1 | Board page `/b/[slug]` | SSR card list. Language switch ja/en/zh/ko/vi, follows the browser, remembered locally. Card detail sheet: all languages, PII-stripped original, source list. Category filter optional |
-| S2 | Drop-in | One big button: camera, choose image, text. No hint chips. Browser re-encodes to JPEG with long edge at most 1568px, which drops EXIF. Signed URL upload. Placeholder card "organizing" appears at once. One-line purpose notice on first drop-in |
+| S2 | Drop-in | One big button: camera, choose image, text. No hint chips. Browser re-encodes to JPEG with long edge at most 1568px, which drops EXIF. Upload through the route handler, which strips metadata again before storing. Placeholder card "organizing" appears at once. One-line purpose notice on first drop-in |
 | S3 | extract | One structured-outputs call: facts, category, place normalized to known places, times, validity, conditions, source type, platform, risk flags, PII-stripped original, all six languages. Measure on 2026-11-03 with five fixtures; if over 20 seconds, split into extract (ja, en, source language) and translate (the rest) |
 | S4 | reconcile | No agent loop. Code selects candidates (same board, same category, not expired or within 24h, same place_id or null place, at most 20, compact JSON). One structured-outputs call returns `create`, `merge`, `update`, `conflict` or `hold`. Code checks the target is in the candidate list, then applies. Conflict is a label plus both statements |
 | S5 | Card signals | Category icon, place, "N minutes ago", source type, source count, expired cards greyed with "may be outdated", held cards not public |
@@ -49,7 +49,7 @@ Summaries, peace/disaster mode switch, safety check-in, follow-up questions, And
 
 **Hosting: Vercel Hobby (free).** Cloudflare Workers was the first choice, but its free plan allows 10 ms of CPU per request (waiting on I/O does not count), which is too tight for Next.js server rendering, and `waitUntil` stops 30 seconds after the client disconnects. There is no budget for the paid plan this week. Vercel Hobby gives functions up to 300 seconds, one cron job per day, and automatic deploys from GitHub at no cost. Nothing in the code depends on Vercel except `vercel.json`, so a later move to a paid Workers plan stays possible. Set `cacheComponents: false` in `next.config.ts` so dynamic server rendering behaves classically. Keep the pure JS image stripping anyway; it keeps the app portable.
 
-**Database and files: Supabase Postgres and Storage** through `@supabase/supabase-js` over HTTP. Service role key only on the server. RLS enabled on all tables with no policies. One private bucket `submissions`. Uploads go browser to Storage via signed upload URLs; the server downloads the object to send it to Claude.
+**Database and files: Supabase Postgres and Storage** through `@supabase/supabase-js` over HTTP. Service role key only on the server. RLS enabled on all tables with no policies. One private bucket `submissions`. Uploads go browser to route handler (multipart, well under the 4.5 MB function body limit after browser compression), which strips metadata and stores the object with the service role. Decided on 2026-11-03 instead of signed upload URLs: no Supabase key in the browser at all, and no unstripped image ever lands in storage. The server downloads the object again to send it to Claude.
 
 **Processing is client-driven.** `POST /api/b/[slug]/submissions` creates the row and returns the id. The client then calls `POST /api/process/[id]` and keeps the connection open while the server streams stage events (`stripping`, `extracting`, `reconciling`, `translating`, `done`, `failed`). The route runs while the client stays connected, within the 300 second function limit, which is far above the pipeline's 30 to 60 seconds. If the client disconnects, the submission is left in `processing` and the watchdog (checked on read) marks it `failed` after 120 seconds with a retry button. A later upgrade path is Cloudflare Queues or Workflows; not this week.
 
@@ -94,16 +94,17 @@ Owner for implementation: Claude Code with `claude-opus-5-5`. Planning, prompt d
 - [ ] Prepare fixture inputs (paper notices, chat screenshots with fake names and avatars, text) into `fixtures/inputs/` with a note on which real shelter they name
 
 ### 2026-11-03 (Tue, holiday): board live, drop-in to card
-- [ ] Set `cacheComponents: false`; add `typecheck`, `db:*`, `eval`, `purge`, `preview`, `deploy` scripts
-- [ ] Supabase: link project, apply `0001_init.sql`, create bucket, run seed
-- [ ] `lib/i18n` dictionary with the key UI strings in five languages; language switch; locale persistence
-- [ ] `/b/[slug]` SSR card list from seed; card detail sheet; text size toggle
-- [ ] First Vercel deploy from `main`; `maxDuration` set on the process and ask routes; the deployed board renders the seed cards
-- [ ] Drop-in UI: camera, image, text; browser compression and EXIF removal; signed upload; purpose notice
-- [ ] `POST /api/b/[slug]/submissions`; `POST /api/process/[id]` with SSE stages; server metadata strip
-- [ ] `lib/claude/extract.ts` using the prompt and schema; cards written; placeholder replaced; polling
-- [ ] Delete chat screenshot originals after processing; `purge_after` set on every row
-- [ ] Measure extract latency on five fixtures; decide one call or extract plus translate; record in DEVLOG
+- [x] Set `cacheComponents: false`; add `typecheck`, `db:migrate`, `db:seed`, `eval`, `purge`, `latency` scripts (deploys happen on push, so no `preview` or `deploy` script)
+- [x] Supabase: apply `0001_init.sql` over the session pooler with `pnpm db:migrate` (no CLI login needed); bucket created by the migration
+- [ ] Run the seed with the secret key (blocked on 11/03: `.env.local` holds the publishable key under `SUPABASE_SERVICE_ROLE_KEY`)
+- [x] `lib/i18n` dictionary with the key UI strings in five languages; language switch; locale from cookie, else Accept-Language
+- [x] `/b/[slug]` SSR card list from seed; card detail sheet; text size toggle
+- [ ] First Vercel deploy from `main`; `maxDuration` set on the process route (done) and ask route; the deployed board renders the seed cards
+- [x] Drop-in UI: camera, image, text; browser compression and EXIF removal; upload through the route handler; purpose notice
+- [x] `POST /api/b/[slug]/submissions`; `POST /api/process/[id]` with SSE stages; server metadata strip (pure JS, tested on planted EXIF, COM, tEXt, eXIf and a post-EOI trailer)
+- [x] `lib/claude/extract.ts` using the prompt and schema; cards written; placeholder replaced; polling
+- [x] Delete chat screenshot originals after processing; `purge_after` set on every row
+- [x] Measure extract latency on five fixtures; decide one call or extract plus translate; record in DEVLOG
 - [ ] Acceptance: photograph a paper notice on a phone; card appears in all languages on the deployed URL within 30 seconds
 
 ### 2026-11-04 (Wed): reconcile, trust, admin

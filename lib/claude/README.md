@@ -10,10 +10,11 @@ Before writing or changing a call, read the `claude-api` skill for the exact SDK
 
 - Model: `claude-opus-5-5` (measure; `claude-sonnet-5-5` is the fallback for latency).
 - System: `prompts/extract.system.md`, marked for prompt caching.
-- Then the board context block, also cached: board name, mode, `now` as an ISO string in JST, and the known places list (id, name_ja, aliases, names).
-- Then the user content: the image (base64 JPEG or PNG after server stripping, long edge at most 1568px) and or the text, last.
+- Then the board context block, also cached: board name, mode and the known places list (id, kind, name_ja, address_ja, aliases, names). Nothing in it changes between calls, so the cache hits.
+- Then the user content, last: `now` as an ISO string in JST (it changes every call, so it must not sit inside a cached block), then the image (base64 JPEG or PNG after server stripping, long edge at most 1568px) and or the text.
 - Output format: `schemas/extract.schema.json`. Low effort. Max output tokens around 6000 (six languages for several facts).
-- After the call: `bump_usage` with the token counts; reject the whole result if any planted PII pattern appears in any string (the eval does this; production does a cheap regex pass for phone numbers and emails).
+- After the call: `bump_usage` with the token counts. Code then validates: enums, six languages present, `place_id` must be on the board (unknown ids become null and are logged), and a regex pass for phone numbers and emails over every text field rejects the whole result (`ExtractError("pii_leak")`). The eval additionally checks the planted names from `fixtures/expected`.
+- A `refusal` stop reason fails the submission with a clear error; no fallbacks beta this week.
 - If latency is over 20 seconds on the fixtures: use a derived schema with only `ja` and `en` in `multilingual` (generated in code from the full schema), publish the card, then call `translate` and patch the card.
 
 ### translate (`translate.ts`, only if extract is split)

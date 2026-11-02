@@ -21,7 +21,7 @@ Start with `docs/PLAN.md` (scope, architecture, task board) and `docs/DEVLOG.md`
 ## Architecture rules
 
 - Next.js App Router, TypeScript, Tailwind. Supabase Postgres and Storage. Hosted on Vercel (Hobby) with automatic deploys from `main`; `vercel.json` holds the daily purge cron. Cloudflare only if a paid Workers plan appears later (`docs/PLAN.md` explains why).
-- **The browser never talks to the database.** All reads go through server components or route handlers using the service role key. The anon key is used only for signed uploads. RLS is enabled on every table with no policies, so the anon key reads nothing.
+- **The browser never talks to the database or to Storage.** All reads go through server components or route handlers using the service role key. Images are posted to a route handler, which strips their metadata before storing them with the service role, so the browser holds no Supabase key at all. RLS is enabled on every table with no policies.
 - **Claude is called only on the server** via `@anthropic-ai/sdk`. Claude proposes; code decides. Every Claude output is validated against a schema, every `target_card_id` is checked against the candidate list, and only whitelisted fields are written.
 - Processing is driven by the uploader's open connection: the client calls `/api/process/[id]` and reads progress as server-sent events. No background jobs that a platform time limit can silently kill. Anything stuck in `processing` for more than 120 seconds is marked `failed` and can be retried.
 - Images are re-encoded in the browser (EXIF removed) and stripped again on the server with a pure JavaScript JPEG and PNG metadata stripper. No native image libraries, so the app stays portable to edge runtimes.
@@ -31,7 +31,7 @@ Start with `docs/PLAN.md` (scope, architecture, task board) and `docs/DEVLOG.md`
 
 - Models: `claude-opus-5-5` by default. `claude-sonnet-5-5` where latency matters and the fixture eval holds. Record every model decision with the measurement behind it in `docs/DEVLOG.md`.
 - Structured outputs for extract, translate and reconcile. Citations for ask (citations cannot be combined with the structured output format).
-- Prompt caching: system prompt and board context first with `cache_control`, user content last.
+- Prompt caching: system prompt and board context first with `cache_control`, user content last. Anything that changes per call (the current time, the input) goes in the user turn, never in a cached block.
 - Prompts live in `lib/claude/prompts/*.md`, schemas in `lib/claude/schemas/*.json`. Change them there, not inline.
 - Check the `claude-api` skill for exact parameter names before writing or changing any API call. Do not rely on memory for SDK shapes.
 

@@ -33,9 +33,6 @@ const inputs =
         .sort()
         .map((f) => join(inputDir, f));
 
-const board = localBoardBySlug(boardSlug);
-if (!board) throw new Error(`unknown board ${boardSlug}`);
-
 function toInput(path: string): ExtractInput {
   const ext = extname(path).toLowerCase();
   if (ext === ".txt") return { text: readFileSync(path, "utf8") };
@@ -57,48 +54,57 @@ type Row = {
   error?: string;
 };
 
-const rows: Row[] = [];
-for (const model of models) {
-  for (let run = 0; run < runs; run++) {
-    for (const path of inputs) {
-      const file = basename(path);
-      const started = performance.now();
-      try {
-        const o = await extract(board, toInput(path), { model });
-        rows.push({
-          file,
-          model,
-          ms: o.latencyMs,
-          input: o.usage.inputTokens,
-          cacheRead: o.usage.cacheReadTokens,
-          cacheWrite: o.usage.cacheWriteTokens,
-          output: o.usage.outputTokens,
-          facts: o.result.facts.length,
-          flags: Array.from(new Set(o.result.facts.flatMap((f) => f.risk_flags))).join("|") || "-",
-          places: o.result.facts.map((f) => f.place_id ?? "null").join("|") || "-",
-        });
-        console.log(`${file} [${model}] ${o.latencyMs} ms, facts=${o.result.facts.length}`);
-        console.log(JSON.stringify(o.result, null, 1).slice(0, 2500));
-      } catch (e) {
-        const ms = Math.round(performance.now() - started);
-        rows.push({ file, model, ms, input: 0, cacheRead: 0, cacheWrite: 0, output: 0, facts: 0, flags: "-", places: "-", error: e instanceof Error ? `${e.name}: ${e.message}` : String(e) });
-        console.log(`${file} [${model}] FAILED after ${ms} ms: ${e instanceof Error ? e.message : e}`);
+async function main() {
+  const board = localBoardBySlug(boardSlug);
+  if (!board) throw new Error(`unknown board ${boardSlug}`);
+  const rows: Row[] = [];
+  for (const model of models) {
+    for (let run = 0; run < runs; run++) {
+      for (const path of inputs) {
+        const file = basename(path);
+        const started = performance.now();
+        try {
+          const o = await extract(board, toInput(path), { model });
+          rows.push({
+            file,
+            model,
+            ms: o.latencyMs,
+            input: o.usage.inputTokens,
+            cacheRead: o.usage.cacheReadTokens,
+            cacheWrite: o.usage.cacheWriteTokens,
+            output: o.usage.outputTokens,
+            facts: o.result.facts.length,
+            flags: Array.from(new Set(o.result.facts.flatMap((f) => f.risk_flags))).join("|") || "-",
+            places: o.result.facts.map((f) => f.place_id ?? "null").join("|") || "-",
+          });
+          console.log(`${file} [${model}] ${o.latencyMs} ms, facts=${o.result.facts.length}`);
+          console.log(JSON.stringify(o.result, null, 1).slice(0, 2500));
+        } catch (e) {
+          const ms = Math.round(performance.now() - started);
+          rows.push({ file, model, ms, input: 0, cacheRead: 0, cacheWrite: 0, output: 0, facts: 0, flags: "-", places: "-", error: e instanceof Error ? `${e.name}: ${e.message}` : String(e) });
+          console.log(`${file} [${model}] FAILED after ${ms} ms: ${e instanceof Error ? e.message : e}`);
+        }
       }
     }
   }
+
+  console.log("\n| file | model | ms | in | cache_r | cache_w | out | facts | flags | place_ids |");
+  console.log("|---|---|---:|---:|---:|---:|---:|---:|---|---|");
+  for (const r of rows) {
+    console.log(
+      `| ${r.file} | ${r.model} | ${r.ms} | ${r.input} | ${r.cacheRead} | ${r.cacheWrite} | ${r.output} | ${r.facts} | ${r.flags} | ${r.error ? "ERROR " + r.error : r.places} |`,
+    );
+  }
+  for (const model of models) {
+    const ok = rows.filter((r) => r.model === model && !r.error).map((r) => r.ms).sort((a, b) => a - b);
+    if (!ok.length) continue;
+    const median = ok[Math.floor(ok.length / 2)];
+    const mean = Math.round(ok.reduce((a, b) => a + b, 0) / ok.length);
+    console.log(`\n${model}: n=${ok.length} median=${median} ms mean=${mean} ms min=${ok[0]} ms max=${ok[ok.length - 1]} ms`);
+  }
 }
 
-console.log("\n| file | model | ms | in | cache_r | cache_w | out | facts | flags | place_ids |");
-console.log("|---|---|---:|---:|---:|---:|---:|---:|---|---|");
-for (const r of rows) {
-  console.log(
-    `| ${r.file} | ${r.model} | ${r.ms} | ${r.input} | ${r.cacheRead} | ${r.cacheWrite} | ${r.output} | ${r.facts} | ${r.flags} | ${r.error ? "ERROR " + r.error : r.places} |`,
-  );
-}
-for (const model of models) {
-  const ok = rows.filter((r) => r.model === model && !r.error).map((r) => r.ms).sort((a, b) => a - b);
-  if (!ok.length) continue;
-  const median = ok[Math.floor(ok.length / 2)];
-  const mean = Math.round(ok.reduce((a, b) => a + b, 0) / ok.length);
-  console.log(`\n${model}: n=${ok.length} median=${median} ms mean=${mean} ms min=${ok[0]} ms max=${ok[ok.length - 1]} ms`);
-}
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});
