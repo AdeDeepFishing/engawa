@@ -96,10 +96,10 @@ Owner for implementation: Claude Code with `claude-opus-5-5`. Planning, prompt d
 ### 2026-11-03 (Tue, holiday): board live, drop-in to card
 - [x] Set `cacheComponents: false`; add `typecheck`, `db:migrate`, `db:seed`, `eval`, `purge`, `latency` scripts (deploys happen on push, so no `preview` or `deploy` script)
 - [x] Supabase: apply `0001_init.sql` over the session pooler with `pnpm db:migrate` (no CLI login needed); bucket created by the migration
-- [ ] Run the seed with the secret key (blocked on 11/03: `.env.local` holds the publishable key under `SUPABASE_SERVICE_ROLE_KEY`)
+- [x] Run the seed with the secret key (admin token written to a git-ignored file)
 - [x] `lib/i18n` dictionary with the key UI strings in five languages; language switch; locale from cookie, else Accept-Language
 - [x] `/b/[slug]` SSR card list from seed; card detail sheet; text size toggle
-- [ ] First Vercel deploy from `main`; `maxDuration` set on the process route (done) and ask route; the deployed board renders the seed cards
+- [x] First Vercel deploy from `main`; `maxDuration` set on the process route; the deployed board renders the seed cards (ask route gets its own on 11/05)
 - [x] Drop-in UI: camera, image, text; browser compression and EXIF removal; upload through the route handler; purpose notice
 - [x] `POST /api/b/[slug]/submissions`; `POST /api/process/[id]` with SSE stages; server metadata strip (pure JS, tested on planted EXIF, COM, tEXt, eXIf and a post-EOI trailer)
 - [x] `lib/claude/extract.ts` using the prompt and schema; cards written; placeholder replaced; polling
