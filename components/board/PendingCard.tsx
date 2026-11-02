@@ -14,6 +14,19 @@ const STAGE_KEYS: Record<string, MessageKey> = {
   failed: "dropin.stage.failed",
 };
 
+/**
+ * What the uploader sees when processing finished. A merge adds no new card
+ * to the list, so say where the drop-in went. `actions` comes from the done
+ * event (one reconcile action per fact) when DropIn passes it through.
+ */
+function doneKey(actions: string[] | undefined): MessageKey {
+  if (!actions?.length || actions.includes("create")) return "dropin.stage.done";
+  if (actions.includes("update")) return "card.result_updated";
+  if (actions.includes("conflict")) return "card.result_conflict";
+  if (actions.every((a) => a === "merge")) return "card.result_merged";
+  return "dropin.stage.done";
+}
+
 function errorKey(code: string | undefined): MessageKey {
   if (code === "busy" || code === "rate_limited") return "dropin.busy";
   if (code === "too_large") return "dropin.too_large";
@@ -35,7 +48,7 @@ export function PendingCard({
   let line: string;
   if (item.status === "uploading") line = t("dropin.stage.received");
   else if (item.status === "processing") line = t(STAGE_KEYS[item.stage ?? "received"] ?? "dropin.stage.received");
-  else if (item.status === "done") line = t("dropin.stage.done");
+  else if (item.status === "done") line = t(doneKey((item as PendingItem & { actions?: string[] }).actions));
   else if (item.status === "held") line = t("dropin.held");
   else if (item.status === "nothing") line = t("dropin.nothing");
   else line = t(errorKey(item.error));

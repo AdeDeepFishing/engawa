@@ -2,10 +2,20 @@
 
 import { useEffect, useRef } from "react";
 import { CATEGORY_ICON, isExpired } from "@/lib/cards/categories";
-import { formatDateTime, placeLabel } from "@/lib/cards/display";
-import { CARD_LANGS, tCount } from "@/lib/i18n";
+import {
+  conflictStatements,
+  formatDateTime,
+  placeLabel,
+  platformLabel,
+  sourceLabel,
+  statementText,
+  supersededStatements,
+  timeAgo,
+  timeRange,
+} from "@/lib/cards/display";
+import { CARD_LANGS, tCount, type Lang } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n/LangProvider";
-import type { Board, Card } from "@/lib/types";
+import type { Board, Card, ConflictStatement } from "@/lib/types";
 
 /**
  * Non-modal detail sheet. It does not trap focus: the page behind stays
@@ -37,6 +47,9 @@ export function CardSheet({
   const place = placeLabel(card, board, lang);
   const expired = isExpired(card.valid_until, now);
   const conditions = card.facts.conditions ?? [];
+  const conflicts = conflictStatements(card);
+  const previous = supersededStatements(card);
+  const sources = card.sources ?? [];
 
   return (
     <section
@@ -72,6 +85,21 @@ export function CardSheet({
           </p>
         ) : null}
 
+        {conflicts.length ? (
+          <div className="mt-3 rounded-xl border border-warn-ink bg-warn-bg p-3 text-warn-ink">
+            <p className="font-bold">
+              <span aria-hidden="true">⚠️ </span>
+              {t("conflict.label")}
+            </p>
+            <p className="mt-1">{t("conflict.explain")}</p>
+            <ul className="mt-2 flex flex-col gap-2">
+              {conflicts.map((s, i) => (
+                <Statement key={`${s.at}-${i}`} statement={s} lang={lang} now={now} />
+              ))}
+            </ul>
+          </div>
+        ) : null}
+
         <p className="mt-4 text-lg">{card.body[lang]}</p>
 
         <dl className="mt-4 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-base">
@@ -83,7 +111,7 @@ export function CardSheet({
           ) : null}
           {card.facts.status ? (
             <>
-              <dt className="text-muted">{t("sheet.category")}</dt>
+              <dt className="text-muted">{t("card.status")}</dt>
               <dd>{t(`status.${card.facts.status}`)}</dd>
             </>
           ) : null}
@@ -107,12 +135,42 @@ export function CardSheet({
           ) : null}
           <dt className="text-muted">{t("sheet.sources")}</dt>
           <dd>
-            {t(`source.${card.source_type}`)}, {tCount("card.source_count", lang, card.source_count)}
-            {card.official_confirmed ? `, ${t("card.official_confirmed")}` : ""}
+            {sourceLabel(card.source_type, card.official_confirmed, lang)} ·{" "}
+            {tCount("card.source_count", lang, card.source_count)}
+            {card.last_confirmed_at ? (
+              <span className="block text-muted">
+                {t("card.last_confirmed", { time: timeAgo(card.last_confirmed_at, now, lang) })}
+              </span>
+            ) : null}
+            {sources.length ? (
+              <ul className="mt-1 flex flex-col gap-0.5 text-sm text-muted">
+                {sources.map((src, i) => (
+                  <li key={`${src.created_at}-${i}`}>
+                    {[
+                      t(`card.relation.${src.relation}`),
+                      platformLabel(src.platform, lang),
+                      t(`source.${src.source_type}`),
+                      formatDateTime(src.created_at, lang),
+                    ].join(" · ")}
+                  </li>
+                ))}
+              </ul>
+            ) : null}
           </dd>
           <dt className="text-muted">{t("sheet.posted")}</dt>
           <dd>{formatDateTime(card.created_at, lang)}</dd>
         </dl>
+
+        {previous.length ? (
+          <section className="mt-5 rounded-xl border border-line p-3">
+            <h3 className="font-semibold">{t("card.previous_versions")}</h3>
+            <ul className="mt-2 flex flex-col gap-2">
+              {previous.map((s, i) => (
+                <Statement key={`${s.at}-${i}`} statement={s} lang={lang} now={now} />
+              ))}
+            </ul>
+          </section>
+        ) : null}
 
         <details className="mt-5 rounded-xl border border-line p-3">
           <summary className="cursor-pointer py-2 font-semibold">{t("sheet.all_languages")}</summary>
@@ -137,5 +195,24 @@ export function CardSheet({
         ) : null}
       </div>
     </section>
+  );
+}
+
+/** One statement in a conflict or in the update history: what it said, its time range, source and age. */
+function Statement({ statement: s, lang, now }: { statement: ConflictStatement; lang: Lang; now: Date }) {
+  const range = timeRange(s.valid_from, s.valid_until, lang);
+  const meta = [
+    sourceLabel(s.source_type, s.official_confirmed, lang),
+    s.source_count ? tCount("card.source_count", lang, s.source_count) : null,
+    timeAgo(s.at, now, lang),
+  ]
+    .filter(Boolean)
+    .join(" · ");
+  return (
+    <li>
+      <p>{statementText(s, lang)}</p>
+      {range ? <p className="font-semibold">{range}</p> : null}
+      <p className="text-sm opacity-80">{meta}</p>
+    </li>
   );
 }

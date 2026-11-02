@@ -1,5 +1,5 @@
 import { INTL_LOCALE, t, type Lang } from "@/lib/i18n";
-import type { Board, Card, ConflictStatement } from "@/lib/types";
+import type { Board, Card, CardStatus, ConflictStatement, Platform, SourceType } from "@/lib/types";
 
 /** Place as shown to a reader: translated name plus the Japanese name, because signs are in Japanese. */
 export function placeLabel(card: Pick<Card, "place_id" | "place_text_ja">, board: Board, lang: Lang): string | null {
@@ -66,4 +66,45 @@ export function contentTime(card: StatementCard): string {
 /** A statement in the reader's language; rows from before multilingual statements fall back to the Japanese text. */
 export function statementText(s: ConflictStatement, lang: Lang): string {
   return s.body?.[lang] || s.text;
+}
+
+/** Time range of a statement or card, for "previously: 11/3 14:00 to 16:00". */
+export function timeRange(
+  from: string | null | undefined,
+  until: string | null | undefined,
+  lang: Lang,
+): string | null {
+  if (from && until) {
+    const end = jstDay(from) === jstDay(until) ? formatTime(until, lang) : formatDateTime(until, lang);
+    return t("card.time_range", lang, { from: formatDateTime(from, lang), until: end });
+  }
+  if (from) return t("card.time_from", lang, { from: formatDateTime(from, lang) });
+  if (until) return t("card.time_until", lang, { until: formatDateTime(until, lang) });
+  return null;
+}
+
+function jstDay(iso: string): string {
+  return new Date(new Date(iso).getTime() + 9 * 3_600_000).toISOString().slice(0, 10);
+}
+
+/** "Confirmed official" replaces "official notice (unconfirmed)" once the admin confirmed it. */
+export function sourceLabel(sourceType: SourceType, officialConfirmed: boolean | undefined, lang: Lang): string {
+  return officialConfirmed ? t("card.official_confirmed", lang) : t(`source.${sourceType}`, lang);
+}
+
+export function platformLabel(platform: Platform | null, lang: Lang): string {
+  return t(`card.platform.${platform ?? "unknown"}`, lang);
+}
+
+type Facts = { valid_from?: string | null; valid_until?: string | null; status?: CardStatus | null };
+
+/**
+ * The shortest way to say how a statement differs from another one: its
+ * time range if the times differ, else its status, else its title.
+ */
+export function statementSummary(s: ConflictStatement, other: Facts, lang: Lang): string {
+  const range = timeRange(s.valid_from, s.valid_until, lang);
+  if (range && range !== timeRange(other.valid_from, other.valid_until, lang)) return range;
+  if (s.status && s.status !== other.status) return t(`status.${s.status}`, lang);
+  return s.title?.[lang] || s.text;
 }
