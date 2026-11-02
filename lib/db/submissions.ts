@@ -104,10 +104,10 @@ export async function getSubmission(id: string): Promise<Submission | null> {
  * Claims a submission for processing. Returns false when another request
  * already holds it (status processing and not yet stuck) or it is finished.
  */
-export async function claimForProcessing(id: string): Promise<boolean> {
+export async function claimForProcessing(id: string, firstStage: Submission["stage"]): Promise<boolean> {
   const { data, error } = await db()
     .from("submissions")
-    .update({ status: "processing", stage: "stripping", error: null })
+    .update({ status: "processing", stage: firstStage, error: null })
     .eq("id", id)
     .in("status", ["received", "failed"])
     .select("id");

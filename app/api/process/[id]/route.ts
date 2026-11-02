@@ -51,7 +51,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       },
     ]);
   }
-  const claimed = await claimForProcessing(id);
+  const isImage = sub.input_kind === "image";
+  const claimed = await claimForProcessing(id, isImage ? "stripping" : "extracting");
   if (!claimed) return Response.json({ error: "already_processing" }, { status: 409 });
 
   const encoder = new TextEncoder();
@@ -59,9 +60,10 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     async start(controller) {
       const send = (e: SseEvent) => controller.enqueue(encoder.encode(encodeSse(e)));
       try {
-        send({ event: "stage", data: { stage: "stripping" } });
         let image: { data: string; mediaType: "image/jpeg" | "image/png" } | undefined;
-        if (sub.input_kind === "image") {
+        if (isImage) {
+          // Text submissions have no image to prepare, so they skip this stage.
+          send({ event: "stage", data: { stage: "stripping" } });
           const bytes = await downloadSubmissionImage(sub);
           if (!bytes) throw new Error("image missing");
           const mime = sniffImage(bytes);
@@ -83,7 +85,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
         const flagged = outcome.result.facts.flatMap((f) => f.risk_flags);
         const heldReason = flagged.length ? Array.from(new Set(flagged)).join(",") : null;
-        const isChatScreenshot = sub.input_kind === "image" && outcome.result.source_platform !== "paper";
+        const isChatScreenshot = isImage && outcome.result.source_platform !== "paper";
         await finishSubmission(sub, {
           platform: outcome.result.source_platform,
           written,
