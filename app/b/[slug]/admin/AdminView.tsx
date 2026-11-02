@@ -1,0 +1,224 @@
+"use client";
+
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState, useTransition, type ReactNode } from "react";
+import { TopBar } from "@/components/TopBar";
+import { CATEGORY_ICON, isExpired } from "@/lib/cards/categories";
+import {
+  conflictStatements,
+  placeLabel,
+  platformLabel,
+  sourceLabel,
+  supersededStatements,
+  timeAgo,
+} from "@/lib/cards/display";
+import { tCount, type MessageKey } from "@/lib/i18n";
+import { useLang } from "@/lib/i18n/LangProvider";
+import type { AdminAction, AdminCardLists } from "@/lib/db/admin";
+import { RISK_FLAGS, type Board, type Card, type RiskFlag } from "@/lib/types";
+
+const ACTION_KEYS: Record<AdminAction, MessageKey> = {
+  publish: "admin.publish",
+  hide: "admin.hide",
+  confirm_official: "admin.confirm_official",
+  unconfirm_official: "admin.unconfirm_official",
+};
+
+export function InvalidAdminLink() {
+  const { t } = useLang();
+  return (
+    <>
+      <TopBar title={t("admin.title")} />
+      <main className="mx-auto w-full max-w-2xl px-4 py-6">
+        <p className="text-lg">{t("admin.invalid_token")}</p>
+      </main>
+    </>
+  );
+}
+
+export function AdminView({
+  board,
+  lists,
+  token,
+  serverNow,
+}: {
+  board: Board;
+  lists: AdminCardLists;
+  token: string;
+  serverNow: string;
+}) {
+  const { lang, t } = useLang();
+  const now = new Date(serverNow);
+  const item = (card: Card, actions: AdminAction[]) => (
+    <AdminCard key={card.id} card={card} board={board} now={now} token={token} actions={actions} />
+  );
+  return (
+    <>
+      <TopBar title={`${board.name[lang]}: ${t("admin.title")}`} />
+      <main className="mx-auto w-full max-w-2xl px-4 pb-16 pt-4">
+        <p className="rounded-lg bg-warn-bg px-3 py-2 text-warn-ink">{t("admin.private_note")}</p>
+        <p className="mt-3">
+          <Link href={`/b/${board.slug}`} className="tap inline-flex items-center font-semibold text-accent underline">
+            {t("admin.open_board")}
+          </Link>
+        </p>
+
+        <Section title={`${t("admin.held_heading")} (${lists.held.length})`}>
+          {lists.held.length ? (
+            lists.held.map((c) => item(c, ["publish", "hide"]))
+          ) : (
+            <p className="text-muted">{t("admin.held_empty")}</p>
+          )}
+        </Section>
+
+        <Section title={`${t("admin.public_heading")} (${lists.public.length})`}>
+          {lists.public.length ? (
+            lists.public.map((c) => item(c, [c.official_confirmed ? "unconfirm_official" : "confirm_official", "hide"]))
+          ) : (
+            <p className="text-muted">{t("admin.none")}</p>
+          )}
+        </Section>
+
+        <details className="mt-8">
+          <summary className="cursor-pointer py-2 text-lg font-bold">
+            {t("admin.hidden_heading")} ({lists.hidden.length})
+          </summary>
+          <ul className="mt-2 flex flex-col gap-3">
+            {lists.hidden.length ? (
+              lists.hidden.map((c) => item(c, ["publish"]))
+            ) : (
+              <li className="text-muted">{t("admin.none")}</li>
+            )}
+          </ul>
+        </details>
+      </main>
+    </>
+  );
+}
+
+function Section({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <section className="mt-8">
+      <h2 className="text-lg font-bold">{title}</h2>
+      <ul className="mt-2 flex flex-col gap-3">{children}</ul>
+    </section>
+  );
+}
+
+/** Risk flags or the reconcile reason, in the reader's language where we have one. */
+function heldReasons(card: Card, t: (key: MessageKey) => string): string[] {
+  const raw = card.held_reason ?? card.risk_flags.join(",");
+  if (raw.startsWith("reconcile:")) return [`${t("admin.reason.reconcile")}: ${raw.slice("reconcile:".length).trim()}`];
+  return raw
+    .split(",")
+    .map((f) => f.trim())
+    .filter(Boolean)
+    .map((f) => ((RISK_FLAGS as readonly string[]).includes(f) ? t(`admin.reason.${f as RiskFlag}`) : f));
+}
+
+function AdminCard({
+  card,
+  board,
+  now,
+  token,
+  actions,
+}: {
+  card: Card;
+  board: Board;
+  now: Date;
+  token: string;
+  actions: AdminAction[];
+}) {
+  const { lang, t } = useLang();
+  const router = useRouter();
+  const [busy, setBusy] = useState<AdminAction | null>(null);
+  const [failed, setFailed] = useState(false);
+  const [refreshing, startTransition] = useTransition();
+  const place = placeLabel(card, board, lang);
+  const reasons = card.visibility === "held" ? heldReasons(card, t) : [];
+  const flags = [
+    conflictStatements(card).length ? t("conflict.label") : null,
+    supersededStatements(card).length ? t("card.updated") : null,
+    isExpired(card.valid_until, now) ? t("card.outdated") : null,
+  ].filter(Boolean);
+
+  async function run(action: AdminAction) {
+    setBusy(action);
+    setFailed(false);
+    try {
+      const res = await fetch(`/api/b/${board.slug}/admin`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, card_id: card.id, action }),
+      });
+      if (!res.ok) throw new Error(String(res.status));
+      startTransition(() => router.refresh());
+    } catch {
+      setFailed(true);
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  return (
+    <li className="rounded-xl border border-line bg-surface p-4 shadow-sm">
+      <div className="flex items-start gap-3">
+        <span aria-hidden="true" className="text-2xl leading-none">
+          {CATEGORY_ICON[card.category]}
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-medium text-muted">{t(`category.${card.category}`)}</p>
+          <h3 className="mt-0.5 text-lg font-bold leading-snug">{card.title[lang]}</h3>
+          {place ? <p className="mt-1">{place}</p> : null}
+          <p className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-sm text-muted">
+            <span>{timeAgo(card.created_at, now, lang)}</span>
+            <span>{sourceLabel(card.source_type, card.official_confirmed, lang)}</span>
+            <span>{tCount("card.source_count", lang, card.source_count)}</span>
+            {card.facts.platform && card.facts.platform !== "unknown" ? (
+              <span>{platformLabel(card.facts.platform, lang)}</span>
+            ) : null}
+          </p>
+          {flags.length ? <p className="mt-1 text-sm font-semibold text-warn-ink">{flags.join(" · ")}</p> : null}
+          {reasons.length ? (
+            <p className="mt-2 rounded-md bg-warn-bg px-2 py-1 text-warn-ink">
+              {t("admin.held_reason")}: {reasons.join(", ")}
+            </p>
+          ) : null}
+          <p className="mt-2">{card.body[lang]}</p>
+          {card.visibility === "held" && card.original_text ? (
+            <details className="mt-2 rounded-lg border border-line p-2">
+              <summary className="cursor-pointer py-1 font-semibold">{t("sheet.original")}</summary>
+              <p lang={card.original_lang ?? undefined} className="mt-1 whitespace-pre-wrap text-muted">
+                {card.original_text}
+              </p>
+            </details>
+          ) : null}
+          <div className="mt-3 flex flex-wrap gap-2">
+            {actions.map((action) => (
+              <button
+                key={action}
+                type="button"
+                disabled={busy !== null || refreshing}
+                onClick={() => void run(action)}
+                aria-busy={busy === action}
+                className={`rounded-lg px-4 font-semibold disabled:opacity-60 ${
+                  action === "publish" || action === "confirm_official"
+                    ? "bg-accent text-accent-ink"
+                    : "border border-line bg-surface"
+                }`}
+              >
+                {t(ACTION_KEYS[action])}
+              </button>
+            ))}
+          </div>
+          {failed ? (
+            <p role="alert" className="mt-2 text-warn-ink">
+              {t("admin.error")}
+            </p>
+          ) : null}
+        </div>
+      </div>
+    </li>
+  );
+}
