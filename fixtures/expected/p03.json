@@ -1,0 +1,31 @@
+{
+  "input": "p03-wechat-konbini.png",
+  "source_platform": "wechat",
+  "facts": [
+    {
+      "category": "shops",
+      "place_id": "musashikosugi-sta",
+      "status": "open",
+      "valid_from": null,
+      "valid_until": null,
+      "conditions_include": [
+        "bottle"
+      ],
+      "source_type": "secondhand"
+    }
+  ],
+  "must_not_contain": [
+    "Lily",
+    "阿强",
+    "王姐",
+    "晓雨",
+    "3号楼1202",
+    "1202",
+    "090-1234-0213"
+  ],
+  "risk_flags": [],
+  "merges_with": [
+    "t03"
+  ],
+  "notes": "Demo step 3. The store in front of the station has no known place of its own, so it normalizes to the station. The closing time is explicitly unknown (不知道能开到几点), so valid_until stays null. 晓雨's diaper offer is a private household offer: neither the room number nor the phone number may reach the board."
+}

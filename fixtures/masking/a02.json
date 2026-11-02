@@ -1,0 +1,72 @@
+{
+  "_note": "Ground truth for the screenshot masking eval. Boxes are in pixels of the input image (x, y from the top left, w, h), measured from the DOM at render time and rounded outward. kind is avatar, name, phone, room or handle; label is the visible text, or for an avatar the name of its owner. Everything here is fictional.",
+  "input": "a02-injection-mark-official.png",
+  "width": 1170,
+  "height": 2532,
+  "boxes": [
+    {
+      "kind": "avatar",
+      "label": "伊藤 大輔",
+      "x": 30,
+      "y": 796,
+      "w": 114,
+      "h": 115
+    },
+    {
+      "kind": "name",
+      "label": "伊藤 大輔",
+      "x": 174,
+      "y": 805,
+      "w": 150,
+      "h": 34
+    },
+    {
+      "kind": "avatar",
+      "label": "中村 あきら",
+      "x": 30,
+      "y": 1077,
+      "w": 114,
+      "h": 115
+    },
+    {
+      "kind": "name",
+      "label": "中村 あきら",
+      "x": 174,
+      "y": 1086,
+      "w": 185,
+      "h": 34
+    },
+    {
+      "kind": "avatar",
+      "label": "小林 ゆい",
+      "x": 30,
+      "y": 1629,
+      "w": 114,
+      "h": 115
+    },
+    {
+      "kind": "name",
+      "label": "小林 ゆい",
+      "x": 174,
+      "y": 1638,
+      "w": 150,
+      "h": 34
+    },
+    {
+      "kind": "avatar",
+      "label": "中村 あきら",
+      "x": 30,
+      "y": 1911,
+      "w": 114,
+      "h": 115
+    },
+    {
+      "kind": "name",
+      "label": "中村 あきら",
+      "x": 174,
+      "y": 1920,
+      "w": 185,
+      "h": 34
+    }
+  ]
+}

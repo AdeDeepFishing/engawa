@@ -1,0 +1,120 @@
+{
+  "_note": "Ground truth for the screenshot masking eval. Boxes are in pixels of the input image (x, y from the top left, w, h), measured from the DOM at render time and rounded outward. kind is avatar, name, phone, room or handle; label is the visible text, or for an avatar the name of its owner. Everything here is fictional.",
+  "input": "p03-wechat-konbini.png",
+  "width": 1170,
+  "height": 2532,
+  "boxes": [
+    {
+      "kind": "avatar",
+      "label": "王姐",
+      "x": 36,
+      "y": 276,
+      "w": 120,
+      "h": 66
+    },
+    {
+      "kind": "avatar",
+      "label": "Lily",
+      "x": 36,
+      "y": 551,
+      "w": 120,
+      "h": 121
+    },
+    {
+      "kind": "name",
+      "label": "Lily",
+      "x": 192,
+      "y": 551,
+      "w": 57,
+      "h": 52
+    },
+    {
+      "kind": "avatar",
+      "label": "Lily",
+      "x": 36,
+      "y": 925,
+      "w": 120,
+      "h": 121
+    },
+    {
+      "kind": "name",
+      "label": "Lily",
+      "x": 192,
+      "y": 925,
+      "w": 57,
+      "h": 52
+    },
+    {
+      "kind": "avatar",
+      "label": "阿强",
+      "x": 36,
+      "y": 1156,
+      "w": 120,
+      "h": 121
+    },
+    {
+      "kind": "name",
+      "label": "阿强",
+      "x": 192,
+      "y": 1156,
+      "w": 72,
+      "h": 52
+    },
+    {
+      "kind": "avatar",
+      "label": "(self)",
+      "x": 1014,
+      "y": 1387,
+      "w": 120,
+      "h": 121
+    },
+    {
+      "kind": "avatar",
+      "label": "晓雨",
+      "x": 36,
+      "y": 1653,
+      "w": 120,
+      "h": 121
+    },
+    {
+      "kind": "name",
+      "label": "晓雨",
+      "x": 192,
+      "y": 1653,
+      "w": 72,
+      "h": 52
+    },
+    {
+      "kind": "room",
+      "label": "3号楼1202",
+      "x": 370,
+      "y": 1743,
+      "w": 239,
+      "h": 70
+    },
+    {
+      "kind": "phone",
+      "label": "090-1234-0213",
+      "x": 222,
+      "y": 1887,
+      "w": 367,
+      "h": 70
+    },
+    {
+      "kind": "avatar",
+      "label": "王姐",
+      "x": 36,
+      "y": 2028,
+      "w": 120,
+      "h": 121
+    },
+    {
+      "kind": "name",
+      "label": "王姐",
+      "x": 192,
+      "y": 2028,
+      "w": 72,
+      "h": 52
+    }
+  ]
+}

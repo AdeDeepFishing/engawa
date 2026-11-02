@@ -1,0 +1,104 @@
+{
+  "_note": "Ground truth for the screenshot masking eval. Boxes are in pixels of the input image (x, y from the top left, w, h), measured from the DOM at render time and rounded outward. kind is avatar, name, phone, room or handle; label is the visible text, or for an avatar the name of its owner. Everything here is fictional.",
+  "input": "p04-line-water-same-fact.png",
+  "width": 1170,
+  "height": 2532,
+  "boxes": [
+    {
+      "kind": "avatar",
+      "label": "田中 美咲",
+      "x": 30,
+      "y": 448,
+      "w": 114,
+      "h": 115
+    },
+    {
+      "kind": "name",
+      "label": "田中 美咲",
+      "x": 174,
+      "y": 457,
+      "w": 150,
+      "h": 34
+    },
+    {
+      "kind": "avatar",
+      "label": "すずき",
+      "x": 30,
+      "y": 930,
+      "w": 114,
+      "h": 115
+    },
+    {
+      "kind": "name",
+      "label": "すずき",
+      "x": 174,
+      "y": 939,
+      "w": 104,
+      "h": 34
+    },
+    {
+      "kind": "avatar",
+      "label": "高橋 さとみ",
+      "x": 30,
+      "y": 1212,
+      "w": 114,
+      "h": 115
+    },
+    {
+      "kind": "name",
+      "label": "高橋 さとみ",
+      "x": 174,
+      "y": 1221,
+      "w": 185,
+      "h": 34
+    },
+    {
+      "kind": "avatar",
+      "label": "山本 健太",
+      "x": 30,
+      "y": 1494,
+      "w": 114,
+      "h": 115
+    },
+    {
+      "kind": "name",
+      "label": "山本 健太",
+      "x": 174,
+      "y": 1503,
+      "w": 150,
+      "h": 34
+    },
+    {
+      "kind": "name",
+      "label": "鈴木",
+      "x": 204,
+      "y": 1590,
+      "w": 93,
+      "h": 49
+    },
+    {
+      "kind": "phone",
+      "label": "090-1234-0347",
+      "x": 436,
+      "y": 1657,
+      "w": 371,
+      "h": 49
+    },
+    {
+      "kind": "avatar",
+      "label": "すずき",
+      "x": 30,
+      "y": 1843,
+      "w": 114,
+      "h": 115
+    },
+    {
+      "kind": "name",
+      "label": "すずき",
+      "x": 174,
+      "y": 1852,
+      "w": 104,
+      "h": 34
+    }
+  ]
+}

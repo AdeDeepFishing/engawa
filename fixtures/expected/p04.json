@@ -1,0 +1,38 @@
+{
+  "input": "p04-line-water-same-fact.png",
+  "source_platform": "line",
+  "facts": [
+    {
+      "category": "water",
+      "place_id": "kosugi-es",
+      "valid_from": "T14:00",
+      "valid_until": "T16:00",
+      "conditions_include": [
+        "container"
+      ],
+      "source_type": "secondhand"
+    }
+  ],
+  "must_not_contain": [
+    "田中 美咲",
+    "田中",
+    "美咲",
+    "すずき",
+    "鈴木",
+    "高橋 さとみ",
+    "高橋",
+    "さとみ",
+    "山本 健太",
+    "山本",
+    "健太",
+    "090-1234-0347"
+  ],
+  "risk_flags": [],
+  "merges_with": [
+    "p02",
+    "p05",
+    "s02",
+    "t02"
+  ],
+  "notes": "Demo step 4. Same fact as p02 told in a group chat: it must merge into the p02 card, not create a new one. 鈴木 appears inside 山本's message as well as the display name すずき."
+}
