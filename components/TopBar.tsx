@@ -1,11 +1,12 @@
 "use client";
 
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { useLang } from "@/lib/i18n/LangProvider";
 import { LanguageSwitch } from "@/components/LanguageSwitch";
 import { TextSizeToggle } from "@/components/TextSizeToggle";
 
-export function TopBar({ title }: { title?: string }) {
+export function TopBar({ title, actions }: { title?: string; actions?: ReactNode }) {
   const { t } = useLang();
   return (
     <header className="sticky top-0 z-10 border-b border-line bg-surface/95 backdrop-blur">
@@ -16,6 +17,7 @@ export function TopBar({ title }: { title?: string }) {
         </Link>
         {title ? <span className="truncate text-lg font-semibold">{title}</span> : null}
         <div className="ml-auto flex items-center gap-2">
+          {actions}
           <TextSizeToggle />
           <LanguageSwitch />
         </div>
