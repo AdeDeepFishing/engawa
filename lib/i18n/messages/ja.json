@@ -210,5 +210,22 @@
   "poster.community": "ここは、だれでも使える地域の掲示板です。紙のお知らせの写真、チャットの画面、文章を入れると、日本語・英語・中国語・韓国語・ベトナム語・やさしい日本語のカードになります。",
   "poster.print_hint": "A4で印刷してください。",
   "poster.print_button": "印刷する",
-  "poster.back": "掲示板に戻る"
+  "poster.back": "掲示板に戻る",
+  "admin.hide_as_duplicate": "重複として非表示にする",
+  "admin.duplicate_target": "重複元のカード",
+  "admin.duplicate_target_pick": "カードを選ぶ",
+  "admin.duplicate_target_none": "選べる公開カードがありません。",
+  "admin.duplicate_target_invalid": "この掲示板の公開カードを選んでください。",
+  "admin.unhide": "非表示を解除する",
+  "card.duplicate_of_prefix": "重複元",
+  "card.hidden_duplicate": "非表示の重複カード",
+  "board.hidden_duplicates_one": "非表示の重複カード 1件",
+  "board.hidden_duplicates_other": "非表示の重複カード {n}件",
+  "board.hidden_duplicates_note": "上のカードと同じ内容のため、管理者が非表示にしたカードです。参考として読めます。",
+  "dropin.progress": "進行状況",
+  "dropin.step.received": "受付",
+  "dropin.step.reading": "読み取り",
+  "dropin.step.checking": "照合",
+  "dropin.step.done": "完了",
+  "dropin.usual_time": "ふつう10から20秒かかります。現在 {n} 秒。"
 }

@@ -4,7 +4,7 @@ import { CATEGORY_ICON, isExpired } from "@/lib/cards/categories";
 import {
   conflictStatements,
   contentTime,
-  placeLabel,
+  placeParts,
   sourceLabel,
   statementSummary,
   supersededStatements,
@@ -28,7 +28,7 @@ export function CardItem({
 }) {
   const { lang, t } = useLang();
   const expired = isExpired(card.valid_until, now);
-  const place = placeLabel(card, board, lang);
+  const place = placeParts(card, board, lang);
   // Self-reported by the uploader's phone (G2); shown only when the board lists the code.
   const area = areaName(board, card.area_code);
   const conflicts = conflictStatements(card);
@@ -49,15 +49,17 @@ export function CardItem({
     .filter(Boolean)
     .join(". ");
 
+  // An expired card is greyed by its background, not by opacity: text on it
+  // keeps its contrast (muted on the beige is 5.8:1; at 70% opacity it was 3.3:1).
   return (
-    <li data-card-id={card.id} data-area-code={card.area_code ?? undefined}>
+    <li id={`card-${card.id}`} data-card-id={card.id} data-area-code={card.area_code ?? undefined}>
       <button
         type="button"
         onClick={() => onOpen(card)}
         aria-label={label}
-        className={`w-full rounded-xl border bg-surface p-4 text-left shadow-sm hover:border-accent ${
+        className={`w-full rounded-xl border p-4 text-left shadow-sm hover:border-accent ${
           conflicts.length ? "border-warn-ink" : "border-line"
-        } ${expired ? "opacity-70" : ""}`}
+        } ${expired ? "bg-held-bg" : "bg-surface"}`}
       >
         <div className="flex items-start gap-3">
           <span aria-hidden="true" className="text-2xl leading-none">
@@ -66,7 +68,17 @@ export function CardItem({
           <div className="min-w-0 flex-1">
             <p className="text-base font-medium text-muted">{t(`category.${card.category}`)}</p>
             <h3 className="mt-0.5 text-lg font-bold leading-snug">{card.title[lang]}</h3>
-            {place ? <p className="mt-1 text-base text-foreground">{place}</p> : null}
+            {place ? (
+              <p className="mt-1 text-base text-foreground">
+                {place.text}
+                {place.ja ? (
+                  <>
+                    {" "}
+                    <span lang="ja">({place.ja})</span>
+                  </>
+                ) : null}
+              </p>
+            ) : null}
             <p className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-base text-muted">
               <span>{when}</span>
               <span className={card.official_confirmed ? "font-semibold text-accent" : undefined}>

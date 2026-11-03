@@ -27,6 +27,13 @@
  *
  *   pnpm eval --reconcile                  merges_with, updates and creates_beside
  *   pnpm eval --reconcile --reconcile-model claude-sonnet-5-5
+ *   pnpm eval --reconcile --now 2026-11-03T10:00:00+09:00
+ *
+ * --now pins the clock that extract and reconcile see (ISO 8601). The p02
+ * merge group mixes 本日 (p02, p04) with the written date 11月3日 (s02, t02),
+ * so on any other day the model rightly reports a date conflict; the chain
+ * is therefore run with the clock set to the fixture day. The run header in
+ * docs/EVAL.md says when a clock was pinned.
  *
  * --reconcile runs chains instead: every merge group from the expected files
  * (the transitive closure of merges_with, expected files first) goes through
@@ -67,6 +74,16 @@ const concurrency = Number(flag("--concurrency") ?? 3);
 const write = !argv.includes("--no-write");
 const reconcileMode = argv.includes("--reconcile");
 const rModel = flag("--reconcile-model") ?? reconcileModel();
+const fixedNow = flag("--now");
+if (fixedNow !== undefined && Number.isNaN(new Date(fixedNow).getTime())) {
+  console.error(`--now needs an ISO 8601 time, got ${fixedNow}`);
+  process.exit(2);
+}
+/** The clock extract and reconcile see: pinned by --now, else the real time. */
+const clock = (): Date => (fixedNow ? new Date(fixedNow) : new Date());
+/** "2026-11-03 10:00" in Japan time, for the run headers. */
+const jstLabel = (d: Date) => new Date(d.getTime() + 9 * 3_600_000).toISOString().slice(0, 16).replace("T", " ");
+const clockNote = fixedNow ? `, clock pinned to ${jstLabel(new Date(fixedNow))} JST (--now)` : "";
 
 // --- expected files -------------------------------------------------------
 
@@ -273,7 +290,7 @@ async function runOne(exp: Expected, file: string): Promise<Row> {
   const started = performance.now();
   let result: ExtractResult;
   try {
-    const o = await extract(board, toInput(file), { model });
+    const o = await extract(board, toInput(file), { model, now: clock() });
     row.ms = o.latencyMs;
     row.usage = {
       input: o.usage.inputTokens,
@@ -373,7 +390,7 @@ function report(rows: Row[], startedAt: Date): string {
   const lines: string[] = [];
   const jstNow = new Date(startedAt.getTime() + 9 * 3_600_000).toISOString().slice(0, 16).replace("T", " ");
   const expectedIds = new Set(rows.map((r) => r.id));
-  lines.push(`Run ${jstNow} JST, model \`${model}\`, effort low, ${rows.length} inputs from ${expectedIds.size} expected files, concurrency ${concurrency}.`);
+  lines.push(`Run ${jstNow} JST, model \`${model}\`, effort low, ${rows.length} inputs from ${expectedIds.size} expected files, concurrency ${concurrency}${clockNote}.`);
   lines.push("");
   lines.push("| input | ms | facts | category | place | times | status | source | conditions | en | flags | PII leaks | invented | 6 langs |");
   lines.push("|---|---:|---:|---|---|---|---|---|---|---|---|---:|---:|---|");
@@ -749,7 +766,7 @@ async function runChain(board: Board, chain: Chain): Promise<ChainRow[]> {
     rows.push(row);
     let result: ExtractResult;
     try {
-      const o = await extract(board, toInput(step.file), { model });
+      const o = await extract(board, toInput(step.file), { model, now: clock() });
       row.extractMs = o.latencyMs;
       result = o.result;
     } catch (e) {
@@ -760,7 +777,7 @@ async function runChain(board: Board, chain: Chain): Promise<ChainRow[]> {
     if (result.facts.length === 0) row.error = "extract returned no facts";
 
     for (const fact of result.facts) {
-      const now = new Date();
+      const now = clock();
       const outcome: FactOutcome = {
         category: fact.category,
         place_id: fact.place_id,
@@ -838,7 +855,7 @@ function reportReconcile(rows: ChainRow[], chains: Chain[], startedAt: Date): st
   const jstNow = new Date(startedAt.getTime() + 9 * 3_600_000).toISOString().slice(0, 16).replace("T", " ");
   lines.push(
     `Run ${jstNow} JST, extract \`${model}\`, reconcile \`${rModel}\`, effort low, ${chains.length} chains, ${rows.length} steps, ` +
-      `candidates selected in memory the way lib/db/cards.ts does, no database writes.`,
+      `candidates selected in memory the way lib/db/cards.ts does, no database writes${clockNote}.`,
   );
   lines.push("");
   lines.push("| chain | input | extract ms | reconcile ms | facts | candidates | decision | expected | result |");

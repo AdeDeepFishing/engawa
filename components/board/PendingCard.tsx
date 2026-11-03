@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import { useLang } from "@/lib/i18n/LangProvider";
 import type { MessageKey } from "@/lib/i18n";
 import type { PendingItem } from "./DropIn";
@@ -14,6 +15,38 @@ const STAGE_KEYS: Record<string, MessageKey> = {
   done: "dropin.stage.done",
   failed: "dropin.stage.failed",
 };
+
+/**
+ * The four steps a drop-in goes through, as the uploader sees them. The
+ * pipeline's finer stages map onto them: uploading, received and stripping
+ * are "received"; extracting is "reading"; masking and reconciling are
+ * "checking"; translating happens inside extract today, so "done" follows.
+ */
+const STEPS = ["received", "reading", "checking", "done"] as const;
+type Step = (typeof STEPS)[number];
+const STEP_KEYS: Record<Step, MessageKey> = {
+  received: "dropin.step.received",
+  reading: "dropin.step.reading",
+  checking: "dropin.step.checking",
+  done: "dropin.step.done",
+};
+
+function currentStep(item: PendingItem): number {
+  if (item.status === "uploading") return 0;
+  if (item.status !== "processing") return STEPS.length - 1;
+  switch (item.stage) {
+    case "extracting":
+      return 1;
+    case "masking":
+    case "reconciling":
+    case "translating":
+      return 2;
+    case "done":
+      return 3;
+    default:
+      return 0;
+  }
+}
 
 /**
  * What the uploader sees when processing finished. A merge adds no new card
@@ -34,7 +67,30 @@ function errorKey(code: string | undefined): MessageKey {
   return "dropin.error_generic";
 }
 
-/** Placeholder shown at the top of the list while a submission is processed. */
+/** Seconds since this card appeared, ticking once a second while work is in progress. */
+function useElapsedSeconds(running: boolean): number {
+  // Set on the first tick, not during render, so the component stays pure.
+  const startedAt = useRef<number | null>(null);
+  const [elapsed, setElapsed] = useState(0);
+  useEffect(() => {
+    if (!running) return;
+    startedAt.current ??= Date.now();
+    const start = startedAt.current;
+    const tick = () => setElapsed(Math.floor((Date.now() - start) / 1000));
+    tick();
+    const id = window.setInterval(tick, 1000);
+    return () => window.clearInterval(id);
+  }, [running]);
+  return elapsed;
+}
+
+/**
+ * Placeholder shown at the top of the list while a submission is processed.
+ * A drop-in takes 10 to 20 seconds, so the card shows where the work is: a
+ * four step stepper driven by the real pipeline stages (never by a timer),
+ * the stage in words, and the usual duration with the seconds so far. The
+ * active step pulses; under prefers-reduced-motion the steps still fill.
+ */
 export function PendingCard({
   item,
   onRetry,
@@ -46,6 +102,8 @@ export function PendingCard({
 }) {
   const { t } = useLang();
   const working = item.status === "uploading" || item.status === "processing";
+  const elapsed = useElapsedSeconds(working);
+  const step = currentStep(item);
   let line: string;
   if (item.status === "uploading") line = t("dropin.stage.received");
   else if (item.status === "processing") line = t(STAGE_KEYS[item.stage ?? "received"] ?? "dropin.stage.received");
@@ -69,7 +127,52 @@ export function PendingCard({
           </span>
           <div className="min-w-0 flex-1">
             <p className="text-lg font-bold">{working ? t("dropin.placeholder_title") : line}</p>
-            {working ? <p className="mt-1 text-muted">{line}</p> : null}
+            {working ? (
+              <>
+                <ol aria-label={t("dropin.progress")} className="mt-3 flex items-start">
+                  {STEPS.map((s, i) => {
+                    const state = i < step ? "done" : i === step ? "active" : "next";
+                    return (
+                      <li
+                        key={s}
+                        aria-current={state === "active" ? "step" : undefined}
+                        className="flex min-w-0 flex-1 flex-col items-center text-center"
+                      >
+                        <span className="flex w-full items-center">
+                          <span
+                            aria-hidden="true"
+                            className={`h-0.5 flex-1 ${i === 0 ? "invisible" : i <= step ? "bg-accent" : "bg-line"}`}
+                          />
+                          <span
+                            aria-hidden="true"
+                            className={`h-4 w-4 shrink-0 rounded-full border-2 ${
+                              state === "done"
+                                ? "border-accent bg-accent"
+                                : state === "active"
+                                  ? "animate-pulse border-accent bg-surface"
+                                  : "border-line bg-surface"
+                            }`}
+                          />
+                          <span
+                            aria-hidden="true"
+                            className={`h-0.5 flex-1 ${i === STEPS.length - 1 ? "invisible" : i < step ? "bg-accent" : "bg-line"}`}
+                          />
+                        </span>
+                        <span
+                          className={`mt-1 text-base leading-tight ${
+                            state === "active" ? "font-bold text-foreground" : state === "done" ? "text-foreground" : "text-muted"
+                          }`}
+                        >
+                          {t(STEP_KEYS[s])}
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ol>
+                <p className="mt-2 text-base">{line}</p>
+                <p className="mt-1 text-base text-muted">{t("dropin.usual_time", { n: elapsed })}</p>
+              </>
+            ) : null}
             {item.note ? <p className="mt-1 text-muted">{item.note}</p> : null}
             {!working ? (
               <div className="mt-3 flex gap-2">

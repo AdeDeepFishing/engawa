@@ -13,8 +13,8 @@ export function TextSizeToggle() {
       onClick={() => setTextSize(large ? "normal" : "large")}
       className="rounded-lg border border-line bg-surface px-3 font-semibold"
     >
-      <span aria-hidden="true" className="text-sm">A</span>
-      <span aria-hidden="true" className="text-xl">A</span>
+      <span aria-hidden="true" className="text-base">A</span>
+      <span aria-hidden="true" className="text-2xl">A</span>
     </button>
   );
 }

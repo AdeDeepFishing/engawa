@@ -210,5 +210,22 @@
   "poster.community": "这是一个人人可用的社区公告板。放入纸质通知的照片、聊天截图或文字，就会变成日语、英语、中文、韩语、越南语和简易日语的卡片。",
   "poster.print_hint": "请用 A4 纸打印。",
   "poster.print_button": "打印",
-  "poster.back": "返回公告板"
+  "poster.back": "返回公告板",
+  "admin.hide_as_duplicate": "作为重复卡片隐藏",
+  "admin.duplicate_target": "重复的原卡片",
+  "admin.duplicate_target_pick": "选择一张卡片",
+  "admin.duplicate_target_none": "没有可选的公开卡片。",
+  "admin.duplicate_target_invalid": "请选择本公告板上的一张公开卡片。",
+  "admin.unhide": "取消隐藏",
+  "card.duplicate_of_prefix": "重复自",
+  "card.hidden_duplicate": "已隐藏的重复卡片",
+  "board.hidden_duplicates_one": "1张已隐藏的重复卡片",
+  "board.hidden_duplicates_other": "{n}张已隐藏的重复卡片",
+  "board.hidden_duplicates_note": "这些卡片与上面的某张卡片内容相同，已由管理员隐藏，仅供参考。",
+  "dropin.progress": "进度",
+  "dropin.step.received": "已收到",
+  "dropin.step.reading": "读取中",
+  "dropin.step.checking": "比对中",
+  "dropin.step.done": "完成",
+  "dropin.usual_time": "通常需要 10 到 20 秒，已用 {n} 秒。"
 }
