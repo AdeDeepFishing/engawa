@@ -24,3 +24,8 @@ export function cardAsText(card: Card, board: Board, now: Date, lang: Lang, url:
 export function cardPath(boardSlug: string, cardId: string): string {
   return `/b/${boardSlug}/c/${cardId}`;
 }
+
+/** Path of the printable six-language notice made from a card. */
+export function noticePath(boardSlug: string, cardId: string): string {
+  return `${cardPath(boardSlug, cardId)}/notice`;
+}

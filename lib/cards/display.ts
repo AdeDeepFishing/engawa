@@ -52,6 +52,19 @@ export function formatDateTime(iso: string, lang: Lang): string {
   }).format(new Date(iso));
 }
 
+/** Date with its year, for a printed page that may hang for weeks: "2026/11/04 10:30". */
+export function formatFullDateTime(iso: string | Date, lang: Lang): string {
+  return new Intl.DateTimeFormat(INTL_LOCALE[lang], {
+    timeZone: TZ,
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(new Date(iso));
+}
+
 export function formatTime(iso: string, lang: Lang): string {
   return new Intl.DateTimeFormat(INTL_LOCALE[lang], {
     timeZone: TZ,

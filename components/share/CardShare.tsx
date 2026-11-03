@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useSyncExternalStore } from "react";
-import { cardAsText, cardPath } from "@/lib/cards/share";
+import { cardAsText, cardPath, noticePath } from "@/lib/cards/share";
 import { useLang } from "@/lib/i18n/LangProvider";
 import type { Board, Card } from "@/lib/types";
 import { copyText } from "./copy";
@@ -19,8 +19,9 @@ const noShareOnServer = () => false;
 
 /**
  * "Share this card": the system share sheet when the browser has one, copy
- * the card's link, or copy the card as plain text for a chat group. Used in
- * the card sheet and on the card page. Everything happens in the browser.
+ * the card's link, copy the card as plain text for a chat group, or open
+ * the printable six-language notice in a new tab. Used in the card sheet
+ * and on the card page. Everything happens in the browser.
  */
 export function CardShare({ card, board, now }: { card: Card; board: Board; now: Date }) {
   const { lang, t } = useLang();
@@ -82,6 +83,16 @@ export function CardShare({ card, board, now }: { card: Card; board: Board; now:
           <span aria-hidden="true">📋</span>
           {t("share.card_copy_text")}
         </button>
+        <a
+          href={noticePath(board.slug, card.id)}
+          target="_blank"
+          rel="noopener"
+          className={action}
+          data-share-notice
+        >
+          <span aria-hidden="true">🖨️</span>
+          {t("share.print_notice")}
+        </a>
       </div>
       <p role="status" className="mt-2 min-h-6 text-base font-semibold text-accent">
         {status}
