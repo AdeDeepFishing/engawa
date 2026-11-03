@@ -5,9 +5,8 @@ import { useLang } from "@/lib/i18n/LangProvider";
 /**
  * The masked copy of a chat screenshot: every avatar, name, handle, phone
  * and room number is painted over before the copy is stored, and the
- * original is deleted. Mount inside the card sheet's original text section
- * when `card.masked_image_path` is set:
- *   {card.masked_image_path ? <MaskedImage cardId={card.id} /> : null}
+ * original is deleted. Mounted in the card sheet's original text section
+ * when `card.has_masked_image` is set; the route serves public cards only.
  */
 export function MaskedImage({ cardId }: { cardId: string }) {
   const { t } = useLang();

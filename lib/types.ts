@@ -151,10 +151,11 @@ export interface Card {
   /** Present when the query embeds card_sources, oldest first. */
   sources?: CardSource[];
   /**
-   * Storage path of the masked copy of a chat screenshot (names and avatars
-   * painted over), or null. Served through /api/cards/[id]/masked only.
+   * Whether a masked copy of the chat screenshot (names and avatars painted
+   * over) exists for this card. Shown through /api/cards/[id]/masked. The
+   * Storage path itself (cards.masked_image_path) never leaves the server.
    */
-  masked_image_path?: string | null;
+  has_masked_image: boolean;
 }
 
 export type SubmissionStatus = "received" | "processing" | "done" | "held" | "failed";

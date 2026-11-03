@@ -16,6 +16,7 @@ import {
 import { CARD_LANGS, tCount, type Lang } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n/LangProvider";
 import type { Board, Card, ConflictStatement } from "@/lib/types";
+import { MaskedImage } from "./MaskedImage";
 
 /**
  * Non-modal detail sheet. It does not trap focus: the page behind stays
@@ -185,12 +186,15 @@ export function CardSheet({
           </ul>
         </details>
 
-        {card.original_text ? (
+        {card.original_text || card.has_masked_image ? (
           <details className="mt-3 rounded-xl border border-line p-3">
             <summary className="cursor-pointer py-2 font-semibold">{t("sheet.original")}</summary>
-            <p lang={card.original_lang ?? undefined} className="mt-2 whitespace-pre-wrap text-muted">
-              {card.original_text}
-            </p>
+            {card.original_text ? (
+              <p lang={card.original_lang ?? undefined} className="mt-2 whitespace-pre-wrap text-muted">
+                {card.original_text}
+              </p>
+            ) : null}
+            {card.has_masked_image ? <MaskedImage cardId={card.id} /> : null}
           </details>
         ) : null}
       </div>
