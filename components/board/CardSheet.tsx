@@ -13,11 +13,12 @@ import {
   timeAgo,
   timeRange,
 } from "@/lib/cards/display";
-import { traceModelsLine, traceStepLine } from "@/lib/cards/trace";
+import { CardShare } from "@/components/share/CardShare";
 import { areaName } from "@/lib/geo";
 import { CARD_LANGS, tCount, type Lang } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n/LangProvider";
 import type { Board, Card, CardTrace, ConflictStatement } from "@/lib/types";
+import { CardTraceView } from "./CardTrace";
 import { MaskedImage } from "./MaskedImage";
 
 /**
@@ -201,41 +202,9 @@ export function CardSheet({
           </section>
         ) : null}
 
-        <section className="mt-5 rounded-xl border border-line p-3" aria-labelledby={`trace-title-${card.id}`} data-trace>
-          <h3 id={`trace-title-${card.id}`} className="font-semibold">
-            {t("trace.heading")}
-          </h3>
-          <p className="mt-1 text-base text-muted">{t("trace.intro")}</p>
-          {steps ? (
-            <>
-              <ol className="mt-3 flex flex-col gap-3">
-                {steps.steps.map((s, i) => (
-                  <li key={`${s.created_at}-${i}`} data-trace-step={s.relation}>
-                    <p>{traceStepLine(s, now, lang)}</p>
-                    {s.reason ? (
-                      <p className="mt-1 border-l-4 border-line pl-3 text-base text-muted">
-                        <span className="font-semibold">{t("trace.reason_label")}: </span>
-                        <q lang="en">{s.reason}</q>
-                      </p>
-                    ) : null}
-                  </li>
-                ))}
-                {steps.official_confirmed ? (
-                  <li data-trace-step="official">
-                    <p className="font-semibold text-accent">{t("trace.official")}</p>
-                  </li>
-                ) : null}
-              </ol>
-              <p className="mt-3 text-base text-muted" data-trace-models>
-                {traceModelsLine(steps.models, lang)}
-              </p>
-            </>
-          ) : (
-            <p className="mt-3 text-base text-muted" aria-live="polite">
-              {t("trace.loading")}
-            </p>
-          )}
-        </section>
+        <CardShare card={card} board={board} now={now} />
+
+        <CardTraceView cardId={card.id} trace={steps} now={now} />
 
         <details className="mt-5 rounded-xl border border-line p-3">
           <summary className="cursor-pointer py-2 font-semibold">{t("sheet.all_languages")}</summary>
@@ -267,7 +236,7 @@ export function CardSheet({
 }
 
 /** One statement in a conflict or in the update history: what it said, its time range, source and age. */
-function Statement({ statement: s, lang, now }: { statement: ConflictStatement; lang: Lang; now: Date }) {
+export function Statement({ statement: s, lang, now }: { statement: ConflictStatement; lang: Lang; now: Date }) {
   const range = timeRange(s.valid_from, s.valid_until, lang);
   const meta = [
     sourceLabel(s.source_type, s.official_confirmed, lang),

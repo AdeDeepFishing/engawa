@@ -1,4 +1,9 @@
 {
+  "share.card_title": "Share this card",
+  "share.card_copy_text": "Copy as text",
+  "share.card_text_copied": "Text copied. Paste it into your group.",
+  "card_page.cta": "Know something about this? Open the board and drop it in: a photo of a notice, a screenshot or a few words.",
+  "card_page.open_board": "Open the board",
   "trace.heading": "How this card was made",
   "trace.intro": "Claude read each source and decided what it means for this card. Code checked every decision before it was written.",
   "trace.created": "Created from {input} ({source}), {time}",

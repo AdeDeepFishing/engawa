@@ -1,4 +1,9 @@
 {
+  "share.card_title": "分享这张卡片",
+  "share.card_copy_text": "复制为文字",
+  "share.card_text_copied": "已复制文字，可以粘贴到群里。",
+  "card_page.cta": "知道相关情况？打开公告板放进去：通知的照片、截图或几句话都可以。",
+  "card_page.open_board": "打开公告板",
   "trace.heading": "这张卡片是怎么来的",
   "trace.intro": "Claude 逐个阅读来源，判断它对这张卡片意味着什么。每个判断在写入前都经过代码检查。",
   "trace.created": "根据{input}（{source}）创建，{time}",

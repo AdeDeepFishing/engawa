@@ -1,4 +1,9 @@
 {
+  "share.card_title": "Chia sẻ thẻ này",
+  "share.card_copy_text": "Sao chép dạng văn bản",
+  "share.card_text_copied": "Đã sao chép văn bản. Dán vào nhóm của bạn.",
+  "card_page.cta": "Bạn biết gì về việc này? Mở bảng tin và đưa vào: ảnh thông báo, ảnh chụp màn hình hoặc vài dòng chữ.",
+  "card_page.open_board": "Mở bảng tin",
   "trace.heading": "Thẻ này được tạo ra như thế nào",
   "trace.intro": "Claude đọc từng nguồn và quyết định nó có ý nghĩa gì với thẻ này. Mã nguồn kiểm tra mọi quyết định trước khi ghi lại.",
   "trace.created": "Tạo từ {input} ({source}), {time}",

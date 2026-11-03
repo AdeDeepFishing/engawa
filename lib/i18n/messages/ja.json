@@ -1,4 +1,9 @@
 {
+  "share.card_title": "このカードを共有",
+  "share.card_copy_text": "文章としてコピー",
+  "share.card_text_copied": "文章をコピーしました。グループに貼り付けてください。",
+  "card_page.cta": "この件について知っていることがあれば、掲示板を開いて入れてください。お知らせの写真、スクリーンショット、ひとこと、なんでも。",
+  "card_page.open_board": "掲示板を開く",
   "trace.heading": "このカードができるまで",
   "trace.intro": "Claudeが情報源をひとつずつ読み、このカードにどう反映するかを判断しました。すべての判断はコードが確認してから書き込まれます。",
   "trace.created": "{input}（{source}）から作成、{time}",
