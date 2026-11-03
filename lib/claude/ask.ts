@@ -4,7 +4,7 @@ import type Anthropic from "@anthropic-ai/sdk";
 import { anthropic, MODELS, type ModelId } from "./client";
 import { nowJst } from "./extract";
 import { isExpired } from "@/lib/cards/categories";
-import { placeLabel } from "@/lib/cards/display";
+import { conflictStatements, placeLabel, statementText } from "@/lib/cards/display";
 import { t, type Lang } from "@/lib/i18n";
 import type { Board, Card, SourceType } from "@/lib/types";
 
@@ -93,7 +93,9 @@ export function noInformationAnswer(lang: Lang): AskAnswer {
 /**
  * One citable document per card. Title is the card title in the reader's
  * language; the content is the body in that language followed by the facts
- * a reader needs to judge it (source, confirmation, age, expiry).
+ * a reader needs to judge it (source, confirmation, age, expiry) and, when
+ * sources disagree, every conflicting statement with its source and time,
+ * so the answer can give both sides instead of only the card text.
  */
 export function cardDocument(card: Card, board: Board, lang: Lang, now: Date): Anthropic.DocumentBlockParam {
   const lines = [card.body[lang] || card.body.ja, "", `Japanese title: ${card.title.ja}`];
@@ -107,6 +109,21 @@ export function cardDocument(card: Card, board: Board, lang: Lang, now: Date): A
   if (card.valid_from) lines.push(`Valid from: ${jst(card.valid_from)}`);
   if (card.valid_until) lines.push(`Valid until: ${jst(card.valid_until)}`);
   if (isExpired(card.valid_until, now)) lines.push("Possibly outdated: the valid until time has passed.");
+  const conflicts = conflictStatements(card);
+  if (conflicts.length) {
+    lines.push(
+      "",
+      "Conflicting reports: sources disagree about this card. The card text above is the statement that stands; the statements below, which include it, contradict each other:",
+    );
+    for (const s of conflicts) {
+      const about = [
+        `source type: ${SOURCE_LABEL[s.source_type]}`,
+        s.official_confirmed ? "confirmed as official by an admin" : null,
+        `posted: ${jst(s.at)}`,
+      ].filter(Boolean);
+      lines.push(`- ${statementText(s, lang)} (${about.join(", ")})`);
+    }
+  }
   return {
     type: "document",
     source: { type: "text", media_type: "text/plain", data: lines.join("\n") },
