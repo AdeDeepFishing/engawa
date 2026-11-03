@@ -39,6 +39,7 @@ Before writing or changing a call, read the `claude-api` skill for the exact SDK
   - `conflict`: card content unchanged; `conflict.statements` gets the card's current statement and the new one, each with `kind: "conflict"`, source type and time; `card_sources` row `conflict`; `source_count` unchanged.
   - `hold`: insert the card with `visibility = 'held'` and `held_reason = "reconcile: <reason>"`.
 - Update and conflict are read-modify-write guarded by `updated_at`, with one retry on a lost race.
+- Every `card_sources` row records how it came about (migration 0005): `confirmed`, `updated` and `conflict` rows carry the decision's `reason` (the model's one sentence, at most 500 characters) and `model` (the reconcile model id, set by code from the outcome, never by the model); a `created` row has no reason and names the extract model. `getPublicCardTrace` in `lib/db/cards.ts` returns these rows for a public card (relation, source type, platform, time, reason, model; nothing from the submission) through `GET /api/cards/[id]/trace`, and the card sheet shows them as "How this card was made".
 - Facts with any risk flag skip reconcile and are inserted as `held` with the flags in `held_reason`.
 
 ### ask (`ask.ts`)

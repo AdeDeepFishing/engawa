@@ -184,11 +184,17 @@ export async function writeCardsForSubmission(
   board: Board,
   sub: Submission,
   result: ExtractResult,
-  options: { decide?: DecideFn; now?: Date } = {},
+  options: { decide?: DecideFn; now?: Date; extractModel?: string | null } = {},
 ): Promise<WrittenCards> {
   const now = options.now ?? new Date();
   const out: WrittenCards = { publicIds: [], heldIds: [], latestPurgeAfter: null, decisions: [] };
-  const ctx: SourceContext = { board, sub, platform: result.source_platform, inputLanguage: result.input_language };
+  const ctx: SourceContext = {
+    board,
+    sub,
+    platform: result.source_platform,
+    inputLanguage: result.input_language,
+    extractModel: options.extractModel ?? null,
+  };
 
   for (const fact of result.facts) {
     let applied: AppliedCard;

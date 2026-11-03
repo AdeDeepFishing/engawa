@@ -55,6 +55,12 @@ export interface ReconcileDecision {
   target_card_id: string | null;
   fill_missing: boolean;
   reason: string;
+  /**
+   * Set by code, not by the model: the model id that proposed this decision,
+   * stored on the card_sources row so readers can see which model compared
+   * the sources. Null when no call was made (no candidates, or the call failed).
+   */
+  model?: string | null;
 }
 
 export interface ReconcileOutcome {
@@ -119,7 +125,7 @@ export async function reconcile(
 ): Promise<ReconcileOutcome> {
   if (candidates.length === 0) {
     return {
-      decision: { action: "create", target_card_id: null, fill_missing: false, reason: "no candidates" },
+      decision: { action: "create", target_card_id: null, fill_missing: false, reason: "no candidates", model: null },
       proposed: null,
       override: null,
       model: null,
@@ -176,7 +182,7 @@ export async function reconcile(
   if (override) {
     console.warn(`reconcile override: ${override}`, JSON.stringify(proposed));
   }
-  return { decision, proposed, override, model, latencyMs, usage };
+  return { decision: { ...decision, model }, proposed, override, model, latencyMs, usage };
 }
 
 function createDecision(reason: string): ReconcileDecision {
