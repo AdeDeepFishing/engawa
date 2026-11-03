@@ -266,5 +266,14 @@
   "board.footer_about": "About this board and what happens to your data",
   "poster.about": "About the board and your data: {url}",
   "dropin.step.translating": "Translating",
-  "card.translating": "Translation coming soon."
+  "card.translating": "Translation coming soon.",
+  "react.question": "Is this still true?",
+  "react.still_true": "Still true",
+  "react.no_longer_true": "No longer true",
+  "react.readers_one": "1 reader",
+  "react.readers_other": "{n} readers",
+  "react.explain": "One tap per phone. Tap again to take it back. Other readers see the counts as a hint.",
+  "react.hint": "Readers report this may no longer be true",
+  "react.rate_limited": "You have tapped a lot in the last hour. Try again later.",
+  "react.failed": "Could not send. Try again."
 }

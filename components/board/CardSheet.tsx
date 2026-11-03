@@ -18,6 +18,7 @@ import { areaName } from "@/lib/geo";
 import { CARD_LANGS, tCount, type Lang } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n/LangProvider";
 import type { Board, Card, CardTrace, ConflictStatement } from "@/lib/types";
+import { CardReactions } from "./CardReactions";
 import { CardTraceView } from "./CardTrace";
 import { MaskedImage } from "./MaskedImage";
 import { ReadAloud } from "./ReadAloud";
@@ -200,6 +201,8 @@ export function CardSheet({
           <dt className="text-muted">{t("sheet.posted")}</dt>
           <dd>{formatDateTime(card.created_at, lang)}</dd>
         </dl>
+
+        <CardReactions key={card.id} card={card} />
 
         {previous.length ? (
           <section className="mt-5 rounded-xl border border-line p-3">

@@ -11,6 +11,7 @@ import {
   timeAgo,
 } from "@/lib/cards/display";
 import { htmlLang, shownLang } from "@/lib/cards/langs";
+import { showsDoubtHint } from "@/lib/cards/reactions";
 import { areaName } from "@/lib/geo";
 import { tCount } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n/LangProvider";
@@ -38,6 +39,8 @@ export function CardItem({
   const conflicts = conflictStatements(card);
   const previous = supersededStatements(card)[0];
   const current = { valid_from: card.valid_from, valid_until: card.valid_until, status: card.facts.status };
+  // Two or more devices said "no longer true": a hint for the reader, the card stays as it is.
+  const doubt = showsDoubtHint(card);
   const when = previous
     ? t("card.updated_time", { time: timeAgo(contentTime(card), now, lang) })
     : timeAgo(card.created_at, now, lang);
@@ -47,6 +50,7 @@ export function CardItem({
     area ? t("area.badge", { area }) : null,
     conflicts.length ? t("conflict.label") : null,
     previous ? t("card.updated") : null,
+    doubt ? t("react.hint") : null,
     expired ? t("card.outdated") : null,
     t("card.open_detail"),
   ]
@@ -127,6 +131,12 @@ export function CardItem({
                 <span className="text-muted">
                   {t("card.previously", { text: statementSummary(previous, current, lang) })}
                 </span>
+              </span>
+            ) : null}
+            {doubt ? (
+              <span className="mt-2 block rounded-md bg-warn-bg px-2 py-0.5 text-base text-warn-ink" data-doubt-hint>
+                <span aria-hidden="true">✗ </span>
+                {t("react.hint")}
               </span>
             ) : null}
             {expired ? (

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { TopBar } from "@/components/TopBar";
 import { CardShare } from "@/components/share/CardShare";
 import { CATEGORY_ICON, isExpired } from "@/lib/cards/categories";
@@ -17,6 +18,7 @@ import { tCount } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n/LangProvider";
 import type { Board, Card, CardTrace } from "@/lib/types";
 import { Statement } from "./CardSheet";
+import { CardReactions } from "./CardReactions";
 import { CardTraceView } from "./CardTrace";
 import { ReadAloud } from "./ReadAloud";
 import { fallbackLangAttr } from "@/lib/cards/langs";
@@ -39,6 +41,7 @@ export function CardPage({
   serverNow: string;
 }) {
   const { lang, t } = useLang();
+  const router = useRouter();
   const now = new Date(serverNow);
   const place = placeLabel(card, board, lang);
   const area = areaName(board, card.area_code);
@@ -145,6 +148,9 @@ export function CardPage({
             <dt className="text-muted">{t("sheet.posted")}</dt>
             <dd>{formatDateTime(card.created_at, lang)}</dd>
           </dl>
+
+          {/* A refresh brings the new last confirmed time and the counts from the server. */}
+          <CardReactions key={card.id} card={card} onReacted={() => router.refresh()} />
 
           {previous.length ? (
             <section className="mt-5 rounded-xl border border-line p-3">

@@ -266,5 +266,14 @@
   "board.footer_about": "이 게시판과 데이터 처리에 대해",
   "poster.about": "게시판과 데이터 처리에 대해: {url}",
   "dropin.step.translating": "번역",
-  "card.translating": "번역이 곧 표시됩니다."
+  "card.translating": "번역이 곧 표시됩니다.",
+  "react.question": "이 정보가 아직 맞나요?",
+  "react.still_true": "아직 맞아요",
+  "react.no_longer_true": "이제 달라요",
+  "react.readers_one": "1명",
+  "react.readers_other": "{n}명",
+  "react.explain": "휴대폰 한 대당 한 번입니다. 다시 누르면 취소됩니다. 인원수는 다른 사람에게 참고로 표시됩니다.",
+  "react.hint": "이 정보가 더 이상 맞지 않을 수 있다는 제보가 있습니다",
+  "react.rate_limited": "지난 1시간 동안 너무 많이 눌렀습니다. 잠시 후 다시 시도해 주세요.",
+  "react.failed": "보내지 못했습니다. 다시 시도해 주세요."
 }
