@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import { headers } from "next/headers";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { getBoardBySlug } from "@/lib/db/boards";
@@ -7,24 +6,15 @@ import { LANGS, t, type Lang } from "@/lib/i18n";
 import { getRequestLang } from "@/lib/i18n/server";
 import { encodeQr, qrPath } from "@/components/share/qr";
 import { PrintButton } from "./PrintButton";
+import { appBase } from "@/lib/app-url";
 
 type Props = { params: Promise<{ slug: string }> };
 
 const QR_MARGIN = 4;
 
-/** Absolute board URL for the QR code: NEXT_PUBLIC_APP_URL, else this request's host, as on the board page. */
+/** Absolute board URL for the QR code and the printed line, from the shared app base. */
 async function boardUrl(slug: string): Promise<string> {
-  const configured = process.env.NEXT_PUBLIC_APP_URL;
-  let base: URL;
-  if (configured) {
-    base = new URL(configured);
-  } else {
-    const h = await headers();
-    const host = h.get("x-forwarded-host") ?? h.get("host") ?? "localhost:3000";
-    const proto = h.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
-    base = new URL(`${proto}://${host}`);
-  }
-  return new URL(`/b/${slug}`, base).toString();
+  return new URL(`/b/${slug}`, await appBase()).toString();
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

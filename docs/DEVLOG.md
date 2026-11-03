@@ -217,3 +217,14 @@ Poster: `page.pdf({ format: "A4" })` gives one page of 595.9 by 842.9 pt (A4) wi
 - Review and merge the branch (Fable). Nothing new in Vercel.
 - Optional after the merge: `pnpm db:seed` to put the codes into the live board row.
 - On a real phone the browser asks for location once when the box is ticked; iOS Safari needs https for that (Vercel has it).
+
+## 2026-11-03 (Tue) night, production check after the PR #7 merge
+
+**Model:** `claude-fable-5-1` in Claude Code, review and integration role.
+
+- PR #7 (G1, G2, G3 with the review fixes) merged at 22:51 JST. The production deploy was live within a minute: `/b/musashikosugi/poster` 200, `/api/cards/<random id>/masked` 404, the board 200 in 0.5 s.
+- Found on production: every share link, OG URL and the poster QR read `ttps://engawa-pearl.vercel.app/...`. The `NEXT_PUBLIC_APP_URL` value in Vercel had lost its first letter, and `new URL()` accepts any scheme, so nothing failed loudly. Fix in code: `lib/app-url.ts` uses the configured value only when it parses as http or https, otherwise logs one warning and falls back to the request host (on Vercel that is the production host anyway). The board page and the poster page share the helper now. Checked with seven values: valid https and http, the typo, a bare host, a `javascript:` URL, empty and unset.
+- Date correction: the two previous entries and the matching lines in `docs/PLAN.md` and `docs/EVAL.md` were headed 2026-11-04. The commits show both pairs of sessions ran on 2026-11-03 JST. Headings now carry the real date.
+
+**Needed a human**
+- Set `NEXT_PUBLIC_APP_URL` in Vercel to `https://engawa-pearl.vercel.app` and redeploy, or remove it: with this fix the request host gives the same URL.
