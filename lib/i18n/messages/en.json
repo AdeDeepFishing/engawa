@@ -191,5 +191,11 @@
   "card.hidden_duplicate": "Hidden duplicate",
   "board.hidden_duplicates_one": "1 hidden duplicate",
   "board.hidden_duplicates_other": "{n} hidden duplicates",
-  "board.hidden_duplicates_note": "These cards repeat a card above and were hidden by the board admin. Shown for reference only."
+  "board.hidden_duplicates_note": "These cards repeat a card above and were hidden by the board admin. Shown for reference only.",
+  "dropin.progress": "Progress",
+  "dropin.step.received": "Received",
+  "dropin.step.reading": "Reading",
+  "dropin.step.checking": "Checking",
+  "dropin.step.done": "Done",
+  "dropin.usual_time": "Usually 10 to 20 seconds. {n} s so far."
 }

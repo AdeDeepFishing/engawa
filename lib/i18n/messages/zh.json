@@ -191,5 +191,11 @@
   "card.hidden_duplicate": "已隐藏的重复卡片",
   "board.hidden_duplicates_one": "1张已隐藏的重复卡片",
   "board.hidden_duplicates_other": "{n}张已隐藏的重复卡片",
-  "board.hidden_duplicates_note": "这些卡片与上面的某张卡片内容相同，已由管理员隐藏，仅供参考。"
+  "board.hidden_duplicates_note": "这些卡片与上面的某张卡片内容相同，已由管理员隐藏，仅供参考。",
+  "dropin.progress": "进度",
+  "dropin.step.received": "已收到",
+  "dropin.step.reading": "读取中",
+  "dropin.step.checking": "比对中",
+  "dropin.step.done": "完成",
+  "dropin.usual_time": "通常需要 10 到 20 秒，已用 {n} 秒。"
 }

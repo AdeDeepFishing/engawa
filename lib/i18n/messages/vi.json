@@ -191,5 +191,11 @@
   "card.hidden_duplicate": "Thẻ trùng lặp đã ẩn",
   "board.hidden_duplicates_one": "1 thẻ trùng lặp đã ẩn",
   "board.hidden_duplicates_other": "{n} thẻ trùng lặp đã ẩn",
-  "board.hidden_duplicates_note": "Những thẻ này có cùng nội dung với một thẻ ở trên và đã được quản trị viên ẩn. Chỉ để tham khảo."
+  "board.hidden_duplicates_note": "Những thẻ này có cùng nội dung với một thẻ ở trên và đã được quản trị viên ẩn. Chỉ để tham khảo.",
+  "dropin.progress": "Tiến trình",
+  "dropin.step.received": "Đã nhận",
+  "dropin.step.reading": "Đang đọc",
+  "dropin.step.checking": "Đối chiếu",
+  "dropin.step.done": "Xong",
+  "dropin.usual_time": "Thường mất 10 đến 20 giây. Đã {n} giây."
 }

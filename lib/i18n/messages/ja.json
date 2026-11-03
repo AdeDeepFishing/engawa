@@ -191,5 +191,11 @@
   "card.hidden_duplicate": "非表示の重複カード",
   "board.hidden_duplicates_one": "非表示の重複カード 1件",
   "board.hidden_duplicates_other": "非表示の重複カード {n}件",
-  "board.hidden_duplicates_note": "上のカードと同じ内容のため、管理者が非表示にしたカードです。参考として読めます。"
+  "board.hidden_duplicates_note": "上のカードと同じ内容のため、管理者が非表示にしたカードです。参考として読めます。",
+  "dropin.progress": "進行状況",
+  "dropin.step.received": "受付",
+  "dropin.step.reading": "読み取り",
+  "dropin.step.checking": "照合",
+  "dropin.step.done": "完了",
+  "dropin.usual_time": "ふつう10から20秒かかります。現在 {n} 秒。"
 }

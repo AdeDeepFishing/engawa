@@ -191,5 +191,11 @@
   "card.hidden_duplicate": "숨긴 중복 카드",
   "board.hidden_duplicates_one": "숨긴 중복 카드 1개",
   "board.hidden_duplicates_other": "숨긴 중복 카드 {n}개",
-  "board.hidden_duplicates_note": "위의 카드와 같은 내용이어서 관리자가 숨긴 카드입니다. 참고용으로 볼 수 있습니다."
+  "board.hidden_duplicates_note": "위의 카드와 같은 내용이어서 관리자가 숨긴 카드입니다. 참고용으로 볼 수 있습니다.",
+  "dropin.progress": "진행 상황",
+  "dropin.step.received": "접수",
+  "dropin.step.reading": "읽는 중",
+  "dropin.step.checking": "대조 중",
+  "dropin.step.done": "완료",
+  "dropin.usual_time": "보통 10에서 20초 걸립니다. 지금 {n}초."
 }
