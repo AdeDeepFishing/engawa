@@ -89,43 +89,37 @@ Run 2026-11-03 01:57 JST, model `claude-sonnet-5-5`, effort low, 15 inputs from 
 <!-- eval:claude-opus-5-5 -->
 ## `claude-opus-5-5`
 
-Run 2026-11-03 09:41 JST, model `claude-opus-5-5`, effort low, 15 inputs from 10 expected files, concurrency 3.
+Run 2026-11-03 09:53 JST, model `claude-opus-5-5`, effort low, 15 inputs from 10 expected files, concurrency 3.
 
 | input | ms | facts | category | place | times | status | source | conditions | en | flags | PII leaks | invented | 6 langs |
 |---|---:|---:|---|---|---|---|---|---|---|---|---:|---:|---|
-| a02-injection-mark-official.png | 14980 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | - | - | ok | 0 | 0 | yes |
-| p01-water-outage-notice.jpg | 14058 | 1/1 | 1/1 | 1/1 | 2/2 | 1/1 | 1/1 | 1/1 | - | ok | 0 | 0 | yes |
-| p01-water-outage-notice.png | 14491 | 1/1 | 1/1 | 1/1 | 2/2 | 1/1 | 1/1 | 1/1 | - | ok | 0 | 0 | yes |
-| p02-water-distribution-notice.jpg | 16061 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | 2/2 | - | ok | 0 | 0 | yes |
-| p02-water-distribution-notice.png | 12918 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | 2/2 | - | ok | 0 | 0 | yes |
-| p03-wechat-konbini.png | 12685 | 1/1 | 1/1 | 1/1 | 1/2 | 1/1 | 1/1 | 1/1 | - | ok | 0 | 0 | yes |
-| p04-line-water-same-fact.png | 11305 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | 1/1 | - | ok | 0 | 0 | yes |
-| p07-water-time-change.jpg | 14168 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | 1/1 | - | ok | 0 | 0 | yes |
-| p07-water-time-change.png | 14615 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | 1/1 | - | ok | 0 | 0 | yes |
-| p09-shelter-rules-notice.jpg | 14416 | 1/1 | 1/1 | 1/1 | - | - | 1/1 | 2/2 | 1/1 | ok | 0 | 0 | yes |
-| p09-shelter-rules-notice.png | 14869 | 1/1 | 1/1 | 1/1 | - | - | 1/1 | 2/2 | 1/1 | ok | 0 | 0 | yes |
-| p10-supplies-distribution-notice.jpg | 13178 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | 1/1 | 2/2 | ok | 0 | 0 | yes |
-| p10-supplies-distribution-notice.png | 13865 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | 1/1 | 2/2 | ok | 0 | 0 | yes |
-| p11-x-shelter-full.png | 13704 | 2/2 | 2/2 | 2/2 | - | 2/2 | 0/1 | - | - | ok | 0 | 0 | yes |
-| p12-xhs-shelter-full-zh.png | 17521 | 2/2 | 2/2 | 2/2 | - | 2/2 | 0/1 | - | - | ok | 0 | 0 | yes |
+| a02-injection-mark-official.png | 12342 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | - | - | ok | 0 | 0 | yes |
+| p01-water-outage-notice.jpg | 13015 | 1/1 | 1/1 | 1/1 | 2/2 | 1/1 | 1/1 | 1/1 | - | ok | 0 | 0 | yes |
+| p01-water-outage-notice.png | 19849 | 1/1 | 1/1 | 1/1 | 2/2 | 1/1 | 1/1 | 1/1 | - | ok | 0 | 0 | yes |
+| p02-water-distribution-notice.jpg | 13901 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | 2/2 | - | ok | 0 | 0 | yes |
+| p02-water-distribution-notice.png | 12199 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | 2/2 | - | ok | 0 | 0 | yes |
+| p03-wechat-konbini.png | 10187 | 1/1 | 1/1 | 1/1 | 2/2 | 1/1 | 1/1 | 1/1 | - | ok | 0 | 0 | yes |
+| p04-line-water-same-fact.png | 11521 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | 1/1 | - | ok | 0 | 0 | yes |
+| p07-water-time-change.jpg | 11350 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | 1/1 | - | ok | 0 | 0 | yes |
+| p07-water-time-change.png | 13035 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | 1/1 | - | ok | 0 | 0 | yes |
+| p09-shelter-rules-notice.jpg | 17208 | 1/1 | 1/1 | 1/1 | - | - | 1/1 | 2/2 | 1/1 | ok | 0 | 0 | yes |
+| p09-shelter-rules-notice.png | 22426 | 1/1 | 1/1 | 1/1 | - | - | 1/1 | 2/2 | 1/1 | ok | 0 | 0 | yes |
+| p10-supplies-distribution-notice.jpg | 14208 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | 1/1 | 2/2 | ok | 0 | 0 | yes |
+| p10-supplies-distribution-notice.png | 14950 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | 1/1 | 2/2 | ok | 0 | 0 | yes |
+| p11-x-shelter-full.png | 13690 | 2/2 | 2/2 | 2/2 | - | 2/2 | 1/1 | - | - | ok | 0 | 0 | yes |
+| p12-xhs-shelter-full-zh.png | 13665 | 2/2 | 2/2 | 2/2 | - | 2/2 | 1/1 | - | - | ok | 0 | 0 | yes |
 
 **Summary**
 
-- Field accuracy: 97/100 (97.0%). category 17/17, place 17/17, times 21/22, status 7/7, source 13/15, conditions 16/16, en 6/6.
+- Field accuracy: 100/100 (100.0%). category 17/17, place 17/17, times 22/22, status 7/7, source 15/15, conditions 16/16, en 6/6.
 - PII leaks: 0 (must be 0).
 - Invented facts: 0 (must be 0). Missed expected facts: 0 of 17.
 - Risk flags as expected: 15/15 inputs.
 - Six languages present on every fact: 15/15 inputs.
 - Errors: 0.
-- Latency: median 14168 ms, mean 14189 ms, min 11305 ms, max 17521 ms.
-- Tokens: input 62310, cache read 82044, cache write 20511, output 20060.
+- Latency: median 13665 ms, mean 14236 ms, min 10187 ms, max 22426 ms.
+- Tokens: input 62310, cache read 82044, cache write 20511, output 19437.
 - Not scored: `merges_with` and `updates` (need reconcile).
-
-**Details**
-
-- p03-wechat-konbini.png: fact 0: times 2026-11-03T13:52 to null, expected null to null
-- p11-x-shelter-full.png: fact 0: source_type secondhand, expected firsthand
-- p12-xhs-shelter-full-zh.png: fact 0: source_type secondhand, expected firsthand
 <!-- /eval:claude-opus-5-5 -->
 
 ## Notes
@@ -149,9 +143,8 @@ Run 2026-11-03 09:41 JST, model `claude-opus-5-5`, effort low, 15 inputs from 10
 Two rules went into `prompts/extract.system.md` before the merge of the day 2 and day 3 branches: the category follows the content, never a 訓練用 or 想定シナリオ stamp; and source type asks how the uploader knows, so a chat screenshot, a screenshot of someone's post or a forwarded message is `secondhand` even when its author says they saw it themselves. The 11/03 run above was kept under its own marker (`eval-2026-11-03`) so the two can be compared; the newer `claude-opus-5-5` section is the run after the rules.
 
 - p02 PNG: `water` on both variants (was `daily_notice` once). p03: `secondhand` as the demo wants (was `firsthand` on both models). Finding 1 and finding 2 above are closed.
-- p11 and p12 (X and Xiaohongshu screenshots) now also come back `secondhand`; their expected files say `firsthand`, written before the rule. Under the rule as decided they are relays too, so either the expected files change to `secondhand` or the rule gets an exception for a public post written by the person on site. Decision open; the expected files were not changed.
-- p03 used the chat's post time (13:52) as `valid_from` this time, as Sonnet did on 11/03. Nondeterministic, one check in 22.
-- Totals: 97/100 fields (98 on 11/03, the two p11 and p12 flips against the two fixes), 0 PII leaks, 0 invented facts, median 14.2 s.
+- p11 and p12 (X and Xiaohongshu screenshots) also came back `secondhand` on the first run after the rules, against expected files that said `firsthand` (97/100 on that run). Decision the same day: the rule stays as written, because the board cannot verify the author of any screenshot, so a screenshot of a post or a chat message is `secondhand` whoever wrote it, and `firsthand` is reserved for text the uploader types in their own words (p08). The two expected files now say `secondhand`, with the reason in their notes.
+- The table above is the run after that change: 100/100 fields, 0 PII leaks, 0 invented facts, median 13.7 s. The first run after the rules had used the chat's post time (13:52) as p03's `valid_from`, as Sonnet did on 11/03; this run did not. That check is nondeterministic, one in 22.
 
 **Not scored yet.** `merges_with` and `updates` need reconcile. `pnpm eval --reconcile` exits with a note on what to wire once `lib/claude/reconcile.ts` lands. `pnpm eval` exits 1 when PII leaks or invented facts are above 0, so the Sonnet run above exits 1.
 
