@@ -487,3 +487,68 @@ After each step the row in the database had no missing language. Deleted afterwa
 - Review and merge the branch (Fable). Nothing new in Vercel; `TRANSLATE_MODEL` is optional.
 - The Korean and Vietnamese card text now comes from the translate prompt, not from extract; the native speaker read on 11/05 reads that.
 - `CardSheet`, `CardPage`, share and ask show English for a language that is not there yet without the "Translation coming soon." line; one line each with `shownLang` from `lib/cards/langs.ts` once their owners are done.
+
+## 2026-11-04 (Wed), offline snapshot, peace-mode questions, eval refresh
+
+**Model:** `claude-opus-5-5` in Claude Code, implementation role, in its own worktree (branch `day5-offline`, cut from `main` at 1b8d659) while `day5-trust` worked on its own file list. No prompt, schema or model changed; the eval ran extract, translate and reconcile on `claude-opus-5-5`.
+
+**Done**
+- N9 offline snapshot. `public/sw.js`, plain JavaScript with no library (164 lines): network first with a cache fallback for `/b/<slug>`, `/b/<slug>/c/<id>` and its `/notice`, `/api/b/<slug>/cards` (the poll) and `/about`; cache first for `/_next/static/*` and `/samples/*`. Under `next dev` the worker is registered as `/sw.js?dev=1` and keeps static files network first, since dev chunks are not content hashed. Never touched: anything that is not GET, the React payload requests of client side navigations (`RSC` header or `_rsc`), `/api/process`, submissions, ask, admin, masked images, traces, the poster and the OG images. Only `ok`, same origin, not redirected responses are stored, each with its stored time in an `x-engawa-stored-at` header; a response answered from the cache carries `x-engawa-from-cache: 1`. Two caches, `engawa-pages-v1` (at most 60 entries) and `engawa-static-v1` (at most 200), oldest first beyond that. `VERSION` is a constant bumped by hand: activate deletes every other `engawa-*` cache, then claims the open pages; install calls `skipWaiting`.
+- The first visit. The first page a reader opens loads before the worker exists, so none of its requests pass through it, and only the poll would have been kept. Once the worker is active, that page sends it its own URL and the build files it loaded (from Resource Timing) in an `engawa:warm` message; the worker stores the ones its rules allow and ignores the rest.
+- `lib/offline.ts` and `components/offline/OfflineSupport.tsx`, mounted once in the root layout: registration in production and in development, only when `navigator.serviceWorker` exists; `useOnline` over the browser's online and offline events; `askServedFromCache`, a message over a `MessageChannel` asking the worker whether this page's HTML came from its cache and when that copy was stored.
+- Board (`BoardView.tsx`): the banner "Offline. Showing the board as of 08:12." (16 px bold, dark amber on pale yellow, a live region, hidden in print; the date is added when the copy is not from today, Japan time) shows while the browser reports offline, or the last poll failed, or the poll was answered from the cache. The time is the `now` of the cards on screen, the server's clock when that cards response was made, which is the moment the worker stored it. A page opened offline or out of the cache polls at once instead of after 5 seconds; coming back online polls at once, and the banner goes when a poll reaches the server. A saved poll older than the cards already on screen is not applied. `DropIn` takes `offline`: the button is disabled and grey, with "Offline: drop-in works again once you are connected." above it.
+- Card, notice and about pages: "Offline. Showing a saved copy from 08:12." from the layout, while the browser reports offline or when the worker says the page came out of its cache.
+- Peace-mode suggested questions: `AskPanel` takes the board's `mode` (`peace` or `disaster`). A peace board suggests "When does garbage collection change next?", "Is a water outage planned?" and "Is there a notice from the building management?"; a disaster board keeps its three. The input's placeholder follows the mode too: it said "Where can I get water?" on every board. That is one key more than the brief.
+- Seven keys at the top of the five message files: `offline.board_banner`, `offline.page_banner`, `offline.dropin_reason`, `ask.suggest_peace_1` to `_3`, `ask.placeholder_peace`. The Korean and Vietnamese lines are mine, for the native read.
+- README: one line under How it works.
+
+**Retention of the offline copy.** The worker keeps only what the public board already showed this reader in this browser: the board page, the card, notice and about pages they opened, the board's last poll, build files and the three sample inputs. No submission, original, masked image, trace, answer or admin page is ever stored, and nothing leaves the phone. The copy lives in the browser's Cache Storage until the browser evicts it, the reader clears the site's data, or `VERSION` changes; beyond 60 pages and 200 build files the oldest go first. It is not bound to `purge_after`: a card hidden or purged on the server stays in a reader's saved copy until their next load of that page reaches the network and replaces it. `docs/PRIVACY.md` belongs to `day5-trust` today, so this paragraph is the record until a line is added there.
+
+**Acceptance** (production build, `pnpm start` on port 3460 behind a small switchable proxy on 3461; throwaway board `offline-acceptance`, a copy of the 武蔵小杉 row, with one card from the `t02` text through the real routes: extract, reconcile create, translate, 19 s; Chrome for Testing at 390 px through `playwright-core`; the live board was not touched).
+
+Playwright's `context.setOffline(true)` blocks the page's own requests but not the service worker's `fetch`, and in this Chrome build neither it nor the CDP network override sets `navigator.onLine` to false. The first offline reload therefore came from the server through the worker. The run uses `setOffline` plus a proxy that closes its port, so the worker's fetch really fails, and the browser's offline signal is checked separately by firing the `offline` event with `navigator.onLine` reporting false. Under `next dev` an offline page does not hydrate at all (the dev client waits for its HMR socket), so the offline steps were run on the production build; online, the dev server registered the worker and kept the same three pages.
+
+| step | what was checked | result |
+|---|---|---|
+| 1 | first visit online: worker controls the page; what is kept | board HTML, poll and card page in `engawa-pages-v1`, 11 build files in `engawa-static-v1`, nothing else; no banner; peace questions shown |
+| 2 | network gone (proxy down, `setOffline`), reload the board | rendered from the cache with its card; banner "Offline. Showing the board as of 08:12."; drop-in disabled with its reason; poll answered `x-engawa-from-cache: 1`, stored 23:12:14 UTC |
+| 3 | ask, offline | the suggestion tap shows "Could not get an answer. Please try again." as before; ask is never cached |
+| 4 | card page offline, new tab | rendered from the cache, "Offline. Showing a saved copy from 08:12.", title and body in English |
+| 5 | poster, never kept | `net::ERR_INTERNET_DISCONNECTED`, as without the worker |
+| 6 | Wi-Fi without internet: browser online, server unreachable, fresh tabs | board and card page from the cache, both with the banner (from the worker's answer, then the poll answered from the cache); drop-in disabled |
+| 7 | network back | banner gone 2.8 s later on the next poll, drop-in enabled, poll from the network |
+| 8 | `offline` event with `navigator.onLine` false, then `online` | banner at once before any poll; gone 7 ms after `online` (the poll reached the server) |
+| 9 | Japanese UI, server unreachable | "オフラインです。08:12 時点の掲示板を表示しています。", "オフラインのため投稿できません。つながると使えます。", the three peace questions in Japanese |
+
+Deleted afterwards: 1 card, 1 source row, 2 submissions (one first sent without the JSON body `/api/process` now needs, so it stayed `received`), 0 storage objects, 2 device rows and the board. `pnpm typecheck`, `pnpm lint` and `pnpm build` clean.
+
+**Eval refresh** (`pnpm eval`, then `pnpm eval --reconcile --now 2026-11-03T10:00:00+09:00`, both written into `docs/EVAL.md`; the notes below the markers are unchanged)
+
+| | result |
+|---|---|
+| field accuracy | 100/100 (category 17/17, place 17/17, times 22/22, status 7/7, source 15/15, conditions 16/16, en 6/6) |
+| PII leaks | 0 |
+| invented facts | 0, missed 0 of 17 |
+| risk flags as expected | 15/15 inputs |
+| six languages after translate | 15/15 inputs |
+| extract latency, time to the first card | median 8407 ms, p90 11031 ms, max 11191 ms |
+| translate latency | median 9372 ms, min 5397 ms, max 15514 ms |
+| reconcile chains | 11/11 steps (create 4/4, merge 6/6, update 1/1), 0 code overrides, reconcile median 2429 ms |
+
+No score below 100/100 and no leak, so no prompt was touched.
+
+**Decisions taken in this session, open for review**
+- Network first has no timeout. On a network that hangs instead of failing, the reader waits for the browser's own timeout before the saved copy shows. A timeout of 5 to 8 seconds for page loads would show the copy sooner, at the cost of a stale page on a slow but working line.
+- The banner also shows after a single failed poll while the browser says online, for the 5 seconds until the next one: the board really did not refresh.
+- The board's banner time is the `now` of the cards on screen rather than the worker's stored time; the two differ by the length of the request. The stored time is what the card and about pages show.
+- While offline, relative times and expiry on the cards are computed against the snapshot's time, consistent with "as of". A card that expired since still looks current against that time; the banner states the time.
+- A page shown from the cache keeps its banner after the network returns, until it is reloaded, since its content is still the old copy. Only the board refreshes itself.
+- Cache sizes 60 pages and 200 build files.
+- The placeholder follows the mode as well as the suggestions.
+
+**Needed a human**
+- Review and merge. Nothing new in Vercel or the database.
+- In `docs/PLAN.md` under 2026-11-05, "N9, N10, N12 only if the day is clear" becomes N9 done (this PR) with N10 and N12 still open. No line exists for the peace-mode questions or the eval refresh; one line each if wanted.
+- After the deploy: open the live board once on a phone, switch to airplane mode, reload: the board and its banner should show. The worker takes over each open page on its next load after every deploy.
+- `docs/PRIVACY.md` (owned by `day5-trust` today): one paragraph on the offline copy, from the retention paragraph above.
+- The acceptance-run skill's curl for `/api/process/<id>` has no JSON body; the route answers 400 without `{"device_id": ...}`.

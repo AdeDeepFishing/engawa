@@ -21,6 +21,7 @@ Maria asks in English where she can get water and whether she can bring her cat 
 3. **Reconcile** (`lib/claude/reconcile.ts`, structured outputs). Code picks the candidate cards (same board, category and place, still valid); Claude proposes create, merge, update, conflict or hold; code checks the answer and enforces the trust order (official, then firsthand, then secondhand), so a weaker source never overwrites a stronger one. Anything with a risk flag is held for a human.
 4. **Cards** show their source type, how many sources back them, when they changed, the previous version after an update, both statements when sources disagree, and "may be outdated" once they expire.
 5. **Admin** (`/b/<slug>/admin`, entered once through `/api/b/<slug>/admin/enter?token=...`, which sets a 12 hour HttpOnly cookie and redirects to the clean URL): the held queue with publish and hide, confirm official, hide any card.
+6. **Offline.** After one visit the board and the card pages a reader opened still show when the network drops, with a line saying the time of that copy (`public/sw.js`).
 
 Claude proposes; code decides. The full architecture is in [docs/PLAN.md](docs/PLAN.md).
 
