@@ -281,3 +281,25 @@ Two rules went into `prompts/extract.system.md` before the merge of the day 2 an
 
 **The clock.** The first re-run of the chain, at 01:28 JST on 11/04 with the real clock, passed t03 but came back 9/11: `s02` and `t02` were judged `conflict` against the p02 card, with the reason that the p02 notice says 本日 (which the model read as 11/04 at that hour) while the two inputs say 11月3日. That is a correct reading of the inputs, not a reconcile fault: the p02 group was written for the demo day. `scripts/eval.ts` therefore gained `--now`, which pins the clock extract and reconcile see, and the chain is run with the fixture day; the run header records it. The extract table keeps the real clock, as before, since its time checks compare the time of day only. Open for review: whether to make the fixture day the chain's default rather than a flag.
 
+### 2026-11-04, extract on `claude-fable-5-1` against `claude-opus-5-5` (N11, `claude-fable-5-1` in Claude Code)
+
+Same 15 inputs, prompt, schema and effort (low), concurrency 3, two runs back to back at 02:35 and 02:37 JST; the full tables are above under the markers for each model. `pnpm eval --model <id>` overrides `EXTRACT_MODEL` for the run, and the summary now also prints the p90 latency and the tokens per call, which this comparison needed.
+
+| | `claude-opus-5-5` | `claude-fable-5-1` |
+|---|---:|---:|
+| Field accuracy | 100/100 | 99/100 |
+| PII leaks | 0 | 0 |
+| Invented facts | 0 | 0 |
+| Missed expected facts | 0 of 17 | 0 of 17 |
+| Risk flags as expected | 15/15 | 15/15 |
+| Latency, median | 14.0 s | 22.6 s |
+| Latency, p90 | 18.5 s | 26.7 s |
+| Latency, min to max | 10.8 to 21.7 s | 18.1 to 27.8 s |
+| Input tokens per call, uncached | 4154 | 4154 |
+| Cache read per call | 6995 | 5596 |
+| Output tokens per call | 1341 | 1948 |
+| List price per million tokens, input and output | $4 and $20 | $10 and $50 |
+
+**Reading.** The one miss is `p03-wechat-konbini.png`: the chat says the convenience store in front of the station is open and has water, the expected file says `shops` (the fact is that the store is open; water is one thing it has), and Fable said `water`. Defensible, and a one-in-seventeen category disagreement, not an error of reading; Opus has returned `shops` on every run since the 11/03 prompt rules. Neither model missed an expected fact, invented one, or let a planted name, handle or number through. Fable writes longer cards: 45 percent more output tokens per call, with the same uncached input, and since output length sets most of the wall time, that is most of the 8.5 second gap at the median; the rest is the model itself. The lower cache read on Fable is an artefact of the run, not of the model: the cache is per model, so the first three concurrent calls wrote it (20985 tokens written) and only twelve read it; on a warm cache the read per call would match Opus.
+
+**Decision.** Extract stays on `claude-opus-5-5`. On these fixtures Fable 5.1 is not more accurate, it keeps the uploader behind the placeholder card for 22 seconds instead of 14 (the plan's split threshold is 20), and it costs two and a half times as much per token with more tokens per call. What would change the decision: a class of input where Fable reads better than Opus, such as handwriting, a crumpled or badly lit photo, or a notice in small print. The fixtures are rendered pages and photo-like renders, so that is untested; the human's phone photos of printed notices (fixtures/README.md, "still to come") are the place to test it, with `pnpm eval --model claude-fable-5-1 --only <ids> --no-write`.
