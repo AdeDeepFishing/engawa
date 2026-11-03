@@ -83,7 +83,8 @@ export function timeRange(
   return null;
 }
 
-function jstDay(iso: string): string {
+/** Calendar day in Japan of an instant, for "same day, show the time only" decisions. */
+export function jstDay(iso: string | Date): string {
   return new Date(new Date(iso).getTime() + 9 * 3_600_000).toISOString().slice(0, 10);
 }
 

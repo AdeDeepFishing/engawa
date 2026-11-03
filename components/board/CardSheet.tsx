@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CATEGORY_ICON, isExpired } from "@/lib/cards/categories";
 import {
   conflictStatements,
@@ -13,10 +13,11 @@ import {
   timeAgo,
   timeRange,
 } from "@/lib/cards/display";
+import { traceModelsLine, traceStepLine } from "@/lib/cards/trace";
 import { areaName } from "@/lib/geo";
 import { CARD_LANGS, tCount, type Lang } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n/LangProvider";
-import type { Board, Card, ConflictStatement } from "@/lib/types";
+import type { Board, Card, CardTrace, ConflictStatement } from "@/lib/types";
 import { MaskedImage } from "./MaskedImage";
 
 /**
@@ -36,6 +37,24 @@ export function CardSheet({
 }) {
   const { lang, t } = useLang();
   const closeRef = useRef<HTMLButtonElement>(null);
+  /** The trace for the card shown; kept with its card id so a stale answer is never shown for another card. */
+  const [trace, setTrace] = useState<{ id: string; data: CardTrace } | null>(null);
+
+  // Fetched when the sheet opens and again when the card gains a source, an
+  // update or the admin's confirmation while it is open. Seed cards without
+  // a database answer 404 and show nothing.
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`/api/cards/${card.id}/trace`, { cache: "no-store" })
+      .then((res) => (res.ok ? (res.json() as Promise<CardTrace>) : null))
+      .then((data) => {
+        if (!cancelled && data) setTrace({ id: card.id, data });
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [card.id, card.source_count, card.updated_at, card.official_confirmed]);
 
   useEffect(() => {
     closeRef.current?.focus();
@@ -53,6 +72,7 @@ export function CardSheet({
   const conflicts = conflictStatements(card);
   const previous = supersededStatements(card);
   const sources = card.sources ?? [];
+  const steps = trace?.id === card.id ? trace.data : null;
 
   return (
     <section
@@ -180,6 +200,42 @@ export function CardSheet({
             </ul>
           </section>
         ) : null}
+
+        <section className="mt-5 rounded-xl border border-line p-3" aria-labelledby={`trace-title-${card.id}`} data-trace>
+          <h3 id={`trace-title-${card.id}`} className="font-semibold">
+            {t("trace.heading")}
+          </h3>
+          <p className="mt-1 text-base text-muted">{t("trace.intro")}</p>
+          {steps ? (
+            <>
+              <ol className="mt-3 flex flex-col gap-3">
+                {steps.steps.map((s, i) => (
+                  <li key={`${s.created_at}-${i}`} data-trace-step={s.relation}>
+                    <p>{traceStepLine(s, now, lang)}</p>
+                    {s.reason ? (
+                      <p className="mt-1 border-l-4 border-line pl-3 text-base text-muted">
+                        <span className="font-semibold">{t("trace.reason_label")}: </span>
+                        <q lang="en">{s.reason}</q>
+                      </p>
+                    ) : null}
+                  </li>
+                ))}
+                {steps.official_confirmed ? (
+                  <li data-trace-step="official">
+                    <p className="font-semibold text-accent">{t("trace.official")}</p>
+                  </li>
+                ) : null}
+              </ol>
+              <p className="mt-3 text-base text-muted" data-trace-models>
+                {traceModelsLine(steps.models, lang)}
+              </p>
+            </>
+          ) : (
+            <p className="mt-3 text-base text-muted" aria-live="polite">
+              {t("trace.loading")}
+            </p>
+          )}
+        </section>
 
         <details className="mt-5 rounded-xl border border-line p-3">
           <summary className="cursor-pointer py-2 font-semibold">{t("sheet.all_languages")}</summary>
