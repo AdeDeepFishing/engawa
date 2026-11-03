@@ -187,17 +187,26 @@ export default async function NoticePage({ params }: Props) {
           {lang !== "ja" ? <Meta card={card} board={board} lang={lang} now={now} /> : null}
         </section>
 
-        {NOTICE_LANGS.map((l, i) => (
-          <section key={l} className="notice-block" lang={l === "easy_ja" ? "ja" : l} data-notice-lang={l}>
-            <p className="notice-lang">{t(`lang.${l}`, lang)}</p>
-            {i === 0 ? (
-              <h1 className="notice-title">{card.title[l]}</h1>
-            ) : (
-              <h2 className="notice-title">{card.title[l]}</h2>
-            )}
-            <p className="notice-body">{card.body[l]}</p>
-          </section>
-        ))}
+        {NOTICE_LANGS.map((l, i) => {
+          // A language the translate step has not written yet carries an English
+          // or Japanese stand-in on the card; the printed notice says so instead
+          // of printing English under a Chinese heading.
+          const pending = (card.missing_langs ?? []).includes(l);
+          const blockLang: Lang = l === "easy_ja" ? "ja" : l;
+          return (
+            <section key={l} className="notice-block" lang={blockLang} data-notice-lang={l} data-pending={pending || undefined}>
+              <p className="notice-lang">{t(`lang.${l}`, lang)}</p>
+              {pending ? (
+                <p className="notice-body">{t("card.translating", blockLang)}</p>
+              ) : i === 0 ? (
+                <h1 className="notice-title">{card.title[l]}</h1>
+              ) : (
+                <h2 className="notice-title">{card.title[l]}</h2>
+              )}
+              {pending ? null : <p className="notice-body">{card.body[l]}</p>}
+            </section>
+          );
+        })}
 
         <section className="notice-about">
           <About card={card} lang="ja" now={now} />
