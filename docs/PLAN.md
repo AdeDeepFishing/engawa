@@ -45,10 +45,10 @@ Everything (fixtures, known places, prompts, seed, recording) is built around th
 
 Ranked by value on the judging axes (impact, demo, use of Claude, depth) against effort. Each ships in its own PR with its acceptance line on the task board.
 
-- N1 Try it with a sample: the drop-in panel offers three sample inputs (a paper notice photo, a chat screenshot, a text) so a judge can run the whole pipeline on the deployed URL without printing anything. Demo. About 1 hour.
-- N2 Share one card: a per-card page with its own OG title, and "copy as text" in the reader's language so a card can be forwarded into a LINE or WeChat group, the reverse of the drop-in direction. Impact. About 1.5 hours.
-- N3 Hidden and merged drawer: a collapsed list at the bottom of the board holds cards the admin hid as duplicates; a card's sources expand to their original text; the admin page gets "hide as duplicate of". Depth. About 2 hours.
-- N4 How this card was made: the reconcile decision and its reason are stored; the card sheet shows the chain (source, extract, merge or update with the reason, admin confirmation). Use of Claude. About 2 hours.
+- N1 Try it with a sample: the drop-in panel offers three sample inputs (a paper notice photo, a chat screenshot, a text) so a judge can run the whole pipeline on the deployed URL without printing anything. Demo. About 1 hour. Done 2026-11-04.
+- N2 Share one card: a per-card page with its own OG title, and "copy as text" in the reader's language so a card can be forwarded into a LINE or WeChat group, the reverse of the drop-in direction. Impact. About 1.5 hours. Done 2026-11-04.
+- N3 Hidden and merged drawer: a collapsed list at the bottom of the board holds cards the admin hid as duplicates; a card's sources expand to their original text; the admin page gets "hide as duplicate of". Depth. About 2 hours. Done 2026-11-04.
+- N4 How this card was made: the reconcile decision and its reason are stored; the card sheet shows the chain (source, extract, merge or update with the reason, admin confirmation). Use of Claude. About 2 hours. Done 2026-11-04.
 - N5 Multilingual notice back: from a card, a printable A4 notice in six languages with the board QR, so a building manager can replace the Japanese-only paper. Impact and demo. About 2 hours.
 - N6 Reader confirmations: "still true" and "no longer true", one tap per device; bumps `last_confirmed_at` or opens a conflict. Depth. About 2 hours.
 - N7 Suggested questions per language above the ask box, and follow-up questions in the same thread. Demo. About 1.5 hours.
@@ -149,13 +149,15 @@ Owner for implementation: Claude Code. The plan said `claude-opus-5-5`; in pract
 - [x] Production check after the merge: poster, masked route and board answer; `NEXT_PUBLIC_APP_URL` is used only when it is an http(s) URL (PR #8)
 
 ### 2026-11-04 (Wed): polish and the first nice-to-haves
-- [ ] t03: Chinese text naming the shop by the station gets no `place_id`; fix in the extract prompt or widen the candidate query by `place_text_ja`; `pnpm eval --reconcile` 11 of 11
-- [ ] Phone UI polish, accessibility pass (16px, 44px targets, contrast, focus order, reduced motion)
-- [ ] N3 hidden and merged drawer; admin "hide as duplicate of"
-- [ ] N1 try it with a sample
-- [ ] N2 share one card
-- [ ] N4 how this card was made
-- [ ] Each item: acceptance on a throwaway board locally, then on the deployed URL after the merge
+- [x] t03: a spot described only by its relation to a known place takes that place's id (extract prompt rule); `pnpm eval --reconcile` 11 of 11, `pnpm eval` 100/100 (PR #9)
+- [x] Phone UI polish, accessibility pass at 390 px: contrast on expired cards and control borders, 44 px summaries, `lang` on place names; measured before and after in the DEVLOG (PR #9)
+- [x] N3 hidden duplicates drawer; admin "hide as duplicate of" and unhide; migration 0004 (PR #9)
+- [x] Waiting card: four step stepper from the real pipeline stages with elapsed seconds, added on request (PR #9)
+- [x] N1 try with a sample: three fictional fixtures under `public/samples/` through the real pipeline (PR #10)
+- [x] N2 share one card: `/b/[slug]/c/[id]` with its own title per language, system share, copy link, copy as text (PR #10)
+- [x] N4 how this card was made: reason and model on `card_sources` (migration 0005), `GET /api/cards/[id]/trace`, one line per step in the sheet (PR #10)
+- [x] Each item: acceptance on a throwaway board locally (tables in the DEVLOG); combined smoke of both branches on the integration branch: 2 drop-ins, hide as duplicate, drawer, trace, card page and admin all answer as specified
+- [ ] After the merge: on the deployed URL, hide the two water duplicates again "as a duplicate of" the remaining card so the drawer shows on the live board; try one sample
 
 ### 2026-11-05 (Thu): more nice-to-haves, native reads
 - [ ] Korean and Vietnamese native speakers read the demo cards; fix wording
