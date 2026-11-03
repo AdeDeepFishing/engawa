@@ -91,7 +91,7 @@ export function CardPage({
           ) : null}
 
           <p className="mt-4 text-lg">{card.body[lang]}</p>
-          <ReadAloud card={card} />
+          <ReadAloud key={card.id} card={card} />
 
           <dl className="mt-4 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-base">
             {place ? (

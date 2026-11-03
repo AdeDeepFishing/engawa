@@ -87,7 +87,6 @@ export function AskPanel({
   }
 
   function onSuggest(text: string) {
-    setQuestion(text);
     void send(text);
   }
 
@@ -111,7 +110,7 @@ export function AskPanel({
           <button
             type="button"
             onClick={clear}
-            className="shrink-0 rounded-lg border border-line px-3 text-base font-semibold"
+            className="shrink-0 rounded-lg border border-line min-h-11 px-4 text-base font-semibold"
             data-ask-clear
           >
             {t("ask.clear")}

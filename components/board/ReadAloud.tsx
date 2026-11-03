@@ -6,7 +6,7 @@ import { useLang } from "@/lib/i18n/LangProvider";
 import type { Card } from "@/lib/types";
 
 /** Voice language per card language. Easy Japanese is read by the Japanese voice. */
-export const VOICE_LANG: Record<CardLang, string> = {
+const VOICE_LANG: Record<CardLang, string> = {
   ja: "ja-JP",
   en: "en-US",
   zh: "zh-CN",
@@ -58,10 +58,9 @@ function pickVoice(tag: string): SpeechSynthesisVoice | null {
 /** Title and body split into sentences: Chrome stops long utterances after about 15 seconds, short ones are safe. */
 function sentences(card: Card, l: CardLang): string[] {
   const text = `${card.title[l]}\n${card.body[l]}`;
-  return text
-    .split(/(?<=[。．.!?！？\n])\s*/u)
-    .map((s) => s.trim())
-    .filter(Boolean);
+  // No regex lookbehind: Safari before 16.4 fails to parse it, which would
+  // break the whole client chunk that imports this file, not just the button.
+  return (text.match(/[^。．.!?！？\n]+[。．.!?！？]*/gu) ?? []).map((s) => s.trim()).filter(Boolean);
 }
 
 /**
@@ -104,6 +103,7 @@ export function ReadAloud({ card }: { card: Card }) {
       if (voice) u.voice = voice;
       return u;
     });
+    if (!parts.length) return;
     const last = parts[parts.length - 1];
     const done = () => {
       // A cancelled run also fires end or error; only the run still shown clears the state.

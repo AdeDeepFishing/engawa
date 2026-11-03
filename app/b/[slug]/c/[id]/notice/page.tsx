@@ -92,7 +92,7 @@ const CSS = `
   .notice-about { font-size: 9pt; line-height: 1.35; margin-top: 2.5mm; padding-top: 1.5mm; }
   .notice-foot { margin-top: 3mm; padding-top: 2mm; break-inside: avoid; }
   .notice-qr { width: 28mm; }
-  .notice-scan { columns: 2; column-gap: 5mm; font-size: 8.5pt; line-height: 1.3; }
+  .notice-scan { columns: 2; column-gap: 5mm; font-size: 10pt; line-height: 1.3; }
   .notice-url { font-size: 9pt; }
   .notice-compact .notice-title { font-size: 12pt; }
   .notice-compact .notice-body { font-size: 11pt; line-height: 1.3; }
