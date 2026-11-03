@@ -113,6 +113,8 @@ Fonts come from the system (Hiragino Sans and PingFang SC on macOS). On one mach
 
 Boxes are in pixels of the input image, measured with `getClientRects` at render time, clipped to the visible part of the screen and rounded outward. `kind` is `avatar`, `name`, `phone`, `room` or `handle`. `label` is the visible text, or for an avatar the name of its owner (`(self)` for the uploader's own avatar). A partly visible element at the edge of the chat area gets a box for its visible part only.
 
+`pnpm eval:mask` runs the masking step on each of these inputs and counts a box as covered when at least 95 percent of its area lies under the painted (padded) boxes. The masked images land in `tools/out/masked/` (not committed) so a person can look at them. Results and the ship decision are in `docs/EVAL.md`.
+
 ## Things to know when running the eval
 
 - The 「訓練用・想定シナリオ」 stamp is part of every paper notice. If the extractor treats a stamped notice as a drill (`daily_notice`) or mentions the stamp in card text, that is a real finding: fix it in the prompt, not by removing the stamp.

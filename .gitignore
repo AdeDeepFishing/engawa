@@ -48,3 +48,6 @@ next-env.d.ts
 .wrangler/
 .dev.vars
 cloudflare-env.d.ts
+
+# masking eval renders (fixtures/tools/.gitignore covers out/ too)
+/fixtures/tools/out/
