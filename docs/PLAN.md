@@ -37,8 +37,8 @@ Everything (fixtures, known places, prompts, seed, recording) is built around th
 
 ### Only after every must item is green, in this order
 
-- G2 uploader area badge: only this board's simplified polygons (a few KB) shipped to the client, point-in-polygon in the browser, only the area code sent. Wording: "self-reported area". About 2 hours.
-- G3 printable A4 QR poster page `/b/[slug]/poster`. About 1 hour.
+- G2 uploader area badge: only this board's simplified polygons (a few KB) shipped to the client, point-in-polygon in the browser, only the area code sent. Wording: "self-reported area". About 2 hours. Done 2026-11-04.
+- G3 printable A4 QR poster page `/b/[slug]/poster`. About 1 hour. Done 2026-11-04.
 - G1 pink masking of names and avatars in chat screenshots. Hard 3 hour time box. Ships only at 100% coverage on the masking fixtures; otherwise chat screenshots stay text-only.
 
 ### Not this week
@@ -108,26 +108,27 @@ Owner for implementation: Claude Code with `claude-opus-5-5`. Planning, prompt d
 - [ ] Acceptance: photograph a paper notice on a phone; card appears in all languages on the deployed URL within 30 seconds
 
 ### 2026-11-04 (Wed): reconcile, trust, admin
-- [ ] Candidate selection query; `lib/claude/reconcile.ts`; apply decisions with validation; `card_sources`; `source_count`
-- [ ] Update and conflict handling (priority: official over firsthand over secondhand; newer over older; old official versus new secondhand is a conflict, not an overwrite)
-- [ ] Held state from risk flags; minimal admin page and route; confirm official
-- [ ] Expiry greying; "N minutes ago"; source type labels in five languages
-- [ ] README skeleton (English) and `docs/PRIVACY.md` linked
-- [ ] Acceptance: the same water fact dropped in Japanese, Chinese and Vietnamese yields one card with 3 sources; the rumour fixture is held and the admin page can publish or hide it
+- [x] Candidate selection query; `lib/claude/reconcile.ts`; apply decisions with validation; `card_sources`; `source_count`
+- [x] Update and conflict handling (priority: official over firsthand over secondhand; newer over older; old official versus new secondhand is a conflict, not an overwrite)
+- [x] Held state from risk flags; minimal admin page and route; confirm official
+- [x] Expiry greying; "N minutes ago"; source type labels in five languages
+- [x] README skeleton (English) and `docs/PRIVACY.md` linked
+- [x] Acceptance: the same water fact dropped in Japanese, Chinese and Vietnamese yields one card with 3 sources; the rumour fixture is held and the admin page can publish or hide it
 
 ### 2026-11-05 (Thu): ask, share, limits, purge, eval
-- [ ] `lib/claude/ask.ts` with Citations; `POST /api/b/[slug]/ask`; chips linking to cards; "no information yet"
-- [ ] Web Share, copy link, fullscreen QR, static OG image and per-language title
-- [ ] Rate limits, daily Claude cap, image size cap, friendly messages
-- [ ] Purge route plus cron trigger; test it on a dev copy
-- [ ] `scripts/eval.ts`, `fixtures/expected/*.json`, run, write `docs/EVAL.md`
+- [x] `lib/claude/ask.ts` with Citations; `POST /api/b/[slug]/ask`; chips linking to cards; "no information yet"
+- [x] Web Share, copy link, fullscreen QR, static OG image and per-language title
+- [x] Rate limits, daily Claude cap, image size cap, friendly messages
+- [x] Purge route plus cron trigger; test it on a dev copy
+- [x] `scripts/eval.ts`, `fixtures/expected/*.json`, run, write `docs/EVAL.md`
 - [ ] Full run of the 7-step demo scenario on the deployed URL; fix what breaks
 - [ ] 21:00 checkpoint: all must items green, otherwise apply the cut order
 
 ### 2026-11-06 (Fri): polish, G items, freeze
 - [ ] Phone UI polish, accessibility pass (16px, 44px targets, contrast, focus order, reduced motion)
 - [ ] Korean and Vietnamese native speakers read the demo cards; fix wording
-- [ ] G2 area badge (2h), then G3 poster (1h), then G1 masking (3h hard stop)
+- [x] G2 area badge (2h), then G3 poster (1h): done on 2026-11-04 on branch `g2-area-g3-poster`
+- [ ] G1 masking (3h hard stop)
 - [ ] Fable review of the whole repo; fix findings; freeze at 20:00
 - [ ] Seed the demo board; record rough footage
 

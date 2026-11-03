@@ -1,4 +1,7 @@
 {
+  "mask.caption": "Names and avatars are masked",
+  "mask.alt": "Copy of the chat screenshot with names and avatars masked",
+  "mask.stage": "Masking names and avatars",
   "ask.heading": "Ask this board",
   "ask.label": "Your question",
   "ask.placeholder": "Where can I get water?",
@@ -160,5 +163,22 @@
   "admin.error": "Could not save. Please try again.",
   "admin.open_board": "Open the board",
   "card.status": "Status",
-  "conflict.statement": "{summary} ({source}, {time})"
+  "conflict.statement": "{summary} ({source}, {time})",
+  "area.opt_in": "Add my area (self-reported)",
+  "area.explain": "Only the area name (town block) is sent, never your location. Your phone works it out by itself.",
+  "area.locating": "Finding your area…",
+  "area.resolved": "Your area: {area}",
+  "area.outside": "You seem to be outside this board's area. It will be sent without an area.",
+  "area.denied": "Location was not allowed. It will be sent without an area.",
+  "area.failed": "Could not get your location. It will be sent without an area.",
+  "area.badge": "Self-reported area: {area}",
+  "area.label": "Self-reported area",
+  "poster.print": "Print poster",
+  "poster.subtitle": "A neighbourhood board in your language",
+  "poster.cta": "Scan to open this neighbourhood's board",
+  "poster.cta_easy": "スマホで よみとって ください。この まちの おしらせが、あなたの ことばで よめます。",
+  "poster.community": "This is a community board. Anyone can drop in a photo of a paper notice, a chat screenshot or a text, and it becomes a card in Japanese, English, Chinese, Korean, Vietnamese and easy Japanese.",
+  "poster.print_hint": "Print on A4.",
+  "poster.print_button": "Print",
+  "poster.back": "Back to the board"
 }

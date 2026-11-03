@@ -50,6 +50,17 @@ Before writing or changing a call, read the `claude-api` skill for the exact SDK
 - Response: text blocks with citations. Map each citation's document index back to the card id and render it as a chip. Non-streaming first.
 - Questions are never stored. Only the usage counter is updated.
 
+### mask (`mask.ts`)
+
+- Purpose: find every avatar, display name, handle, phone number and room number in a chat or social screenshot so that code can paint pink rounded rectangles over them (docs/PLAN.md G1). The model returns boxes; it never returns the text of the conversation.
+- Model: `claude-opus-5-5` (default), `MASK_MODEL` switches it. Effort medium (the `effort` option; low and high were tried on the fixtures with the same boxes). Non-streaming, max output 4000 tokens.
+- Input: the screenshot shrunk by code to a long edge of at most 1568 px (`lib/image/raster.ts`, box filter, re-encoded as JPEG 85 for the call) and the user text stating that exact pixel size. The model and the code therefore agree on the frame; `lib/image/mask-pipeline.ts` scales the boxes back to the stored image. If the model still reports another frame size, code rescales the boxes into the given one and logs it.
+- System: `prompts/mask.system.md`, marked for caching. Output format: `schemas/mask.schema.json` (width, height, boxes with kind, label, x, y, w, h).
+- Code validates (`validateMaskResult`): at most 60 boxes or the whole answer is rejected (`MaskError("too_many_boxes")`), every coordinate numeric, boxes clipped to the image, boxes entirely outside dropped and counted. A refusal, non-JSON or truncated answer is a `MaskError` too.
+- Drawing (`lib/image/mask.ts`, pure JavaScript with `pngjs` and `jpeg-js`): fill `#f5a3c7`, corner radius 8 px, avatar boxes padded by 4 px, text boxes by 10 px, and numbers inside running text (room, phone, handle) by one extra text height sideways, because the model's left edge on such a run can land one character late. PNG stays PNG, JPEG is written at quality 85.
+- In the pipeline (`app/api/process/[id]/route.ts`) the call runs beside reconcile for images whose `source_platform` is a chat or social platform (`CHAT_PLATFORMS` in `lib/types.ts`), through `withUsage()`. Any failure is logged by kind and the card continues without a masked copy: nothing is stored. The masked copy goes to the `submissions` bucket under `masked/<board>/<submission>` and its path onto `cards.masked_image_path`; the original is deleted as before. `MASKING_ENABLED=0` turns the stage off.
+- Eval: `pnpm eval:mask` scores coverage of the ground truth boxes in `fixtures/masking` (a box counts as covered at 95 percent of its area under the padded predictions) and writes the table to `docs/EVAL.md`. The ship rule is 100 percent on every sidecar.
+
 ## Budget guard
 
 Every call goes through `withUsage()` which checks `usage_daily` for today against `DAILY_CLAUDE_CALL_CAP` before calling and increments after. Over the cap, the caller returns a "busy" status and the UI shows the message in the user's language.

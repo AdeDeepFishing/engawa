@@ -14,6 +14,10 @@ Engawa is built for a moment when people share screenshots of other people's mes
 8. There are no accounts. A random device identifier in the browser is used for rate limiting and for showing a user their own submissions.
 9. The admin page is opened once through a link that carries the admin token. That request sets an HttpOnly cookie holding a digest of the token (never the token itself) with a 12 hour expiry, scoped to that board's admin page and admin API, and redirects to the clean admin URL. After that one request the token appears in no page URL, Referer or browser history entry.
 
+## Area badge
+
+The drop-in panel has an opt-in box, "Add my area (self-reported)", off by default and remembered only in the uploader's own browser. When it is on, the browser asks the phone for its position, matches it against this board's simplified 町丁目 polygons (a few KB bundled with the page, built from e-Stat census boundaries), and shows the resolved area name before anything is sent. The submission then carries that one area code and nothing else about location: no coordinates, no accuracy, no timestamp of the fix, and nothing is logged. A denied, unavailable or unresolved position sends no area at all and the drop-in goes ahead as usual. The server accepts only codes that belong to the board, stores the code on the submission and copies it to the card (and, for a merge, to that source row) as "self-reported area", which readers see as a badge. It is a trust signal the uploader chose to add, never a verification, and it is deleted with the card.
+
 ## Retention
 
 | Data | Stored? | Deleted when |

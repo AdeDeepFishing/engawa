@@ -1,4 +1,7 @@
 {
+  "mask.caption": "名前とアイコンは隠してあります",
+  "mask.alt": "名前とアイコンを隠したチャット画面のコピー",
+  "mask.stage": "名前とアイコンを隠しています",
   "ask.heading": "この掲示板に質問する",
   "ask.label": "質問",
   "ask.placeholder": "どこで水がもらえますか",
@@ -160,5 +163,22 @@
   "admin.error": "保存できませんでした。もう一度お試しください。",
   "admin.open_board": "掲示板を開く",
   "card.status": "状況",
-  "conflict.statement": "{summary}（{source}、{time}）"
+  "conflict.statement": "{summary}（{source}、{time}）",
+  "area.opt_in": "自分のエリアを付ける（自己申告）",
+  "area.explain": "送るのはエリア名（町丁目）だけです。位置情報そのものは端末の外に出ません。",
+  "area.locating": "エリアを調べています…",
+  "area.resolved": "あなたのエリア：{area}",
+  "area.outside": "この掲示板の範囲外のようです。エリアなしで送ります。",
+  "area.denied": "位置情報が許可されませんでした。エリアなしで送ります。",
+  "area.failed": "位置情報を取得できませんでした。エリアなしで送ります。",
+  "area.badge": "自己申告のエリア：{area}",
+  "area.label": "自己申告のエリア",
+  "poster.print": "ポスターを印刷",
+  "poster.subtitle": "あなたのことばで読める地域の掲示板",
+  "poster.cta": "スキャンして、この地域の掲示板を開く",
+  "poster.cta_easy": "スマホで よみとって ください。この まちの おしらせが、あなたの ことばで よめます。",
+  "poster.community": "ここは、だれでも使える地域の掲示板です。紙のお知らせの写真、チャットの画面、文章を入れると、日本語・英語・中国語・韓国語・ベトナム語・やさしい日本語のカードになります。",
+  "poster.print_hint": "A4で印刷してください。",
+  "poster.print_button": "印刷する",
+  "poster.back": "掲示板に戻る"
 }

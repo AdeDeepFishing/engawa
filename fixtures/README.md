@@ -94,6 +94,7 @@ Fonts come from the system (Hiragino Sans and PingFang SC on macOS). On one mach
 - `risk_flags` must each be set on at least one fact.
 - `merges_with` lists inputs that state the same fact and must end up on the same card.
 - `updates` (only `p07`) lists inputs whose card this one must update rather than duplicate. Drop it in after them; the expected times are the card's times afterwards.
+- `creates_beside` (only `p10`) lists inputs whose cards must already be on the board when this one is dropped in; it must still come back as `create` (same shelter, different category). The reconcile eval appends it to that group's chain.
 - `notes` is for people reading the file and is not checked.
 
 ## Masking file shape
@@ -111,6 +112,8 @@ Fonts come from the system (Hiragino Sans and PingFang SC on macOS). On one mach
 ```
 
 Boxes are in pixels of the input image, measured with `getClientRects` at render time, clipped to the visible part of the screen and rounded outward. `kind` is `avatar`, `name`, `phone`, `room` or `handle`. `label` is the visible text, or for an avatar the name of its owner (`(self)` for the uploader's own avatar). A partly visible element at the edge of the chat area gets a box for its visible part only.
+
+`pnpm eval:mask` runs the masking step on each of these inputs and counts a box as covered when at least 95 percent of its area lies under the painted (padded) boxes. The masked images land in `tools/out/masked/` (not committed) so a person can look at them. Results and the ship decision are in `docs/EVAL.md`.
 
 ## Things to know when running the eval
 

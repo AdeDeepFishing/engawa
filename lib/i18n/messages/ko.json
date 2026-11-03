@@ -1,4 +1,7 @@
 {
+  "mask.caption": "이름과 프로필 사진은 가려져 있습니다",
+  "mask.alt": "이름과 프로필 사진을 가린 채팅 화면 사본",
+  "mask.stage": "이름과 프로필 사진을 가리는 중",
   "ask.heading": "이 게시판에 질문하기",
   "ask.label": "질문",
   "ask.placeholder": "어디에서 물을 받을 수 있나요?",
@@ -160,5 +163,22 @@
   "admin.error": "저장하지 못했습니다. 다시 시도해 주세요.",
   "admin.open_board": "게시판 열기",
   "card.status": "상태",
-  "conflict.statement": "{summary} ({source}, {time})"
+  "conflict.statement": "{summary} ({source}, {time})",
+  "area.opt_in": "내 구역 표시하기 (자진 신고)",
+  "area.explain": "구역 이름(초메 단위)만 보내고 위치 정보는 보내지 않습니다. 판단은 휴대전화 안에서만 이루어집니다.",
+  "area.locating": "구역을 확인하는 중…",
+  "area.resolved": "내 구역: {area}",
+  "area.outside": "이 게시판 범위 밖에 있는 것 같습니다. 구역 없이 보냅니다.",
+  "area.denied": "위치 사용이 허용되지 않았습니다. 구역 없이 보냅니다.",
+  "area.failed": "위치를 가져오지 못했습니다. 구역 없이 보냅니다.",
+  "area.badge": "자진 신고 구역: {area}",
+  "area.label": "자진 신고 구역",
+  "poster.print": "포스터 인쇄",
+  "poster.subtitle": "내 언어로 읽는 동네 게시판",
+  "poster.cta": "스캔해서 이 동네 게시판 열기",
+  "poster.cta_easy": "スマホで よみとって ください。この まちの おしらせが、あなたの ことばで よめます。",
+  "poster.community": "누구나 쓸 수 있는 동네 게시판입니다. 종이 안내문 사진, 채팅 화면, 글을 넣으면 일본어, 영어, 중국어, 한국어, 베트남어, 쉬운 일본어 카드가 됩니다.",
+  "poster.print_hint": "A4 용지에 인쇄하세요.",
+  "poster.print_button": "인쇄",
+  "poster.back": "게시판으로 돌아가기"
 }

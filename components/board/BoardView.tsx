@@ -135,7 +135,12 @@ export function BoardView({
         )}
       </main>
       {canSubmit ? (
-        <DropIn boardSlug={board.slug} onPending={upsertPending} retryRequest={retryRequest} />
+        <DropIn
+          boardSlug={board.slug}
+          areaNames={board.area_names}
+          onPending={upsertPending}
+          retryRequest={retryRequest}
+        />
       ) : null}
       {selected ? <CardSheet card={selected} board={board} now={now} onClose={close} /> : null}
     </>

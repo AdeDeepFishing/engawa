@@ -1,4 +1,7 @@
 {
+  "mask.caption": "姓名和头像已遮挡",
+  "mask.alt": "遮挡了姓名和头像的聊天截图副本",
+  "mask.stage": "正在遮挡姓名和头像",
   "ask.heading": "向这个公告板提问",
   "ask.label": "你的问题",
   "ask.placeholder": "哪里可以领到水？",
@@ -160,5 +163,22 @@
   "admin.error": "保存失败，请重试。",
   "admin.open_board": "打开公告板",
   "card.status": "状态",
-  "conflict.statement": "{summary}（{source}，{time}）"
+  "conflict.statement": "{summary}（{source}，{time}）",
+  "area.opt_in": "附上我所在的区域（自行申报）",
+  "area.explain": "只会发送区域名称（町丁目），绝不会发送你的位置。判断在手机本机完成。",
+  "area.locating": "正在判断区域…",
+  "area.resolved": "你的区域：{area}",
+  "area.outside": "你似乎不在这个公告板的范围内。将不附区域发送。",
+  "area.denied": "未获得位置权限。将不附区域发送。",
+  "area.failed": "无法获取位置。将不附区域发送。",
+  "area.badge": "自行申报的区域：{area}",
+  "area.label": "自行申报的区域",
+  "poster.print": "打印海报",
+  "poster.subtitle": "用你的语言阅读的社区公告板",
+  "poster.cta": "扫一扫，打开这个社区的公告板",
+  "poster.cta_easy": "スマホで よみとって ください。この まちの おしらせが、あなたの ことばで よめます。",
+  "poster.community": "这是一个人人可用的社区公告板。放入纸质通知的照片、聊天截图或文字，就会变成日语、英语、中文、韩语、越南语和简易日语的卡片。",
+  "poster.print_hint": "请用 A4 纸打印。",
+  "poster.print_button": "打印",
+  "poster.back": "返回公告板"
 }

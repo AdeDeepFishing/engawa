@@ -13,9 +13,11 @@ import {
   timeAgo,
   timeRange,
 } from "@/lib/cards/display";
+import { areaName } from "@/lib/geo";
 import { CARD_LANGS, tCount, type Lang } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n/LangProvider";
 import type { Board, Card, ConflictStatement } from "@/lib/types";
+import { MaskedImage } from "./MaskedImage";
 
 /**
  * Non-modal detail sheet. It does not trap focus: the page behind stays
@@ -45,6 +47,7 @@ export function CardSheet({
   }, [onClose, card.id]);
 
   const place = placeLabel(card, board, lang);
+  const area = areaName(board, card.area_code);
   const expired = isExpired(card.valid_until, now);
   const conditions = card.facts.conditions ?? [];
   const conflicts = conflictStatements(card);
@@ -107,6 +110,12 @@ export function CardSheet({
             <>
               <dt className="text-muted">{t("sheet.place")}</dt>
               <dd>{place}</dd>
+            </>
+          ) : null}
+          {area ? (
+            <>
+              <dt className="text-muted">{t("area.label")}</dt>
+              <dd>{area}</dd>
             </>
           ) : null}
           {card.facts.status ? (
@@ -185,12 +194,15 @@ export function CardSheet({
           </ul>
         </details>
 
-        {card.original_text ? (
+        {card.original_text || card.has_masked_image ? (
           <details className="mt-3 rounded-xl border border-line p-3">
             <summary className="cursor-pointer py-2 font-semibold">{t("sheet.original")}</summary>
-            <p lang={card.original_lang ?? undefined} className="mt-2 whitespace-pre-wrap text-muted">
-              {card.original_text}
-            </p>
+            {card.original_text ? (
+              <p lang={card.original_lang ?? undefined} className="mt-2 whitespace-pre-wrap text-muted">
+                {card.original_text}
+              </p>
+            ) : null}
+            {card.has_masked_image ? <MaskedImage cardId={card.id} /> : null}
           </details>
         ) : null}
       </div>
