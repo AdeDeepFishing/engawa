@@ -1,6 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "TranslateResult",
+  "description": "The full shape. lib/claude/translate.ts keeps in `targets` only the languages a call asks for, so a card that already has Chinese is not translated into Chinese again.",
   "type": "object",
   "additionalProperties": false,
   "required": ["items"],

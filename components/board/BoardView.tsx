@@ -76,6 +76,9 @@ export function BoardView({
     setPending((list) => list.filter((p) => p.id !== id));
   }, []);
 
+  /** Pending items whose cards were already fetched once, so the `cards` event refreshes only once per drop-in. */
+  const fetchedCardsFor = useRef(new Set<string>());
+
   const upsertPending = useCallback(
     (item: PendingItem) => {
       setPending((list) => {
@@ -85,6 +88,13 @@ export function BoardView({
         next[idx] = { ...next[idx], ...item };
         return next;
       });
+      // The cards land before their translation: fetch the list as soon as
+      // they exist, so the uploader sees the card in its first languages.
+      if (item.status === "processing" && item.cardIds?.length && !fetchedCardsFor.current.has(item.id)) {
+        fetchedCardsFor.current.add(item.id);
+        inFlight.current = false;
+        void refresh();
+      }
       if (item.status === "done") {
         void (async () => {
           inFlight.current = false;
