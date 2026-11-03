@@ -1,4 +1,7 @@
 {
+  "mask.caption": "Tên và ảnh đại diện đã được che",
+  "mask.alt": "Bản sao ảnh chụp màn hình trò chuyện đã che tên và ảnh đại diện",
+  "mask.stage": "Đang che tên và ảnh đại diện",
   "ask.heading": "Hỏi bảng tin này",
   "ask.label": "Câu hỏi của bạn",
   "ask.placeholder": "Tôi có thể lấy nước ở đâu?",

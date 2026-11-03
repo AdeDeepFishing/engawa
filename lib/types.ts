@@ -45,6 +45,12 @@ export const PLATFORMS = [
 ] as const;
 export type Platform = (typeof PLATFORMS)[number];
 
+/** Platforms whose images are chat or social screenshots: originals are deleted and a masked copy may be kept. */
+export const CHAT_PLATFORMS = ["line", "wechat", "x", "xiaohongshu", "facebook"] as const satisfies readonly Platform[];
+export function isChatPlatform(p: Platform | null | undefined): boolean {
+  return p != null && (CHAT_PLATFORMS as readonly string[]).includes(p);
+}
+
 export type Visibility = "public" | "held" | "hidden";
 export type BoardMode = "peace" | "disaster";
 
@@ -144,12 +150,18 @@ export interface Card {
   updated_at: string;
   /** Present when the query embeds card_sources, oldest first. */
   sources?: CardSource[];
+  /**
+   * Storage path of the masked copy of a chat screenshot (names and avatars
+   * painted over), or null. Served through /api/cards/[id]/masked only.
+   */
+  masked_image_path?: string | null;
 }
 
 export type SubmissionStatus = "received" | "processing" | "done" | "held" | "failed";
 export type Stage =
   | "stripping"
   | "extracting"
+  | "masking"
   | "reconciling"
   | "translating"
   | "done"

@@ -1,9 +1,11 @@
 import { type NextRequest } from "next/server";
 import { extract, ExtractError } from "@/lib/claude/extract";
+import { MaskError } from "@/lib/claude/mask";
 import { reconcile, type ReconcileDecision } from "@/lib/claude/reconcile";
 import { BusyError, withUsage } from "@/lib/claude/usage";
 import { hasDb } from "@/lib/db/client";
 import { getBoardById } from "@/lib/db/boards";
+import { attachMaskedImage, uploadMaskedImage } from "@/lib/db/masked";
 import {
   claimForProcessing,
   downloadSubmissionImage,
@@ -14,8 +16,9 @@ import {
   writeCardsForSubmission,
   type DecideFn,
 } from "@/lib/db/submissions";
-import type { Board } from "@/lib/types";
-import { sniffImage } from "@/lib/image/strip";
+import { isChatPlatform, type Board } from "@/lib/types";
+import { maskingEnabled, maskScreenshot, type MaskedScreenshot } from "@/lib/image/mask-pipeline";
+import { sniffImage, type StrippableMime } from "@/lib/image/strip";
 import { encodeSse, type SseEvent } from "@/lib/sse";
 
 export const dynamic = "force-dynamic";
@@ -25,11 +28,13 @@ export const maxDuration = 300;
 /**
  * Runs the pipeline for one submission while the uploader keeps the
  * connection open, streaming stage events as server-sent events:
- *   stage  {stage}            stripping (images only), extracting, reconciling
+ *   stage  {stage}            stripping (images only), extracting, masking (chat screenshots,
+ *                            when enabled), reconciling
  *   done   {status, card_ids, public_count, held_count, note_for_uploader,
- *           actions, latency_ms, reconcile_ms}
+ *           actions, latency_ms, reconcile_ms, masked}
  *   failed {error, message}
  * `actions` has one reconcile action per fact (create, merge, update, conflict, hold).
+ * `masked` is true when a masked copy of a chat screenshot was stored on the cards.
  * Body: JSON {device_id}. The device must match the submission.
  */
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -65,7 +70,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     async start(controller) {
       const send = (e: SseEvent) => controller.enqueue(encoder.encode(encodeSse(e)));
       try {
-        let image: { data: string; mediaType: "image/jpeg" | "image/png" } | undefined;
+        let image: { data: string; mediaType: StrippableMime } | undefined;
+        let stored: { bytes: Uint8Array; mime: StrippableMime } | undefined;
         if (isImage) {
           // Text submissions have no image to prepare, so they skip this stage.
           send({ event: "stage", data: { stage: "stripping" } });
@@ -73,6 +79,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
           if (!bytes) throw new Error("image missing");
           const mime = sniffImage(bytes);
           if (!mime) throw new Error("stored image is not JPEG or PNG");
+          stored = { bytes, mime };
           image = { data: Buffer.from(bytes).toString("base64"), mediaType: mime };
         }
 
@@ -83,6 +90,15 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
           return { value: o, inputTokens: o.usage.inputTokens, outputTokens: o.usage.outputTokens };
         });
 
+        // Masking (G1) runs beside reconcile: it needs only the image and the
+        // platform, and a failure never blocks the card.
+        let masking: Promise<MaskedScreenshot | null> | null = null;
+        if (stored && isChatPlatform(outcome.result.source_platform) && maskingEnabled()) {
+          await setStage(id, "masking");
+          send({ event: "stage", data: { stage: "masking" } });
+          masking = maskWithoutBlocking(id, stored.bytes, stored.mime);
+        }
+
         await setStage(id, "reconciling");
         send({ event: "stage", data: { stage: "reconciling" } });
         const reconcileStarted = performance.now();
@@ -90,6 +106,18 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
           decide: decideWithClaude(board, id),
         });
         const reconcileMs = Math.round(performance.now() - reconcileStarted);
+
+        let maskedPath: string | null = null;
+        const masked = masking ? await masking : null;
+        if (masked) {
+          try {
+            maskedPath = await uploadMaskedImage(board.id, id, masked.bytes, masked.mime);
+            await attachMaskedImage([...written.publicIds, ...written.heldIds], maskedPath);
+          } catch (err) {
+            console.error(`masking ${id}: storing the masked copy failed:`, err instanceof Error ? err.message : String(err));
+            maskedPath = null;
+          }
+        }
 
         const flagged = outcome.result.facts.flatMap((f) => f.risk_flags);
         const heldReason = flagged.length ? Array.from(new Set(flagged)).join(",") : null;
@@ -111,6 +139,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
             actions: written.decisions.map((d) => d.action),
             latency_ms: outcome.latencyMs,
             reconcile_ms: reconcileMs,
+            masked: maskedPath !== null,
           },
         });
       } catch (err) {
@@ -166,6 +195,38 @@ function decideWithClaude(board: Board, submissionId: string): DecideFn {
       return { action: "create", target_card_id: null, fill_missing: false, reason: `reconcile failed: ${message}` };
     }
   };
+}
+
+/**
+ * Masks a chat screenshot through the budget guard. Any failure (refusal,
+ * invalid answer, too many boxes, API error, daily cap) is logged by kind
+ * and the card continues without a masked copy: nothing is stored.
+ */
+async function maskWithoutBlocking(
+  submissionId: string,
+  bytes: Uint8Array,
+  mime: StrippableMime,
+): Promise<MaskedScreenshot | null> {
+  try {
+    const masked = await withUsage(async () => {
+      const m = await maskScreenshot(bytes, mime);
+      return { value: m, inputTokens: m.outcome.usage.inputTokens, outputTokens: m.outcome.usage.outputTokens };
+    });
+    const o = masked.outcome;
+    console.log(
+      `masking ${submissionId}: ${masked.boxes.length} boxes (${masked.drawn.length} drawn) in ${o.latencyMs} ms on ${o.model}` +
+        ` (tokens in ${o.usage.inputTokens}, cache read ${o.usage.cacheReadTokens}, out ${o.usage.outputTokens})` +
+        (o.dropped ? `, ${o.dropped} dropped` : "") +
+        (o.rescaledFrom ? `, rescaled from ${o.rescaledFrom.width}x${o.rescaledFrom.height}` : ""),
+    );
+    return masked;
+  } catch (err) {
+    const kind =
+      err instanceof MaskError ? err.code : err instanceof BusyError ? "busy" : err instanceof Error ? err.name : "unknown";
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(`masking ${submissionId} failed (${kind}), the card continues without a masked copy:`, message);
+    return null;
+  }
 }
 
 function classify(err: unknown): { code: string; message: string } {
