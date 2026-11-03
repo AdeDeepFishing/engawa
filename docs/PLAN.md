@@ -18,7 +18,7 @@ Everything (fixtures, known places, prompts, seed, recording) is built around th
 
 ## 2. Scope
 
-### Must ship (green by 2026-11-05 21:00)
+### Must ship (planned green by 2026-11-05 21:00; all green on 2026-11-03)
 
 | # | Feature | Cut to |
 |---|---|---|
@@ -37,13 +37,32 @@ Everything (fixtures, known places, prompts, seed, recording) is built around th
 
 ### Only after every must item is green, in this order
 
-- G2 uploader area badge: only this board's simplified polygons (a few KB) shipped to the client, point-in-polygon in the browser, only the area code sent. Wording: "self-reported area". About 2 hours. Done 2026-11-04.
-- G3 printable A4 QR poster page `/b/[slug]/poster`. About 1 hour. Done 2026-11-04.
-- G1 pink masking of names and avatars in chat screenshots. Hard 3 hour time box. Ships only at 100% coverage on the masking fixtures; otherwise chat screenshots stay text-only.
+- G2 uploader area badge: only this board's simplified polygons (a few KB) shipped to the client, point-in-polygon in the browser, only the area code sent. Wording: "self-reported area". About 2 hours. Done 2026-11-03.
+- G3 printable A4 QR poster page `/b/[slug]/poster`. About 1 hour. Done 2026-11-03.
+- G1 pink masking of names and avatars in chat screenshots. Hard 3 hour time box. Ships only at 100% coverage on the masking fixtures; otherwise chat screenshots stay text-only. Done 2026-11-03: 50 of 50 boxes covered on five fixtures, on by default, `MASKING_ENABLED=0` turns it off.
+
+### Nice to have, from 2026-11-04 (the must list went green two days early)
+
+Ranked by value on the judging axes (impact, demo, use of Claude, depth) against effort. Each ships in its own PR with its acceptance line on the task board.
+
+- N1 Try it with a sample: the drop-in panel offers three sample inputs (a paper notice photo, a chat screenshot, a text) so a judge can run the whole pipeline on the deployed URL without printing anything. Demo. About 1 hour.
+- N2 Share one card: a per-card page with its own OG title, and "copy as text" in the reader's language so a card can be forwarded into a LINE or WeChat group, the reverse of the drop-in direction. Impact. About 1.5 hours.
+- N3 Hidden and merged drawer: a collapsed list at the bottom of the board holds cards the admin hid as duplicates; a card's sources expand to their original text; the admin page gets "hide as duplicate of". Depth. About 2 hours.
+- N4 How this card was made: the reconcile decision and its reason are stored; the card sheet shows the chain (source, extract, merge or update with the reason, admin confirmation). Use of Claude. About 2 hours.
+- N5 Multilingual notice back: from a card, a printable A4 notice in six languages with the board QR, so a building manager can replace the Japanese-only paper. Impact and demo. About 2 hours.
+- N6 Reader confirmations: "still true" and "no longer true", one tap per device; bumps `last_confirmed_at` or opens a conflict. Depth. About 2 hours.
+- N7 Suggested questions per language above the ask box, and follow-up questions in the same thread. Demo. About 1.5 hours.
+- N8 Read aloud with the Web Speech API for the card text in the reader's language and やさしい日本語. Impact. About 1 hour.
+- N9 Offline snapshot: a service worker keeps the last board page for when the network drops, with a "last updated" banner. Impact. About 2 hours.
+- N10 Place view: cards grouped by known place with its address; shelter status at a glance. Depth. About 2 hours.
+- N11 Extract on `claude-fable-5-1` versus `claude-opus-5-5` on the eval, recorded in `docs/EVAL.md`. Use of Claude. About 1 hour of API time.
+- N12 Board index and a "make a board" form (name, area, places from the city list) that shows the admin link once. Impact. About 3 hours.
+- N13 Claude Code visible in the repo: a pre-commit hook that runs the dash scan and the i18n parity check, a project skill for the throwaway-board acceptance run, the review subagent definition, and a README section on which model and which Claude Code feature did what and why. Use of Claude (the criteria ask for Skills, subagents, MCP and hooks chosen by purpose). About 1.5 hours.
+- N14 About page `/about` in five languages: who the board is for (named people and scenes, with numbers for 中原区), what it does with their data, who runs it after the event. Impact (the criteria ask who, in what scene, how much, and who keeps using it). About 1 hour.
 
 ### Not this week
 
-Summaries, peace/disaster mode switch, safety check-in, follow-up questions, Android share target, offline snapshot, multiple boards UI beyond a simple index, Managed Agents, runtime model comparison beyond a 10-fixture spot check.
+Peace/disaster mode switch, safety check-in, Android share target, Managed Agents, runtime model comparison beyond the eval.
 
 ## 3. Architecture decisions
 
@@ -78,36 +97,35 @@ Categories and default validity (hours): `water` 6, `food` 6, `supplies` 12, `sh
 
 ## 5. Task board
 
-Owner for implementation: Claude Code with `claude-opus-5-5`. Planning, prompt design and the 11/6 review: `claude-fable-5-1`. The human reviews, runs manual checks, handles accounts and secrets, and talks to native speakers.
+Owner for implementation: Claude Code. The plan said `claude-opus-5-5`; in practice every session up to 2026-11-04 10:00 JST ran on `claude-fable-5-1` while the weekly budget allowed, and `claude-opus-5-5` implements from then on. Planning, prompt design, reviews and merges: `claude-fable-5-1`. The human reviews, runs manual checks, handles accounts and secrets, and talks to native speakers. The dates below are when the work happened: the original schedule ran one to two days later, and the must list went green on 2026-11-03.
 
-### Done on 2026-11-02 (Fable)
+### 2026-11-02 (Mon), kickoff evening (Fable)
 - [x] Private repo created after kickoff, scaffold committed
 - [x] CLAUDE.md, this plan, DEVLOG, PRIVACY
 - [x] Initial schema migration and seed drafts
 - [x] Prompts and JSON schemas for extract, translate, reconcile, ask
 
-### Human, before 2026-11-03 morning
-- [ ] Create the Supabase project (Tokyo region), put URL, anon key and service role key in `.env.local`
-- [ ] Put the hackathon Anthropic API key in `.env.local`
-- [ ] Create the Vercel project from the GitHub repo (Hobby), add the environment variables, confirm the first deploy
+### Human, 2026-11-02 and 11-03
+- [x] Create the Supabase project (Tokyo region), put URL, anon key and service role key in `.env.local`
+- [x] Put the hackathon Anthropic API key in `.env.local`
+- [x] Create the Vercel project from the GitHub repo (Hobby), add the environment variables, confirm the first deploy
 - [x] Shelter list verified against 川崎市地域防災計画 資料編 2-06 (as of 2025-04-01) and 2-18 water points; `supabase/seed/boards.json` updated
-- [ ] Prepare fixture inputs (paper notices, chat screenshots with fake names and avatars, text) into `fixtures/inputs/` with a note on which real shelter they name
+- [x] Prepare fixture inputs (paper notices, chat screenshots with fake names and avatars, text) into `fixtures/inputs/` with a note on which real shelter they name
 
-### 2026-11-03 (Tue, holiday): board live, drop-in to card
+### 2026-11-02 (Mon) night into 11-03 early: board live, drop-in to card
 - [x] Set `cacheComponents: false`; add `typecheck`, `db:migrate`, `db:seed`, `eval`, `purge`, `latency` scripts (deploys happen on push, so no `preview` or `deploy` script)
 - [x] Supabase: apply `0001_init.sql` over the session pooler with `pnpm db:migrate` (no CLI login needed); bucket created by the migration
 - [x] Run the seed with the secret key (admin token written to a git-ignored file)
 - [x] `lib/i18n` dictionary with the key UI strings in five languages; language switch; locale from cookie, else Accept-Language
 - [x] `/b/[slug]` SSR card list from seed; card detail sheet; text size toggle
-- [x] First Vercel deploy from `main`; `maxDuration` set on the process route; the deployed board renders the seed cards (ask route gets its own on 11/05)
+- [x] First Vercel deploy from `main`; `maxDuration` set on the process route; the deployed board renders the seed cards
 - [x] Drop-in UI: camera, image, text; browser compression and EXIF removal; upload through the route handler; purpose notice
 - [x] `POST /api/b/[slug]/submissions`; `POST /api/process/[id]` with SSE stages; server metadata strip (pure JS, tested on planted EXIF, COM, tEXt, eXIf and a post-EOI trailer)
 - [x] `lib/claude/extract.ts` using the prompt and schema; cards written; placeholder replaced; polling
 - [x] Delete chat screenshot originals after processing; `purge_after` set on every row
 - [x] Measure extract latency on five fixtures; decide one call or extract plus translate; record in DEVLOG
-- [ ] Acceptance: photograph a paper notice on a phone; card appears in all languages on the deployed URL within 30 seconds
 
-### 2026-11-04 (Wed): reconcile, trust, admin
+### 2026-11-03 (Tue, holiday) morning: reconcile, trust, admin (branch `day2-reconcile-admin`, PR #1)
 - [x] Candidate selection query; `lib/claude/reconcile.ts`; apply decisions with validation; `card_sources`; `source_count`
 - [x] Update and conflict handling (priority: official over firsthand over secondhand; newer over older; old official versus new secondhand is a conflict, not an overwrite)
 - [x] Held state from risk flags; minimal admin page and route; confirm official
@@ -115,22 +133,44 @@ Owner for implementation: Claude Code with `claude-opus-5-5`. Planning, prompt d
 - [x] README skeleton (English) and `docs/PRIVACY.md` linked
 - [x] Acceptance: the same water fact dropped in Japanese, Chinese and Vietnamese yields one card with 3 sources; the rumour fixture is held and the admin page can publish or hide it
 
-### 2026-11-05 (Thu): ask, share, limits, purge, eval
+### 2026-11-03 (Tue) morning: ask, share, limits, purge, eval (branch `day3-ask-share`, PR #2; both merged with review fixes as PR #3)
 - [x] `lib/claude/ask.ts` with Citations; `POST /api/b/[slug]/ask`; chips linking to cards; "no information yet"
 - [x] Web Share, copy link, fullscreen QR, static OG image and per-language title
 - [x] Rate limits, daily Claude cap, image size cap, friendly messages
 - [x] Purge route plus cron trigger; test it on a dev copy
 - [x] `scripts/eval.ts`, `fixtures/expected/*.json`, run, write `docs/EVAL.md`
-- [ ] Full run of the 7-step demo scenario on the deployed URL; fix what breaks
-- [ ] 21:00 checkpoint: all must items green, otherwise apply the cut order
+- [x] Review fixes before the merge: admin entry link sets HttpOnly cookies instead of a token in the URL, drill stamps never set the category, screenshots are `secondhand`, ask answers show both sides of a conflict
+- [x] Checkpoint: all must items green on the deployed URL on 2026-11-03, two days before the planned 11/05 21:00 gate; the cut order was not needed
 
-### 2026-11-06 (Fri): polish, G items, freeze
+### 2026-11-03 (Tue) afternoon and evening: G items (PRs #4 and #5, merged with review fixes as PR #7)
+- [x] G2 area badge (2h), then G3 poster (1h), on branch `g2-area-g3-poster`
+- [x] G1 masking on branch `g1-masking-eval`: 50 of 50 boxes covered on five fixtures, on by default; masked copies uploaded only when a card needs them, never for flagged screenshots
+- [x] `pnpm eval --reconcile`: 10 of 11 chains pass; t03 open (see 11/04)
+- [x] Production check after the merge: poster, masked route and board answer; `NEXT_PUBLIC_APP_URL` is used only when it is an http(s) URL (PR #8)
+
+### 2026-11-04 (Wed): polish and the first nice-to-haves
+- [ ] t03: Chinese text naming the shop by the station gets no `place_id`; fix in the extract prompt or widen the candidate query by `place_text_ja`; `pnpm eval --reconcile` 11 of 11
 - [ ] Phone UI polish, accessibility pass (16px, 44px targets, contrast, focus order, reduced motion)
+- [ ] N3 hidden and merged drawer; admin "hide as duplicate of"
+- [ ] N1 try it with a sample
+- [ ] N2 share one card
+- [ ] N4 how this card was made
+- [ ] Each item: acceptance on a throwaway board locally, then on the deployed URL after the merge
+
+### 2026-11-05 (Thu): more nice-to-haves, native reads
 - [ ] Korean and Vietnamese native speakers read the demo cards; fix wording
-- [x] G2 area badge (2h), then G3 poster (1h): done on 2026-11-04 on branch `g2-area-g3-poster`
-- [ ] G1 masking (3h hard stop)
+- [ ] N5 multilingual notice back
+- [ ] N6 reader confirmations
+- [ ] N7 suggested questions; N8 read aloud
+- [ ] N11 Fable versus Opus on the eval
+- [ ] N13 Claude Code visible in the repo; N14 about page
+- [ ] N9, N10, N12 only if the day is clear
+
+### 2026-11-06 (Fri): review, freeze, demo prep
+- [ ] Full run of the 7-step demo scenario on the deployed URL; fix what breaks
+- [ ] Human: photograph a paper notice on a phone; the card appears in all languages on the deployed URL within 30 seconds
 - [ ] Fable review of the whole repo; fix findings; freeze at 20:00
-- [ ] Seed the demo board; record rough footage
+- [ ] Seed the demo board (fresh notices with the right date and time); record rough footage
 
 ### 2026-11-07 (Sat): video and submission
 - [ ] Record screen (one screen, three browser windows side by side) and phone inserts
@@ -139,6 +179,8 @@ Owner for implementation: Claude Code with `claude-opus-5-5`. Planning, prompt d
 - [ ] Submit by 21:00 JST
 
 ## 6. Cut order if 2026-11-05 21:00 is not green
+
+Not needed: the must list was green on 2026-11-03. Kept for the record.
 
 1. All G items
 2. S7: keep QR and copy link only

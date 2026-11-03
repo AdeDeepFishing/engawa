@@ -194,7 +194,7 @@ Run 2026-11-03 20:17 JST, model `claude-opus-5-5`, effort medium, 5 sidecars, mo
 3. "invented" is strict, as asked: an extracted fact that matches no expected fact counts, even when it is true (Sonnet on p09). The details list each one for a person to judge.
 4. Card text keeps the drill stamp ("（訓練用）"), so ask answers mention "stamped as a training scenario". Correct for the fixtures; worth knowing before recording the demo.
 
-### 2026-11-04, extract prompt rules from the merge review (re-run on `claude-opus-5-5`)
+### 2026-11-03, extract prompt rules from the merge review (re-run on `claude-opus-5-5`)
 
 Two rules went into `prompts/extract.system.md` before the merge of the day 2 and day 3 branches: the category follows the content, never a 訓練用 or 想定シナリオ stamp; and source type asks how the uploader knows, so a chat screenshot, a screenshot of someone's post or a forwarded message is `secondhand` even when its author says they saw it themselves. The 11/03 run above was kept under its own marker (`eval-2026-11-03`) so the two can be compared; the newer `claude-opus-5-5` section is the run after the rules.
 
