@@ -102,7 +102,7 @@ Sonnet median 7.5 s (mean 7.4 s), Opus median 10.7 s (mean 10.9 s). Both passed 
 
 ## 2026-11-03 (Tue) morning, reconcile, trust signals, admin
 
-**Model:** `claude-opus-5-5` in Claude Code, implementation role. The session ran early, in the small hours of 11/03 JST, in its own git worktree (branch `day2-reconcile-admin`) while a second session worked on the day 3 list (ask, share, limits, eval) in another worktree. The two sessions owned disjoint files so the branches merge cleanly; Fable reviews and merges. Reconcile runs on `claude-opus-5-5` (measured below against `claude-sonnet-5-5`).
+**Model:** `claude-opus-5-5` in Claude Code, implementation role. The session ran early, in the small hours of 11/03 JST, in its own git worktree (branch `day2-reconcile-admin`) while a second session, also on `claude-opus-5-5`, worked on the day 3 list (ask, share, limits, eval) in another worktree. The two sessions owned disjoint files so the branches merge cleanly; Fable reviews and merges. Reconcile runs on `claude-opus-5-5` (measured below against `claude-sonnet-5-5`).
 
 **Done**
 - `vercel.json`: functions pinned to `hnd1`, next to Supabase Tokyo. The deployed drop-in on 11/03 took 18.8 s against 7.8 s of Claude time because every database call crossed the Pacific.
@@ -345,3 +345,145 @@ The admin page of the test board was measured too: no text under 16 px, no contr
 - The footer names only models the rows record: `models.extract` is nullable like `models.reconcile`, no configured default stands in, and the footer is left out when nothing is named.
 - No model reason under an override: the decision carries the override text set by code, and `traceOf` stores no reason when it is set (the model's sentence would argue for the update that was not taken). Unit-checked on `checkDecision`: an update from a secondhand fact over an official card comes back as a conflict with the override set; a merge is untouched. In a live run on a throwaway board (t02, then a secondhand text moving the start to 15:00) the model itself chose conflict, so its own reason was stored: "Same water distribution at Kosugi Elementary School on Nov 3 ending at 16:00, but a secondhand neighbour message says it starts at 15:00 while the official notice says 14:00."; the sheet read "Marked as conflicting with text sent in (heard from others), 02:10" under "Created from text sent in (official), 02:10".
 - Throwaway board `judge-review` deleted afterwards with its rows and the device row. Noted for the polish round, as the review said: the UUID regex lives in four files.
+
+## 2026-11-04 (Wed), notice back, suggested questions, read aloud
+
+**Model:** `claude-fable-5-1` in Claude Code, implementation role, in its own worktree (branch `day4-notice-ask`, cut from `origin/integration-day4`, which is `main` after PRs 9, 10 and 11) while another session worked on the Claude Code setup files, the README, the about page and the poster. No Claude call was added. The ask call (`claude-sonnet-5-5`, Citations) changed in one place: a follow-up question may carry the earlier question and answer pairs as plain turns.
+
+**Done**
+- N5, multilingual notice back. `app/b/[slug]/c/[id]/notice/page.tsx` is the reverse of the drop-in: one public card as a printable A4 notice in Japanese, やさしい日本語, English, Chinese, Korean and Vietnamese, in that order, each block with its `lang` attribute (easy Japanese carries `ja`), the language name as a label. Place, time window, status and the outdated warning once at the top in Japanese, with the reader's language beside it when different (cookie, else Accept-Language, the same rule as every page); the source line in words ("From a paper notice (official), 3 sources", input kind from the first source row's platform, else the facts' platform) and the date the paper was made, one line per language; the board QR and URL at the foot with "scan for updates in your language" in the five UI languages in two columns, so a reader of the paper reaches the live card. Same 404 rules as the card page (held, hidden, unknown, malformed ids) through `loadPublicCard` in `lib/db/public-card.ts`, the card page's loader moved out so both pages share one cached read per request. Print CSS lives with the page like the poster's: `@page` A4 portrait with 12 mm margins, the hint, print button and back link hidden in print, the brand line and board name in a header rule, no top bar. On screen the same sheet reads at phone width with nothing under 16 px. "Print as a notice (six languages)" is the fourth entry of the share group (`CardShare`, in the sheet and on the card page) and opens the notice in a new tab; `noticePath` sits next to `cardPath` in `lib/cards/share.ts`.
+- N7, suggested questions and a thread. `AskPanel` shows three suggested questions per UI language as 44 px chips under the heading (where to get water, whether the shelter is open, what to bring; `ask.suggest_1` to `ask.suggest_3`); a tap fills the box and sends. Question and answer pairs stay on screen as a thread above the box, at most five (the oldest drops off), each answer with its citation chips, the newest with the skeleton while it loads, a failed one with its error line; "Clear questions" (44 px) empties the thread and drops a reply still in flight. Client state only: questions are never stored, and the route still does not log them. A follow-up such as "Until when?" needs the earlier turns, so the client sends the answered pairs (question and the answer's plain text, pairs that got "no information yet" left out) as `history`, and the route keeps at most five well formed pairs cut to the question and answer limits (anything else is ignored, not refused). In `ask()` the documents stay in the first user turn with the first question, the earlier answers follow as plain assistant turns, and the reader's language, the time and the latest question come last, so the cached prefix (system prompt and documents) and the citation indexes are unchanged. One paragraph in `ask.system.md` says earlier turns are context only and never a source; the cached system prompt changes once. With no public cards the route still answers "no information yet" in code without a call.
+- N8, read aloud. `components/board/ReadAloud.tsx`, under the body in the sheet and on the card page: "Read aloud" (title and body in the reader's language) and "Read in easy Japanese" (the やさしい日本語 text), 44 px buttons with an icon and a label, each becoming "Stop reading" while it speaks; starting one cancels the other, leaving the sheet or the page cancels the voice. Voice tags `ja-JP`, `en-US`, `zh-CN`, `ko-KR`, `vi-VN`, easy Japanese on `ja-JP`. Text goes to the engine one sentence at a time (Chrome drops long utterances after about 15 seconds) and the utterances stay referenced until the last one ends (Safari drops speech when the object is collected). Availability is a `useSyncExternalStore` read with a false server snapshot, so the HTML has no button and the DOM gets them after hydration, the same lesson as the share button; the installed voices are a second store on `voiceschanged`, and a language with no installed voice is left out once the list is known, rather than read in another language's voice. The voice is the system default for the language, else the first plain system voice (macOS lists its novelty voices such as "Eddy (Japanese (Japan))" before Kyoko; their names carry a parenthesis), else whatever the engine picks for the tag.
+- 16 keys at the top of all five message files (`share.print_notice`, 6 `notice.*`, 6 `ask.*`, 3 `read.*`), 245 keys each, parity checked by script; no dashes in any changed file.
+
+**Acceptance run** (local dev server on port 3440 against the shared Supabase project; throwaway board, a copy of the 武蔵小杉 row with its own slug and a name object in every language, deleted afterwards with its 5 cards, 3 source rows, 1 submission and the device row; Playwright 1.62 Chromium headless shell at 390 px, UI in English; the live board was not touched: 4 public cards before and after). The notice cards were inserted directly so that their length is known: `fixtures/expected/*.json` hold facts, not card text, so there is no long fixture card to print; a short card (the seed water outage, 87 English characters), a medium one (a ward office disaster waste notice, 420 English characters, about the longest an extracted notice gets) and a deliberately long one (a shelter notice, 700 English characters) stood in. The water card and the questions went through the real route and Claude.
+
+| step | result | measurement |
+|---|---|---:|
+| empty board: suggested question "Is the shelter open?" | "no information yet", no citations, no Claude call; clear removes the thread | |
+| notice, short card | 200, six blocks ja, easy_ja, en, zh, ko, vi with `lang`, place and time in Japanese and English, QR and board URL, smallest on-screen text 16 px, one A4 page | 678 px of about 1032, body 12 pt, 13 estimated lines |
+| notice, medium card | the same, one A4 page | 929 px, body 11 pt, 36 estimated lines |
+| notice, long card | the same, two A4 pages at the 11 pt floor | 1101 px, body 11 pt, 51 estimated lines |
+| notice, held card and malformed id | 404 and 404 | |
+| chip "Where can I get water?" | answer with 2 citations, the water card first | 2.3 to 3.4 s over three runs |
+| typed "What should I bring to the shelter?" | first pair still visible, answer with 1 citation | 2.4 s |
+| typed "Until when?" | answered from the thread's context with a citation to the shelter card | 3.4 to 4.4 s |
+| citation chip | opens the sheet; the sheet has the print entry (48 px, new tab, `/notice` href) and two read aloud buttons | |
+| card page, read aloud | server HTML has no button; two buttons after hydration; tap: `speechSynthesis.speaking` true within 0.2 s and the label "Stop reading"; tap again: false and the label back; easy Japanese starts the same way | 44 px |
+
+- Size tier: the page counts the estimated print lines of the six titles and bodies (a CJK or Hangul character as two Latin ones, 80 per line) and switches the body from 12 pt to 11 pt above 28, the only step there is: 12 pt holds about 28 lines on one page, 11 pt about 41, and beyond that the notice runs to a second page rather than below 11 pt, as specified. The first layout had the language label on its own line, the source and date on two lines and the five scan lines stacked; putting the label inline with the title in print, one line per language and two columns for the scan lines gained about 140 px, which is why the medium card fits.
+- Voices on this Mac (macOS, Chromium headless shell, 191 voices): ja-JP Kyoko, O-Ren, Hattori plus eight novelty voices; en-US Samantha (default) and 29 others; zh-CN Tingting, Li-Mu, Yu-shu plus eight novelty voices; ko-KR Yuna plus eight; vi-VN Linh only. Vietnamese may have no voice on some phones: iOS has Linh only when the user downloads it, and Android depends on the installed TTS engine, which is why the button is left out when the list has no voice for it.
+- Browser console: 2 errors across the run, both the browser's own log of the trace fetch answering 404 for cards inserted directly without source rows (the same log the judge session noted); nothing from the app.
+- `pnpm typecheck`, `pnpm lint` clean on every commit; one `pnpm build` at the end, clean.
+
+**Decisions taken in this session, open for review**
+- The notice carries the board QR and URL, as the task said, not the card's: the paper hangs for days and the board shows the card's updates and its neighbours. The card URL is one more line if wanted.
+- Follow-up context comes from the client as plain text pairs, so nothing is stored anywhere and a stale client still gets an answer; earlier answers are assistant turns without citations. The documents stay in the first user turn, which keeps the cache prefix. The alternative, no history and independent questions, would leave "Until when?" unanswerable.
+- Pairs that got "no information yet" are not sent back as context; they add nothing.
+- The source word in the notice's about line is the short form used by the trace ("official", "seen firsthand") rather than the badge text ("Official notice (unconfirmed)"), to avoid nested parentheses in Japanese.
+- A second button reads the easy Japanese version to any reader; the plan's N8 line names both. The task's single button is the first one.
+- A language without an installed voice is hidden rather than read in the default voice; a reader would otherwise hear Vietnamese in an English voice.
+- The three suggested questions are the same in peace and disaster mode; on the live peace-mode board "Is the shelter open?" gets "no information yet", which also shows the honest answer.
+- The card page's loader moved to `lib/db/public-card.ts` so the notice shares it; the UUID regex is now in four places still (admin, trace, masked, this loader).
+
+**Needed a human**
+- Review and merge the branch (Fable). Nothing new in Vercel, no migration.
+- On a real phone: read aloud in Japanese, Chinese, Korean and Vietnamese (iOS Safari speaks only after a tap, which the button is; Android voices vary), and the share sheet's "Print as a notice" from the sheet.
+- Print one notice on paper and scan the QR; on this Mac the URL carries port 3000 from `NEXT_PUBLIC_APP_URL`, on Vercel it is the production URL.
+- Tick N5, N7 and N8 under 2026-11-05 in `docs/PLAN.md` (the work happened on 11-04).
+- Native speakers read the 16 new strings, in particular the three suggested questions and "やさしい日本語で読み上げる".
+
+## 2026-11-04 (Wed), Claude Code setup, about page, Fable eval
+
+**Model:** `claude-fable-5-1` in Claude Code, implementation role, in its own worktree (branch `day4-claude-about`, cut from `origin/integration-day4` after PRs 9 and 10, merged with `main` before the PR) while a second session worked on the printable notice, the suggested questions and read aloud. No runtime Claude call was changed; the two eval runs below are the only API use of this session.
+
+**Done**
+- N13, Claude Code visible in the repo. `.claude/settings.json` registers a `PostToolUse` hook on `Edit|Write` that runs `scripts/guard.ts` (new) on the file just written: exit 2 with the finding when the file holds an em dash or an en dash, and, for the five message files, when the five key sets differ; it prints paths, line numbers and key names only. `pnpm guard <file>` and `pnpm guard --all` run it by hand (`AGENTS.md`, written by `next dev` with its own dash, is skipped). `.claude/skills/acceptance-run/SKILL.md` writes down the throwaway-board procedure every implementation session had been rebuilding (copy of the pilot board, dev server on a free port, the two routes the browser calls, what to record, cleanup, never the live board), backed by `scripts/throwaway-board.ts` with `create <slug>` and `delete <slug>` (`pnpm board:throwaway`), which refuses every seeded slug and prints ids and counts only. `.claude/agents/reviewer.md` is the read-only review subagent with the checklist the reviews have used (what a route exposes, Claude outputs as data, `t()` everywhere, 16px and 44px, no dashes, key parity) and the output format: ranked findings with file and line, then a verdict. `CLAUDE.md` gained a "Claude Code setup" section; the rest is unchanged. `README.md` gained "Built with Claude Code": how the sessions were organized, which model does what at runtime with the measured numbers, the Fable comparison, and where the hook, skill and agent live.
+- N14, about page. `app/about/page.tsx` (server: metadata, optional `?b=<slug>` so the page can link back to the board the reader came from) and `components/about/AboutView.tsx` (client, so the language switch applies at once): who it is for (Maria, 佐藤さん, チェンさん), the wall it removes, who lives here, what happens to the data in plain words (coarse location, placeholders for personal information, screenshots never shown and deleted, expiry, no accounts, no indexing), who could run it after the event (phrased as intent: a building management association, a 自治会, a shelter team, an international exchange centre). 22 keys appended at the end of all five message files (250 keys each, parity checked by the guard). Linked from the board footer (`app/b/[slug]/page.tsx`, outside `BoardView.tsx`, a 44px link that sits above the floating drop-in button) and from the poster (a printed line with the about URL, a link on screen).
+- N11, Fable 5.1 against Opus 5.5 on the eval. `scripts/eval.ts` already took `--model <id>` (overriding `EXTRACT_MODEL` for the run); the summary now also prints the p90 latency and the input, cache-read and output tokens per call. Full fixture set run once on each model; tables in `docs/EVAL.md` under their markers, comparison and reading in its notes.
+
+**Figures on the about page, and where they come from**
+- 65,745 foreign residents in 川崎市 and 8,631 in 中原区 at the end of September 2026: 川崎市「管区別年齢別外国人住民人口」(住民基本台帳, 令和8年9月末日現在), the XLSX the city publishes on its statistics pages, read with a script.
+- The five largest nationality groups in 中原区 at the end of March 2026 (China 2,451, Korea 1,154, Vietnam 686, the Philippines 635, Nepal 495): 川崎市「外国人国籍地域別統計」(令和7年度分), the March 2026 CSV. These justify the five UI languages in the text.
+- Both are named with their month in the page text, and the values sit in one constant in `AboutView.tsx` with the sources in a comment. Numbers that could not be confirmed from a city file (a city-wide share, the Dec 2024 survey figures seen in search results) were left out.
+
+**Extract on `claude-opus-5-5` against `claude-fable-5-1`** (15 inputs, effort low, concurrency 3, 02:35 and 02:37 JST)
+
+| | Opus 5.5 | Fable 5.1 |
+|---|---:|---:|
+| Field accuracy | 100/100 | 99/100 (p03 `water` for `shops`) |
+| PII leaks, invented facts, missed facts | 0, 0, 0 of 17 | 0, 0, 0 of 17 |
+| Latency median, p90 | 14.0 s, 18.5 s | 22.6 s, 26.7 s |
+| Tokens per call: input, cache read, output | 4154, 6995, 1341 | 4154, 5596, 1948 |
+
+**Decision:** extract stays on `claude-opus-5-5`. Fable 5.1 was not more accurate on these fixtures, kept the uploader waiting 22 seconds instead of 14 (over the 20 second threshold the plan set for splitting the call), wrote 45 percent more output tokens per card and costs two and a half times as much per token. The one category disagreement is defensible either way. What would reopen it: inputs where reading is the hard part (handwriting, bad photos, small print), which the rendered fixtures do not cover; the human's phone photos are the place to test, with `pnpm eval --model claude-fable-5-1 --only <ids> --no-write`.
+
+**Checks**
+- `pnpm typecheck`, `pnpm lint`, `pnpm guard --all` clean; `pnpm build` once at the end.
+- Guard by hand: exit 2 with two findings on a file holding both dashes, the same through the hook's stdin JSON, exit 0 on a clean message file, on `--all`, and on a Bash tool event.
+- About page at 375px in the built-in browser: no text under 16px, the three controls (home link, text size toggle, back link) at 44px, no horizontal scroll, `html lang` follows the language. Board footer link: 16px, 44px tall, its bottom 36px above the top of the floating drop-in button. Poster: the about line renders with the URL from `appBase()` (localhost locally, the deployed URL on Vercel). No drop-in was made; the live board was only read.
+
+**Decisions open for review**
+- The hook could not be seen firing in this session: Claude Code reads hook settings when a session starts, and a Write with an em dash made right after the settings file was added produced no hook output here. The script itself was verified with the same JSON the hook sends. A new session on this tree should edit a file with a dash and see the finding; until then the live firing is a claim from the docs, not a measurement.
+- The guard checks every text file a session writes, fixtures included; the only tracked file with a dash is the generated `AGENTS.md`, skipped by name.
+- `pnpm guard` and `pnpm board:throwaway` were added to `package.json`; the Commands block in `CLAUDE.md` was left as it was and the new section names them.
+- The about page's Korean and Vietnamese strings are mine; the native read planned for 11/05 should cover them with the demo cards. 佐藤さん and チェンさん are written without a gendered title in every language.
+- `throwaway-board.ts delete` keeps a device row when another board's submission uses the same device id, and says so in its output.
+
+**Needed a human**
+- Review and merge the PR. Nothing new in Vercel or the database.
+- Tick in `docs/PLAN.md` under 2026-11-05: "N11 Fable versus Opus on the eval" and "N13 Claude Code visible in the repo; N14 about page".
+- Confirm the hook fires in a fresh session, then open `/about` on the deployed URL in two languages.
+
+## 2026-11-04 (Wed) early morning, extract split from translate: the first card in about 8 seconds
+
+**Model:** `claude-fable-5-1` in Claude Code, implementation role, in its own worktree (branch `split-translate`, cut from `main` after PR #11) while two other sessions worked on their own file lists. Extract and translate both run on `claude-opus-5-5`; `claude-sonnet-5-5` was measured for translate (below) and not chosen.
+
+**Why.** Until today one extract call wrote the card in six languages and took a median of 13 seconds on the fixtures, almost all of it output tokens. The PLAN's S3 fallback (split extract from translate) was written for the case of more than 20 seconds; it is used now for a different reason: the uploader should see their card as soon as it exists, and the other languages can follow a few seconds later.
+
+**Done**
+- Extract writes Japanese, English and the input's own language when that is Chinese, Korean or Vietnamese. In `schemas/extract.schema.json` the other languages are `["string", "null"]` and the prompt says to set them to null; validation (`toMultilingual` in `lib/claude/extract.ts`) requires `ja` and `en` and keeps any other non-empty string. The stored shape is `PartialMultilingual`; readers keep `Multilingual` (all six) because the projections below fill it.
+- `lib/claude/translate.ts`: one structured-outputs call per submission over the day 0 prompt and schema. The schema is cut in code to the languages asked for (a Chinese input already has Chinese), one variant per subset; the prompt and the same board context block as extract (known places with their names in each language) are cached. Code checks one entry per item, every asked-for language non-empty, and no phone number or email (`TranslateError("pii_leak")`). `translateFacts` serves the scripts.
+- `lib/db/translate.ts`: `fillCardLanguages` reads the written cards, builds one item per card and per conflict statement that lacks a language, makes one call for all of them and writes only the missing languages under the `updated_at` the row had when it was read. A row that changed meanwhile is read again and filled only if its Japanese and English are still the text that was translated. A card that lacks nothing causes no call: a merge target with six languages is read, found complete and left alone (checked live, step 3 below). `listCardsMissingLanguages` names up to 3 older public or held cards of the board still missing a language, so a translation that failed earlier is filled by the next drop-in on the board.
+- `app/api/process/[id]/route.ts`: after reconcile and `finishSubmission` (status `done`, cards recorded) the route sends a `cards` event, then `stage: translating`, runs the fill with one retry (none after the daily cap), then `done` with `translate_ms` and `translated`. A failed translate never fails the submission. The translation state lives on the cards, not on the submission row.
+- Client: `DropIn` refreshes the list on the `cards` event, so the card appears while translate runs; `PendingCard` has a fifth step, Translating; `dropin.step.translating` and `card.translating` were appended to the five message files (231 keys each, parity checked, no dashes).
+- Readers: `lib/cards/langs.ts` fills a missing language with English, then Japanese (やさしい日本語 with Japanese first), in `toPublicCard` and the admin list, never in the row, and sets `missing_langs` on the card. `CardItem` marks the title with the language it is really in (`lang` attribute) and says "Translation coming soon." under it. The sheet, the card page, share and ask read the same filled records and show the fallback text without the hint (their files belong to other sessions this week; `missing_langs` is there for them).
+- `pnpm eval` runs translate after extract and scores six languages on the result, with a translate column; `pnpm latency` prints extract and translate side by side (`--no-translate` for extract alone). `lib/claude/README.md` and `.env.example` (`TRANSLATE_MODEL`) updated.
+
+**Latency, before and after** (`pnpm latency`, all 23 fixture inputs one after another, `claude-opus-5-5`, effort low, prompt cache warm; the first column is the code on `main` at 18ced70, the others this branch)
+
+| ms | before: one call, six languages | after: extract (ja, en, input language) | after: translate | after: extract plus translate |
+|---|---:|---:|---:|---:|
+| median | 12980 | 8296 | 8635 | 15798 |
+| mean | 12662 | 7947 | 8605 | 16552 |
+| min | 7147 | 4766 | 4528 | 10321 |
+| max | 22519 | 10589 | 12898 | 22944 |
+
+The time to the first card is the extract column: 13.0 to 8.3 seconds at the median, 22.5 to 10.6 at the worst (the p09 photo). Extract output tokens over the 23 inputs went from 28385 to 16839. The full set of six languages now lands about 2.8 seconds later than before at the median, as a second step the reader does not wait for.
+
+**Eval** (`pnpm eval --no-write`, 15 inputs, concurrency 3; `docs/EVAL.md` is another session's file this week, so the numbers are here): 100/100 fields, 0 PII leaks, 0 invented facts, risk flags 15/15, six languages present on every fact after translate 15/15, extract median 7391 ms. `pnpm eval --reconcile --now 2026-11-03T10:00:00+09:00 --no-write`: 11/11 (create 4/4, merge 6/6, update 1/1), reconcile median 2323 ms; t03 merges since the PR #9 prompt rule.
+
+**Translate model.** Same eval with `--translate-model claude-sonnet-5-5`: 100/100, 0 leaks, 0 invented, 15/15 six languages, translate median 7780 ms against 9991 ms for Opus in the eval (both ran beside the latency run) and 8635 ms for Opus in the sequential latency run. Decision: translate stays on `claude-opus-5-5`. The card is already on the board when translate runs, so the second saved buys little, and the Korean and Vietnamese text is what native speakers read on 11/05. `TRANSLATE_MODEL=claude-sonnet-5-5` switches it in one variable.
+
+**Acceptance** (local dev server on port 3131 against the shared Supabase project; throwaway board `split-acceptance-0323`, a copy of the 武蔵小杉 row; a script sent the text through the two routes and polled the public cards API every second as a reader's browser would; the built-in browser pane watched the board with the interface in Vietnamese; the live board was not touched). Times are from the submission's creation.
+
+| step | input | `cards` event | a poll saw the card | `done`, six languages | what the Vietnamese browser showed |
+|---|---|---:|---:|---:|---|
+| 1 | `t02` water notice text (ja) | 10.2 s (extract 8.2 s; the first request compiled the route) | 11.9 s, `missing_langs` zh ko vi easy_ja, title in English | 17.5 s (translate 7.3 s) | the Vietnamese title after the poll |
+| 2 | `t03` WeChat text (zh) | 5.8 s (extract 5.1 s) | 6.1 s, `missing_langs` ko vi easy_ja | 10.9 s (translate 5.0 s, ko vi easy_ja only) | first the English title with "Bản dịch sẽ có trong giây lát.", on the next poll "Cửa hàng tiện lợi trước Ga Musashi-Kosugi (武蔵小杉駅), đang mở cửa, còn nước" |
+| 3 | `t02` again | 15.5 s, merge into step 1's card (extract 12.2 s, reconcile 2.9 s) | complete at once | 15.6 s, translate stage 0.1 s | no translate call in the server log: the complete merge target was left alone |
+
+After each step the row in the database had no missing language. Deleted afterwards: the 2 cards, 3 source rows, 3 submissions, 0 storage objects, 3 device rows and the board. `pnpm typecheck`, `pnpm lint` and `pnpm build` clean.
+
+**Decisions taken in this session, open for review**
+- The card appears on a `cards` event sent before `done`, with `done` after translate, rather than `done` first and translate after it. The client already treats `done` as the end of the stream and removes the placeholder 2.5 seconds later, and the whole pipeline stays inside the uploader's open connection as the architecture says. The uploader sees the card at the same moment either way; the placeholder shows Translating for the remaining seconds.
+- Fallback order English, then Japanese, for zh, ko and vi; Japanese first for やさしい日本語.
+- The fill happens in the public and admin projections, so every reader gets complete records without touching their files; the stored row stays partial until translate writes it.
+- Null in the schema rather than optional properties: the structured outputs documentation lists nullable types as supported and says nothing about optional properties.
+- The sweep is capped at 3 older cards per drop-in, in the same call as the submission's own cards.
+- `docs/EVAL.md` not updated from this branch; run `pnpm eval` after the merge to refresh its table (the header and columns changed).
+
+**Needed a human**
+- Review and merge the branch (Fable). Nothing new in Vercel; `TRANSLATE_MODEL` is optional.
+- The Korean and Vietnamese card text now comes from the translate prompt, not from extract; the native speaker read on 11/05 reads that.
+- `CardSheet`, `CardPage`, share and ask show English for a language that is not there yet without the "Translation coming soon." line; one line each with `shownLang` from `lib/cards/langs.ts` once their owners are done.

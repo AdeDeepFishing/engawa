@@ -45,6 +45,9 @@ type DoneEvent = {
   actions?: string[];
 };
 
+/** Sent when the cards are on the board, before the other languages are translated. */
+type CardsEvent = Pick<DoneEvent, "status" | "card_ids">;
+
 /**
  * Fixtures published under public/samples so a judge on the deployed URL can
  * run the real pipeline without printing anything (fixtures/README.md says
@@ -239,6 +242,11 @@ export function DropIn({
         if (ev.event === "stage") {
           const stage = (ev.data as { stage?: string }).stage;
           onPending({ id: localId, submissionId, status: "processing", stage });
+        } else if (ev.event === "cards") {
+          // The card is written: the parent refreshes the list now, in the
+          // languages extract wrote, while the server translates the rest.
+          const d = ev.data as CardsEvent;
+          onPending({ id: localId, submissionId, status: "processing", stage: "translating", cardIds: d.card_ids });
         } else if (ev.event === "done") {
           finished = true;
           const d = ev.data as DoneEvent;

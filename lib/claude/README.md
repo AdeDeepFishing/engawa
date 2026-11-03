@@ -12,16 +12,19 @@ Before writing or changing a call, read the `claude-api` skill for the exact SDK
 - System: `prompts/extract.system.md`, marked for prompt caching.
 - Then the board context block, also cached: board name, mode and the known places list (id, kind, name_ja, address_ja, aliases, names). Nothing in it changes between calls, so the cache hits.
 - Then the user content, last: `now` as an ISO string in JST (it changes every call, so it must not sit inside a cached block), then the image (base64 JPEG or PNG after server stripping, long edge at most 1568px) and or the text.
-- Output format: `schemas/extract.schema.json`. Low effort. Max output tokens around 6000 (six languages for several facts).
-- After the call: `bump_usage` with the token counts. Code then validates: enums, six languages present, `place_id` must be on the board (unknown ids become null and are logged), and a regex pass for phone numbers and emails over every text field rejects the whole result (`ExtractError("pii_leak")`). The eval additionally checks the planted names from `fixtures/expected`.
+- Output format: `schemas/extract.schema.json`. Low effort. Max output tokens 6000.
+- Languages, since 2026-11-04: `title` and `body` carry Japanese, English and the input's own language when it is Chinese, Korean or Vietnamese; the other languages are `null` in the schema and absent after validation (`PartialMultilingual`). The translate call below writes the rest after the card is on the board, so the first card shows in about 9 seconds instead of 13 (measurement in `docs/DEVLOG.md`, 2026-11-04 split entry).
+- After the call: `bump_usage` with the token counts. Code then validates: enums, Japanese and English present and non-empty, `place_id` must be on the board (unknown ids become null and are logged), and a regex pass for phone numbers and emails over every text field rejects the whole result (`ExtractError("pii_leak")`). The eval additionally checks the planted names from `fixtures/expected`.
 - A `refusal` stop reason fails the submission with a clear error; no fallbacks beta this week.
-- If latency is over 20 seconds on the fixtures: use a derived schema with only `ja` and `en` in `multilingual` (generated in code from the full schema), publish the card, then call `translate` and patch the card.
 
-### translate (`translate.ts`, only if extract is split)
+### translate (`translate.ts`)
 
-- System: `prompts/translate.system.md`.
-- Input: a numbered list of items with `title.ja`, `title.en`, `body.ja`, `body.en`.
-- Output format: `schemas/translate.schema.json`.
+- Model: `claude-opus-5-5` (default), `TRANSLATE_MODEL` switches it. Effort low, non-streaming, max output 8000 tokens.
+- System: `prompts/translate.system.md` plus the same board context block as extract (known places with their names in each language, so translations use the seed's spellings), both marked for caching. User content: the languages to write and the items as JSON (`index`, `title_ja`, `title_en`, `body_ja`, `body_en`).
+- Output format: `schemas/translate.schema.json`, cut down in code to the languages asked for (a Chinese input already has Chinese), so the model writes exactly those. One schema variant per language subset.
+- Code validates: one entry per item, every asked-for language a non-empty string, no phone number or email in any of them (`TranslateError("pii_leak")`).
+- In the pipeline (`app/api/process/[id]/route.ts`) the call runs after the submission is finished and the `cards` event is sent: `lib/db/translate.ts` reads the written cards (and up to 3 older cards of the board still missing a language), makes one call for all of them, and writes only the languages each card lacked, under the `updated_at` the row had when it was read. A merge target that already has six languages is read, found complete and left alone; with nothing missing there is no call. A failed call is tried once more; after that the cards keep their fallback (readers see English or Japanese, marked as such, through `lib/cards/langs.ts`) and the next drop-in on the board fills them. Conflict statements written from a fresh fact are filled the same way.
+- Scripts: `pnpm eval` runs translate after extract and scores six languages on the result; `pnpm latency` prints extract and translate times side by side.
 
 ### reconcile (`reconcile.ts`)
 

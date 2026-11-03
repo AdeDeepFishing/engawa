@@ -1,36 +1,20 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { cache } from "react";
 import { CardPage } from "@/components/board/CardPage";
 import { appBase } from "@/lib/app-url";
 import { cardPath } from "@/lib/cards/share";
-import { getBoardBySlug, getPublicCard } from "@/lib/db/boards";
 import { getPublicCardTrace } from "@/lib/db/cards";
 import { hasDb } from "@/lib/db/client";
+import { loadPublicCard } from "@/lib/db/public-card";
 import { INTL_LOCALE, LANGS } from "@/lib/i18n";
 import { getRequestLang } from "@/lib/i18n/server";
-import type { Board, Card } from "@/lib/types";
 
 type Props = { params: Promise<{ slug: string; id: string }> };
 
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 /** Link previews cut descriptions around here; the body is cut at a word before it. */
 const DESCRIPTION_CHARS = 200;
 
 const ogLocale = (tag: string) => tag.replace("-", "_");
-
-/**
- * The board and the public card, or null when either is missing, so the
- * page answers 404 for held, hidden and unknown cards. A malformed id never
- * reaches the database. Cached per request: metadata and page share one read.
- */
-const load = cache(async (slug: string, id: string): Promise<{ board: Board; card: Card } | null> => {
-  const board = await getBoardBySlug(slug);
-  if (!board) return null;
-  if (hasDb() && !UUID_RE.test(id)) return null;
-  const card = await getPublicCard(board, id);
-  return card ? { board, card } : null;
-});
 
 function shorten(text: string): string {
   if (text.length <= DESCRIPTION_CHARS) return text;
@@ -46,7 +30,7 @@ function shorten(text: string): string {
  */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug, id } = await params;
-  const [found, lang, base] = await Promise.all([load(slug, id), getRequestLang(), appBase()]);
+  const [found, lang, base] = await Promise.all([loadPublicCard(slug, id), getRequestLang(), appBase()]);
   if (!found) return { title: "Engawa" };
   const { board, card } = found;
   const title = `${card.title[lang]} | ${board.name[lang]} | Engawa`;
@@ -72,7 +56,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function CardRoute({ params }: Props) {
   const { slug, id } = await params;
-  const found = await load(slug, id);
+  const found = await loadPublicCard(slug, id);
   if (!found) notFound();
   const trace = hasDb() ? await getPublicCardTrace(found.card.id) : null;
   return <CardPage board={found.board} card={found.card} trace={trace} serverNow={new Date().toISOString()} />;

@@ -20,6 +20,8 @@ import { useLang } from "@/lib/i18n/LangProvider";
 import type { Board, Card, CardTrace, ConflictStatement } from "@/lib/types";
 import { CardTraceView } from "./CardTrace";
 import { MaskedImage } from "./MaskedImage";
+import { ReadAloud } from "./ReadAloud";
+import { fallbackLangAttr } from "@/lib/cards/langs";
 
 /**
  * Non-modal detail sheet. It does not trap focus: the page behind stays
@@ -95,7 +97,7 @@ export function CardSheet({
           </span>
           <div className="min-w-0 flex-1">
             <p className="text-base font-medium text-muted">{t(`category.${card.category}`)}</p>
-            <h2 id={`sheet-title-${card.id}`} className="text-xl font-bold leading-snug">
+            <h2 id={`sheet-title-${card.id}`} lang={fallbackLangAttr(card, lang)} className="text-xl font-bold leading-snug">
               {card.title[lang]}
             </h2>
           </div>
@@ -130,7 +132,9 @@ export function CardSheet({
           </div>
         ) : null}
 
-        <p className="mt-4 text-lg">{card.body[lang]}</p>
+        <p lang={fallbackLangAttr(card, lang)} className="mt-4 text-lg">{card.body[lang]}</p>
+        {fallbackLangAttr(card, lang) ? <p className="mt-1 text-base text-muted">{t("card.translating")}</p> : null}
+        <ReadAloud key={card.id} card={card} />
 
         <dl className="mt-4 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-base">
           {place ? (
@@ -215,7 +219,7 @@ export function CardSheet({
         <details className="mt-5 rounded-xl border border-line p-3">
           <summary className="cursor-pointer py-2 font-semibold">{t("sheet.all_languages")}</summary>
           <ul className="mt-2 flex flex-col gap-3">
-            {CARD_LANGS.filter((l) => l !== lang).map((l) => (
+            {CARD_LANGS.filter((l) => l !== lang && !(card.missing_langs ?? []).includes(l)).map((l) => (
               <li key={l} lang={l === "easy_ja" ? "ja" : l}>
                 <p className="text-base text-muted">{t(`lang.${l}`)}</p>
                 <p className="font-semibold">{card.title[l]}</p>

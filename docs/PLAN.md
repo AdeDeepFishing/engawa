@@ -49,16 +49,16 @@ Ranked by value on the judging axes (impact, demo, use of Claude, depth) against
 - N2 Share one card: a per-card page with its own OG title, and "copy as text" in the reader's language so a card can be forwarded into a LINE or WeChat group, the reverse of the drop-in direction. Impact. About 1.5 hours. Done 2026-11-04.
 - N3 Hidden and merged drawer: a collapsed list at the bottom of the board holds cards the admin hid as duplicates; a card's sources expand to their original text; the admin page gets "hide as duplicate of". Depth. About 2 hours. Done 2026-11-04.
 - N4 How this card was made: the reconcile decision and its reason are stored; the card sheet shows the chain (source, extract, merge or update with the reason, admin confirmation). Use of Claude. About 2 hours. Done 2026-11-04.
-- N5 Multilingual notice back: from a card, a printable A4 notice in six languages with the board QR, so a building manager can replace the Japanese-only paper. Impact and demo. About 2 hours.
+- N5 Multilingual notice back: from a card, a printable A4 notice in six languages with the board QR, so a building manager can replace the Japanese-only paper. Impact and demo. About 2 hours. Done 2026-11-04.
 - N6 Reader confirmations: "still true" and "no longer true", one tap per device; bumps `last_confirmed_at` or opens a conflict. Depth. About 2 hours.
-- N7 Suggested questions per language above the ask box, and follow-up questions in the same thread. Demo. About 1.5 hours.
-- N8 Read aloud with the Web Speech API for the card text in the reader's language and やさしい日本語. Impact. About 1 hour.
+- N7 Suggested questions per language above the ask box, and follow-up questions in the same thread. Demo. About 1.5 hours. Done 2026-11-04.
+- N8 Read aloud with the Web Speech API for the card text in the reader's language and やさしい日本語. Impact. About 1 hour. Done 2026-11-04.
 - N9 Offline snapshot: a service worker keeps the last board page for when the network drops, with a "last updated" banner. Impact. About 2 hours.
 - N10 Place view: cards grouped by known place with its address; shelter status at a glance. Depth. About 2 hours.
-- N11 Extract on `claude-fable-5-1` versus `claude-opus-5-5` on the eval, recorded in `docs/EVAL.md`. Use of Claude. About 1 hour of API time.
+- N11 Extract on `claude-fable-5-1` versus `claude-opus-5-5` on the eval, recorded in `docs/EVAL.md`. Use of Claude. About 1 hour of API time. Done 2026-11-04.
 - N12 Board index and a "make a board" form (name, area, places from the city list) that shows the admin link once. Impact. About 3 hours.
-- N13 Claude Code visible in the repo: a pre-commit hook that runs the dash scan and the i18n parity check, a project skill for the throwaway-board acceptance run, the review subagent definition, and a README section on which model and which Claude Code feature did what and why. Use of Claude (the criteria ask for Skills, subagents, MCP and hooks chosen by purpose). About 1.5 hours.
-- N14 About page `/about` in five languages: who the board is for (named people and scenes, with numbers for 中原区), what it does with their data, who runs it after the event. Impact (the criteria ask who, in what scene, how much, and who keeps using it). About 1 hour.
+- N13 Claude Code visible in the repo: a pre-commit hook that runs the dash scan and the i18n parity check, a project skill for the throwaway-board acceptance run, the review subagent definition, and a README section on which model and which Claude Code feature did what and why. Use of Claude (the criteria ask for Skills, subagents, MCP and hooks chosen by purpose). About 1.5 hours. Done 2026-11-04.
+- N14 About page `/about` in five languages: who the board is for (named people and scenes, with numbers for 中原区), what it does with their data, who runs it after the event. Impact (the criteria ask who, in what scene, how much, and who keeps using it). About 1 hour. Done 2026-11-04.
 
 ### Not this week
 
@@ -157,15 +157,18 @@ Owner for implementation: Claude Code. The plan said `claude-opus-5-5`; in pract
 - [x] N2 share one card: `/b/[slug]/c/[id]` with its own title per language, system share, copy link, copy as text (PR #10)
 - [x] N4 how this card was made: reason and model on `card_sources` (migration 0005), `GET /api/cards/[id]/trace`, one line per step in the sheet (PR #10)
 - [x] Each item: acceptance on a throwaway board locally (tables in the DEVLOG); combined smoke of both branches on the integration branch: 2 drop-ins, hide as duplicate, drawer, trace, card page and admin all answer as specified
-- [ ] After the merge: on the deployed URL, hide the two water duplicates again "as a duplicate of" the remaining card so the drawer shows on the live board; try one sample
+- [x] After the merge: on the deployed URL, the two water duplicates were hidden again "as a duplicate of" the remaining card and the drawer shows on the live board
+- [x] Faster first card: extract writes ja, en and the input's language, translate fills the rest after the card is on the board; first card at a median 8.3 s instead of 13.0 s on the 23 fixtures, eval 100/100 (PR #13)
+- [x] N5 multilingual notice back, N7 suggested questions and a thread, N8 read aloud (PR #12)
+- [x] N13 Claude Code setup visible (PostToolUse guard hook, acceptance-run skill, reviewer agent, README section), N14 about page, N11 Fable versus Opus extract eval (PR #14)
 
 ### 2026-11-05 (Thu): more nice-to-haves, native reads
 - [ ] Korean and Vietnamese native speakers read the demo cards; fix wording
-- [ ] N5 multilingual notice back
+- [x] N5 multilingual notice back (done 2026-11-04, PR #12)
 - [ ] N6 reader confirmations
-- [ ] N7 suggested questions; N8 read aloud
-- [ ] N11 Fable versus Opus on the eval
-- [ ] N13 Claude Code visible in the repo; N14 about page
+- [x] N7 suggested questions; N8 read aloud (done 2026-11-04, PR #12)
+- [x] N11 Fable versus Opus on the eval (done 2026-11-04, PR #14; Opus stays at runtime)
+- [x] N13 Claude Code visible in the repo; N14 about page (done 2026-11-04, PR #14)
 - [ ] N9, N10, N12 only if the day is clear
 
 ### 2026-11-06 (Fri): review, freeze, demo prep

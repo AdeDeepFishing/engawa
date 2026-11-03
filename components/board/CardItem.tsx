@@ -10,6 +10,7 @@ import {
   supersededStatements,
   timeAgo,
 } from "@/lib/cards/display";
+import { htmlLang, shownLang } from "@/lib/cards/langs";
 import { areaName } from "@/lib/geo";
 import { tCount } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n/LangProvider";
@@ -28,6 +29,9 @@ export function CardItem({
 }) {
   const { lang, t } = useLang();
   const expired = isExpired(card.valid_until, now);
+  // A fresh card may still lack the reader's language: its text is then
+  // English or Japanese, marked as such, until the translation lands.
+  const textIn = shownLang(card, lang);
   const place = placeParts(card, board, lang);
   // Self-reported by the uploader's phone (G2); shown only when the board lists the code.
   const area = areaName(board, card.area_code);
@@ -67,7 +71,10 @@ export function CardItem({
           </span>
           <div className="min-w-0 flex-1">
             <p className="text-base font-medium text-muted">{t(`category.${card.category}`)}</p>
-            <h3 className="mt-0.5 text-lg font-bold leading-snug">{card.title[lang]}</h3>
+            <h3 lang={textIn === lang ? undefined : htmlLang(textIn)} className="mt-0.5 text-lg font-bold leading-snug">
+              {card.title[lang]}
+            </h3>
+            {textIn !== lang ? <p className="mt-1 text-base text-muted">{t("card.translating")}</p> : null}
             {place ? (
               <p className="mt-1 text-base text-foreground">
                 {place.text}

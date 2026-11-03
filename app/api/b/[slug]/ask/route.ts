@@ -1,5 +1,13 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { ask, AskError, MAX_QUESTION_CHARS, noInformationAnswer } from "@/lib/claude/ask";
+import {
+  ask,
+  AskError,
+  MAX_HISTORY_ANSWER_CHARS,
+  MAX_HISTORY_TURNS,
+  MAX_QUESTION_CHARS,
+  noInformationAnswer,
+  type AskTurn,
+} from "@/lib/claude/ask";
 import { BusyError, withUsage } from "@/lib/claude/usage";
 import { getBoardBySlug, listPublicCards } from "@/lib/db/boards";
 import { DEFAULT_LANG, isLang } from "@/lib/i18n";
@@ -28,14 +36,34 @@ function overAskLimit(key: string, now = Date.now()): boolean {
 }
 
 /**
+ * Earlier question and answer pairs from the client, kept only when well
+ * formed: at most MAX_HISTORY_TURNS, strings only, cut to the same limits as
+ * a question and an answer. Anything else is ignored rather than refused, so
+ * a stale client still gets an answer.
+ */
+function parseHistory(value: unknown): AskTurn[] {
+  if (!Array.isArray(value)) return [];
+  const turns: AskTurn[] = [];
+  for (const item of value.slice(-MAX_HISTORY_TURNS)) {
+    if (!item || typeof item !== "object") continue;
+    const { question, answer } = item as { question?: unknown; answer?: unknown };
+    if (typeof question !== "string" || typeof answer !== "string") continue;
+    const q = question.trim().slice(0, MAX_QUESTION_CHARS);
+    const a = answer.trim().slice(0, MAX_HISTORY_ANSWER_CHARS);
+    if (q && a) turns.push({ question: q, answer: a });
+  }
+  return turns;
+}
+
+/**
  * Answers a question from the board's public cards.
- * Body: JSON {question, lang, device_id?}.
+ * Body: JSON {question, lang, device_id?, history?: [{question, answer}]}.
  * Response 200: {answer: {segments: [{text, cardIds}], cardIds, noInfo}}.
  * Errors: 400 bad_request, 404 board_not_found, 429 rate_limited,
  * 503 busy (daily Claude cap), 502 failed. The question is never stored or logged.
  */
 export async function POST(req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
-  let body: { question?: unknown; lang?: unknown; device_id?: unknown };
+  let body: { question?: unknown; lang?: unknown; device_id?: unknown; history?: unknown };
   try {
     body = (await req.json()) as typeof body;
   } catch {
@@ -46,6 +74,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
     return NextResponse.json({ error: "bad_request" }, { status: 400 });
   }
   const lang = isLang(body.lang) ? body.lang : DEFAULT_LANG;
+  const history = parseHistory(body.history);
 
   const { slug } = await params;
   const board = await getBoardBySlug(slug);
@@ -64,7 +93,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
   }
   try {
     const outcome = await withUsage(async () => {
-      const o = await ask(board, cards, question, lang);
+      const o = await ask(board, cards, question, lang, { history });
       return { value: o, inputTokens: o.usage.inputTokens, outputTokens: o.usage.outputTokens };
     });
     return NextResponse.json(

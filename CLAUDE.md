@@ -57,7 +57,7 @@ pnpm purge          # run the purge job once against the configured database
 - `lib/image/` browser compression and server stripping.
 - `lib/geo/` board polygons and point-in-area (G2, only after the must list is done).
 - `supabase/migrations/`, `supabase/seed/`.
-- `fixtures/` test inputs (made before the event as test material, fake names and avatars, see `fixtures/README.md`) with `expected/*.json` written during the event.
+- `fixtures/` test inputs (fictional paper notices, chat and social screenshots and texts, rendered with Playwright on 11/03 during the event, fake names and avatars, see `fixtures/README.md`) with `expected/*.json`.
 - `scripts/` eval, seed, purge.
 - `docs/PLAN.md`, `docs/DEVLOG.md`, `docs/PRIVACY.md`, `docs/EVAL.md`.
 
@@ -69,3 +69,9 @@ pnpm purge          # run the purge job once against the configured database
 - Planning notes that predate the event live outside this repository at `~/Desktop/temp/hackathon-2026-plan/`. Read them by path when useful. Never copy or translate them into the repository.
 - Before claiming something works, run it: `pnpm typecheck`, `pnpm eval`, and a manual drop-in on the deployed URL.
 - Secrets never go into the repo or into chat. The human puts them in `.env.local` and in the Vercel project settings.
+
+## Claude Code setup
+
+`.claude/settings.json` registers a `PostToolUse` hook on `Edit|Write` that runs `scripts/guard.ts` on the file just written. It fails with exit 2, so the finding comes straight back into the session, when the file contains an em dash or an en dash (rule 7), and, when the file is one of the five message files, when the five no longer carry the same key set (rule 1). It reports paths, line numbers and key names only. The same script runs by hand as `pnpm guard <file>` or `pnpm guard --all` over every tracked text file (`AGENTS.md` is written by `next dev` and skipped). The hook covers the two rules that are easiest to break in passing and that no reviewer should spend attention on; the other rules in this file stay a matter of reading.
+
+Two more pieces of the setup live next to it: `.claude/skills/acceptance-run/SKILL.md` is the acceptance procedure on a throwaway board (a copy of the pilot board, the real drop-in flow, then cleanup, never the live board), backed by `pnpm board:throwaway create|delete <slug>` (`scripts/throwaway-board.ts`); `.claude/agents/reviewer.md` is the read-only review subagent that the reviewing session runs before every merge, privacy first, with ranked findings by file and line and a verdict.

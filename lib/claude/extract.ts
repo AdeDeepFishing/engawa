@@ -3,7 +3,7 @@ import { join } from "node:path";
 import type Anthropic from "@anthropic-ai/sdk";
 import { anthropic, extractModel, type ModelId } from "./client";
 import { CATEGORIES, PLATFORMS, RISK_FLAGS, SOURCE_TYPES, CARD_STATUSES } from "@/lib/types";
-import type { Board, Category, Multilingual, Platform, RiskFlag, SourceType, CardStatus } from "@/lib/types";
+import type { Board, Category, PartialMultilingual, Platform, RiskFlag, SourceType, CardStatus } from "@/lib/types";
 import { CARD_LANGS } from "@/lib/i18n";
 
 // Prompt and schema are files, loaded once per process. Edit them there.
@@ -39,8 +39,9 @@ export interface ExtractFact {
   source_type: SourceType;
   risk_flags: RiskFlag[];
   confidence: "high" | "medium" | "low";
-  title: Multilingual;
-  body: Multilingual;
+  /** Japanese, English and the input's language; the rest is added by translate after the card is written. */
+  title: PartialMultilingual;
+  body: PartialMultilingual;
   original_excerpt: string;
 }
 
@@ -136,7 +137,7 @@ export async function extract(
   const started = performance.now();
   const stream = client.messages.stream({
     model,
-    max_tokens: options.maxTokens ?? 8000,
+    max_tokens: options.maxTokens ?? 6000,
     system: [
       { type: "text", text: loadPrompt(), cache_control: { type: "ephemeral" } },
       { type: "text", text: boardContext(board), cache_control: { type: "ephemeral" } },
@@ -194,12 +195,22 @@ export function containsContact(text: string): boolean {
   return PHONE_RE.test(text) || EMAIL_RE.test(text);
 }
 
-function isMultilingual(v: unknown): v is Multilingual {
-  return (
-    typeof v === "object" &&
-    v !== null &&
-    CARD_LANGS.every((l) => typeof (v as Record<string, unknown>)[l] === "string")
-  );
+/**
+ * Japanese and English must be there; any other language is kept when it
+ * is a non-empty string and dropped when null or empty. The translate step
+ * fills what is missing after the card is written (lib/db/translate.ts).
+ */
+function toMultilingual(v: unknown): PartialMultilingual | null {
+  if (typeof v !== "object" || v === null) return null;
+  const r = v as Record<string, unknown>;
+  if (typeof r.ja !== "string" || !r.ja.trim() || typeof r.en !== "string" || !r.en.trim()) return null;
+  const out: PartialMultilingual = { ja: r.ja, en: r.en };
+  for (const l of CARD_LANGS) {
+    if (l === "ja" || l === "en") continue;
+    const s = r[l];
+    if (typeof s === "string" && s.trim()) out[l] = s;
+  }
+  return out;
 }
 
 function oneOf<T extends string>(list: readonly T[], v: unknown): v is T {
@@ -233,8 +244,10 @@ export function validateExtractResult(
     if (!oneOf(CATEGORIES, x.category)) throw new ExtractError("invalid_output", `fact ${i}: category`);
     if (!oneOf(SOURCE_TYPES, x.source_type)) throw new ExtractError("invalid_output", `fact ${i}: source_type`);
     if (!oneOf(CARD_STATUSES, x.status)) throw new ExtractError("invalid_output", `fact ${i}: status`);
-    if (!isMultilingual(x.title) || !isMultilingual(x.body)) {
-      throw new ExtractError("invalid_output", `fact ${i}: title or body languages`);
+    const title = toMultilingual(x.title);
+    const body = toMultilingual(x.body);
+    if (!title || !body) {
+      throw new ExtractError("invalid_output", `fact ${i}: title or body lacks Japanese or English`);
     }
     let placeId = stringOrNull(x.place_id);
     if (placeId && !knownPlaceIds.has(placeId)) {
@@ -259,8 +272,8 @@ export function validateExtractResult(
       source_type: x.source_type,
       risk_flags: riskFlags,
       confidence,
-      title: x.title,
-      body: x.body,
+      title,
+      body,
       original_excerpt: typeof x.original_excerpt === "string" ? x.original_excerpt : "",
     };
     for (const s of [

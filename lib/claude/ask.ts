@@ -24,6 +24,16 @@ export function askModel(): ModelId {
 }
 
 export const MAX_QUESTION_CHARS = 500;
+/** Earlier pairs a follow-up question may carry; the client keeps the same number on screen. */
+export const MAX_HISTORY_TURNS = 5;
+/** An earlier answer is cut here before it goes back as context. */
+export const MAX_HISTORY_ANSWER_CHARS = 2000;
+
+/** One earlier question and its answer as plain text, sent back by the client with a follow-up. */
+export interface AskTurn {
+  question: string;
+  answer: string;
+}
 
 /** A run of answer text and the cards it cites (empty when the run cites nothing). */
 export interface AskSegment {
@@ -147,7 +157,7 @@ export async function ask(
   cards: Card[],
   question: string,
   lang: Lang,
-  options: { model?: ModelId; now?: Date } = {},
+  options: { model?: ModelId; now?: Date; history?: AskTurn[] } = {},
 ): Promise<AskOutcome> {
   const q = question.trim();
   if (!q) throw new Error("ask needs a question");
@@ -166,29 +176,43 @@ export async function ask(
     cache_control: { type: "ephemeral" },
   };
 
+  // The reader's language and the time change per call, so they travel with
+  // the latest question, after the cached documents. Earlier pairs, when the
+  // client sends them, sit between as plain turns: context for a follow-up
+  // such as "is it open now?", never a source. Documents stay in the first
+  // user turn, so the cache prefix and the citation indexes are unchanged.
+  const history = (options.history ?? []).slice(-MAX_HISTORY_TURNS);
+  const latest: Anthropic.TextBlockParam = {
+    type: "text",
+    text: [
+      `Reader's interface language: ${LANG_NAME[lang]}`,
+      `Current date and time in Japan: ${nowJst(now)}`,
+      "",
+      "Question:",
+      q.slice(0, MAX_QUESTION_CHARS),
+    ].join("\n"),
+  };
+  const messages: Anthropic.MessageParam[] = history.length
+    ? [
+        {
+          role: "user",
+          content: [...documents, { type: "text", text: `Question:\n${history[0].question.slice(0, MAX_QUESTION_CHARS)}` }],
+        },
+        ...history.flatMap((turn, i): Anthropic.MessageParam[] => [
+          { role: "assistant", content: turn.answer.slice(0, MAX_HISTORY_ANSWER_CHARS) || "..." },
+          i + 1 < history.length
+            ? { role: "user", content: `Question:\n${history[i + 1].question.slice(0, MAX_QUESTION_CHARS)}` }
+            : { role: "user", content: [latest] },
+        ]),
+      ]
+    : [{ role: "user", content: [...documents, latest] }];
+
   const started = performance.now();
   const message = await anthropic().messages.create({
     model,
     max_tokens: 4096,
     system: [{ type: "text", text: loadPrompt(), cache_control: { type: "ephemeral" } }],
-    messages: [
-      {
-        role: "user",
-        content: [
-          ...documents,
-          {
-            type: "text",
-            text: [
-              `Reader's interface language: ${LANG_NAME[lang]}`,
-              `Current date and time in Japan: ${nowJst(now)}`,
-              "",
-              "Question:",
-              q.slice(0, MAX_QUESTION_CHARS),
-            ].join("\n"),
-          },
-        ],
-      },
-    ],
+    messages,
     output_config: { effort: "low" },
   });
   const latencyMs = Math.round(performance.now() - started);

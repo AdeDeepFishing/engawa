@@ -46,6 +46,7 @@ const CSS = `
 .poster-cta { list-style: none; margin: 20px 0 0; padding: 0; display: grid; gap: 6px; font-size: 1.125rem; line-height: 1.4; }
 .poster-cta-easy { font-weight: 600; }
 .poster-community { margin: 20px 0 0; font-size: 1rem; line-height: 1.5; color: #333333; }
+.poster-about { display: inline-flex; min-height: 44px; align-items: center; text-decoration: underline; text-underline-offset: 4px; word-break: break-all; }
 @media print {
   html, body { background: #ffffff !important; color: #111111; }
   .poster { max-width: none; padding: 0; }
@@ -58,6 +59,7 @@ const CSS = `
   .poster-url { font-size: 13pt; }
   .poster-cta { font-size: 14pt; margin-top: 10mm; gap: 3mm; }
   .poster-community { font-size: 11pt; margin-top: 10mm; }
+  .poster-about { min-height: 0; text-decoration: none; }
 }
 `;
 
@@ -71,6 +73,7 @@ export default async function PosterPage({ params }: Props) {
   const [board, lang] = await Promise.all([getBoardBySlug(slug), getRequestLang()]);
   if (!board) notFound();
   const url = await boardUrl(board.slug);
+  const aboutUrl = new URL("/about", await appBase()).toString();
   const qr = encodeQr(url);
   const view = qr.size + QR_MARGIN * 2;
   // Japanese first because the poster hangs in Japan; then the other UI languages in their usual order.
@@ -125,6 +128,11 @@ export default async function PosterPage({ params }: Props) {
         </ul>
         <p className="poster-community" lang={lang}>
           {t("poster.community", lang)}
+        </p>
+        <p className="poster-community" lang={lang}>
+          <Link href="/about" className="poster-about">
+            {t("poster.about", lang, { url: aboutUrl })}
+          </Link>
         </p>
       </main>
     </>
