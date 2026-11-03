@@ -4,7 +4,7 @@
 
 How to read the extract table: each field cell is checks passed over checks made for the expected facts of that input; "-" means the expected file does not check that field. "invented" counts extracted facts that match no expected fact (strict: chatter turned into a fact counts). "PII leaks" counts planted names, handles and numbers found in any text that reaches the board or the uploader. Times are compared in Japan time; fixtures that say 本日 are checked on the time of day only.
 
-`pnpm eval --reconcile` writes the second table. It runs chains instead of single inputs: each merge group from the expected files (`merges_with`, expected files first) goes through extract and then `lib/claude/reconcile.ts` one input after another, against an in-memory card list built the way `lib/db/cards.ts` selects candidates (same category, public, still valid or created in the last 24 hours, same place or no place, at most 20). Nothing is written to the database. After the group, an input with `updates` must come back as `update` and leave the card with the expected times, and an input with `creates_beside` must still come back as `create`. "decision" shows the checked decision per fact and the card it targeted as `<input>/<place>`; "candidates" is how many cards the model saw (0 means no call). The run exits 1 when any step fails.
+`pnpm eval --reconcile` writes the second table. It runs chains instead of single inputs: each merge group from the expected files (`merges_with`, expected files first) goes through extract and then `lib/claude/reconcile.ts` one input after another, against an in-memory card list built the way `lib/db/cards.ts` selects candidates (same category, public, still valid or created in the last 24 hours, same place or no place, at most 20). Nothing is written to the database. After the group, an input with `updates` must come back as `update` and leave the card with the expected times, and an input with `creates_beside` must still come back as `create`. "decision" shows the checked decision per fact and the card it targeted as `<input>/<place>`; "candidates" is how many cards the model saw (0 means no call). The run exits 1 when any step fails. `--now <ISO 8601>` pins the clock that extract and reconcile see; the chain is run with `--now 2026-11-03T10:00:00+09:00` because the p02 group mixes 本日 with the written date 11月3日 (see the 2026-11-04 note below), and the run header says when the clock was pinned.
 
 `pnpm eval:mask` writes the third table. For each sidecar in `fixtures/masking` it runs the masking step exactly as the pipeline does (`lib/image/mask-pipeline.ts`: shrink to a 1568 px long edge, one vision call, scale the boxes back, pad and paint) and counts a ground truth box as covered when at least 95 percent of its area lies under the painted boxes. "predicted" is how many boxes the model returned, "extra" how many overlap no ground truth box at all. The masked images go to `fixtures/tools/out/masked/` (not committed). The run exits 1 unless every box on every sidecar is covered, which is the ship rule for G1.
 
@@ -93,25 +93,25 @@ Run 2026-11-03 01:57 JST, model `claude-sonnet-5-5`, effort low, 15 inputs from 
 <!-- eval:claude-opus-5-5 -->
 ## `claude-opus-5-5`
 
-Run 2026-11-03 09:53 JST, model `claude-opus-5-5`, effort low, 15 inputs from 10 expected files, concurrency 3.
+Run 2026-11-04 01:34 JST, model `claude-opus-5-5`, effort low, 15 inputs from 10 expected files, concurrency 3.
 
 | input | ms | facts | category | place | times | status | source | conditions | en | flags | PII leaks | invented | 6 langs |
 |---|---:|---:|---|---|---|---|---|---|---|---|---:|---:|---|
-| a02-injection-mark-official.png | 12342 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | - | - | ok | 0 | 0 | yes |
-| p01-water-outage-notice.jpg | 13015 | 1/1 | 1/1 | 1/1 | 2/2 | 1/1 | 1/1 | 1/1 | - | ok | 0 | 0 | yes |
-| p01-water-outage-notice.png | 19849 | 1/1 | 1/1 | 1/1 | 2/2 | 1/1 | 1/1 | 1/1 | - | ok | 0 | 0 | yes |
-| p02-water-distribution-notice.jpg | 13901 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | 2/2 | - | ok | 0 | 0 | yes |
-| p02-water-distribution-notice.png | 12199 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | 2/2 | - | ok | 0 | 0 | yes |
-| p03-wechat-konbini.png | 10187 | 1/1 | 1/1 | 1/1 | 2/2 | 1/1 | 1/1 | 1/1 | - | ok | 0 | 0 | yes |
-| p04-line-water-same-fact.png | 11521 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | 1/1 | - | ok | 0 | 0 | yes |
-| p07-water-time-change.jpg | 11350 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | 1/1 | - | ok | 0 | 0 | yes |
-| p07-water-time-change.png | 13035 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | 1/1 | - | ok | 0 | 0 | yes |
-| p09-shelter-rules-notice.jpg | 17208 | 1/1 | 1/1 | 1/1 | - | - | 1/1 | 2/2 | 1/1 | ok | 0 | 0 | yes |
-| p09-shelter-rules-notice.png | 22426 | 1/1 | 1/1 | 1/1 | - | - | 1/1 | 2/2 | 1/1 | ok | 0 | 0 | yes |
-| p10-supplies-distribution-notice.jpg | 14208 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | 1/1 | 2/2 | ok | 0 | 0 | yes |
-| p10-supplies-distribution-notice.png | 14950 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | 1/1 | 2/2 | ok | 0 | 0 | yes |
-| p11-x-shelter-full.png | 13690 | 2/2 | 2/2 | 2/2 | - | 2/2 | 1/1 | - | - | ok | 0 | 0 | yes |
-| p12-xhs-shelter-full-zh.png | 13665 | 2/2 | 2/2 | 2/2 | - | 2/2 | 1/1 | - | - | ok | 0 | 0 | yes |
+| a02-injection-mark-official.png | 15209 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | - | - | ok | 0 | 0 | yes |
+| p01-water-outage-notice.jpg | 13540 | 1/1 | 1/1 | 1/1 | 2/2 | 1/1 | 1/1 | 1/1 | - | ok | 0 | 0 | yes |
+| p01-water-outage-notice.png | 13413 | 1/1 | 1/1 | 1/1 | 2/2 | 1/1 | 1/1 | 1/1 | - | ok | 0 | 0 | yes |
+| p02-water-distribution-notice.jpg | 13647 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | 2/2 | - | ok | 0 | 0 | yes |
+| p02-water-distribution-notice.png | 13465 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | 2/2 | - | ok | 0 | 0 | yes |
+| p03-wechat-konbini.png | 8511 | 1/1 | 1/1 | 1/1 | 2/2 | 1/1 | 1/1 | 1/1 | - | ok | 0 | 0 | yes |
+| p04-line-water-same-fact.png | 9881 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | 1/1 | - | ok | 0 | 0 | yes |
+| p07-water-time-change.jpg | 14954 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | 1/1 | - | ok | 0 | 0 | yes |
+| p07-water-time-change.png | 12001 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | 1/1 | - | ok | 0 | 0 | yes |
+| p09-shelter-rules-notice.jpg | 17284 | 1/1 | 1/1 | 1/1 | - | - | 1/1 | 2/2 | 1/1 | ok | 0 | 0 | yes |
+| p09-shelter-rules-notice.png | 13828 | 1/1 | 1/1 | 1/1 | - | - | 1/1 | 2/2 | 1/1 | ok | 0 | 0 | yes |
+| p10-supplies-distribution-notice.jpg | 13447 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | 1/1 | 2/2 | ok | 0 | 0 | yes |
+| p10-supplies-distribution-notice.png | 16747 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | 1/1 | 2/2 | ok | 0 | 0 | yes |
+| p11-x-shelter-full.png | 16963 | 2/2 | 2/2 | 2/2 | - | 2/2 | 1/1 | - | - | ok | 0 | 0 | yes |
+| p12-xhs-shelter-full-zh.png | 15811 | 2/2 | 2/2 | 2/2 | - | 2/2 | 1/1 | - | - | ok | 0 | 0 | yes |
 
 **Summary**
 
@@ -121,41 +121,37 @@ Run 2026-11-03 09:53 JST, model `claude-opus-5-5`, effort low, 15 inputs from 10
 - Risk flags as expected: 15/15 inputs.
 - Six languages present on every fact: 15/15 inputs.
 - Errors: 0.
-- Latency: median 13665 ms, mean 14236 ms, min 10187 ms, max 22426 ms.
-- Tokens: input 62310, cache read 82044, cache write 20511, output 19437.
+- Latency: median 13647 ms, mean 13913 ms, min 8511 ms, max 17284 ms.
+- Tokens: input 62310, cache read 104925, cache write 0, output 20704.
 - `merges_with`, `updates` and `creates_beside` are scored by `pnpm eval --reconcile` (second table).
 <!-- /eval:claude-opus-5-5 -->
 
 <!-- eval-reconcile:claude-opus-5-5 -->
 ## reconcile on `claude-opus-5-5`
 
-Run 2026-11-03 10:47 JST, extract `claude-opus-5-5`, reconcile `claude-opus-5-5`, effort low, 3 chains, 11 steps, candidates selected in memory the way lib/db/cards.ts does, no database writes.
+Run 2026-11-04 01:37 JST, extract `claude-opus-5-5`, reconcile `claude-opus-5-5`, effort low, 3 chains, 11 steps, candidates selected in memory the way lib/db/cards.ts does, no database writes, clock pinned to 2026-11-03 10:00 JST (--now).
 
 | chain | input | extract ms | reconcile ms | facts | candidates | decision | expected | result |
 |---|---|---:|---:|---:|---:|---|---|---|
-| p02 | p02-water-distribution-notice.jpg | 11905 | 0 | 1 | 0 | create | create | pass |
-| p02 | p04-line-water-same-fact.png | 9357 | 4152 | 1 | 1 | merge to p02/kosugi-es | merge | pass |
-| p02 | p05-facebook-water-vi.txt | 8570 | 3118 | 1 | 1 | merge to p02/kosugi-es | merge | pass |
-| p02 | s02-water-distribution-notice-synthetic.jpg | 10274 | 3020 | 1 | 1 | merge to p02/kosugi-es | merge | pass |
-| p02 | t02-water-distribution-notice-ja.txt | 9050 | 3559 | 1 | 1 | merge to p02/kosugi-es | merge | pass |
-| p02 | p07-water-time-change.jpg | 12783 | 2512 | 1 | 1 | update to p02/kosugi-es | update | pass |
-| p02 | p10-supplies-distribution-notice.jpg | 14749 | 0 | 1 | 0 | create | create | pass |
-| p03 | p03-wechat-konbini.png | 13248 | 0 | 1 | 0 | create | create | pass |
-| p03 | t03-wechat-konbini-zh.txt | 8401 | 0 | 1 | 0 | create | merge | fail |
-| p11 | p11-x-shelter-full.png | 16985 | 0 | 2 | 0; 0 | create; create | create | pass |
-| p11 | p12-xhs-shelter-full-zh.png | 12910 | 4903 | 2 | 1; 1 | merge to p11/kosugi-es; merge to p11/nakahara-jhs | merge | pass |
+| p02 | p02-water-distribution-notice.jpg | 11278 | 0 | 1 | 0 | create | create | pass |
+| p02 | p04-line-water-same-fact.png | 9600 | 2301 | 1 | 1 | merge to p02/kosugi-es | merge | pass |
+| p02 | p05-facebook-water-vi.txt | 7356 | 2531 | 1 | 1 | merge to p02/kosugi-es | merge | pass |
+| p02 | s02-water-distribution-notice-synthetic.jpg | 12973 | 2872 | 1 | 1 | merge to p02/kosugi-es | merge | pass |
+| p02 | t02-water-distribution-notice-ja.txt | 9155 | 2909 | 1 | 1 | merge to p02/kosugi-es | merge | pass |
+| p02 | p07-water-time-change.jpg | 10896 | 3239 | 1 | 1 | update to p02/kosugi-es | update | pass |
+| p02 | p10-supplies-distribution-notice.jpg | 15643 | 0 | 1 | 0 | create | create | pass |
+| p03 | p03-wechat-konbini.png | 9776 | 0 | 1 | 0 | create | create | pass |
+| p03 | t03-wechat-konbini-zh.txt | 7823 | 2494 | 1 | 1 | merge to p03/musashikosugi-sta | merge | pass |
+| p11 | p11-x-shelter-full.png | 16458 | 0 | 2 | 0; 0 | create; create | create | pass |
+| p11 | p12-xhs-shelter-full-zh.png | 14498 | 5090 | 2 | 1; 1 | merge to p11/kosugi-es; merge to p11/nakahara-jhs | merge | pass |
 
 **Summary**
 
-- Steps passed: 10/11 (create 4/4, merge 5/6, update 1/1). Must be all.
+- Steps passed: 11/11 (create 4/4, merge 6/6, update 1/1). Must be all.
 - Chains: p02 (p02, p04, p05, s02, t02, p07, p10); p03 (p03, t03); p11 (p11, p12).
 - Code overrides of the model's proposal: 0.
-- Reconcile latency over 7 calls with candidates: median 3020 ms, min 2295 ms, max 4152 ms. Steps with no candidates make no call.
-- Reconcile tokens: input 4362, cache read 23766, cache write 3961, output 1003.
-
-**Details**
-
-- p03 / t03-wechat-konbini-zh.txt: fact 0 (shops at no place): create, expected merge; model reason: no candidates
+- Reconcile latency over 8 calls with candidates: median 2652 ms, min 2301 ms, max 3239 ms. Steps with no candidates make no call.
+- Reconcile tokens: input 4794, cache read 27727, cache write 3961, output 1041.
 <!-- /eval-reconcile:claude-opus-5-5 -->
 
 <!-- eval-mask:claude-opus-5-5 -->
@@ -234,3 +230,12 @@ Two rules went into `prompts/extract.system.md` before the merge of the day 2 an
 **For the merge (Fable).** `components/board/CardSheet.tsx` mounts `MaskedImage` inside the original text section when `card.has_masked_image` is set (done after the review, once the G2/G3 session was finished with that file). Also touched outside the owned list, small and additive: `lib/db/masked.ts` (new: upload, attach, read for public cards), `lib/db/purge.ts` (masked objects are removed with their cards, plus the orphan safety net), `lib/db/boards.ts` and `lib/db/local.ts` (`has_masked_image`), `.env.example` (`MASK_MODEL`, `MASKING_ENABLED`). The Vercel project needs no new variable: the default is on.
 
 **Review fixes (same day, PR #5 review by Fable).** (1) A masked object can no longer outlive its card: the copy is uploaded only when a written card still lacks one, `attachMaskedImage` returns the number of rows it changed and the object is removed at once when that is zero (a merge into an already masked card stores nothing: checked on the throwaway board, two p04 drop-ins, one object), and the purge job removes `masked/` objects older than the longest card retention that no card lists. (2) A screenshot that produced any risk-flagged fact gets no masked copy at all, and `plate` (vehicle number plates) joined the kinds in code, schema and prompt; the fixtures carry no plates, so the eval cannot measure it. (3) Readers get `has_masked_image` instead of the Storage path: `listPublicCards` and `getPublicCard` strip `masked_image_path`, verified on the cards API and the board HTML. (4) The masked route sends `Cache-Control: no-store`, a refusal is logged by category only, and `scripts/eval-mask.ts` says at the top that it prints labels and runs on the fictional fixtures only. Coverage after the changes: 50/50 again, median 6.7 s.
+
+### 2026-11-04, t03 merge and the pinned clock (polish session, `claude-fable-5-1`)
+
+**What changed.** One rule in `prompts/extract.system.md` under Places: a shop, spot or queue described only by its relation to a known place (the convenience store in front of the station, 駅前のコンビニ, 站前的便利店) takes that known place's `place_id`, with the spot itself kept in `place_text_ja`. The prompt rule was preferred over a wider candidate query because it fixes the fact where it is made: the card then carries the station's `place_id`, so the board shows the place, ask can cite it by place, and reconcile sees the same candidates as the p03 screenshot did, with no second query path to keep in step with `listReconcileCandidates`.
+
+**Result.** `t03` now extracts to `musashikosugi-sta` with 武蔵小杉駅前のコンビニ in `place_text_ja`, sees the p03 card as its one candidate and merges onto it (reconcile 2.5 s). `pnpm eval` after the rule: 100/100 fields, 0 PII leaks, 0 invented facts, median 13.6 s (table above, run 2026-11-04 01:31 JST). `pnpm eval --reconcile --now 2026-11-03T10:00:00+09:00`: 11/11 steps (table above, run 01:37 JST), reconcile median 2.7 s, 0 code overrides.
+
+**The clock.** The first re-run of the chain, at 01:28 JST on 11/04 with the real clock, passed t03 but came back 9/11: `s02` and `t02` were judged `conflict` against the p02 card, with the reason that the p02 notice says 本日 (which the model read as 11/04 at that hour) while the two inputs say 11月3日. That is a correct reading of the inputs, not a reconcile fault: the p02 group was written for the demo day. `scripts/eval.ts` therefore gained `--now`, which pins the clock extract and reconcile see, and the chain is run with the fixture day; the run header records it. The extract table keeps the real clock, as before, since its time checks compare the time of day only. Open for review: whether to make the fixture day the chain's default rather than a flag.
+
