@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { anthropic, MODELS, type ModelId } from "./client";
+import type { UsageMeter } from "./usage";
 import { boardContext, containsContact, type ExtractFact } from "./extract";
 import { missingLangs } from "@/lib/cards/langs";
 import type { CardLang } from "@/lib/i18n";
@@ -102,7 +103,7 @@ export async function translate(
   board: Board,
   items: TranslateItem[],
   langs: readonly TranslateLang[],
-  options: { model?: ModelId; maxTokens?: number } = {},
+  options: { model?: ModelId; maxTokens?: number; onUsage?: UsageMeter } = {},
 ): Promise<TranslateOutcome> {
   const wanted = TRANSLATE_LANGS.filter((l) => langs.includes(l));
   if (items.length === 0 || wanted.length === 0) {
@@ -144,6 +145,7 @@ export async function translate(
     cacheReadTokens: message.usage.cache_read_input_tokens ?? 0,
     cacheWriteTokens: message.usage.cache_creation_input_tokens ?? 0,
   };
+  options.onUsage?.(usage);
   if (message.stop_reason === "refusal") {
     throw new TranslateError("refusal", message.stop_details?.explanation ?? "refused");
   }

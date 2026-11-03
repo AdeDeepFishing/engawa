@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type Anthropic from "@anthropic-ai/sdk";
 import { anthropic, MODELS, type ModelId } from "./client";
+import type { UsageMeter } from "./usage";
 
 // Prompt and schema are files, loaded once per process. Edit them there.
 const PROMPT_PATH = join(process.cwd(), "lib/claude/prompts/mask.system.md");
@@ -88,7 +89,7 @@ export type MaskEffort = "low" | "medium" | "high";
 export async function maskBoxes(
   image: { data: string; mediaType: "image/jpeg" | "image/png" },
   size: { width: number; height: number },
-  options: { model?: ModelId; effort?: MaskEffort } = {},
+  options: { model?: ModelId; effort?: MaskEffort; onUsage?: UsageMeter } = {},
 ): Promise<MaskOutcome> {
   const model = options.model ?? maskModel();
   const userContent: Anthropic.ContentBlockParam[] = [
@@ -119,6 +120,7 @@ export async function maskBoxes(
     cacheReadTokens: message.usage.cache_read_input_tokens ?? 0,
     cacheWriteTokens: message.usage.cache_creation_input_tokens ?? 0,
   };
+  options.onUsage?.(usage);
 
   if (message.stop_reason === "refusal") {
     // Only the category: the explanation can quote what is in the screenshot.
