@@ -40,18 +40,16 @@ export function InvalidAdminLink() {
 export function AdminView({
   board,
   lists,
-  token,
   serverNow,
 }: {
   board: Board;
   lists: AdminCardLists;
-  token: string;
   serverNow: string;
 }) {
   const { lang, t } = useLang();
   const now = new Date(serverNow);
   const item = (card: Card, actions: AdminAction[]) => (
-    <AdminCard key={card.id} card={card} board={board} now={now} token={token} actions={actions} />
+    <AdminCard key={card.id} card={card} board={board} now={now} actions={actions} />
   );
   return (
     <>
@@ -121,13 +119,11 @@ function AdminCard({
   card,
   board,
   now,
-  token,
   actions,
 }: {
   card: Card;
   board: Board;
   now: Date;
-  token: string;
   actions: AdminAction[];
 }) {
   const { lang, t } = useLang();
@@ -147,10 +143,11 @@ function AdminCard({
     setBusy(action);
     setFailed(false);
     try {
+      // The admin cookie goes along with the request; no token in the body.
       const res = await fetch(`/api/b/${board.slug}/admin`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, card_id: card.id, action }),
+        body: JSON.stringify({ card_id: card.id, action }),
       });
       if (!res.ok) throw new Error(String(res.status));
       startTransition(() => router.refresh());

@@ -18,6 +18,51 @@ export function isAdminToken(candidate: unknown): boolean {
   return timingSafeEqual(a, b);
 }
 
+/**
+ * The admin session. The entry link (`/api/b/[slug]/admin/enter?token=`)
+ * checks the token once; after that the browser holds HttpOnly cookies for
+ * 12 hours and the token itself is in no URL. The cookie value is
+ * `<expiry>.<sha256 digest over the expiry and the token>`, never the token,
+ * so the expiry is enforced on the server too. One cookie is scoped to the
+ * board's admin page and one to its admin API; no other path receives them.
+ */
+export const ADMIN_SESSION_SECONDS = 12 * 60 * 60;
+export const ADMIN_PAGE_COOKIE = "engawa_admin";
+export const ADMIN_API_COOKIE = "engawa_admin_api";
+
+export function adminCookies(slug: string): { name: string; path: string }[] {
+  return [
+    { name: ADMIN_PAGE_COOKIE, path: `/b/${slug}/admin` },
+    { name: ADMIN_API_COOKIE, path: `/api/b/${slug}/admin` },
+  ];
+}
+
+function sessionDigest(token: string, expiresAt: number): string {
+  return createHash("sha256").update(`engawa-admin-session:${expiresAt}:${token}`).digest("hex");
+}
+
+/** The cookie value for a session starting now, or null when there is no admin. */
+export function adminCookieValue(now = new Date()): string | null {
+  const expected = process.env.ADMIN_TOKEN;
+  if (!expected || expected.length < 16) return null;
+  const expiresAt = Math.floor(now.getTime() / 1000) + ADMIN_SESSION_SECONDS;
+  return `${expiresAt}.${sessionDigest(expected, expiresAt)}`;
+}
+
+/** Checks a cookie value: well formed, not expired, digest equal in constant time. */
+export function isAdminCookie(candidate: unknown, now = new Date()): boolean {
+  const expected = process.env.ADMIN_TOKEN;
+  if (!expected || expected.length < 16) return false;
+  if (typeof candidate !== "string" || candidate.length > 200) return false;
+  const match = /^(\d{1,12})\.([0-9a-f]{64})$/.exec(candidate);
+  if (!match) return false;
+  const expiresAt = Number(match[1]);
+  if (expiresAt * 1000 <= now.getTime()) return false;
+  const a = createHash("sha256").update(match[2]).digest();
+  const b = createHash("sha256").update(sessionDigest(expected, expiresAt)).digest();
+  return timingSafeEqual(a, b);
+}
+
 export interface AdminCardLists {
   held: Card[];
   public: Card[];

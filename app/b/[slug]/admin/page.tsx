@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
-import { isAdminToken, listCardsForAdmin } from "@/lib/db/admin";
+import { ADMIN_PAGE_COOKIE, isAdminCookie, listCardsForAdmin } from "@/lib/db/admin";
 import { getBoardBySlug } from "@/lib/db/boards";
 import { hasDb } from "@/lib/db/client";
 import { t } from "@/lib/i18n";
@@ -11,7 +12,6 @@ export const dynamic = "force-dynamic";
 
 type Props = {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ token?: string | string[] }>;
 };
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -19,22 +19,21 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: `${t("admin.title", lang)} | Engawa`,
     robots: { index: false, follow: false },
-    // The token is in this page's URL: never send it onwards in a Referer.
-    referrer: "no-referrer",
   };
 }
 
 /**
- * Secret-link admin for one board: the held queue (publish or hide),
- * confirm official, hide any card. The token is checked on the server in
- * constant time; without it nothing about the cards is rendered.
+ * Admin for one board: the held queue (publish or hide), confirm official,
+ * hide any card. The admin arrives here through the entry link
+ * (/api/b/[slug]/admin/enter), which checks the token and sets an HttpOnly
+ * cookie; this page reads only that cookie, so the URL carries no secret.
+ * Without a valid cookie nothing about the cards is rendered.
  */
-export default async function AdminPage({ params, searchParams }: Props) {
-  const [{ slug }, { token }] = await Promise.all([params, searchParams]);
+export default async function AdminPage({ params }: Props) {
+  const [{ slug }, store] = await Promise.all([params, cookies()]);
   const board = await getBoardBySlug(slug);
   if (!board) notFound();
-  const value = typeof token === "string" ? token : "";
-  if (!hasDb() || !isAdminToken(value)) return <InvalidAdminLink />;
+  if (!hasDb() || !isAdminCookie(store.get(ADMIN_PAGE_COOKIE)?.value)) return <InvalidAdminLink />;
   const lists = await listCardsForAdmin(board);
-  return <AdminView board={board} lists={lists} token={value} serverNow={new Date().toISOString()} />;
+  return <AdminView board={board} lists={lists} serverNow={new Date().toISOString()} />;
 }

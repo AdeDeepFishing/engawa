@@ -71,7 +71,7 @@ async function main() {
       const lines = [
         `# admin token for board ${b.slug}, generated ${now.toISOString()}`,
         `ADMIN_TOKEN_${b.slug.toUpperCase().replace(/[^A-Z0-9]/g, "_")}=${token}`,
-        `# admin URL: /b/${b.slug}/admin?token=${token}`,
+        `# admin link: /api/b/${b.slug}/admin/enter?token=<ADMIN_TOKEN> (the ADMIN_TOKEN environment variable gates the page)`,
         "",
       ];
       if (tokenFile) {

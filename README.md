@@ -20,7 +20,7 @@ Maria asks in English where she can get water and whether she can bring her cat 
 2. **Extract** (`lib/claude/extract.ts`, Claude Opus 5.5, structured outputs). Facts, category, place normalized to the board's known places, times, source type, risk flags, and the card text in six languages. Personal information is replaced with placeholders; code rejects any result in which a phone number or email survives.
 3. **Reconcile** (`lib/claude/reconcile.ts`, structured outputs). Code picks the candidate cards (same board, category and place, still valid); Claude proposes create, merge, update, conflict or hold; code checks the answer and enforces the trust order (official, then firsthand, then secondhand), so a weaker source never overwrites a stronger one. Anything with a risk flag is held for a human.
 4. **Cards** show their source type, how many sources back them, when they changed, the previous version after an update, both statements when sources disagree, and "may be outdated" once they expire.
-5. **Admin** (`/b/<slug>/admin?token=...`): the held queue with publish and hide, confirm official, hide any card.
+5. **Admin** (`/b/<slug>/admin`, entered once through `/api/b/<slug>/admin/enter?token=...`, which sets a 12 hour HttpOnly cookie and redirects to the clean URL): the held queue with publish and hide, confirm official, hide any card.
 
 Claude proposes; code decides. The full architecture is in [docs/PLAN.md](docs/PLAN.md).
 
@@ -36,7 +36,7 @@ pnpm db:seed                 # demo board 武蔵小杉, known places, two sample
 pnpm dev                     # then open http://localhost:3000/b/musashikosugi
 ```
 
-Without `SUPABASE_URL` the board still renders read-only from the seed files, which is enough to work on the UI. `ADMIN_TOKEN` (generate it with `openssl rand -hex 16`) enables the admin page; leave it empty and there is no admin at all.
+Without `SUPABASE_URL` the board still renders read-only from the seed files, which is enough to work on the UI. `ADMIN_TOKEN` (generate it with `openssl rand -hex 16`) enables the admin page: open `/api/b/<slug>/admin/enter?token=<ADMIN_TOKEN>` once and the browser keeps a cookie for 12 hours, scoped to that board's admin page and API. Leave it empty and there is no admin at all.
 
 Checks: `pnpm typecheck`, `pnpm lint`, and `pnpm eval` for the fixture evaluation.
 
