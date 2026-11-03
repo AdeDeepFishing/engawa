@@ -7,7 +7,9 @@ import { ShareButton } from "@/components/share/ShareButton";
 import { CardItem } from "./CardItem";
 import { CardSheet } from "./CardSheet";
 import { DropIn, type PendingItem } from "./DropIn";
+import { HiddenDrawer } from "./HiddenDrawer";
 import { PendingCard } from "./PendingCard";
+import type { HiddenDuplicate } from "@/lib/db/boards";
 import { useLang } from "@/lib/i18n/LangProvider";
 import type { Board, Card } from "@/lib/types";
 
@@ -17,17 +19,21 @@ const DONE_LINGER_MS = 2_500;
 export function BoardView({
   board,
   initialCards,
+  initialHiddenDuplicates = [],
   serverNow,
   canSubmit,
 }: {
   board: Board;
   initialCards: Card[];
+  /** Cards hidden as duplicates of a public card; shown in a drawer under the list. */
+  initialHiddenDuplicates?: HiddenDuplicate[];
   serverNow: string;
   /** False when the server has no database (seed fallback), so drop-in is hidden. */
   canSubmit: boolean;
 }) {
   const { lang, t } = useLang();
   const [cards, setCards] = useState<Card[]>(initialCards);
+  const [hidden, setHidden] = useState<HiddenDuplicate[]>(initialHiddenDuplicates);
   const [now, setNow] = useState<Date>(() => new Date(serverNow));
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [pending, setPending] = useState<PendingItem[]>([]);
@@ -42,8 +48,9 @@ export function BoardView({
     try {
       const res = await fetch(`/api/b/${board.slug}/cards`, { cache: "no-store" });
       if (res.ok) {
-        const data = (await res.json()) as { cards: Card[]; now: string };
+        const data = (await res.json()) as { cards: Card[]; hidden_duplicates?: HiddenDuplicate[]; now: string };
         setCards(data.cards);
+        setHidden(data.hidden_duplicates ?? []);
         setNow(new Date(data.now));
       }
     } catch {
@@ -133,6 +140,7 @@ export function BoardView({
             ))}
           </ul>
         )}
+        <HiddenDrawer items={hidden} now={now} onOpenOriginal={openFromAnswer} />
       </main>
       {canSubmit ? (
         <DropIn

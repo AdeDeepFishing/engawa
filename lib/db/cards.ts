@@ -1,7 +1,7 @@
 import { db } from "./client";
 import { addDays, addHours, CARD_RETENTION_DAYS, DEFAULT_VALID_HOURS } from "@/lib/cards/categories";
 import { contentTime } from "@/lib/cards/display";
-import type { ExtractFact } from "@/lib/claude/extract";
+import { containsContact, type ExtractFact } from "@/lib/claude/extract";
 import { trustRank } from "@/lib/cards/trust";
 import type { ReconcileCandidate, ReconcileDecision } from "@/lib/claude/reconcile";
 import type {
@@ -9,10 +9,12 @@ import type {
   Card,
   CardFacts,
   CardSource,
+  CardTrace,
   ConflictStatement,
   Platform,
   ReconcileAction,
   Submission,
+  TraceStep,
   Visibility,
 } from "@/lib/types";
 
@@ -38,6 +40,32 @@ export interface SourceContext {
   sub: Submission;
   platform: Platform;
   inputLanguage: string;
+  /** Model that read the input; recorded on the `created` source row. Null when unknown (scripts). */
+  extractModel?: string | null;
+}
+
+/** What a source row records about the decision behind it (migration 0005). */
+interface SourceTrace {
+  reason: string | null;
+  model: string | null;
+}
+
+/**
+ * Merge, update and conflict rows carry the model's reason and the reconcile
+ * model. When code overrode the model's action (an update from a weaker
+ * source kept as a conflict) the model's sentence argues for the action not
+ * taken, so no reason is stored; the override itself is in the server log.
+ * A reason is built from PII-stripped card text, but it reaches readers, so
+ * it gets the same phone and email check as the extract output and is
+ * dropped rather than stored when it fails.
+ */
+function traceOf(decision: ReconcileDecision): SourceTrace {
+  let reason: string | null = decision.override ? null : decision.reason.trim() || null;
+  if (reason && containsContact(reason)) {
+    console.warn("reconcile reason dropped: it contains a phone number or email");
+    reason = null;
+  }
+  return { reason, model: decision.model ?? null };
 }
 
 export interface AppliedCard {
@@ -182,7 +210,8 @@ export async function insertCard(
   const { data, error } = await db().from("cards").insert(row).select("id, visibility, purge_after").single();
   if (error) throw error;
   const card = data as { id: string; visibility: Visibility; purge_after: string };
-  await insertSource(ctx, card.id, fact, "created");
+  // A create has no comparison to explain; the row names the model that read the input.
+  await insertSource(ctx, card.id, fact, "created", { reason: null, model: ctx.extractModel ?? null });
   return { ...card, action: decision.action, reason: decision.reason };
 }
 
@@ -194,7 +223,7 @@ async function mergeIntoCard(
   decision: ReconcileDecision,
   now: Date,
 ): Promise<AppliedCard> {
-  await insertSource(ctx, card.id, fact, "confirmed");
+  await insertSource(ctx, card.id, fact, "confirmed", traceOf(decision));
   const { error: rpcErr } = await db().rpc("bump_card_source", { p_card: card.id });
   if (rpcErr) throw rpcErr;
 
@@ -282,7 +311,7 @@ async function updateCard(
       purge_after: laterOf(purge, cardPurgeAfter(current, now)),
     };
   });
-  await insertSource(ctx, card.id, fact, "updated");
+  await insertSource(ctx, card.id, fact, "updated", traceOf(decision));
   return { id: card.id, visibility: "public", purge_after: result.purge_after, action: "update", reason: decision.reason };
 }
 
@@ -300,7 +329,7 @@ async function conflictCard(
     statements.push(statementFromFact(fact, ctx.sub.id, now));
     return { conflict: { statements: trimStatements(statements) } };
   });
-  await insertSource(ctx, card.id, fact, "conflict");
+  await insertSource(ctx, card.id, fact, "conflict", traceOf(decision));
   return { id: card.id, visibility: "public", purge_after: result.purge_after, action: "conflict", reason: decision.reason };
 }
 
@@ -377,6 +406,7 @@ async function insertSource(
   cardId: string,
   fact: ExtractFact,
   relation: CardSource["relation"],
+  trace: SourceTrace,
 ): Promise<void> {
   const { error } = await db().from("card_sources").insert({
     card_id: cardId,
@@ -385,6 +415,8 @@ async function insertSource(
     source_type: fact.source_type,
     platform: ctx.platform,
     uploader_area_code: ctx.sub.uploader_area_code,
+    reason: trace.reason,
+    model: trace.model,
   });
   if (error) throw error;
 }
@@ -398,6 +430,54 @@ function laterOf(a: string, b: string): string {
 }
 
 // --- reads and admin writes -----------------------------------------------------
+
+/** Columns of a card_sources row that readers may see: no submission id, no uploader, no area. */
+const TRACE_COLUMNS = "relation, source_type, platform, created_at, reason, model";
+
+/**
+ * How a public card was made: its card_sources rows oldest first, each with
+ * the reconcile reason and the model that wrote it, plus whether the admin
+ * confirmed the card. Nothing from the submissions themselves reaches the
+ * reader: no content, no uploader, no image path. Null for held, hidden and
+ * unknown cards, like the masked image route.
+ */
+export async function getPublicCardTrace(cardId: string): Promise<CardTrace | null> {
+  const client = db();
+  const { data: card, error } = await client
+    .from("cards")
+    .select("id, official_confirmed")
+    .eq("id", cardId)
+    .eq("visibility", "public")
+    .maybeSingle();
+  if (error) throw error;
+  if (!card) return null;
+  const { data, error: rowsErr } = await client
+    .from("card_sources")
+    .select(TRACE_COLUMNS)
+    .eq("card_id", cardId)
+    .order("created_at", { ascending: true });
+  if (rowsErr) throw rowsErr;
+  const steps = (data ?? []) as unknown as TraceStep[];
+  return {
+    card_id: cardId,
+    official_confirmed: Boolean((card as { official_confirmed: boolean }).official_confirmed),
+    steps,
+    models: traceModels(steps),
+  };
+}
+
+/**
+ * Which models made the card, as far as the rows say: the `created` row's
+ * model (the extract model) and the latest comparison row's model (the
+ * reconcile model). A row written before migration 0005 has none, and no
+ * comparison row means no reconcile model: nothing is named that is not on
+ * record, not even a configured default.
+ */
+function traceModels(steps: TraceStep[]): CardTrace["models"] {
+  const created = steps.find((s) => s.relation === "created");
+  const compared = [...steps].reverse().find((s) => s.relation !== "created");
+  return { extract: created?.model ?? null, reconcile: compared?.model ?? null };
+}
 
 /** Any card on the board, whatever its visibility. Server only. */
 export async function getCard(board: Pick<Board, "id">, cardId: string): Promise<Card | null> {

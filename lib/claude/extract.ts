@@ -189,6 +189,11 @@ export async function extract(
 const PHONE_RE = /(?<!\d)0\d{1,4}-\d{1,4}-\d{3,4}(?!\d)|(?<!\d)0\d{9,10}(?!\d)/;
 const EMAIL_RE = /[\w.+-]+@[\w-]+\.[\w.-]+/;
 
+/** The same phone and email check the extract result must pass, for other model text that reaches readers. */
+export function containsContact(text: string): boolean {
+  return PHONE_RE.test(text) || EMAIL_RE.test(text);
+}
+
 function isMultilingual(v: unknown): v is Multilingual {
   return (
     typeof v === "object" &&

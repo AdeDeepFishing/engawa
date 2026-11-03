@@ -3,32 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useLang } from "@/lib/i18n/LangProvider";
+import { copyText } from "./copy";
 import { QrScreen } from "./QrScreen";
 
 type CopyState = "idle" | "copied" | "failed";
-
-async function copyText(text: string): Promise<boolean> {
-  try {
-    await navigator.clipboard.writeText(text);
-    return true;
-  } catch {
-    // Older browsers and non-secure contexts: fall back to a hidden textarea.
-    try {
-      const area = document.createElement("textarea");
-      area.value = text;
-      area.setAttribute("readonly", "");
-      area.style.position = "fixed";
-      area.style.opacity = "0";
-      document.body.appendChild(area);
-      area.select();
-      const ok = document.execCommand("copy");
-      area.remove();
-      return ok;
-    } catch {
-      return false;
-    }
-  }
-}
 
 /**
  * Share button for the top bar. Opens a small non-modal panel with the

@@ -16,6 +16,7 @@ Test inputs for the extraction and reconciliation pipeline, and for the eval scr
 - Rendered image fixtures, their `expected/` files and the `masking/` boxes were made by Claude Code on 2026-11-03.
 - Still to come from the human: phone photos of some printed notices (name them like `p02-water-distribution-notice.real.jpg` and add them to `variants` in the expected file), and a native speaker check of `p05-facebook-water-vi.txt`.
 - `expected/` files for the text fixtures (`t02`, `t03`, `s02`, `p05`, `p06`, `p08`, `a01`, `a03`) are not written yet.
+- Three inputs are also published under `public/samples/` for the board's "Try with a sample" row, so a judge on the deployed URL can run the real pipeline: `notice.jpg` is `p01-water-outage-notice.jpg`, `chat.png` is `p03-wechat-konbini.png`, `text.txt` is `p08-queue-short.txt`. Copy them again when those fixtures are re-rendered.
 
 ## Layout
 

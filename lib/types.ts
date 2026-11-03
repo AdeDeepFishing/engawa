@@ -122,6 +122,33 @@ export interface CardSource {
   created_at: string;
 }
 
+/**
+ * One step in how a card was made: a card_sources row with the reconcile
+ * decision's reason and the model that produced the row. `reason` is null on
+ * a `created` row (nothing was compared) and on rows written before
+ * 2026-11-04. `model` is the extract model on a `created` row and the
+ * reconcile model on the others; null on rows written before 2026-11-04.
+ */
+export interface TraceStep extends CardSource {
+  reason: string | null;
+  model: string | null;
+}
+
+/** How a public card was made, as readers see it. Served by /api/cards/[id]/trace. */
+export interface CardTrace {
+  card_id: string;
+  official_confirmed: boolean;
+  /** Oldest first. */
+  steps: TraceStep[];
+  /**
+   * Model ids as read from the rows, nothing else: `extract` from the
+   * `created` row, `reconcile` from the latest confirmed, updated or conflict
+   * row. Null when no such row exists or the row predates migration 0005;
+   * the footer then names nothing rather than a configured default.
+   */
+  models: { extract: string | null; reconcile: string | null };
+}
+
 export interface Card {
   id: string;
   board_id: string;

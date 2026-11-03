@@ -109,6 +109,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         const reconcileStarted = performance.now();
         const written = await writeCardsForSubmission(board, sub, outcome.result, {
           decide: decideWithClaude(board, id),
+          extractModel: outcome.model,
         });
         const reconcileMs = Math.round(performance.now() - reconcileStarted);
 
@@ -208,7 +209,7 @@ function decideWithClaude(board: Board, submissionId: string): DecideFn {
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       console.error(`reconcile ${submissionId} failed, creating instead:`, message);
-      return { action: "create", target_card_id: null, fill_missing: false, reason: `reconcile failed: ${message}` };
+      return { action: "create", target_card_id: null, fill_missing: false, reason: `reconcile failed: ${message}`, model: null };
     }
   };
 }

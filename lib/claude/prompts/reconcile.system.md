@@ -32,5 +32,5 @@ official_confirmed, then official, then firsthand, then secondhand, then unknown
 ## Output
 
 - `target_card_id` must be one of the candidate ids, or null when the action is `create`.
-- `reason`: one sentence in English for the log, naming the candidate you compared against if any.
+- `reason`: one or two short sentences in English. Readers see it under the card as "how this card was made", so say in plain words what the new fact shares with the card you chose or how it differs (place, time, status, conditions, source). Do not write card ids.
 - Never invent a candidate. If you are unsure whether two things are the same, prefer `create` over `merge`, and prefer `conflict` over `update`.

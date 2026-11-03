@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CATEGORY_ICON, isExpired } from "@/lib/cards/categories";
 import {
   conflictStatements,
@@ -13,10 +13,12 @@ import {
   timeAgo,
   timeRange,
 } from "@/lib/cards/display";
+import { CardShare } from "@/components/share/CardShare";
 import { areaName } from "@/lib/geo";
 import { CARD_LANGS, tCount, type Lang } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n/LangProvider";
-import type { Board, Card, ConflictStatement } from "@/lib/types";
+import type { Board, Card, CardTrace, ConflictStatement } from "@/lib/types";
+import { CardTraceView } from "./CardTrace";
 import { MaskedImage } from "./MaskedImage";
 
 /**
@@ -36,6 +38,28 @@ export function CardSheet({
 }) {
   const { lang, t } = useLang();
   const closeRef = useRef<HTMLButtonElement>(null);
+  /**
+   * The trace for the card shown, kept with its card id so a stale answer is
+   * never shown for another card. `data` null means the route answered 404
+   * (seed cards without a database, a card no longer public) or the fetch
+   * failed: the section is then left out instead of loading forever.
+   */
+  const [trace, setTrace] = useState<{ id: string; data: CardTrace | null } | null>(null);
+
+  // Fetched when the sheet opens and again when the card gains a source, an
+  // update or the admin's confirmation while it is open.
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`/api/cards/${card.id}/trace`, { cache: "no-store" })
+      .then((res) => (res.ok ? (res.json() as Promise<CardTrace>) : null))
+      .catch(() => null)
+      .then((data) => {
+        if (!cancelled) setTrace({ id: card.id, data });
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [card.id, card.source_count, card.updated_at, card.official_confirmed]);
 
   useEffect(() => {
     closeRef.current?.focus();
@@ -53,6 +77,9 @@ export function CardSheet({
   const conflicts = conflictStatements(card);
   const previous = supersededStatements(card);
   const sources = card.sources ?? [];
+  // Loading until the fetch settles, then the data or, on a 404, nothing.
+  const traceState = trace?.id === card.id ? trace : null;
+  const traceAbsent = traceState !== null && traceState.data === null;
 
   return (
     <section
@@ -181,6 +208,10 @@ export function CardSheet({
           </section>
         ) : null}
 
+        <CardShare card={card} board={board} now={now} />
+
+        {traceAbsent ? null : <CardTraceView cardId={card.id} trace={traceState?.data ?? null} now={now} />}
+
         <details className="mt-5 rounded-xl border border-line p-3">
           <summary className="cursor-pointer py-2 font-semibold">{t("sheet.all_languages")}</summary>
           <ul className="mt-2 flex flex-col gap-3">
@@ -211,7 +242,7 @@ export function CardSheet({
 }
 
 /** One statement in a conflict or in the update history: what it said, its time range, source and age. */
-function Statement({ statement: s, lang, now }: { statement: ConflictStatement; lang: Lang; now: Date }) {
+export function Statement({ statement: s, lang, now }: { statement: ConflictStatement; lang: Lang; now: Date }) {
   const range = timeRange(s.valid_from, s.valid_until, lang);
   const meta = [
     sourceLabel(s.source_type, s.official_confirmed, lang),
