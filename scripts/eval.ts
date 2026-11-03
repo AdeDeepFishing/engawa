@@ -417,6 +417,7 @@ function report(rows: Row[], startedAt: Date): string {
   const ok = rows.filter((r) => !r.error);
   const ms = ok.map((r) => r.ms).sort((a, b) => a - b);
   const median = ms.length ? ms[Math.floor(ms.length / 2)] : 0;
+  const p90 = ms.length ? ms[Math.min(ms.length - 1, Math.ceil(ms.length * 0.9) - 1)] : 0;
   const mean = ms.length ? Math.round(ms.reduce((a, b) => a + b, 0) / ms.length) : 0;
   const leaks = rows.reduce((n, r) => n + r.leaks.length, 0);
   const invented = rows.reduce((n, r) => n + r.invented.length, 0);
@@ -438,8 +439,10 @@ function report(rows: Row[], startedAt: Date): string {
   lines.push(`- Risk flags as expected: ${ok.length - flagRows}/${ok.length} inputs.`);
   lines.push(`- Six languages present on every fact: ${langRows}/${ok.length} inputs.`);
   lines.push(`- Errors: ${rows.length - ok.length}.`);
-  lines.push(`- Latency: median ${median} ms, mean ${mean} ms, min ${ms[0] ?? 0} ms, max ${ms[ms.length - 1] ?? 0} ms.`);
+  lines.push(`- Latency: median ${median} ms, p90 ${p90} ms, mean ${mean} ms, min ${ms[0] ?? 0} ms, max ${ms[ms.length - 1] ?? 0} ms.`);
   lines.push(`- Tokens: input ${usage.input}, cache read ${usage.cacheRead}, cache write ${usage.cacheWrite}, output ${usage.output}.`);
+  const per = (n: number) => (ok.length ? Math.round(n / ok.length) : 0);
+  lines.push(`- Tokens per call: input ${per(usage.input)} (plus ${per(usage.cacheRead)} read from cache), output ${per(usage.output)}.`);
   lines.push("- `merges_with`, `updates` and `creates_beside` are scored by `pnpm eval --reconcile` (second table).");
 
   const details = rows.filter((r) => r.problems.length || r.invented.length || r.leaks.length || r.error);
