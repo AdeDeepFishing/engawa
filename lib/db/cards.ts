@@ -245,6 +245,9 @@ async function mergeIntoCard(
  * into the statement history so readers see "previously: ...". The count
  * starts again at one: it says how many sources stand behind what the card
  * says now, and the superseded statement keeps its own count.
+ * official_confirmed is not written here: only the admin route sets it, and
+ * the trust check in reconcile turns any update to a confirmed card into a
+ * conflict, so a confirmed card is never updated by this path.
  */
 async function updateCard(
   ctx: SourceContext,
@@ -271,7 +274,6 @@ async function updateCard(
       original_text: fact.original_excerpt || null,
       original_lang: ctx.inputLanguage,
       source_type: fact.source_type,
-      official_confirmed: false,
       source_count: 1,
       last_confirmed_at: null,
       valid_from: fact.valid_from,
