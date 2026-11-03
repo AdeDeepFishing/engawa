@@ -94,6 +94,7 @@ Fonts come from the system (Hiragino Sans and PingFang SC on macOS). On one mach
 - `risk_flags` must each be set on at least one fact.
 - `merges_with` lists inputs that state the same fact and must end up on the same card.
 - `updates` (only `p07`) lists inputs whose card this one must update rather than duplicate. Drop it in after them; the expected times are the card's times afterwards.
+- `creates_beside` (only `p10`) lists inputs whose cards must already be on the board when this one is dropped in; it must still come back as `create` (same shelter, different category). The reconcile eval appends it to that group's chain.
 - `notes` is for people reading the file and is not checked.
 
 ## Masking file shape

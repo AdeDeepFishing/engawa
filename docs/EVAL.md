@@ -2,7 +2,9 @@
 
 `pnpm eval` runs extract over every fixture input that has an expected file and scores it against `fixtures/expected`. Each run replaces its own section below (one per model); notes at the bottom are written by hand.
 
-How to read the table: each field cell is checks passed over checks made for the expected facts of that input; "-" means the expected file does not check that field. "invented" counts extracted facts that match no expected fact (strict: chatter turned into a fact counts). "PII leaks" counts planted names, handles and numbers found in any text that reaches the board or the uploader. Times are compared in Japan time; fixtures that say 本日 are checked on the time of day only.
+How to read the extract table: each field cell is checks passed over checks made for the expected facts of that input; "-" means the expected file does not check that field. "invented" counts extracted facts that match no expected fact (strict: chatter turned into a fact counts). "PII leaks" counts planted names, handles and numbers found in any text that reaches the board or the uploader. Times are compared in Japan time; fixtures that say 本日 are checked on the time of day only.
+
+`pnpm eval --reconcile` writes the second table. It runs chains instead of single inputs: each merge group from the expected files (`merges_with`, expected files first) goes through extract and then `lib/claude/reconcile.ts` one input after another, against an in-memory card list built the way `lib/db/cards.ts` selects candidates (same category, public, still valid or created in the last 24 hours, same place or no place, at most 20). Nothing is written to the database. After the group, an input with `updates` must come back as `update` and leave the card with the expected times, and an input with `creates_beside` must still come back as `create`. "decision" shows the checked decision per fact and the card it targeted as `<input>/<place>`; "candidates" is how many cards the model saw (0 means no call). The run exits 1 when any step fails.
 
 <!-- eval-2026-11-03:claude-opus-5-5 -->
 ## `claude-opus-5-5`, 2026-11-03 run, before the 11/04 prompt rules
@@ -119,8 +121,40 @@ Run 2026-11-03 09:53 JST, model `claude-opus-5-5`, effort low, 15 inputs from 10
 - Errors: 0.
 - Latency: median 13665 ms, mean 14236 ms, min 10187 ms, max 22426 ms.
 - Tokens: input 62310, cache read 82044, cache write 20511, output 19437.
-- Not scored: `merges_with` and `updates` (need reconcile).
+- `merges_with`, `updates` and `creates_beside` are scored by `pnpm eval --reconcile` (second table).
 <!-- /eval:claude-opus-5-5 -->
+
+<!-- eval-reconcile:claude-opus-5-5 -->
+## reconcile on `claude-opus-5-5`
+
+Run 2026-11-03 10:47 JST, extract `claude-opus-5-5`, reconcile `claude-opus-5-5`, effort low, 3 chains, 11 steps, candidates selected in memory the way lib/db/cards.ts does, no database writes.
+
+| chain | input | extract ms | reconcile ms | facts | candidates | decision | expected | result |
+|---|---|---:|---:|---:|---:|---|---|---|
+| p02 | p02-water-distribution-notice.jpg | 11905 | 0 | 1 | 0 | create | create | pass |
+| p02 | p04-line-water-same-fact.png | 9357 | 4152 | 1 | 1 | merge to p02/kosugi-es | merge | pass |
+| p02 | p05-facebook-water-vi.txt | 8570 | 3118 | 1 | 1 | merge to p02/kosugi-es | merge | pass |
+| p02 | s02-water-distribution-notice-synthetic.jpg | 10274 | 3020 | 1 | 1 | merge to p02/kosugi-es | merge | pass |
+| p02 | t02-water-distribution-notice-ja.txt | 9050 | 3559 | 1 | 1 | merge to p02/kosugi-es | merge | pass |
+| p02 | p07-water-time-change.jpg | 12783 | 2512 | 1 | 1 | update to p02/kosugi-es | update | pass |
+| p02 | p10-supplies-distribution-notice.jpg | 14749 | 0 | 1 | 0 | create | create | pass |
+| p03 | p03-wechat-konbini.png | 13248 | 0 | 1 | 0 | create | create | pass |
+| p03 | t03-wechat-konbini-zh.txt | 8401 | 0 | 1 | 0 | create | merge | fail |
+| p11 | p11-x-shelter-full.png | 16985 | 0 | 2 | 0; 0 | create; create | create | pass |
+| p11 | p12-xhs-shelter-full-zh.png | 12910 | 4903 | 2 | 1; 1 | merge to p11/kosugi-es; merge to p11/nakahara-jhs | merge | pass |
+
+**Summary**
+
+- Steps passed: 10/11 (create 4/4, merge 5/6, update 1/1). Must be all.
+- Chains: p02 (p02, p04, p05, s02, t02, p07, p10); p03 (p03, t03); p11 (p11, p12).
+- Code overrides of the model's proposal: 0.
+- Reconcile latency over 7 calls with candidates: median 3020 ms, min 2295 ms, max 4152 ms. Steps with no candidates make no call.
+- Reconcile tokens: input 4362, cache read 23766, cache write 3961, output 1003.
+
+**Details**
+
+- p03 / t03-wechat-konbini-zh.txt: fact 0 (shops at no place): create, expected merge; model reason: no candidates
+<!-- /eval-reconcile:claude-opus-5-5 -->
 
 ## Notes
 
@@ -149,3 +183,11 @@ Two rules went into `prompts/extract.system.md` before the merge of the day 2 an
 **Not scored yet.** `merges_with` and `updates` need reconcile. `pnpm eval --reconcile` exits with a note on what to wire once `lib/claude/reconcile.ts` lands. `pnpm eval` exits 1 when PII leaks or invented facts are above 0, so the Sonnet run above exits 1.
 
 **Purge check.** `pnpm purge` and `GET /api/cron/purge` (401 without `CRON_SECRET`, 200 with it) both ran with 0 objects and 0 rows deleted: the earliest `purge_after` on the board is 2026-12-02, so the seed and demo cards stay.
+
+### 2026-11-03, reconcile eval wired (session G1, `claude-fable-5-1`)
+
+**What changed.** `scripts/eval.ts --reconcile` runs the chains above instead of exiting with a note. Chains come from the expected files: the transitive closure of `merges_with` (p02 with p04, p05, s02, t02; p03 with t03; p11 with p12), then `updates` (p07 after the p02 group) and the new `creates_beside` key (p10 after the p02 group, documented in `fixtures/README.md`). Candidates are selected in memory with the same rule as `listReconcileCandidates`, and decisions are applied in memory the way `applyDecision` does (merge bumps the count and fills gaps, update replaces the times), so the update check reads the card's times afterwards. No database row is touched. `pnpm eval --reconcile` exits 1 on any failed step.
+
+**Result on the default models (extract and reconcile both `claude-opus-5-5`, effort low).** 10 of 11 steps pass: every image and text in the water group merges onto the p02 card (p04 LINE, p05 Vietnamese Facebook text, s02 synthetic photo, t02 Japanese text), p07 updates it to 15:00 to 16:00, p10 stays a separate supplies card, and both p12 facts merge onto the matching p11 cards (kosugi-es full, nakahara-jhs open). Reconcile median 3.0 s per call with candidates, prompt cache read from the second call on. No code override was needed: every proposal passed `checkDecision`.
+
+**Finding that needs a decision (not this session's files).** `t03-wechat-konbini-zh.txt` says 武藏小杉站前的便利店, the same words as the p03 screenshot, yet extract put the text version at no known place (`place_id` null, the store written in `place_text_ja`) while the screenshot went to `musashikosugi-sta`. The candidate rule then hides the p03 card from it: a fact with no place only sees cards with no place, so reconcile was not called and a second card was created. This is the same behaviour the 11/04 acceptance run saw with a text that named no place. Two possible fixes, either outside this branch: a line in `prompts/extract.system.md` that a shop or spot described by a known place ("in front of the station") normalizes to that place, or a wider candidate query that also offers cards at the places named in the fact's `place_text_ja`. Until one lands, the demo script should name the place in chat text the way p03 does, and the reconcile eval exits 1 on this step.
