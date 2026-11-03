@@ -102,12 +102,15 @@ function writeAreaOptIn(on: boolean): void {
 export function DropIn({
   boardSlug,
   areaNames,
+  offline = false,
   onPending,
   retryRequest,
 }: {
   boardSlug: string;
   /** The board's 町丁目 list; the area control appears only when polygons exist for it. */
   areaNames: Board["area_names"];
+  /** True while the board cannot reach the server: the button is disabled with a one-line reason. */
+  offline?: boolean;
   /** Receives every status change; the parent refreshes the list when a status is done. */
   onPending: (item: PendingItem) => void;
   /** Set by the parent when the user taps retry on a failed item. */
@@ -421,11 +424,19 @@ export function DropIn({
 
   return (
     <>
-      <div className="pointer-events-none fixed inset-x-0 bottom-4 z-10 flex justify-center px-4">
+      <div className="pointer-events-none fixed inset-x-0 bottom-4 z-10 flex flex-col items-center gap-2 px-4">
+        {offline ? (
+          <p id="dropin-offline" className="rounded-lg bg-warn-bg px-3 py-1 text-center text-base font-semibold text-warn-ink shadow">
+            {t("offline.dropin_reason")}
+          </p>
+        ) : null}
         <button
           type="button"
           onClick={openPanel}
-          className="pointer-events-auto min-h-14 rounded-full bg-accent px-8 text-lg font-bold text-accent-ink shadow-lg"
+          disabled={offline}
+          aria-describedby={offline ? "dropin-offline" : undefined}
+          className="pointer-events-auto min-h-14 rounded-full bg-accent px-8 text-lg font-bold text-accent-ink shadow-lg disabled:bg-muted"
+          data-dropin-button
         >
           {t("dropin.button")}
         </button>

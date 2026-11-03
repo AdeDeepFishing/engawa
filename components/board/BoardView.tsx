@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { TopBar } from "@/components/TopBar";
 import { AskPanel } from "@/components/ask/AskPanel";
+import { OfflineBanner } from "@/components/offline/OfflineBanner";
 import { ShareButton } from "@/components/share/ShareButton";
 import { CardItem } from "./CardItem";
 import { CardSheet } from "./CardSheet";
@@ -11,6 +12,7 @@ import { HiddenDrawer } from "./HiddenDrawer";
 import { PendingCard } from "./PendingCard";
 import type { HiddenDuplicate } from "@/lib/db/boards";
 import { useLang } from "@/lib/i18n/LangProvider";
+import { askServedFromCache, FROM_CACHE_HEADER, formatSnapshotTime, useOnline } from "@/lib/offline";
 import type { Board, Card } from "@/lib/types";
 
 const POLL_MS = 5_000;
@@ -38,6 +40,12 @@ export function BoardView({
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [pending, setPending] = useState<PendingItem[]>([]);
   const [retryRequest, setRetryRequest] = useState<PendingItem | null>(null);
+  /** True while the poll cannot reach the server: it failed, or the offline worker answered from its cache. */
+  const [stale, setStale] = useState(false);
+  const online = useOnline();
+  const offline = stale || !online;
+  /** Server time of the cards on screen, so an older saved copy never replaces newer cards. */
+  const shownAt = useRef(new Date(serverNow).getTime());
   const inFlight = useRef(false);
   const listRef = useRef<HTMLUListElement>(null);
   const selected = selectedId ? (cards.find((c) => c.id === selectedId) ?? null) : null;
@@ -49,16 +57,40 @@ export function BoardView({
       const res = await fetch(`/api/b/${board.slug}/cards`, { cache: "no-store" });
       if (res.ok) {
         const data = (await res.json()) as { cards: Card[]; hidden_duplicates?: HiddenDuplicate[]; now: string };
-        setCards(data.cards);
-        setHidden(data.hidden_duplicates ?? []);
-        setNow(new Date(data.now));
+        const fromCache = res.headers.has(FROM_CACHE_HEADER);
+        const at = new Date(data.now).getTime();
+        // The offline banner shows `now`, the time of what is on screen.
+        if (!fromCache || at >= shownAt.current) {
+          shownAt.current = at;
+          setCards(data.cards);
+          setHidden(data.hidden_duplicates ?? []);
+          setNow(new Date(data.now));
+        }
+        setStale(fromCache);
       }
     } catch {
-      // Offline or slow network: keep showing what we have.
+      // Offline with nothing saved, or a dropped request: keep showing what we have.
+      setStale(true);
     } finally {
       inFlight.current = false;
     }
   }, [board.slug]);
+
+  // A page opened offline, or answered from the worker's cache, polls at once
+  // instead of in 5 seconds, so the banner and the newest saved cards show up.
+  // Coming back online polls at once too; the banner goes when that poll succeeds.
+  useEffect(() => {
+    void askServedFromCache().then((storedAt) => {
+      if (storedAt) setStale(true);
+      if (storedAt || !navigator.onLine) void refresh();
+    });
+    const onOnline = () => {
+      inFlight.current = false;
+      void refresh();
+    };
+    window.addEventListener("online", onOnline);
+    return () => window.removeEventListener("online", onOnline);
+  }, [refresh]);
 
   useEffect(() => {
     const id = window.setInterval(refresh, POLL_MS);
@@ -126,6 +158,7 @@ export function BoardView({
 
   return (
     <>
+      <OfflineBanner message={offline ? t("offline.board_banner", { time: formatSnapshotTime(now, lang) }) : null} />
       <TopBar title={board.name[lang]} actions={<ShareButton boardSlug={board.slug} boardName={board.name[lang]} />} />
       <main className="mx-auto w-full max-w-2xl flex-1 px-4 pb-32 pt-4">
         <h1 className="sr-only">{board.name[lang]}</h1>
@@ -156,6 +189,7 @@ export function BoardView({
         <DropIn
           boardSlug={board.slug}
           areaNames={board.area_names}
+          offline={offline}
           onPending={upsertPending}
           retryRequest={retryRequest}
         />

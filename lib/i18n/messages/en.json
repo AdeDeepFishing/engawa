@@ -1,4 +1,7 @@
 {
+  "offline.board_banner": "Offline. Showing the board as of {time}.",
+  "offline.page_banner": "Offline. Showing a saved copy from {time}.",
+  "offline.dropin_reason": "Offline: drop-in works again once you are connected.",
   "share.print_notice": "Print as a notice (six languages)",
   "notice.title": "Notice in six languages",
   "notice.hint": "Print on A4 and put it up next to the original notice.",

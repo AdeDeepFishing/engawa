@@ -1,4 +1,7 @@
 {
+  "offline.board_banner": "Đang ngoại tuyến. Đang hiển thị bảng tin lúc {time}.",
+  "offline.page_banner": "Đang ngoại tuyến. Đang hiển thị bản đã lưu lúc {time}.",
+  "offline.dropin_reason": "Đang ngoại tuyến: có thể gửi lại khi có kết nối.",
   "share.print_notice": "In thành thông báo (6 ngôn ngữ)",
   "notice.title": "Thông báo bằng 6 ngôn ngữ",
   "notice.hint": "In trên giấy A4 và dán cạnh thông báo gốc.",

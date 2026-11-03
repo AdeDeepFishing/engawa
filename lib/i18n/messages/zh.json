@@ -1,4 +1,7 @@
 {
+  "offline.board_banner": "当前离线。显示的是 {time} 时的公告板。",
+  "offline.page_banner": "当前离线。显示的是 {time} 保存的页面。",
+  "offline.dropin_reason": "离线中无法投递，联网后即可使用。",
   "share.print_notice": "打印为通知（6种语言）",
   "notice.title": "6种语言的通知",
   "notice.hint": "用A4纸打印，贴在原通知旁边。",

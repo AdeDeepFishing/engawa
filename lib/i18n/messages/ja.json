@@ -1,4 +1,7 @@
 {
+  "offline.board_banner": "オフラインです。{time} 時点の掲示板を表示しています。",
+  "offline.page_banner": "オフラインです。{time} に保存したページを表示しています。",
+  "offline.dropin_reason": "オフラインのため投稿できません。つながると使えます。",
   "share.print_notice": "6言語のお知らせを印刷",
   "notice.title": "6言語のお知らせ",
   "notice.hint": "A4で印刷して、元のお知らせの横に貼ってください。",
