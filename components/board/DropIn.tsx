@@ -358,7 +358,8 @@ export function DropIn({
         const form = new FormData();
         form.set("kind", "text");
         form.set("text", content);
-        await submit(form, content);
+        // No sentText: a refused sample must not land in the text box as if the user had typed it.
+        await submit(form);
       } else {
         const blob = await res.blob();
         const name = sample.file.slice(sample.file.lastIndexOf("/") + 1);
