@@ -169,5 +169,13 @@
   "area.denied": "Không được phép dùng vị trí. Sẽ gửi mà không kèm khu vực.",
   "area.failed": "Không lấy được vị trí. Sẽ gửi mà không kèm khu vực.",
   "area.badge": "Khu vực tự khai: {area}",
-  "area.label": "Khu vực tự khai"
+  "area.label": "Khu vực tự khai",
+  "poster.print": "In áp phích",
+  "poster.subtitle": "Bảng tin khu phố bằng ngôn ngữ của bạn",
+  "poster.cta": "Quét mã để mở bảng tin khu phố này",
+  "poster.cta_easy": "スマホで よみとって ください。この まちの おしらせが、あなたの ことばで よめます。",
+  "poster.community": "Đây là bảng tin cộng đồng, ai cũng dùng được. Đưa vào ảnh thông báo giấy, ảnh chụp màn hình chat hoặc văn bản, nó sẽ thành thẻ bằng tiếng Nhật, Anh, Trung, Hàn, Việt và tiếng Nhật dễ hiểu.",
+  "poster.print_hint": "In trên giấy A4.",
+  "poster.print_button": "In",
+  "poster.back": "Về bảng tin"
 }

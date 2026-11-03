@@ -169,5 +169,13 @@
   "area.denied": "Location was not allowed. It will be sent without an area.",
   "area.failed": "Could not get your location. It will be sent without an area.",
   "area.badge": "Self-reported area: {area}",
-  "area.label": "Self-reported area"
+  "area.label": "Self-reported area",
+  "poster.print": "Print poster",
+  "poster.subtitle": "A neighbourhood board in your language",
+  "poster.cta": "Scan to open this neighbourhood's board",
+  "poster.cta_easy": "スマホで よみとって ください。この まちの おしらせが、あなたの ことばで よめます。",
+  "poster.community": "This is a community board. Anyone can drop in a photo of a paper notice, a chat screenshot or a text, and it becomes a card in Japanese, English, Chinese, Korean, Vietnamese and easy Japanese.",
+  "poster.print_hint": "Print on A4.",
+  "poster.print_button": "Print",
+  "poster.back": "Back to the board"
 }

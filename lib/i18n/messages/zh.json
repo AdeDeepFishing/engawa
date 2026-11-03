@@ -169,5 +169,13 @@
   "area.denied": "未获得位置权限。将不附区域发送。",
   "area.failed": "无法获取位置。将不附区域发送。",
   "area.badge": "自行申报的区域：{area}",
-  "area.label": "自行申报的区域"
+  "area.label": "自行申报的区域",
+  "poster.print": "打印海报",
+  "poster.subtitle": "用你的语言阅读的社区公告板",
+  "poster.cta": "扫一扫，打开这个社区的公告板",
+  "poster.cta_easy": "スマホで よみとって ください。この まちの おしらせが、あなたの ことばで よめます。",
+  "poster.community": "这是一个人人可用的社区公告板。放入纸质通知的照片、聊天截图或文字，就会变成日语、英语、中文、韩语、越南语和简易日语的卡片。",
+  "poster.print_hint": "请用 A4 纸打印。",
+  "poster.print_button": "打印",
+  "poster.back": "返回公告板"
 }

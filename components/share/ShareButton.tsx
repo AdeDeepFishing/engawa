@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { useLang } from "@/lib/i18n/LangProvider";
 import { QrScreen } from "./QrScreen";
 
@@ -130,6 +131,10 @@ export function ShareButton({ boardSlug, boardName }: { boardSlug: string; board
               <span aria-hidden="true">▦</span>
               {t("share.qr")}
             </button>
+            <Link href={`/b/${boardSlug}/poster`} target="_blank" rel="noopener" className={action}>
+              <span aria-hidden="true">🖨️</span>
+              {t("poster.print")}
+            </Link>
           </div>
           <p className="mt-3 break-all rounded-lg bg-held-bg px-3 py-2 text-base select-all">{url}</p>
           <p role="status" className="mt-2 min-h-6 px-1 text-base font-semibold text-accent">
