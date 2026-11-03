@@ -13,7 +13,9 @@
     "eval": "node --env-file-if-exists=.env.local --import=tsx scripts/eval.ts",
     "eval:mask": "node --env-file-if-exists=.env.local --import=tsx scripts/eval-mask.ts",
     "purge": "node --env-file-if-exists=.env.local --import=tsx scripts/purge.ts",
-    "latency": "node --env-file-if-exists=.env.local --import=tsx scripts/latency.ts"
+    "latency": "node --env-file-if-exists=.env.local --import=tsx scripts/latency.ts",
+    "guard": "node --import=tsx scripts/guard.ts",
+    "board:throwaway": "node --env-file-if-exists=.env.local --import=tsx scripts/throwaway-board.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "1.3.0",
