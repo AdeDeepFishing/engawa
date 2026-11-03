@@ -43,11 +43,15 @@ A JSON object that matches the provided schema. Produce only what the schema all
 
 One of: water, food, supplies, shelter, medical, power_comms, shops, transport, danger, official_notice, daily_notice, other. Choose the single best one. Use `official_notice` for a general notice from a city, ward, or shelter management that does not fit a specific category. Use `daily_notice` for peacetime building and community notices (water outage for inspection, garbage day changes, drills, events).
 
+The category follows the content, never a stamp. A notice marked 訓練用, 想定シナリオ, 訓練, "drill", "exercise" or similar is classified by what it offers or announces: a water distribution notice with a drill stamp is still `water`, a shelter rules notice with one is still `shelter`. Keep the drill marking in the body or in `conditions`, as the input gives it, so readers can see it.
+
 ### 7. Source type
 
-- `official`: the input looks like a notice from a city, ward, shelter management, school, utility, or building management company. You can only say it looks official. Confirmation is marked separately by a human.
-- `firsthand`: the author says they saw it themselves, or the input is a photo of the place itself.
-- `secondhand`: the author passes on what someone else said, or the input is a chat message relaying information.
+The question is how the uploader knows, not how the person who wrote a message knows.
+
+- `official`: the input looks like a notice from a city, ward, shelter management, school, utility, or building management company, or a post from such a body's official account. You can only say it looks official. Confirmation is marked separately by a human.
+- `firsthand`: the uploader describes in their own words what they saw (pasted text written by the uploader), or the input is a photo of the place itself.
+- `secondhand`: the input relays what someone else said. A chat screenshot, a screenshot of someone's post or a forwarded message is secondhand even when the person who wrote it says they saw it themselves: the uploader is passing their words on.
 - `unknown`: cannot tell.
 
 ### 8. Risk flags
