@@ -1,7 +1,7 @@
 import { createHash, timingSafeEqual } from "node:crypto";
 import { CARD_WITH_SOURCES, withSortedSources } from "./cards";
 import { db } from "./client";
-import type { Board, Card, Visibility } from "@/lib/types";
+import type { Board, Card, Multilingual, Visibility } from "@/lib/types";
 
 /**
  * The admin gate. ADMIN_TOKEN comes from the environment and is compared
@@ -63,11 +63,25 @@ export function isAdminCookie(candidate: unknown, now = new Date()): boolean {
   return timingSafeEqual(a, b);
 }
 
+/**
+ * A card as the admin page sees it. `duplicate_of` is the card this hidden
+ * card repeats (null unless it was hidden as a duplicate) and `original` is
+ * that card's title, embedded by the query. Until `duplicate_of` joins the
+ * shared Card type in lib/types.ts, the column is typed here.
+ */
+export type AdminCard = Card & {
+  duplicate_of: string | null;
+  original: { id: string; title: Multilingual } | null;
+};
+
 export interface AdminCardLists {
-  held: Card[];
-  public: Card[];
-  hidden: Card[];
+  held: AdminCard[];
+  public: AdminCard[];
+  hidden: AdminCard[];
 }
+
+/** The admin query: every column, the sources, and the title of the card a duplicate repeats. */
+const ADMIN_CARD_COLUMNS = `${CARD_WITH_SOURCES}, original:cards!cards_duplicate_of_fkey(id, title)`;
 
 /** Everything the admin page shows: the held queue, then public and hidden cards, newest first. */
 export async function listCardsForAdmin(board: Board): Promise<AdminCardLists> {
@@ -75,43 +89,84 @@ export async function listCardsForAdmin(board: Board): Promise<AdminCardLists> {
     (["held", "public", "hidden"] as const).map(async (visibility) => {
       const { data, error } = await db()
         .from("cards")
-        .select(CARD_WITH_SOURCES)
+        .select(ADMIN_CARD_COLUMNS)
         .eq("board_id", board.id)
         .eq("visibility", visibility)
         .order("created_at", { ascending: false })
         .limit(visibility === "public" ? 200 : 100);
       if (error) throw error;
-      return ((data ?? []) as Card[]).map(withSortedSources);
+      return ((data ?? []) as AdminCard[]).map((c) => withSortedSources(c) as AdminCard);
     }),
   );
   return { held: lists[0], public: lists[1], hidden: lists[2] };
 }
 
-export const ADMIN_ACTIONS = ["publish", "hide", "confirm_official", "unconfirm_official"] as const;
+export const ADMIN_ACTIONS = [
+  "publish",
+  "hide",
+  "hide_as_duplicate",
+  "confirm_official",
+  "unconfirm_official",
+] as const;
 export type AdminAction = (typeof ADMIN_ACTIONS)[number];
+
+/** Why "hide as a duplicate" was refused; the route answers 409 with the code. */
+export type DuplicateTargetProblem = "same_card" | "target_not_found" | "target_not_public";
+
+export class AdminActionError extends Error {
+  constructor(public readonly code: DuplicateTargetProblem) {
+    super(code);
+  }
+}
+
+export interface AdminActionResult {
+  id: string;
+  visibility: Visibility;
+  official_confirmed: boolean;
+  duplicate_of: string | null;
+}
 
 /**
  * The only writes the admin route can make. `confirm_official` is the only
  * code path in the app that sets official_confirmed to true.
+ *
+ * `hide` keeps `duplicate_of` null. `hide_as_duplicate` needs `targetCardId`:
+ * another card of the same board that is public (a held or hidden card cannot
+ * be the original of anything), and sets both `visibility` and
+ * `duplicate_of`. `publish` on a hidden duplicate ("unhide") clears
+ * `duplicate_of` again. Returns null when the card is not on this board.
  */
 export async function applyAdminAction(
   board: Board,
   cardId: string,
   action: AdminAction,
-): Promise<{ id: string; visibility: Visibility; official_confirmed: boolean } | null> {
-  const patch =
-    action === "publish"
-      ? { visibility: "public" }
-      : action === "hide"
-        ? { visibility: "hidden" }
-        : { official_confirmed: action === "confirm_official" };
+  options: { targetCardId?: string } = {},
+): Promise<AdminActionResult | null> {
+  let patch: Record<string, unknown>;
+  if (action === "publish") patch = { visibility: "public", duplicate_of: null };
+  else if (action === "hide") patch = { visibility: "hidden", duplicate_of: null };
+  else if (action === "hide_as_duplicate") {
+    const target = options.targetCardId;
+    if (!target || target === cardId) throw new AdminActionError("same_card");
+    const { data: original, error } = await db()
+      .from("cards")
+      .select("id, visibility")
+      .eq("board_id", board.id)
+      .eq("id", target)
+      .maybeSingle();
+    if (error) throw error;
+    if (!original) throw new AdminActionError("target_not_found");
+    if (original.visibility !== "public") throw new AdminActionError("target_not_public");
+    patch = { visibility: "hidden", duplicate_of: target };
+  } else patch = { official_confirmed: action === "confirm_official" };
+
   const { data, error } = await db()
     .from("cards")
     .update(patch)
     .eq("board_id", board.id)
     .eq("id", cardId)
-    .select("id, visibility, official_confirmed")
+    .select("id, visibility, official_confirmed, duplicate_of")
     .maybeSingle();
   if (error) throw error;
-  return (data as { id: string; visibility: Visibility; official_confirmed: boolean } | null) ?? null;
+  return (data as AdminActionResult | null) ?? null;
 }

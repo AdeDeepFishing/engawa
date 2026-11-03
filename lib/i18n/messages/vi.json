@@ -180,5 +180,16 @@
   "poster.community": "Đây là bảng tin cộng đồng, ai cũng dùng được. Đưa vào ảnh thông báo giấy, ảnh chụp màn hình chat hoặc văn bản, nó sẽ thành thẻ bằng tiếng Nhật, Anh, Trung, Hàn, Việt và tiếng Nhật dễ hiểu.",
   "poster.print_hint": "In trên giấy A4.",
   "poster.print_button": "In",
-  "poster.back": "Về bảng tin"
+  "poster.back": "Về bảng tin",
+  "admin.hide_as_duplicate": "Ẩn vì trùng lặp",
+  "admin.duplicate_target": "Thẻ gốc",
+  "admin.duplicate_target_pick": "Chọn một thẻ",
+  "admin.duplicate_target_none": "Không có thẻ công khai nào khác để chọn.",
+  "admin.duplicate_target_invalid": "Hãy chọn một thẻ công khai trên bảng này.",
+  "admin.unhide": "Bỏ ẩn",
+  "card.duplicate_of_prefix": "Trùng với",
+  "card.hidden_duplicate": "Thẻ trùng lặp đã ẩn",
+  "board.hidden_duplicates_one": "1 thẻ trùng lặp đã ẩn",
+  "board.hidden_duplicates_other": "{n} thẻ trùng lặp đã ẩn",
+  "board.hidden_duplicates_note": "Những thẻ này có cùng nội dung với một thẻ ở trên và đã được quản trị viên ẩn. Chỉ để tham khảo."
 }

@@ -180,5 +180,16 @@
   "poster.community": "This is a community board. Anyone can drop in a photo of a paper notice, a chat screenshot or a text, and it becomes a card in Japanese, English, Chinese, Korean, Vietnamese and easy Japanese.",
   "poster.print_hint": "Print on A4.",
   "poster.print_button": "Print",
-  "poster.back": "Back to the board"
+  "poster.back": "Back to the board",
+  "admin.hide_as_duplicate": "Hide as a duplicate",
+  "admin.duplicate_target": "The card it repeats",
+  "admin.duplicate_target_pick": "Choose a card",
+  "admin.duplicate_target_none": "No other public card to choose.",
+  "admin.duplicate_target_invalid": "Choose a public card on this board.",
+  "admin.unhide": "Unhide",
+  "card.duplicate_of_prefix": "Duplicate of",
+  "card.hidden_duplicate": "Hidden duplicate",
+  "board.hidden_duplicates_one": "1 hidden duplicate",
+  "board.hidden_duplicates_other": "{n} hidden duplicates",
+  "board.hidden_duplicates_note": "These cards repeat a card above and were hidden by the board admin. Shown for reference only."
 }
