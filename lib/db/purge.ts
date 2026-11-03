@@ -16,6 +16,7 @@ export interface PurgeReport {
   storageObjectsDeleted: number;
   submissionsDeleted: number;
   cardsDeleted: number;
+  reactionsDeleted: number;
   devicesDeleted: number;
   errors: string[];
 }
@@ -23,7 +24,8 @@ export interface PurgeReport {
 /**
  * Deletes everything whose purge_after has passed: storage objects first
  * (submission images, then masked copies that belong to cards), then rows. Runs once a day from the Vercel cron and on demand via
- * `pnpm purge`. card_sources go with their card or submission (cascade).
+ * `pnpm purge`. card_sources and card_reactions go with their card or
+ * submission (cascade); reactions past their own purge_after go too.
  */
 export async function runPurge(now = new Date()): Promise<PurgeReport> {
   const client = db();
@@ -33,6 +35,7 @@ export async function runPurge(now = new Date()): Promise<PurgeReport> {
     storageObjectsDeleted: 0,
     submissionsDeleted: 0,
     cardsDeleted: 0,
+    reactionsDeleted: 0,
     devicesDeleted: 0,
     errors: [],
   };
@@ -92,6 +95,16 @@ export async function runPurge(now = new Date()): Promise<PurgeReport> {
   } catch (e) {
     report.errors.push(`orphaned masked objects: ${e instanceof Error ? e.message : String(e)}`);
   }
+
+  // 2c. Reader reactions past their own purge_after. They carry their card's
+  // purge_after from when they were set, so the cascade above takes most of
+  // them; this catches the ones on a card whose life a later source extended.
+  const { count: reactions, error: reactErr } = await client
+    .from("card_reactions")
+    .delete({ count: "exact" })
+    .lt("purge_after", nowIso);
+  if (reactErr) report.errors.push(`delete reactions: ${reactErr.message}`);
+  else report.reactionsDeleted = reactions ?? 0;
 
   // 3. Devices not seen for 90 days.
   const { data: devices, error: devErr } = await client

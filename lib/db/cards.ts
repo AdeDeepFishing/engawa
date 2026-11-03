@@ -1,4 +1,5 @@
 import { db } from "./client";
+import { clearReactions } from "./reactions";
 import { addDays, addHours, CARD_RETENTION_DAYS, DEFAULT_VALID_HOURS } from "@/lib/cards/categories";
 import { contentTime } from "@/lib/cards/display";
 import { containsContact, type ExtractFact } from "@/lib/claude/extract";
@@ -273,7 +274,8 @@ async function mergeIntoCard(
  * code). The card keeps its id and its source rows; the old content moves
  * into the statement history so readers see "previously: ...". The count
  * starts again at one: it says how many sources stand behind what the card
- * says now, and the superseded statement keeps its own count.
+ * says now, and the superseded statement keeps its own count. Reader
+ * confirmations are cleared for the same reason.
  * official_confirmed is not written here: only the admin route sets it, and
  * the trust check in reconcile turns any update to a confirmed card into a
  * conflict, so a confirmed card is never updated by this path.
@@ -312,6 +314,8 @@ async function updateCard(
     };
   });
   await insertSource(ctx, card.id, fact, "updated", traceOf(decision));
+  // Reader confirmations were about the old content (N6).
+  await clearReactions(card.id);
   return { id: card.id, visibility: "public", purge_after: result.purge_after, action: "update", reason: decision.reason };
 }
 

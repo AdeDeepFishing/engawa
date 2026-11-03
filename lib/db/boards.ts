@@ -2,6 +2,7 @@ import { CARD_WITH_SOURCES, withSortedSources } from "./cards";
 import { fillLangs, withLangFallback } from "@/lib/cards/langs";
 import { db, hasDb } from "./client";
 import { localBoardBySlug, localBoards, localCardsForBoard } from "./local";
+import { withReactions } from "./reactions";
 import type { Board, Card, Multilingual } from "@/lib/types";
 
 const BOARD_COLUMNS = "id, slug, name, mode, area_names, known_places";
@@ -33,8 +34,9 @@ export async function listBoards(): Promise<Board[]> {
 
 /**
  * Public cards for a board, pinned first, newest first, each with its
- * sources (relation, source type, platform, time; no submission ids).
- * Held and hidden cards never leave the server.
+ * sources (relation, source type, platform, time; no submission ids) and
+ * its reader confirmation counts (one count query for the whole list, no
+ * device ids). Held and hidden cards never leave the server.
  */
 export async function listPublicCards(board: Board): Promise<Card[]> {
   if (!hasDb()) return sortCards(localCardsForBoard(board));
@@ -47,7 +49,7 @@ export async function listPublicCards(board: Board): Promise<Card[]> {
     .order("created_at", { ascending: false })
     .limit(200);
   if (error) throw error;
-  return ((data ?? []) as PublicCardRow[]).map(toPublicCard);
+  return withReactions(((data ?? []) as PublicCardRow[]).map(toPublicCard));
 }
 
 export async function getPublicCard(board: Board, cardId: string): Promise<Card | null> {
@@ -60,7 +62,9 @@ export async function getPublicCard(board: Board, cardId: string): Promise<Card 
     .eq("visibility", "public")
     .maybeSingle();
   if (error) throw error;
-  return data ? toPublicCard(data as PublicCardRow) : null;
+  if (!data) return null;
+  const [card] = await withReactions([toPublicCard(data as PublicCardRow)]);
+  return card;
 }
 
 /**
