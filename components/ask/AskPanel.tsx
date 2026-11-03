@@ -95,7 +95,7 @@ export function AskPanel({
           {t("ask.submit")}
         </button>
       </form>
-      <p className="mt-2 text-sm text-muted">{t("ask.note")}</p>
+      <p className="mt-2 text-base text-muted">{t("ask.note")}</p>
 
       <div aria-live="polite" aria-busy={state.kind === "loading"}>
         {state.kind === "loading" ? (
@@ -150,7 +150,7 @@ function Answer({
       </p>
       {answer.cardIds.length ? (
         <>
-          <h3 className="mt-4 text-sm font-semibold text-muted">{t("ask.sources")}</h3>
+          <h3 className="mt-4 text-base font-semibold text-muted">{t("ask.sources")}</h3>
           <ul className="mt-2 flex flex-col gap-2">
             {answer.cardIds.map((id) => {
               const card = byId.get(id);

@@ -165,10 +165,10 @@ function AdminCard({
           {CATEGORY_ICON[card.category]}
         </span>
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-medium text-muted">{t(`category.${card.category}`)}</p>
+          <p className="text-base font-medium text-muted">{t(`category.${card.category}`)}</p>
           <h3 className="mt-0.5 text-lg font-bold leading-snug">{card.title[lang]}</h3>
           {place ? <p className="mt-1">{place}</p> : null}
-          <p className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-sm text-muted">
+          <p className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-base text-muted">
             <span>{timeAgo(card.created_at, now, lang)}</span>
             <span>{sourceLabel(card.source_type, card.official_confirmed, lang)}</span>
             <span>{tCount("card.source_count", lang, card.source_count)}</span>
@@ -176,7 +176,7 @@ function AdminCard({
               <span>{platformLabel(card.facts.platform, lang)}</span>
             ) : null}
           </p>
-          {flags.length ? <p className="mt-1 text-sm font-semibold text-warn-ink">{flags.join(" · ")}</p> : null}
+          {flags.length ? <p className="mt-1 text-base font-semibold text-warn-ink">{flags.join(" · ")}</p> : null}
           {reasons.length ? (
             <p className="mt-2 rounded-md bg-warn-bg px-2 py-1 text-warn-ink">
               {t("admin.held_reason")}: {reasons.join(", ")}
@@ -185,7 +185,7 @@ function AdminCard({
           <p className="mt-2">{card.body[lang]}</p>
           {card.visibility === "held" && card.original_text ? (
             <details className="mt-2 rounded-lg border border-line p-2">
-              <summary className="cursor-pointer py-1 font-semibold">{t("sheet.original")}</summary>
+              <summary className="min-h-11 cursor-pointer py-2.5 font-semibold">{t("sheet.original")}</summary>
               <p lang={card.original_lang ?? undefined} className="mt-1 whitespace-pre-wrap text-muted">
                 {card.original_text}
               </p>

@@ -64,7 +64,7 @@ export function CardSheet({
             {CATEGORY_ICON[card.category]}
           </span>
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium text-muted">{t(`category.${card.category}`)}</p>
+            <p className="text-base font-medium text-muted">{t(`category.${card.category}`)}</p>
             <h2 id={`sheet-title-${card.id}`} className="text-xl font-bold leading-snug">
               {card.title[lang]}
             </h2>
@@ -80,7 +80,7 @@ export function CardSheet({
         </div>
 
         {expired ? (
-          <p className="mt-3 inline-block rounded-md bg-warn-bg px-2 py-1 text-sm font-medium text-warn-ink">
+          <p className="mt-3 inline-block rounded-md bg-warn-bg px-2 py-1 text-base font-medium text-warn-ink">
             {t("card.outdated")}
           </p>
         ) : null}
@@ -143,7 +143,7 @@ export function CardSheet({
               </span>
             ) : null}
             {sources.length ? (
-              <ul className="mt-1 flex flex-col gap-0.5 text-sm text-muted">
+              <ul className="mt-1 flex flex-col gap-0.5 text-base text-muted">
                 {sources.map((src, i) => (
                   <li key={`${src.created_at}-${i}`}>
                     {[
@@ -177,7 +177,7 @@ export function CardSheet({
           <ul className="mt-2 flex flex-col gap-3">
             {CARD_LANGS.filter((l) => l !== lang).map((l) => (
               <li key={l} lang={l === "easy_ja" ? "ja" : l}>
-                <p className="text-sm text-muted">{t(`lang.${l}`)}</p>
+                <p className="text-base text-muted">{t(`lang.${l}`)}</p>
                 <p className="font-semibold">{card.title[l]}</p>
                 <p>{card.body[l]}</p>
               </li>
@@ -212,7 +212,7 @@ function Statement({ statement: s, lang, now }: { statement: ConflictStatement; 
     <li>
       <p>{statementText(s, lang)}</p>
       {range ? <p className="font-semibold">{range}</p> : null}
-      <p className="text-sm opacity-80">{meta}</p>
+      <p className="text-base opacity-80">{meta}</p>
     </li>
   );
 }

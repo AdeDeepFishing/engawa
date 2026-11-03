@@ -60,10 +60,10 @@ export function CardItem({
             {CATEGORY_ICON[card.category]}
           </span>
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium text-muted">{t(`category.${card.category}`)}</p>
+            <p className="text-base font-medium text-muted">{t(`category.${card.category}`)}</p>
             <h3 className="mt-0.5 text-lg font-bold leading-snug">{card.title[lang]}</h3>
             {place ? <p className="mt-1 text-base text-foreground">{place}</p> : null}
-            <p className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-sm text-muted">
+            <p className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-base text-muted">
               <span>{when}</span>
               <span className={card.official_confirmed ? "font-semibold text-accent" : undefined}>
                 {sourceLabel(card.source_type, card.official_confirmed, lang)}
@@ -71,7 +71,7 @@ export function CardItem({
               <span>{tCount("card.source_count", lang, card.source_count)}</span>
             </p>
             {conflicts.length ? (
-              <span className="mt-2 block rounded-md bg-warn-bg px-2 py-1 text-sm text-warn-ink">
+              <span className="mt-2 block rounded-md bg-warn-bg px-2 py-1 text-base text-warn-ink">
                 <span className="block font-semibold">
                   <span aria-hidden="true">⚠️ </span>
                   {t("conflict.label")}
@@ -91,7 +91,7 @@ export function CardItem({
               </span>
             ) : null}
             {previous ? (
-              <span className="mt-2 flex flex-wrap items-baseline gap-x-2 text-sm">
+              <span className="mt-2 flex flex-wrap items-baseline gap-x-2 text-base">
                 <span className="rounded-md bg-accent px-2 py-0.5 font-semibold text-accent-ink">
                   {t("card.updated")}
                 </span>
@@ -101,7 +101,7 @@ export function CardItem({
               </span>
             ) : null}
             {expired ? (
-              <p className="mt-2 inline-block rounded-md bg-warn-bg px-2 py-0.5 text-sm font-medium text-warn-ink">
+              <p className="mt-2 inline-block rounded-md bg-warn-bg px-2 py-0.5 text-base font-medium text-warn-ink">
                 {t("card.outdated")}
               </p>
             ) : null}
