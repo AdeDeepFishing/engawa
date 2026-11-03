@@ -5,7 +5,7 @@ import { reconcile, type ReconcileDecision } from "@/lib/claude/reconcile";
 import { BusyError, withUsage } from "@/lib/claude/usage";
 import { hasDb } from "@/lib/db/client";
 import { getBoardById } from "@/lib/db/boards";
-import { attachMaskedImage, uploadMaskedImage } from "@/lib/db/masked";
+import { attachMaskedImage, cardsWithoutMaskedImage, removeMaskedImage, uploadMaskedImage } from "@/lib/db/masked";
 import {
   claimForProcessing,
   downloadSubmissionImage,
@@ -90,10 +90,15 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
           return { value: o, inputTokens: o.usage.inputTokens, outputTokens: o.usage.outputTokens };
         });
 
+        const flagged = outcome.result.facts.flatMap((f) => f.risk_flags);
+        const heldReason = flagged.length ? Array.from(new Set(flagged)).join(",") : null;
+
         // Masking (G1) runs beside reconcile: it needs only the image and the
-        // platform, and a failure never blocks the card.
+        // platform, and a failure never blocks the card. A screenshot that
+        // produced any flagged fact (sensitive_personal among them) gets no
+        // masked copy at all, not even for its public sibling cards.
         let masking: Promise<MaskedScreenshot | null> | null = null;
-        if (stored && isChatPlatform(outcome.result.source_platform) && maskingEnabled()) {
+        if (stored && flagged.length === 0 && isChatPlatform(outcome.result.source_platform) && maskingEnabled()) {
           await setStage(id, "masking");
           send({ event: "stage", data: { stage: "masking" } });
           masking = maskWithoutBlocking(id, stored.bytes, stored.mime);
@@ -107,20 +112,31 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         });
         const reconcileMs = Math.round(performance.now() - reconcileStarted);
 
+        // The masked copy is stored only for written cards that have none yet
+        // (a merge into an already masked card, or no card at all, stores
+        // nothing), and an object that ends up on no card is removed at once,
+        // so every masked object is always listed on a card and purged with it.
         let maskedPath: string | null = null;
         const masked = masking ? await masking : null;
         if (masked) {
+          let uploaded: string | null = null;
           try {
-            maskedPath = await uploadMaskedImage(board.id, id, masked.bytes, masked.mime);
-            await attachMaskedImage([...written.publicIds, ...written.heldIds], maskedPath);
+            const targets = await cardsWithoutMaskedImage([...written.publicIds, ...written.heldIds]);
+            if (targets.length > 0) {
+              uploaded = await uploadMaskedImage(board.id, id, masked.bytes, masked.mime);
+              const attached = await attachMaskedImage(targets, uploaded);
+              if (attached > 0) maskedPath = uploaded;
+              else console.warn(`masking ${id}: no card took the masked copy, removing it`);
+            } else {
+              console.log(`masking ${id}: every written card already has a masked copy, nothing stored`);
+            }
           } catch (err) {
             console.error(`masking ${id}: storing the masked copy failed:`, err instanceof Error ? err.message : String(err));
             maskedPath = null;
           }
+          if (uploaded && !maskedPath) await removeMaskedImage(uploaded);
         }
 
-        const flagged = outcome.result.facts.flatMap((f) => f.risk_flags);
-        const heldReason = flagged.length ? Array.from(new Set(flagged)).join(",") : null;
         const isChatScreenshot = isImage && outcome.result.source_platform !== "paper";
         await finishSubmission(sub, {
           platform: outcome.result.source_platform,

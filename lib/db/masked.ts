@@ -20,15 +20,40 @@ export async function uploadMaskedImage(
   return path;
 }
 
-/** Records the masked copy on the cards this submission wrote, where they have none yet. */
-export async function attachMaskedImage(cardIds: string[], path: string): Promise<void> {
-  if (cardIds.length === 0) return;
-  const { error } = await db()
+/** Which of these cards still have no masked copy. A merge into an already masked card needs no new object. */
+export async function cardsWithoutMaskedImage(cardIds: string[]): Promise<string[]> {
+  if (cardIds.length === 0) return [];
+  const { data, error } = await db()
     .from("cards")
-    .update({ masked_image_path: path })
+    .select("id")
     .in("id", cardIds)
     .is("masked_image_path", null);
   if (error) throw error;
+  return ((data ?? []) as { id: string }[]).map((c) => c.id);
+}
+
+/**
+ * Records the masked copy on these cards, where they have none yet, and
+ * returns how many rows it changed. Zero means the object belongs to no
+ * card and must be removed by the caller, or it would sit in Storage with
+ * nothing to purge it.
+ */
+export async function attachMaskedImage(cardIds: string[], path: string): Promise<number> {
+  if (cardIds.length === 0) return 0;
+  const { data, error } = await db()
+    .from("cards")
+    .update({ masked_image_path: path })
+    .in("id", cardIds)
+    .is("masked_image_path", null)
+    .select("id");
+  if (error) throw error;
+  return data?.length ?? 0;
+}
+
+/** Removes a masked object. Never throws: the caller is already on an error path. */
+export async function removeMaskedImage(path: string): Promise<void> {
+  const { error } = await db().storage.from(SUBMISSIONS_BUCKET).remove([path]);
+  if (error) console.error(`masked image ${path} could not be removed:`, error.message);
 }
 
 /**
