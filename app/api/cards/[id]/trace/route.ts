@@ -1,10 +1,9 @@
 import { type NextRequest } from "next/server";
 import { hasDb } from "@/lib/db/client";
 import { getPublicCardTrace } from "@/lib/db/cards";
+import { isUuid } from "@/lib/ids";
 
 export const dynamic = "force-dynamic";
-
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /**
  * How one public card was made: its source rows oldest first with the
@@ -14,7 +13,7 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
  */
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  if (!hasDb() || !UUID_RE.test(id)) return new Response(null, { status: 404 });
+  if (!hasDb() || !isUuid(id)) return new Response(null, { status: 404 });
   const trace = await getPublicCardTrace(id);
   if (!trace) return new Response(null, { status: 404 });
   return Response.json(trace, { headers: { "Cache-Control": "no-store" } });
