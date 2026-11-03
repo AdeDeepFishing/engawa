@@ -19,7 +19,7 @@
     },
     "reason": {
       "type": "string",
-      "description": "One sentence in English for the log."
+      "description": "One or two short sentences in English, shown to readers under the card: what the new fact shares with the chosen card or how it differs. No card ids."
     }
   }
 }

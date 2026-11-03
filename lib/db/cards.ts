@@ -2,7 +2,7 @@ import { db } from "./client";
 import { addDays, addHours, CARD_RETENTION_DAYS, DEFAULT_VALID_HOURS } from "@/lib/cards/categories";
 import { contentTime } from "@/lib/cards/display";
 import { extractModel } from "@/lib/claude/client";
-import type { ExtractFact } from "@/lib/claude/extract";
+import { containsContact, type ExtractFact } from "@/lib/claude/extract";
 import { trustRank } from "@/lib/cards/trust";
 import { reconcileModel, type ReconcileCandidate, type ReconcileDecision } from "@/lib/claude/reconcile";
 import type {
@@ -51,9 +51,19 @@ interface SourceTrace {
   model: string | null;
 }
 
-/** Merge, update and conflict rows carry the model's reason and the reconcile model. */
+/**
+ * Merge, update and conflict rows carry the model's reason and the reconcile
+ * model. The reason is built from PII-stripped card text, but it reaches
+ * readers, so it gets the same phone and email check as the extract output
+ * and is dropped rather than stored when it fails.
+ */
 function traceOf(decision: ReconcileDecision): SourceTrace {
-  return { reason: decision.reason.trim() || null, model: decision.model ?? null };
+  let reason: string | null = decision.reason.trim() || null;
+  if (reason && containsContact(reason)) {
+    console.warn("reconcile reason dropped: it contains a phone number or email");
+    reason = null;
+  }
+  return { reason, model: decision.model ?? null };
 }
 
 export interface AppliedCard {
