@@ -6,6 +6,7 @@ import { INTL_LOCALE, LANGS, t } from "@/lib/i18n";
 import { getRequestLang } from "@/lib/i18n/server";
 import { BoardView } from "@/components/board/BoardView";
 import { appBase } from "@/lib/app-url";
+import { AboutLink } from "@/components/about/AboutLink";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -45,12 +46,18 @@ export default async function BoardPage({ params }: Props) {
   if (!board) notFound();
   const [cards, hiddenDuplicates] = await Promise.all([listPublicCards(board), listHiddenDuplicates(board.id)]);
   return (
-    <BoardView
-      board={board}
-      initialCards={cards}
-      initialHiddenDuplicates={hiddenDuplicates}
-      serverNow={new Date().toISOString()}
-      canSubmit={hasDb()}
-    />
+    <>
+      <BoardView
+        board={board}
+        initialCards={cards}
+        initialHiddenDuplicates={hiddenDuplicates}
+        serverNow={new Date().toISOString()}
+        canSubmit={hasDb()}
+      />
+      {/* Sits inside the list's bottom padding and clears the floating drop-in button. */}
+      <footer className="mx-auto -mt-24 w-full max-w-2xl px-4 pb-24">
+        <AboutLink boardSlug={board.slug} />
+      </footer>
+    </>
   );
 }
