@@ -1,3 +1,4 @@
+import { CARD_WITH_SOURCES, withSortedSources } from "./cards";
 import { db, hasDb } from "./client";
 import { localBoardBySlug, localBoards, localCardsForBoard } from "./local";
 import type { Board, Card } from "@/lib/types";
@@ -30,34 +31,35 @@ export async function listBoards(): Promise<Board[]> {
 }
 
 /**
- * Public cards for a board, pinned first, newest first. Held and hidden
- * cards never leave the server.
+ * Public cards for a board, pinned first, newest first, each with its
+ * sources (relation, source type, platform, time; no submission ids).
+ * Held and hidden cards never leave the server.
  */
 export async function listPublicCards(board: Board): Promise<Card[]> {
   if (!hasDb()) return sortCards(localCardsForBoard(board));
   const { data, error } = await db()
     .from("cards")
-    .select("*")
+    .select(CARD_WITH_SOURCES)
     .eq("board_id", board.id)
     .eq("visibility", "public")
     .order("pinned", { ascending: false })
     .order("created_at", { ascending: false })
     .limit(200);
   if (error) throw error;
-  return (data ?? []) as Card[];
+  return ((data ?? []) as Card[]).map(withSortedSources);
 }
 
 export async function getPublicCard(board: Board, cardId: string): Promise<Card | null> {
   if (!hasDb()) return localCardsForBoard(board).find((c) => c.id === cardId) ?? null;
   const { data, error } = await db()
     .from("cards")
-    .select("*")
+    .select(CARD_WITH_SOURCES)
     .eq("board_id", board.id)
     .eq("id", cardId)
     .eq("visibility", "public")
     .maybeSingle();
   if (error) throw error;
-  return (data as Card | null) ?? null;
+  return data ? withSortedSources(data as Card) : null;
 }
 
 export function sortCards(cards: Card[]): Card[] {

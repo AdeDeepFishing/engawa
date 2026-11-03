@@ -75,13 +75,45 @@ export interface CardFacts {
   conditions?: string[];
   confidence?: "high" | "medium" | "low";
   platform?: Platform;
+  /** False when valid_until is the category default rather than a time the source stated. */
+  valid_until_stated?: boolean;
 }
 
+/**
+ * One statement about a card, kept for display. `superseded`: an earlier
+ * version that an update replaced ("previously: ..."). `conflict`: one side
+ * of an open disagreement; the card content is left as it was.
+ * Rows written before 2026-11-04 have only text, source_type, submission_id and at.
+ */
 export interface ConflictStatement {
+  kind?: "superseded" | "conflict";
+  /** Japanese body, plain text. */
   text: string;
+  title?: Multilingual;
+  body?: Multilingual;
+  status?: CardStatus | null;
+  valid_from?: string | null;
+  valid_until?: string | null;
   source_type: SourceType;
+  official_confirmed?: boolean;
+  source_count?: number;
   submission_id: string | null;
+  /** When this statement reached the board. */
   at: string;
+  /** Superseded only: when the update replaced it. */
+  replaced_at?: string;
+}
+
+export interface CardConflict {
+  statements: ConflictStatement[];
+}
+
+/** One row of card_sources as shown to readers. No submission id leaves the server. */
+export interface CardSource {
+  relation: "created" | "confirmed" | "updated" | "conflict";
+  source_type: SourceType;
+  platform: Platform | null;
+  created_at: string;
 }
 
 export interface Card {
@@ -101,12 +133,17 @@ export interface Card {
   source_count: number;
   risk_flags: RiskFlag[];
   visibility: Visibility;
-  conflict: { statements: ConflictStatement[] } | null;
+  /** Why the card is held: risk flags joined by commas, or "reconcile: <reason>". */
+  held_reason?: string | null;
+  last_confirmed_at?: string | null;
+  conflict: CardConflict | null;
   valid_from: string | null;
   valid_until: string | null;
   pinned: boolean;
   created_at: string;
   updated_at: string;
+  /** Present when the query embeds card_sources, oldest first. */
+  sources?: CardSource[];
 }
 
 export type SubmissionStatus = "received" | "processing" | "done" | "held" | "failed";
@@ -117,6 +154,9 @@ export type Stage =
   | "translating"
   | "done"
   | "failed";
+
+export const RECONCILE_ACTIONS = ["create", "merge", "update", "conflict", "hold"] as const;
+export type ReconcileAction = (typeof RECONCILE_ACTIONS)[number];
 
 export interface Submission {
   id: string;

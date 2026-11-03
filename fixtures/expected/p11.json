@@ -6,7 +6,7 @@
       "category": "shelter",
       "place_id": "kosugi-es",
       "status": "full",
-      "source_type": "firsthand"
+      "source_type": "secondhand"
     },
     {
       "category": "shelter",
@@ -29,5 +29,5 @@
   "merges_with": [
     "p12"
   ],
-  "notes": "Timeline with three posts. あやの's post holds two facts: the 小杉小学校 shelter gym is full and has stopped taking people (seen firsthand), and staff say 中原中学校 still has room (its source type is not checked). The other two posts are chatter. The 1時間 old battery post must not become a power_comms fact."
+  "notes": "Timeline with three posts. あやの's post holds two facts: the 小杉小学校 shelter gym is full and has stopped taking people, and staff say 中原中学校 still has room (its source type is not checked). The other two posts are chatter. The 1時間 old battery post must not become a power_comms fact. Source type is secondhand, not firsthand, since 2026-11-04: あやの writes as an eyewitness, but the board cannot verify the author of a screenshot, so a screenshot of a post or a chat message is secondhand whoever wrote it, and firsthand is reserved for text the uploader types in their own words (p08)."
 }

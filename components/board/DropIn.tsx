@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import type { MessageKey } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n/LangProvider";
 import { getDeviceId, hasConsented, setConsented } from "@/lib/device";
 import { ImageTooLargeError, prepareImage } from "@/lib/image/browser";
@@ -17,7 +18,20 @@ export interface PendingItem {
   error?: string;
   canRetry?: boolean;
   cardIds?: string[];
+  /** One reconcile action per fact from the done event; PendingCard says where a merge went. */
+  actions?: string[];
   note?: string | null;
+}
+
+/**
+ * Maps a refused submission (stable codes from the submissions route) to the
+ * error code PendingCard shows as its headline and a friendlier line below it.
+ */
+function refusal(status: number, body: { error?: string; scope?: string } | null): { error: string; noteKey: MessageKey | null } {
+  if (status === 429) return { error: "rate_limited", noteKey: body?.scope === "board" ? "limit.board" : "limit.device" };
+  if (status === 503 && body?.error === "busy") return { error: "busy", noteKey: "limit.busy" };
+  if (status === 413) return { error: "too_large", noteKey: "limit.too_large" };
+  return { error: "generic", noteKey: null };
 }
 
 type DoneEvent = {
@@ -26,6 +40,7 @@ type DoneEvent = {
   public_count: number | null;
   held_count: number | null;
   note_for_uploader: string | null;
+  actions?: string[];
 };
 
 export function DropIn({
@@ -39,7 +54,7 @@ export function DropIn({
   /** Set by the parent when the user taps retry on a failed item. */
   retryRequest: PendingItem | null;
 }) {
-  const { t } = useLang();
+  const { lang, t } = useLang();
   const [open, setOpen] = useState(false);
   const [needsConsent, setNeedsConsent] = useState(false);
   const [mode, setMode] = useState<"choose" | "text">("choose");
@@ -50,7 +65,8 @@ export function DropIn({
 
   const openPanel = () => {
     setNeedsConsent(!hasConsented());
-    setMode("choose");
+    // Text kept after a refused send opens straight in the text box.
+    setMode(text.trim() ? "text" : "choose");
     setOpen(true);
   };
 
@@ -97,11 +113,19 @@ export function DropIn({
           const publicCount = d.public_count ?? (d.status === "done" ? d.card_ids.length : 0);
           const heldCount = d.held_count ?? (d.status === "held" ? d.card_ids.length : 0);
           const status: PendingStatus = publicCount > 0 ? "done" : heldCount > 0 ? "held" : "nothing";
-          onPending({ id: localId, submissionId, status, cardIds: d.card_ids, note: d.note_for_uploader });
+          onPending({
+            id: localId,
+            submissionId,
+            status,
+            cardIds: d.card_ids,
+            actions: d.actions,
+            note: d.note_for_uploader,
+          });
         } else if (ev.event === "failed") {
           finished = true;
           const d = ev.data as { error?: string };
-          onPending({ id: localId, submissionId, status: "failed", error: d.error, canRetry: true });
+          const note = d.error === "busy" ? t("limit.busy") : null;
+          onPending({ id: localId, submissionId, status: "failed", error: d.error, canRetry: true, note });
         }
       });
       if (!finished) {
@@ -112,7 +136,8 @@ export function DropIn({
     }
   }
 
-  async function submit(form: FormData) {
+  /** `sentText` is put back in the text box when a limit refuses it, so nothing typed is lost. */
+  async function submit(form: FormData, sentText?: string) {
     const localId = `pending-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
     onPending({ id: localId, status: "uploading" });
     setOpen(false);
@@ -121,8 +146,14 @@ export function DropIn({
       form.set("consent", "1");
       const res = await fetch(`/api/b/${boardSlug}/submissions`, { method: "POST", body: form });
       if (!res.ok) {
-        const code = res.status === 429 ? "busy" : res.status === 413 ? "too_large" : "generic";
-        onPending({ id: localId, status: "failed", error: code, canRetry: false });
+        const body = (await res.json().catch(() => null)) as { error?: string; scope?: string } | null;
+        const { error, noteKey } = refusal(res.status, body);
+        const keepText = Boolean(sentText) && (res.status === 429 || res.status === 503);
+        if (keepText) setText(sentText as string);
+        // Japanese and Chinese sentences run on without a space.
+        const gap = lang === "ja" || lang === "zh" ? "" : " ";
+        const note = noteKey ? [t(noteKey), keepText ? t("limit.text_kept") : ""].join(gap).trim() : null;
+        onPending({ id: localId, status: "failed", error, canRetry: false, note });
         return;
       }
       const { id } = (await res.json()) as { id: string };
@@ -141,7 +172,13 @@ export function DropIn({
       form.set("image", blob, "image.jpg");
     } catch (e) {
       const localId = `pending-${Date.now()}`;
-      onPending({ id: localId, status: "failed", error: e instanceof ImageTooLargeError ? "too_large" : "generic" });
+      const tooLarge = e instanceof ImageTooLargeError;
+      onPending({
+        id: localId,
+        status: "failed",
+        error: tooLarge ? "too_large" : "generic",
+        note: tooLarge ? t("limit.too_large") : null,
+      });
       setOpen(false);
       return;
     }
@@ -150,11 +187,12 @@ export function DropIn({
 
   async function onTextSend() {
     if (!text.trim()) return;
+    const sent = text.trim();
     const form = new FormData();
     form.set("kind", "text");
-    form.set("text", text.trim());
+    form.set("text", sent);
     setText("");
-    await submit(form);
+    await submit(form, sent);
   }
 
   const choice = "flex min-h-14 w-full items-center justify-center rounded-xl border border-line bg-surface px-4 text-lg font-semibold hover:border-accent";

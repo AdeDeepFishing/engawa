@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { TopBar } from "@/components/TopBar";
+import { AskPanel } from "@/components/ask/AskPanel";
+import { ShareButton } from "@/components/share/ShareButton";
 import { CardItem } from "./CardItem";
 import { CardSheet } from "./CardSheet";
 import { DropIn, type PendingItem } from "./DropIn";
@@ -31,6 +33,7 @@ export function BoardView({
   const [pending, setPending] = useState<PendingItem[]>([]);
   const [retryRequest, setRetryRequest] = useState<PendingItem | null>(null);
   const inFlight = useRef(false);
+  const listRef = useRef<HTMLUListElement>(null);
   const selected = selectedId ? (cards.find((c) => c.id === selectedId) ?? null) : null;
 
   const refresh = useCallback(async () => {
@@ -89,18 +92,34 @@ export function BoardView({
   const open = useCallback((card: Card) => setSelectedId(card.id), []);
   const close = useCallback(() => setSelectedId(null), []);
 
+  // A citation chip scrolls its card into view and opens the same sheet a tap
+  // on the card opens. CardItem marks its <li> with data-card-id.
+  const openFromAnswer = useCallback(
+    (cardId: string) => {
+      if (!cards.some((c) => c.id === cardId)) return;
+      const item = listRef.current?.querySelector(`[data-card-id="${cardId}"]`);
+      if (item instanceof HTMLElement) {
+        const smooth = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        item.scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: "center" });
+      }
+      setSelectedId(cardId);
+    },
+    [cards],
+  );
+
   return (
     <>
-      <TopBar title={board.name[lang]} />
+      <TopBar title={board.name[lang]} actions={<ShareButton boardSlug={board.slug} boardName={board.name[lang]} />} />
       <main className="mx-auto w-full max-w-2xl flex-1 px-4 pb-32 pt-4">
         <h1 className="sr-only">{board.name[lang]}</h1>
-        <h2 className="text-base font-semibold text-muted">{t("board.cards_heading")}</h2>
+        <AskPanel boardSlug={board.slug} cards={cards} onOpenCard={openFromAnswer} />
+        <h2 className="mt-6 text-base font-semibold text-muted">{t("board.cards_heading")}</h2>
         {cards.length === 0 && pending.length === 0 ? (
           <p className="mt-6 rounded-xl border border-dashed border-line p-6 text-center text-muted">
             {t("board.empty")}
           </p>
         ) : (
-          <ul className="mt-3 flex flex-col gap-3">
+          <ul ref={listRef} className="mt-3 flex flex-col gap-3">
             {pending.map((item) => (
               <PendingCard
                 key={item.id}

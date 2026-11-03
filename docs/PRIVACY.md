@@ -12,6 +12,7 @@ Engawa is built for a moment when people share screenshots of other people's mes
 6. Anything that could identify a person's health condition or a specific person's situation is held and not published.
 7. Boards are not indexed by search engines (`noindex`) and there is no public search.
 8. There are no accounts. A random device identifier in the browser is used for rate limiting and for showing a user their own submissions.
+9. The admin page is opened once through a link that carries the admin token. That request sets an HttpOnly cookie holding a digest of the token (never the token itself) with a 12 hour expiry, scoped to that board's admin page and admin API, and redirects to the clean admin URL. After that one request the token appears in no page URL, Referer or browser history entry.
 
 ## Retention
 
@@ -27,6 +28,7 @@ Engawa is built for a moment when people share screenshots of other people's mes
 | Cards | Yes | `valid_until` + 30 days |
 | Questions | No | n/a |
 | Device identifier | Yes | 90 days after last activity |
+| Admin session cookie | Only in the admin's browser: HttpOnly, a digest of the token with its expiry | 12 hours after the admin link was opened |
 
 Every row and object carries `purge_after`, computed when it is written. A daily job deletes storage objects first, then rows. During the hackathon week the job runs once a day; the schedule is in `docs/PLAN.md`.
 

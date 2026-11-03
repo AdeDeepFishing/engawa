@@ -25,17 +25,21 @@ Before writing or changing a call, read the `claude-api` skill for the exact SDK
 
 ### reconcile (`reconcile.ts`)
 
-- Candidates are selected by code: same board, same category, `visibility = 'public'`, and either `valid_until` is null or in the future or `created_at` within the last 24 hours, and `place_id` equal to the new fact's or null. At most 20, most recent first. Compact each candidate to: id, place_id, place_text_ja, status, valid_from, valid_until, conditions, source_type, official_confirmed, source_count, title.ja, created_at, updated_at.
-- System: `prompts/reconcile.system.md`. User content: the board `now`, the new fact, the candidate list as JSON.
+- Model: `claude-opus-5-5` (default), `RECONCILE_MODEL=claude-sonnet-5-5` switches it. Effort low, non-streaming, max output 4000 tokens. Measured on 2026-11-04 in `docs/DEVLOG.md`.
+- Candidates are selected by code (`listReconcileCandidates` in `lib/db/cards.ts`): same board, same category, `visibility = 'public'`, and either `valid_until` is null or in the future or `created_at` within the last 24 hours, and `place_id` equal to the new fact's or null (a fact with no place only sees cards with no place). At most 20, most recent first. Compact each candidate to: id, place_id, place_text_ja, status, valid_from, valid_until, conditions, source_type, official_confirmed, source_count, title.ja, created_at, updated_at. Times go to the model in JST.
+- No candidates: no call. The fact becomes a new card.
+- System: `prompts/reconcile.system.md` plus the same board context block as extract (known places with aliases, needed to match places written differently), both marked for caching (about 4000 tokens, read from cache from the second call on). User content: the board `now`, the new fact, the candidate list as JSON.
 - Output format: `schemas/reconcile.schema.json`.
-- Code validates: `target_card_id` is in the candidate list when the action is not `create`; `create` has a null target. Anything else is treated as `create` and logged.
-- Applying decisions (in `lib/db`):
+- Code validates (`checkDecision`): `target_card_id` is in the candidate list when the action is not `create`; `create` has a null target. An unknown target, an invalid output or a refusal becomes `create` and is logged. The trust order is enforced in code, not left to the prompt: an `update` from a source weaker than the card (confirmed official, then official, firsthand, secondhand, unknown) becomes a `conflict`, so an old official statement is never overwritten by a new secondhand one.
+- The call goes through `withUsage()`. If it throws (API error, daily cap), the fact still becomes its own card: a duplicate is better than losing what a neighbour sent.
+- Applying decisions (`applyDecision` in `lib/db/cards.ts`):
   - `create`: insert the card with `source_count = 1`, a `card_sources` row with relation `created`.
-  - `merge`: `source_count + 1`, `card_sources` row `confirmed`, `last confirmed` timestamp; if `fill_missing`, set null fields from the new fact.
-  - `update`: replace title, body, facts, valid_from, valid_until, status with the new fact's values; keep the id and sources; `card_sources` row `updated`; keep the previous statement inside `conflict` history as the superseded value for display.
-  - `conflict`: do not change the card content; set `conflict` to both statements (existing and new, with source types and times); `card_sources` row `conflict`.
-  - `hold`: insert the card with `visibility = 'held'` and `held_reason`.
-- Facts with any risk flag skip reconcile and are inserted as `held`.
+  - `merge`: `card_sources` row `confirmed`, then `bump_card_source()` increments `source_count` and sets `last_confirmed_at` atomically. A stronger source raises the card's `source_type` (never `official_confirmed`). If `fill_missing`, null fields are filled from the new fact, and a default end time (`facts.valid_until_stated = false`) is replaced by a stated one.
+  - `update`: replace title, body, facts, valid_from, valid_until, status and source type with the new fact's values; keep the id and the source rows; `card_sources` row `updated`. The previous content goes into `conflict.statements` with `kind: "superseded"` (all six languages, times, source type, source count) so readers see "previously: ...". `source_count` starts again at 1 and `official_confirmed` and `last_confirmed_at` are reset, because they described the old content. Open conflicts are dropped: the update settles them.
+  - `conflict`: card content unchanged; `conflict.statements` gets the card's current statement and the new one, each with `kind: "conflict"`, source type and time; `card_sources` row `conflict`; `source_count` unchanged.
+  - `hold`: insert the card with `visibility = 'held'` and `held_reason = "reconcile: <reason>"`.
+- Update and conflict are read-modify-write guarded by `updated_at`, with one retry on a lost race.
+- Facts with any risk flag skip reconcile and are inserted as `held` with the flags in `held_reason`.
 
 ### ask (`ask.ts`)
 

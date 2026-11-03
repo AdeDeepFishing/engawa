@@ -30,7 +30,7 @@ Everything (fixtures, known places, prompts, seed, recording) is built around th
 | S6 | Ask | Citations API, one document per public card. Non-streaming with a skeleton first. Citation chips map to cards. "No information yet" when absent. Questions are not stored |
 | S7 | Share | Web Share API with copy-link fallback. Fullscreen QR. One static OG image and per-language title |
 | S8 | Updates | Poll every 5 seconds. Supabase Realtime broadcast only as a "board changed" hint if time allows |
-| S9 | Minimal admin | Secret link `/b/[slug]/admin?token=`: held queue (publish or hide), confirm official, hide any card |
+| S9 | Minimal admin | Secret link `/api/b/[slug]/admin/enter?token=` sets a 12 hour cookie for `/b/[slug]/admin`: held queue (publish or hide), confirm official, hide any card |
 | S10 | Deletion | `purge_after` computed at write time. Chat screenshot originals deleted right after processing. Daily purge job deletes storage objects, then rows. Retention table in `docs/PRIVACY.md` |
 | S11 | Abuse and budget | 3 submissions per device per minute, 30 per board per minute, a daily Claude call cap (`DAILY_CLAUDE_CALL_CAP`), 8 MB image limit. Over the cap: "busy, try again later" |
 | S12 | Eval | `scripts/eval.ts` over 20 fixtures: field accuracy, PII leaks (must be 0), invented facts (must be 0), multilingual duplicates merged into one card. Results table in `docs/EVAL.md` and README |
