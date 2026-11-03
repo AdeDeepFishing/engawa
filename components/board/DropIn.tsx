@@ -46,6 +46,23 @@ type DoneEvent = {
 };
 
 /**
+ * Fixtures published under public/samples so a judge on the deployed URL can
+ * run the real pipeline without printing anything (fixtures/README.md says
+ * which fixture each one is). A sample goes down exactly the path a user's
+ * own file or text takes: the same compression and metadata strip, the same
+ * upload route, the same processing stream, the same rate limits.
+ */
+type Sample =
+  | { id: "paper" | "chat"; kind: "image"; file: string; mime: "image/jpeg" | "image/png"; labelKey: MessageKey; icon: string }
+  | { id: "text"; kind: "text"; file: string; labelKey: MessageKey; icon: string };
+
+const SAMPLES: readonly Sample[] = [
+  { id: "paper", kind: "image", file: "/samples/notice.jpg", mime: "image/jpeg", labelKey: "sample.paper", icon: "📄" },
+  { id: "chat", kind: "image", file: "/samples/chat.png", mime: "image/png", labelKey: "sample.chat", icon: "💬" },
+  { id: "text", kind: "text", file: "/samples/text.txt", labelKey: "sample.text", icon: "🗒️" },
+];
+
+/**
  * Self-reported area (G2). The position is read in the browser and mapped to
  * one of the board's 町丁目 polygons right here; only the resolved code is
  * ever sent, and only while the uploader keeps the box ticked.
@@ -102,6 +119,8 @@ export function DropIn({
   const [area, setArea] = useState<AreaState>({ status: "idle" });
   /** True while a send waits for a position fix still in flight. */
   const [waitingForArea, setWaitingForArea] = useState(false);
+  /** Id of the sample being fetched, so a double tap sends it once. */
+  const [sampleLoading, setSampleLoading] = useState<string | null>(null);
   /** The latest area state, readable from the submit path after an await. */
   const areaRef = useRef<AreaState>({ status: "idle" });
   /** The position fix in flight, if any; submit awaits it (it has its own 10 s timeout). */
@@ -327,7 +346,35 @@ export function DropIn({
     await submit(form, sent);
   }
 
+  /** Loads a published sample and sends it the way a user's own file or text is sent. */
+  async function onSample(sample: Sample) {
+    if (sampleLoading) return;
+    setSampleLoading(sample.id);
+    try {
+      const res = await fetch(sample.file);
+      if (!res.ok) throw new Error(`sample ${sample.id}: ${res.status}`);
+      if (sample.kind === "text") {
+        const content = (await res.text()).trim();
+        const form = new FormData();
+        form.set("kind", "text");
+        form.set("text", content);
+        await submit(form, content);
+      } else {
+        const blob = await res.blob();
+        const name = sample.file.slice(sample.file.lastIndexOf("/") + 1);
+        await onImagePicked(new File([blob], name, { type: sample.mime }));
+      }
+    } catch {
+      onPending({ id: `pending-${Date.now()}`, status: "failed", error: "generic", canRetry: false, note: t("sample.failed") });
+      closePanel();
+    } finally {
+      setSampleLoading(null);
+    }
+  }
+
   const choice = "flex min-h-14 w-full items-center justify-center rounded-xl border border-line bg-surface px-4 text-lg font-semibold hover:border-accent";
+  const sampleChoice =
+    "flex min-h-12 w-full items-center gap-3 rounded-xl border border-line bg-surface px-4 text-left text-base font-semibold hover:border-accent disabled:opacity-50";
 
   const areaLine =
     area.status === "locating"
@@ -441,6 +488,26 @@ export function DropIn({
                   <span aria-hidden="true" className="mr-2">📝</span>
                   {t("dropin.text")}
                 </button>
+                <div className="mt-1 rounded-xl border border-dashed border-line p-3" data-sample-row>
+                  <p className="text-base font-semibold">{t("sample.heading")}</p>
+                  <p className="mt-1 text-base text-muted">{t("sample.note")}</p>
+                  <div className="mt-3 flex flex-col gap-2">
+                    {SAMPLES.map((s) => (
+                      <button
+                        key={s.id}
+                        type="button"
+                        className={sampleChoice}
+                        disabled={sampleLoading !== null || waitingForArea}
+                        aria-busy={sampleLoading === s.id}
+                        data-sample={s.id}
+                        onClick={() => void onSample(s)}
+                      >
+                        <span aria-hidden="true">{s.icon}</span>
+                        {t(s.labelKey)}
+                      </button>
+                    ))}
+                  </div>
+                </div>
                 {areaControl}
               </div>
             ) : (

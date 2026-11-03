@@ -1,4 +1,10 @@
 {
+  "sample.heading": "用示例试试",
+  "sample.note": "虚构的测试素材：姓名、头像、号码均为虚构，地点是真实的公共场所。",
+  "sample.paper": "纸质通知的照片",
+  "sample.chat": "聊天截图",
+  "sample.text": "粘贴的文字",
+  "sample.failed": "无法加载示例，请重试。",
   "mask.caption": "姓名和头像已遮挡",
   "mask.alt": "遮挡了姓名和头像的聊天截图副本",
   "mask.stage": "正在遮挡姓名和头像",

@@ -1,4 +1,10 @@
 {
+  "sample.heading": "Try with a sample",
+  "sample.note": "Fictional test material: made-up names, avatars and numbers, real public places.",
+  "sample.paper": "Photo of a paper notice",
+  "sample.chat": "Chat screenshot",
+  "sample.text": "Pasted text",
+  "sample.failed": "Could not load the sample. Please try again.",
   "mask.caption": "Names and avatars are masked",
   "mask.alt": "Copy of the chat screenshot with names and avatars masked",
   "mask.stage": "Masking names and avatars",

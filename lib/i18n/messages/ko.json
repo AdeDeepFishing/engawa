@@ -1,4 +1,10 @@
 {
+  "sample.heading": "샘플로 해보기",
+  "sample.note": "가상의 테스트 자료입니다. 이름, 아바타, 번호는 가짜이고 장소는 실제 공공장소입니다.",
+  "sample.paper": "종이 안내문 사진",
+  "sample.chat": "채팅 화면",
+  "sample.text": "붙여넣은 글",
+  "sample.failed": "샘플을 불러오지 못했습니다. 다시 시도해 주세요.",
   "mask.caption": "이름과 프로필 사진은 가려져 있습니다",
   "mask.alt": "이름과 프로필 사진을 가린 채팅 화면 사본",
   "mask.stage": "이름과 프로필 사진을 가리는 중",

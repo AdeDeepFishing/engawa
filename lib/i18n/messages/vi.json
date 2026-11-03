@@ -1,4 +1,10 @@
 {
+  "sample.heading": "Thử với mẫu",
+  "sample.note": "Tài liệu thử nghiệm hư cấu: tên, ảnh đại diện và số là giả, địa điểm là nơi công cộng có thật.",
+  "sample.paper": "Ảnh thông báo giấy",
+  "sample.chat": "Ảnh chụp màn hình chat",
+  "sample.text": "Văn bản dán vào",
+  "sample.failed": "Không tải được mẫu. Vui lòng thử lại.",
   "mask.caption": "Tên và ảnh đại diện đã được che",
   "mask.alt": "Bản sao ảnh chụp màn hình trò chuyện đã che tên và ảnh đại diện",
   "mask.stage": "Đang che tên và ảnh đại diện",
