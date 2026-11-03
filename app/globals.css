@@ -6,8 +6,8 @@
   --foreground: #1b1b1b;
   --muted: #5c5c5c;
   --line: #d9d6cf;
-  /* Borders of controls: at least 3:1 against the page and the surface (WCAG 1.4.11). */
-  --line-strong: #8f8b82;
+  /* Borders of controls: at least 3:1 on white, on the page and on the beige (WCAG 1.4.11). */
+  --line-strong: #87837a;
   --accent: #1f5c3f;
   --accent-ink: #ffffff;
   --warn-bg: #fff4d6;

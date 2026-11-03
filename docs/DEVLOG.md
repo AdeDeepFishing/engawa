@@ -217,3 +217,50 @@ Poster: `page.pdf({ format: "A4" })` gives one page of 595.9 by 842.9 pt (A4) wi
 - Review and merge the branch (Fable). Nothing new in Vercel.
 - Optional after the merge: `pnpm db:seed` to put the codes into the live board row.
 - On a real phone the browser asks for location once when the box is ticked; iOS Safari needs https for that (Vercel has it).
+
+## 2026-11-04 (Wed), polish: t03, accessibility, hidden duplicates
+
+**Model:** `claude-fable-5-1` in Claude Code, implementation role, in its own worktree (branch `day4-polish`, cut from `main` after PR #7) while a second session worked on the judge-facing features in another worktree. Extract and reconcile ran on `claude-opus-5-5` as before; no Claude call was added.
+
+**Done**
+- t03 merges. One rule in `prompts/extract.system.md` (Places): a shop, spot or queue described only by its relation to a known place (the convenience store in front of the station, 駅前のコンビニ, 站前的便利店) takes that place's `place_id`, with the spot itself kept in `place_text_ja`. The prompt rule was chosen over a wider candidate query because it fixes the fact where it is made: the card carries the station's id for the board, for ask and for reconcile alike, and `listReconcileCandidates` keeps its one rule. `t03` now extracts to `musashikosugi-sta` with 武蔵小杉駅前のコンビニ as the spot, sees the p03 card and merges onto it. `pnpm eval`: 100/100 fields, 0 PII leaks, 0 invented facts, median 13.6 s. `pnpm eval --reconcile --now 2026-11-03T10:00:00+09:00`: 11/11, reconcile median 2.7 s, 0 code overrides. Both tables and the note are in `docs/EVAL.md`.
+- The chain clock. The first re-run of the chain with the real clock, at 01:28 JST, passed t03 and failed s02 and t02 as `conflict`: the p02 notice says 本日, which the model read as 11/04 at that hour, while those two inputs say 11月3日. Correct reading, wrong day. `scripts/eval.ts` gained `--now <ISO 8601>`, which pins the clock extract and reconcile see, and the run header records it; the extract table keeps the real clock as before, since it checks the time of day only.
+- Accessibility pass at 390 px (Playwright 1.62 Chromium, UI in English and Japanese, board, poster, index, admin, share panel, sheet and drop-in panel measured; measurements below). Fixes in the files this session owns: an expired card is greyed by the beige background instead of 70% opacity, so its meta text keeps 5.8:1 (it was 3.3:1) and the outdated badge 9:1 (was 4.1:1); a control drawn with the hairline border (button, input, select, textarea, summary, link) gets `--line-strong`, 3.8:1 on white, 3.6:1 on the page and 3.3:1 on the beige, while decorative borders keep the hairline; `summary` joins the 44 px rule; the small "A" in the text size toggle is 16 px; the Japanese place name next to a translated one is wrapped in `lang="ja"` (`placeParts` in `lib/cards/display.ts`); card `<li>` elements carry `id="card-<id>"` so a link can point at them. Focus ring, tab order, icon labels, reduced motion, the remembered text size and `<html lang>` were already right and were verified, not changed. The look is the same: beige instead of faded for expired cards, a slightly darker hairline on controls.
+- N3 hidden duplicates. Migration `0004_duplicate_of.sql` (idempotent): `cards.duplicate_of uuid references cards(id) on delete set null`, so the purge job never fails on a duplicate that outlives its original, and an index on `(board_id, visibility, duplicate_of)`. Admin (`lib/db/admin.ts`, the admin page and route): a new action `hide_as_duplicate` with `target_card_id`, a public card of the same board; a held, hidden, unknown or self target answers 409 with the reason; it sets `visibility = 'hidden'` and `duplicate_of`; plain hide keeps `duplicate_of` null; publish on a hidden card is labelled "Unhide" and clears `duplicate_of`. The admin page offers the action under each public card as a select of the other public cards, and shows "Duplicate of: <title>" on a hidden duplicate. Public read `listHiddenDuplicates(boardId)` in `lib/db/boards.ts` returns hidden cards with `duplicate_of` set whose original is still public, through the same projection as `listPublicCards` (no `masked_image_path`; held and plain hidden cards never), plus the original's title; a read failure logs and returns none, so the card list never depends on the drawer. The cards API carries `hidden_duplicates`, so the drawer follows the 5 second poll. `components/board/HiddenDrawer.tsx`: a collapsed `<details>` after the card list, summary "N hidden duplicates" in the UI language, each item read only (title, body, time, source type) with a "Duplicate of" link that scrolls to and opens the original; nothing when there are none. Eleven keys appended at the end of all five message files (193 each, parity checked, no dashes).
+
+**Accessibility measurements** (390 by 844, device scale 2, `scripts` kept outside the repo; the audit walks every visible text node and control, composites translucent backgrounds and ancestor opacity before computing contrast, and tabs through the page to read the focus outline)
+
+| check | before | after |
+|---|---|---|
+| text under 16 px | none on the board, poster, index, admin, share panel, sheet and drop-in panel; one decorative 14 px glyph (the small "A" in the toggle, aria-hidden) | none; the glyph is 16 px |
+| controls under 44 by 44 | none on the board, poster, index and admin; the sheet's "In all languages" summary 332 by 40 (other session's file) | none; `summary` is covered by the global 44 px rule, so the sheet's summary is 44 without touching the file |
+| text contrast under AA | expired cards: category, time, source and count lines 3.32:1 (muted at 70% opacity on white), "May be outdated" badge 4.1:1; the disabled Ask button 3.26:1 (exempt) | only the disabled Ask button (exempt); expired meta lines 5.8:1 on the beige, the badge 9.1:1 |
+| control border contrast (1.4.11) | 1.39:1 on Share, the text size toggle, the language select and the card buttons; 1.45:1 on the ask input and the admin Hide buttons | 3.8:1 on white, 3.6:1 on the page, 3.3:1 on the beige (`--line-strong`); nothing under 3:1 on the board, index, admin or poster |
+| focus ring | 3 px accent outline, offset 2 px, on every tabbed control | unchanged |
+| tab order (board) | logo, Share, text size, language, ask input, cards top to bottom, drop-in button | unchanged, plus the drawer summary and its links after the list |
+| icon-only controls without a name | none | none |
+| `lang` | `html`, every language option, the sheet's language list and original text, the poster's lines | plus `span[lang=ja]` on the Japanese place name in the list |
+| reduced motion | `animate-pulse` resolves to no animation and no transition under `prefers-reduced-motion: reduce` | unchanged |
+| text size toggle | root 16 px to 18.88 px, still large after a reload (cookie and localStorage) | unchanged |
+| `<html lang>` | follows the switch at once and after a reload | unchanged |
+
+**Acceptance run.** Pending at the time of writing: migration 0004 is not yet applied to the shared project (see "Needed a human"), so the throwaway-board run (two cards from text through the drop-in flow, one hidden as a duplicate of the other on the admin page, the drawer with one item linking to the original, a plain hidden card and a held card absent from it, then the board's rows and objects removed) runs once it is. The scripts for it are ready outside the repo; this paragraph is replaced by the results.
+
+**Decisions taken in this session, open for review**
+- Prompt rule rather than a wider candidate query for t03 (reason above). The rule also applies to screenshots, so p03 keeps extracting to the station.
+- The reconcile chain is run with `--now` on the fixture day. The alternative is to make that the chain's default in `scripts/eval.ts`; left as a flag so the choice is visible.
+- `duplicate_of` is `on delete set null`: when the original is purged, the duplicate becomes a plain hidden card and leaves the drawer. The task text said only `references cards(id)`; without the clause the daily purge would fail on the original.
+- The drawer shows a duplicate only while its original is public. If the admin later hides the original (plainly or as a duplicate of a third card), its duplicates leave the drawer with it, since the original was hidden for a reason.
+- `listHiddenDuplicates` fails soft (logs, returns none) so a board whose database lacks migration 0004 still renders its cards. The admin page does not: it embeds the original through the new foreign key and errors until the migration is applied.
+- `duplicate_of` is typed locally (`AdminCard` in `lib/db/admin.ts`, `HiddenDuplicate` in `lib/db/boards.ts`) because `lib/types.ts` belongs to the other session this week; one optional field `duplicate_of?: string | null` on `Card` would let both go.
+- The stronger border applies to every control that used the hairline, including the card buttons, so a card's edge reads at 3:1 like any other button.
+
+**Needed a human**
+- Apply migration 0004 to the shared project from this worktree: `pnpm db:migrate --include-all`. The plain `pnpm db:migrate` refuses because the remote history already holds version 0005 from the judge session's worktree, which this branch does not carry, and the `--include-all` push was blocked for this session as a production change. Until it is applied, the deployed admin page would fail and the drawer stays empty, so the migration goes first and the merge second.
+- Review and merge the branch (Fable).
+- Optional, for the owner of `lib/types.ts`: add `duplicate_of?: string | null` to `Card`.
+
+**Seen along the way, not changed (other session's files)**
+- `CardSheet.tsx`: the "In all languages" and "Original text" summaries were 40 px tall; the global `summary` rule now makes them 44. The sheet's conflict and language lists were fine at 16 px.
+- `DropIn.tsx`: nothing under 16 px or 44 px in the open panel; the consent and choice buttons measure 48 px or more.
+- The eval chain's date sensitivity (above) sits in the fixtures, not in reconcile: p02 says 本日 while s02 and t02 carry a written date.
