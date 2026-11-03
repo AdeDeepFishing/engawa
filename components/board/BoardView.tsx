@@ -162,7 +162,7 @@ export function BoardView({
       <TopBar title={board.name[lang]} actions={<ShareButton boardSlug={board.slug} boardName={board.name[lang]} />} />
       <main className="mx-auto w-full max-w-2xl flex-1 px-4 pb-32 pt-4">
         <h1 className="sr-only">{board.name[lang]}</h1>
-        <AskPanel boardSlug={board.slug} cards={cards} onOpenCard={openFromAnswer} />
+        <AskPanel boardSlug={board.slug} mode={board.mode} cards={cards} onOpenCard={openFromAnswer} />
         <h2 className="mt-6 text-base font-semibold text-muted">{t("board.cards_heading")}</h2>
         {cards.length === 0 && pending.length === 0 ? (
           <p className="mt-6 rounded-xl border border-dashed border-line p-6 text-center text-muted">
