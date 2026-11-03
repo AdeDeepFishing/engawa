@@ -1,12 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { cardAsText, cardPath } from "@/lib/cards/share";
 import { useLang } from "@/lib/i18n/LangProvider";
 import type { Board, Card } from "@/lib/types";
 import { copyText } from "./copy";
 
 type CopyState = "idle" | "link" | "text" | "failed";
+
+// Whether the browser has a share sheet, read as an external store: false in
+// the server snapshot and therefore in the first client render, so the card
+// page hydrates without a mismatch, then the real answer right after. The
+// API does not appear or vanish while the page is open, so there is nothing
+// to subscribe to. (An effect that sets state is what the lint rule forbids.)
+const subscribeNever = () => () => {};
+const hasShareApi = () => typeof navigator.share === "function";
+const noShareOnServer = () => false;
 
 /**
  * "Share this card": the system share sheet when the browser has one, copy
@@ -17,8 +26,7 @@ export function CardShare({ card, board, now }: { card: Card; board: Board; now:
   const { lang, t } = useLang();
   const [copy, setCopy] = useState<CopyState>("idle");
   const [url, setUrl] = useState<string | null>(null);
-  // Read once on mount, on the client only; this component is never server-rendered with a different answer.
-  const [canShare] = useState(() => typeof navigator !== "undefined" && typeof navigator.share === "function");
+  const canShare = useSyncExternalStore(subscribeNever, hasShareApi, noShareOnServer);
 
   function cardUrl(): string {
     const absolute = `${window.location.origin}${cardPath(board.slug, card.id)}`;
