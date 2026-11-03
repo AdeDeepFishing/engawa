@@ -38,20 +38,24 @@ export function CardSheet({
 }) {
   const { lang, t } = useLang();
   const closeRef = useRef<HTMLButtonElement>(null);
-  /** The trace for the card shown; kept with its card id so a stale answer is never shown for another card. */
-  const [trace, setTrace] = useState<{ id: string; data: CardTrace } | null>(null);
+  /**
+   * The trace for the card shown, kept with its card id so a stale answer is
+   * never shown for another card. `data` null means the route answered 404
+   * (seed cards without a database, a card no longer public) or the fetch
+   * failed: the section is then left out instead of loading forever.
+   */
+  const [trace, setTrace] = useState<{ id: string; data: CardTrace | null } | null>(null);
 
   // Fetched when the sheet opens and again when the card gains a source, an
-  // update or the admin's confirmation while it is open. Seed cards without
-  // a database answer 404 and show nothing.
+  // update or the admin's confirmation while it is open.
   useEffect(() => {
     let cancelled = false;
     fetch(`/api/cards/${card.id}/trace`, { cache: "no-store" })
       .then((res) => (res.ok ? (res.json() as Promise<CardTrace>) : null))
+      .catch(() => null)
       .then((data) => {
-        if (!cancelled && data) setTrace({ id: card.id, data });
-      })
-      .catch(() => undefined);
+        if (!cancelled) setTrace({ id: card.id, data });
+      });
     return () => {
       cancelled = true;
     };
@@ -73,7 +77,9 @@ export function CardSheet({
   const conflicts = conflictStatements(card);
   const previous = supersededStatements(card);
   const sources = card.sources ?? [];
-  const steps = trace?.id === card.id ? trace.data : null;
+  // Loading until the fetch settles, then the data or, on a 404, nothing.
+  const traceState = trace?.id === card.id ? trace : null;
+  const traceAbsent = traceState !== null && traceState.data === null;
 
   return (
     <section
@@ -204,7 +210,7 @@ export function CardSheet({
 
         <CardShare card={card} board={board} now={now} />
 
-        <CardTraceView cardId={card.id} trace={steps} now={now} />
+        {traceAbsent ? null : <CardTraceView cardId={card.id} trace={traceState?.data ?? null} now={now} />}
 
         <details className="mt-5 rounded-xl border border-line p-3">
           <summary className="cursor-pointer py-2 font-semibold">{t("sheet.all_languages")}</summary>
