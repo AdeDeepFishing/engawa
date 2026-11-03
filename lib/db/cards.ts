@@ -1,10 +1,9 @@
 import { db } from "./client";
 import { addDays, addHours, CARD_RETENTION_DAYS, DEFAULT_VALID_HOURS } from "@/lib/cards/categories";
 import { contentTime } from "@/lib/cards/display";
-import { extractModel } from "@/lib/claude/client";
 import { containsContact, type ExtractFact } from "@/lib/claude/extract";
 import { trustRank } from "@/lib/cards/trust";
-import { reconcileModel, type ReconcileCandidate, type ReconcileDecision } from "@/lib/claude/reconcile";
+import type { ReconcileCandidate, ReconcileDecision } from "@/lib/claude/reconcile";
 import type {
   Board,
   Card,
@@ -53,12 +52,15 @@ interface SourceTrace {
 
 /**
  * Merge, update and conflict rows carry the model's reason and the reconcile
- * model. The reason is built from PII-stripped card text, but it reaches
- * readers, so it gets the same phone and email check as the extract output
- * and is dropped rather than stored when it fails.
+ * model. When code overrode the model's action (an update from a weaker
+ * source kept as a conflict) the model's sentence argues for the action not
+ * taken, so no reason is stored; the override itself is in the server log.
+ * A reason is built from PII-stripped card text, but it reaches readers, so
+ * it gets the same phone and email check as the extract output and is
+ * dropped rather than stored when it fails.
  */
 function traceOf(decision: ReconcileDecision): SourceTrace {
-  let reason: string | null = decision.reason.trim() || null;
+  let reason: string | null = decision.override ? null : decision.reason.trim() || null;
   if (reason && containsContact(reason)) {
     console.warn("reconcile reason dropped: it contains a phone number or email");
     reason = null;
@@ -465,18 +467,16 @@ export async function getPublicCardTrace(cardId: string): Promise<CardTrace | nu
 }
 
 /**
- * Which models made the card: the `created` row's model (the extract model)
- * and the latest comparison row's model (the reconcile model). Rows written
- * before migration 0005 have no model, so the configured default stands in.
- * No comparison row, no reconcile model: nothing is claimed that is not on record.
+ * Which models made the card, as far as the rows say: the `created` row's
+ * model (the extract model) and the latest comparison row's model (the
+ * reconcile model). A row written before migration 0005 has none, and no
+ * comparison row means no reconcile model: nothing is named that is not on
+ * record, not even a configured default.
  */
 function traceModels(steps: TraceStep[]): CardTrace["models"] {
   const created = steps.find((s) => s.relation === "created");
   const compared = [...steps].reverse().find((s) => s.relation !== "created");
-  return {
-    extract: created?.model ?? extractModel(),
-    reconcile: compared ? (compared.model ?? reconcileModel()) : null,
-  };
+  return { extract: created?.model ?? null, reconcile: compared?.model ?? null };
 }
 
 /** Any card on the board, whatever its visibility. Server only. */

@@ -25,10 +25,10 @@ export function traceStepLine(step: TraceStep, now: Date, lang: Lang): string {
   });
 }
 
-/** "Read by claude-opus-5-5 · compared by claude-opus-5-5"; the second part only when a comparison is on record. */
+/** "Read by claude-opus-5-5 · compared by claude-opus-5-5"; each part only when a row names the model. Empty when none does. */
 export function traceModelsLine(models: CardTrace["models"], lang: Lang): string {
   return [
-    t("trace.model_extract", lang, { model: models.extract }),
+    models.extract ? t("trace.model_extract", lang, { model: models.extract }) : null,
     models.reconcile ? t("trace.model_reconcile", lang, { model: models.reconcile }) : null,
   ]
     .filter(Boolean)

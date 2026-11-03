@@ -61,6 +61,13 @@ export interface ReconcileDecision {
    * the sources. Null when no call was made (no candidates, or the call failed).
    */
   model?: string | null;
+  /**
+   * Set by code: why it changed the model's proposal, when it did (an update
+   * from a weaker source downgraded to a conflict, a target outside the
+   * candidates). The model's reason then argues for an action that was not
+   * taken, so it is not stored for readers. Null when the proposal stood.
+   */
+  override?: string | null;
 }
 
 export interface ReconcileOutcome {
@@ -125,7 +132,7 @@ export async function reconcile(
 ): Promise<ReconcileOutcome> {
   if (candidates.length === 0) {
     return {
-      decision: { action: "create", target_card_id: null, fill_missing: false, reason: "no candidates", model: null },
+      decision: { action: "create", target_card_id: null, fill_missing: false, reason: "no candidates", model: null, override: null },
       proposed: null,
       override: null,
       model: null,
@@ -182,7 +189,7 @@ export async function reconcile(
   if (override) {
     console.warn(`reconcile override: ${override}`, JSON.stringify(proposed));
   }
-  return { decision: { ...decision, model }, proposed, override, model, latencyMs, usage };
+  return { decision: { ...decision, model, override }, proposed, override, model, latencyMs, usage };
 }
 
 function createDecision(reason: string): ReconcileDecision {

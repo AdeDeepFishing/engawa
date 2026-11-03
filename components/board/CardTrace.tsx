@@ -13,6 +13,7 @@ import type { CardTrace } from "@/lib/types";
  */
 export function CardTraceView({ cardId, trace, now }: { cardId: string; trace: CardTrace | null; now: Date }) {
   const { lang, t } = useLang();
+  const modelsLine = trace ? traceModelsLine(trace.models, lang) : "";
   return (
     <section className="mt-5 rounded-xl border border-line p-3" aria-labelledby={`trace-title-${cardId}`} data-trace>
       <h3 id={`trace-title-${cardId}`} className="font-semibold">
@@ -39,9 +40,11 @@ export function CardTraceView({ cardId, trace, now }: { cardId: string; trace: C
               </li>
             ) : null}
           </ol>
-          <p className="mt-3 text-base text-muted" data-trace-models>
-            {traceModelsLine(trace.models, lang)}
-          </p>
+          {modelsLine ? (
+            <p className="mt-3 text-base text-muted" data-trace-models>
+              {modelsLine}
+            </p>
+          ) : null}
         </>
       ) : (
         <p className="mt-3 text-base text-muted" aria-live="polite">

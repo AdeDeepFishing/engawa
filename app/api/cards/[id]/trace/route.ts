@@ -8,7 +8,7 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 
 /**
  * How one public card was made: its source rows oldest first with the
- * reconcile reason and the model behind each, and the models used. 404 for
+ * reconcile reason and the model behind each, and the model ids on record. 404 for
  * held, hidden and unknown cards, like the masked image route. Not cached:
  * a card hidden by the admin must stop answering at once.
  */

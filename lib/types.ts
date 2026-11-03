@@ -141,11 +141,12 @@ export interface CardTrace {
   /** Oldest first. */
   steps: TraceStep[];
   /**
-   * Model ids as read from the rows, else the configured defaults.
-   * `reconcile` is null when no confirmed, updated or conflict step exists,
-   * because then no comparison is on record.
+   * Model ids as read from the rows, nothing else: `extract` from the
+   * `created` row, `reconcile` from the latest confirmed, updated or conflict
+   * row. Null when no such row exists or the row predates migration 0005;
+   * the footer then names nothing rather than a configured default.
    */
-  models: { extract: string; reconcile: string | null };
+  models: { extract: string | null; reconcile: string | null };
 }
 
 export interface Card {

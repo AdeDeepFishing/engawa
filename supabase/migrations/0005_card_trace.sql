@@ -8,5 +8,5 @@ alter table card_sources add column if not exists reason text;
 
 -- Model id that produced the row: the extract model on a `created` row, the
 -- reconcile model on `confirmed`, `updated` and `conflict` rows. Null on rows
--- written before today; readers then see the configured default.
+-- written before today; readers then see no model named for that row.
 alter table card_sources add column if not exists model text;
