@@ -227,5 +227,7 @@
   "dropin.step.reading": "Reading",
   "dropin.step.checking": "Checking",
   "dropin.step.done": "Done",
-  "dropin.usual_time": "Usually 10 to 20 seconds. {n} s so far."
+  "dropin.usual_time": "Usually 10 to 20 seconds. {n} s so far.",
+  "dropin.step.translating": "Translating",
+  "card.translating": "Translation coming soon."
 }

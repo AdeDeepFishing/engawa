@@ -227,5 +227,7 @@
   "dropin.step.reading": "读取中",
   "dropin.step.checking": "比对中",
   "dropin.step.done": "完成",
-  "dropin.usual_time": "通常需要 10 到 20 秒，已用 {n} 秒。"
+  "dropin.usual_time": "通常需要 10 到 20 秒，已用 {n} 秒。",
+  "dropin.step.translating": "翻译",
+  "card.translating": "翻译稍后显示。"
 }

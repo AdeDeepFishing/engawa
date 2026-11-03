@@ -1,5 +1,6 @@
 import { createHash, timingSafeEqual } from "node:crypto";
 import { CARD_WITH_SOURCES, withSortedSources } from "./cards";
+import { fillLangs, withLangFallback } from "@/lib/cards/langs";
 import { db } from "./client";
 import type { Board, Card, Multilingual, Visibility } from "@/lib/types";
 
@@ -95,7 +96,11 @@ export async function listCardsForAdmin(board: Board): Promise<AdminCardLists> {
         .order("created_at", { ascending: false })
         .limit(visibility === "public" ? 200 : 100);
       if (error) throw error;
-      return ((data ?? []) as AdminCard[]).map((c) => withSortedSources(c) as AdminCard);
+      // Held cards are fresh and often still waiting for their translation: the admin reads a fallback, never a blank.
+      return ((data ?? []) as AdminCard[]).map((c) => {
+        const card = withLangFallback(withSortedSources(c) as AdminCard);
+        return card.original ? { ...card, original: { ...card.original, title: fillLangs(card.original.title) } } : card;
+      });
     }),
   );
   return { held: lists[0], public: lists[1], hidden: lists[2] };

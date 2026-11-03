@@ -227,5 +227,7 @@
   "dropin.step.reading": "Đang đọc",
   "dropin.step.checking": "Đối chiếu",
   "dropin.step.done": "Xong",
-  "dropin.usual_time": "Thường mất 10 đến 20 giây. Đã {n} giây."
+  "dropin.usual_time": "Thường mất 10 đến 20 giây. Đã {n} giây.",
+  "dropin.step.translating": "Dịch",
+  "card.translating": "Bản dịch sẽ có trong giây lát."
 }

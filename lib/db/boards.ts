@@ -1,4 +1,5 @@
 import { CARD_WITH_SOURCES, withSortedSources } from "./cards";
+import { fillLangs, withLangFallback } from "@/lib/cards/langs";
 import { db, hasDb } from "./client";
 import { localBoardBySlug, localBoards, localCardsForBoard } from "./local";
 import type { Board, Card, Multilingual } from "@/lib/types";
@@ -103,7 +104,7 @@ export async function listHiddenDuplicates(boardId: string): Promise<HiddenDupli
   for (const row of (data ?? []) as HiddenDuplicateRow[]) {
     const { original, duplicate_of, ...rest } = row;
     if (!duplicate_of || !original || original.visibility !== "public") continue;
-    out.push({ ...toPublicCard(rest), duplicate_of, original_title: original.title });
+    out.push({ ...toPublicCard(rest), duplicate_of, original_title: fillLangs(original.title) });
   }
   return out;
 }
@@ -113,11 +114,13 @@ type PublicCardRow = Omit<Card, "has_masked_image"> & { masked_image_path?: stri
 
 /**
  * What readers get: the row without `masked_image_path` (it names the board
- * and the submission) and with `has_masked_image` instead, sources sorted.
+ * and the submission) and with `has_masked_image` instead, sources sorted,
+ * and no language blank: a language the translate step has not written yet
+ * carries English or Japanese, with `missing_langs` saying which ones.
  */
 export function toPublicCard(row: PublicCardRow): Card {
   const { masked_image_path, ...rest } = row;
-  return withSortedSources({ ...rest, has_masked_image: Boolean(masked_image_path) });
+  return withLangFallback(withSortedSources({ ...rest, has_masked_image: Boolean(masked_image_path) }));
 }
 
 export function sortCards(cards: Card[]): Card[] {

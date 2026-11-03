@@ -227,5 +227,7 @@
   "dropin.step.reading": "읽는 중",
   "dropin.step.checking": "대조 중",
   "dropin.step.done": "완료",
-  "dropin.usual_time": "보통 10에서 20초 걸립니다. 지금 {n}초."
+  "dropin.usual_time": "보통 10에서 20초 걸립니다. 지금 {n}초.",
+  "dropin.step.translating": "번역",
+  "card.translating": "번역이 곧 표시됩니다."
 }

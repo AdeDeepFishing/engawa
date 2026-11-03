@@ -227,5 +227,7 @@
   "dropin.step.reading": "読み取り",
   "dropin.step.checking": "照合",
   "dropin.step.done": "完了",
-  "dropin.usual_time": "ふつう10から20秒かかります。現在 {n} 秒。"
+  "dropin.usual_time": "ふつう10から20秒かかります。現在 {n} 秒。",
+  "dropin.step.translating": "翻訳",
+  "card.translating": "翻訳を準備しています。"
 }
