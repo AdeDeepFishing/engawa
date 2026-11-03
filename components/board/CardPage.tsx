@@ -18,6 +18,7 @@ import { useLang } from "@/lib/i18n/LangProvider";
 import type { Board, Card, CardTrace } from "@/lib/types";
 import { Statement } from "./CardSheet";
 import { CardTraceView } from "./CardTrace";
+import { ReadAloud } from "./ReadAloud";
 
 /**
  * One card on its own page, reached from a shared link. The same content as
@@ -90,6 +91,7 @@ export function CardPage({
           ) : null}
 
           <p className="mt-4 text-lg">{card.body[lang]}</p>
+          <ReadAloud card={card} />
 
           <dl className="mt-4 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-base">
             {place ? (
