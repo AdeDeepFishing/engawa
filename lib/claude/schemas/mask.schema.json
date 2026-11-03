@@ -15,7 +15,7 @@
     },
     "boxes": {
       "type": "array",
-      "description": "One box per avatar, name, handle, phone number or room number. At most 60.",
+      "description": "One box per avatar, name, handle, phone number, room number or vehicle number plate. At most 60.",
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -23,7 +23,7 @@
         "properties": {
           "kind": {
             "type": "string",
-            "enum": ["avatar", "name", "handle", "phone", "room"]
+            "enum": ["avatar", "name", "handle", "phone", "room", "plate"]
           },
           "label": {
             "type": "string",

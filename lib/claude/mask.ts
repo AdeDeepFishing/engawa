@@ -29,7 +29,7 @@ export function maskModel(): ModelId {
   return process.env.MASK_MODEL || MODELS.opus;
 }
 
-export const MASK_KINDS = ["avatar", "name", "handle", "phone", "room"] as const;
+export const MASK_KINDS = ["avatar", "name", "handle", "phone", "room", "plate"] as const;
 export type MaskKind = (typeof MASK_KINDS)[number];
 
 /** Code never writes more boxes than this; a longer answer is rejected whole. */
@@ -97,7 +97,7 @@ export async function maskBoxes(
       type: "text",
       text:
         `The image is exactly ${size.width} pixels wide and ${size.height} pixels high. ` +
-        "Return the boxes of every avatar, name, handle, phone number and room number in that frame.",
+        "Return the boxes of every avatar, name, handle, phone number, room number and number plate in that frame.",
     },
   ];
 
@@ -121,7 +121,8 @@ export async function maskBoxes(
   };
 
   if (message.stop_reason === "refusal") {
-    throw new MaskError("refusal", message.stop_details?.explanation ?? "refused");
+    // Only the category: the explanation can quote what is in the screenshot.
+    throw new MaskError("refusal", `refused (${message.stop_details?.category ?? "no category"})`);
   }
   if (message.stop_reason === "max_tokens") {
     throw new MaskError("truncated", "output hit max_tokens");
