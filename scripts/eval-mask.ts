@@ -1,4 +1,9 @@
 /**
+ * Fixtures only. This script prints the labels the model attaches to its
+ * boxes (names, handles, numbers as read from the image) and writes the
+ * masked images to disk. Run it only on the fictional screenshots in
+ * fixtures/, never on a real one.
+ *
  * Coverage eval for the chat screenshot masking (docs/PLAN.md G1). For every
  * sidecar in fixtures/masking it runs the masking step on the input exactly
  * as the pipeline does (lib/image/mask-pipeline.ts), then checks each ground
