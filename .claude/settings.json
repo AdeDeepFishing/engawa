@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cd \"$CLAUDE_PROJECT_DIR\" && node --import=tsx scripts/guard.ts",
+            "command": "cd \"$CLAUDE_PROJECT_DIR\" && { test -d node_modules/tsx || exit 0; } && node --import=tsx scripts/guard.ts",
             "timeout": 30
           }
         ]

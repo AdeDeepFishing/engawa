@@ -283,6 +283,8 @@ Two rules went into `prompts/extract.system.md` before the merge of the day 2 an
 
 ### 2026-11-04, extract on `claude-fable-5-1` against `claude-opus-5-5` (N11, `claude-fable-5-1` in Claude Code)
 
+This comparison measured the single-call extract that wrote all six languages. Since the split of extract and translate later the same day, extract writes Japanese, English and the input's language and translate fills the rest, so the numbers here are not reproducible on the current pipeline without `--model` on both calls.
+
 Same 15 inputs, prompt, schema and effort (low), concurrency 3, two runs back to back at 02:35 and 02:37 JST; the full tables are above under the markers for each model. `pnpm eval --model <id>` overrides `EXTRACT_MODEL` for the run, and the summary now also prints the p90 latency and the tokens per call, which this comparison needed.
 
 | | `claude-opus-5-5` | `claude-fable-5-1` |

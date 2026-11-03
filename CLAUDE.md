@@ -57,7 +57,7 @@ pnpm purge          # run the purge job once against the configured database
 - `lib/image/` browser compression and server stripping.
 - `lib/geo/` board polygons and point-in-area (G2, only after the must list is done).
 - `supabase/migrations/`, `supabase/seed/`.
-- `fixtures/` test inputs (made before the event as test material, fake names and avatars, see `fixtures/README.md`) with `expected/*.json` written during the event.
+- `fixtures/` test inputs (fictional paper notices, chat and social screenshots and texts, rendered with Playwright on 11/03 during the event, fake names and avatars, see `fixtures/README.md`) with `expected/*.json`.
 - `scripts/` eval, seed, purge.
 - `docs/PLAN.md`, `docs/DEVLOG.md`, `docs/PRIVACY.md`, `docs/EVAL.md`.
 
