@@ -6,6 +6,8 @@
   --foreground: #1b1b1b;
   --muted: #5c5c5c;
   --line: #d9d6cf;
+  /* Borders of controls: at least 3:1 against the page and the surface (WCAG 1.4.11). */
+  --line-strong: #8f8b82;
   --accent: #1f5c3f;
   --accent-ink: #ffffff;
   --warn-bg: #fff4d6;
@@ -19,6 +21,7 @@
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
   --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
   --color-accent: var(--accent);
   --color-accent-ink: var(--accent-ink);
   --color-warn-bg: var(--warn-bg);
@@ -52,9 +55,16 @@ button,
 [role="button"],
 a.tap,
 input[type="file"] + label,
-select {
+select,
+summary {
   min-height: 2.75rem;
   min-width: 2.75rem;
+}
+
+/* A control drawn with the hairline gets the stronger one, so its edge
+   reads at 3:1 on the page and on white; decorative borders keep the hairline. */
+:is(button, input, select, textarea, summary, a).border-line {
+  border-color: var(--line-strong);
 }
 
 :focus-visible {

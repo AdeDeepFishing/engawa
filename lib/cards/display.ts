@@ -1,17 +1,33 @@
 import { INTL_LOCALE, t, type Lang } from "@/lib/i18n";
 import type { Board, Card, CardStatus, ConflictStatement, Platform, SourceType } from "@/lib/types";
 
-/** Place as shown to a reader: translated name plus the Japanese name, because signs are in Japanese. */
-export function placeLabel(card: Pick<Card, "place_id" | "place_text_ja">, board: Board, lang: Lang): string | null {
+/**
+ * Place as shown to a reader, in parts: the name in the reader's language
+ * and, when that differs, the Japanese name to mark with lang="ja", because
+ * signs on the street are in Japanese. `ja` is null when the whole label is
+ * already Japanese (the UI is Japanese, or the place is unknown).
+ */
+export function placeParts(
+  card: Pick<Card, "place_id" | "place_text_ja">,
+  board: Board,
+  lang: Lang,
+): { text: string; ja: string | null } | null {
   if (card.place_id) {
     const place = board.known_places.find((p) => p.id === card.place_id);
     if (place) {
-      if (lang === "ja") return place.name_ja;
+      if (lang === "ja") return { text: place.name_ja, ja: null };
       const localized = place.names[lang];
-      return localized ? `${localized} (${place.name_ja})` : place.name_ja;
+      return localized ? { text: localized, ja: place.name_ja } : { text: place.name_ja, ja: null };
     }
   }
-  return card.place_text_ja;
+  return card.place_text_ja ? { text: card.place_text_ja, ja: null } : null;
+}
+
+/** Place as one string: translated name plus the Japanese name in parentheses. */
+export function placeLabel(card: Pick<Card, "place_id" | "place_text_ja">, board: Board, lang: Lang): string | null {
+  const parts = placeParts(card, board, lang);
+  if (!parts) return null;
+  return parts.ja ? `${parts.text} (${parts.ja})` : parts.text;
 }
 
 export function timeAgo(iso: string, now: Date, lang: Lang): string {
