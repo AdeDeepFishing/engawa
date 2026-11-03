@@ -18,6 +18,8 @@ export interface PendingItem {
   error?: string;
   canRetry?: boolean;
   cardIds?: string[];
+  /** One reconcile action per fact from the done event; PendingCard says where a merge went. */
+  actions?: string[];
   note?: string | null;
 }
 
@@ -38,6 +40,7 @@ type DoneEvent = {
   public_count: number | null;
   held_count: number | null;
   note_for_uploader: string | null;
+  actions?: string[];
 };
 
 export function DropIn({
@@ -110,7 +113,14 @@ export function DropIn({
           const publicCount = d.public_count ?? (d.status === "done" ? d.card_ids.length : 0);
           const heldCount = d.held_count ?? (d.status === "held" ? d.card_ids.length : 0);
           const status: PendingStatus = publicCount > 0 ? "done" : heldCount > 0 ? "held" : "nothing";
-          onPending({ id: localId, submissionId, status, cardIds: d.card_ids, note: d.note_for_uploader });
+          onPending({
+            id: localId,
+            submissionId,
+            status,
+            cardIds: d.card_ids,
+            actions: d.actions,
+            note: d.note_for_uploader,
+          });
         } else if (ev.event === "failed") {
           finished = true;
           const d = ev.data as { error?: string };

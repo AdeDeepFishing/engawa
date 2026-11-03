@@ -93,20 +93,18 @@ export function BoardView({
   const close = useCallback(() => setSelectedId(null), []);
 
   // A citation chip scrolls its card into view and opens the same sheet a tap
-  // on the card opens. CardItem renders the <li>, so the card is found by its
-  // position in the list: pending placeholders first, then the cards.
+  // on the card opens. CardItem marks its <li> with data-card-id.
   const openFromAnswer = useCallback(
     (cardId: string) => {
-      const index = cards.findIndex((c) => c.id === cardId);
-      if (index < 0) return;
-      const item = listRef.current?.children[pending.length + index];
+      if (!cards.some((c) => c.id === cardId)) return;
+      const item = listRef.current?.querySelector(`[data-card-id="${cardId}"]`);
       if (item instanceof HTMLElement) {
         const smooth = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         item.scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: "center" });
       }
       setSelectedId(cardId);
     },
-    [cards, pending.length],
+    [cards],
   );
 
   return (

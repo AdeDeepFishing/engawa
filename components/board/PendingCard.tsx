@@ -17,7 +17,7 @@ const STAGE_KEYS: Record<string, MessageKey> = {
 /**
  * What the uploader sees when processing finished. A merge adds no new card
  * to the list, so say where the drop-in went. `actions` comes from the done
- * event (one reconcile action per fact) when DropIn passes it through.
+ * event (one reconcile action per fact).
  */
 function doneKey(actions: string[] | undefined): MessageKey {
   if (!actions?.length || actions.includes("create")) return "dropin.stage.done";
@@ -48,7 +48,7 @@ export function PendingCard({
   let line: string;
   if (item.status === "uploading") line = t("dropin.stage.received");
   else if (item.status === "processing") line = t(STAGE_KEYS[item.stage ?? "received"] ?? "dropin.stage.received");
-  else if (item.status === "done") line = t(doneKey((item as PendingItem & { actions?: string[] }).actions));
+  else if (item.status === "done") line = t(doneKey(item.actions));
   else if (item.status === "held") line = t("dropin.held");
   else if (item.status === "nothing") line = t("dropin.nothing");
   else line = t(errorKey(item.error));

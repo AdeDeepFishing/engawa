@@ -46,7 +46,7 @@ export function CardItem({
     .join(". ");
 
   return (
-    <li>
+    <li data-card-id={card.id}>
       <button
         type="button"
         onClick={() => onOpen(card)}
