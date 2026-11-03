@@ -3,7 +3,13 @@
   "title": "ExtractResult",
   "type": "object",
   "additionalProperties": false,
-  "required": ["input_language", "source_platform", "facts", "discarded", "note_for_uploader"],
+  "required": [
+    "input_language",
+    "source_platform",
+    "facts",
+    "discarded",
+    "note_for_uploader"
+  ],
   "properties": {
     "input_language": {
       "type": "string",
@@ -11,7 +17,16 @@
     },
     "source_platform": {
       "type": "string",
-      "enum": ["line", "wechat", "x", "xiaohongshu", "facebook", "paper", "other", "unknown"],
+      "enum": [
+        "line",
+        "wechat",
+        "x",
+        "xiaohongshu",
+        "facebook",
+        "paper",
+        "other",
+        "unknown"
+      ],
       "description": "Where the input visibly comes from. paper for photographed notices."
     },
     "facts": {
@@ -20,56 +35,119 @@
         "type": "object",
         "additionalProperties": false,
         "required": [
-          "category", "place_id", "place_text_ja", "status", "valid_from", "valid_until",
-          "conditions", "source_type", "risk_flags", "confidence", "title", "body", "original_excerpt"
+          "category",
+          "place_id",
+          "place_text_ja",
+          "status",
+          "valid_from",
+          "valid_until",
+          "conditions",
+          "source_type",
+          "risk_flags",
+          "confidence",
+          "title",
+          "body",
+          "original_excerpt"
         ],
         "properties": {
           "category": {
             "type": "string",
-            "enum": ["water", "food", "supplies", "shelter", "medical", "power_comms", "shops", "transport", "danger", "official_notice", "daily_notice", "other"]
+            "enum": [
+              "water",
+              "food",
+              "supplies",
+              "shelter",
+              "medical",
+              "power_comms",
+              "shops",
+              "transport",
+              "danger",
+              "official_notice",
+              "daily_notice",
+              "other"
+            ]
           },
           "place_id": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "description": "An id from the known places list, or null."
           },
           "place_text_ja": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "description": "The place as written in the input, Japanese preferred. Null if no place is stated."
           },
           "status": {
             "type": "string",
-            "enum": ["open", "closed", "full", "planned", "unknown"]
+            "enum": [
+              "open",
+              "closed",
+              "full",
+              "planned",
+              "unknown"
+            ]
           },
           "valid_from": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "description": "ISO 8601 with +09:00 offset, or null."
           },
           "valid_until": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "description": "ISO 8601 with +09:00 offset, or null when the input states no end."
           },
           "conditions": {
             "type": "array",
-            "items": { "type": "string" },
+            "items": {
+              "type": "string"
+            },
             "description": "Short English phrases as stated in the input, for example bring your own container, no pets, one bottle per person."
           },
           "source_type": {
             "type": "string",
-            "enum": ["official", "firsthand", "secondhand", "unknown"]
+            "enum": [
+              "official",
+              "firsthand",
+              "secondhand",
+              "unknown"
+            ]
           },
           "risk_flags": {
             "type": "array",
             "items": {
               "type": "string",
-              "enum": ["rumor", "scam", "sensitive_personal", "group_accusation", "prompt_injection"]
+              "enum": [
+                "rumor",
+                "scam",
+                "sensitive_personal",
+                "group_accusation",
+                "prompt_injection"
+              ]
             }
           },
           "confidence": {
             "type": "string",
-            "enum": ["high", "medium", "low"]
+            "enum": [
+              "high",
+              "medium",
+              "low"
+            ]
           },
-          "title": { "$ref": "#/$defs/multilingual" },
-          "body": { "$ref": "#/$defs/multilingual" },
+          "title": {
+            "$ref": "#/$defs/multilingual"
+          },
+          "body": {
+            "$ref": "#/$defs/multilingual"
+          },
           "original_excerpt": {
             "type": "string",
             "description": "The part of the input this fact comes from, in the original language, with personal information replaced by placeholders."
@@ -81,12 +159,24 @@
       "type": "array",
       "items": {
         "type": "string",
-        "enum": ["chatter", "greeting", "emotion", "reaction", "unrelated", "duplicate_within_input", "personal_only", "unreadable"]
+        "enum": [
+          "chatter",
+          "greeting",
+          "emotion",
+          "reaction",
+          "unrelated",
+          "duplicate_within_input",
+          "personal_only",
+          "unreadable"
+        ]
       },
       "description": "Types of content dropped from the input. Types only, never the content."
     },
     "note_for_uploader": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "description": "One short sentence in the input language if a key element is missing, otherwise null."
     }
   },
@@ -94,15 +184,51 @@
     "multilingual": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["ja", "en", "zh", "ko", "vi", "easy_ja"],
+      "required": [
+        "ja",
+        "en",
+        "zh",
+        "ko",
+        "vi",
+        "easy_ja"
+      ],
       "properties": {
-        "ja": { "type": "string" },
-        "en": { "type": "string" },
-        "zh": { "type": "string" },
-        "ko": { "type": "string" },
-        "vi": { "type": "string" },
-        "easy_ja": { "type": "string" }
-      }
+        "ja": {
+          "type": "string"
+        },
+        "en": {
+          "type": "string"
+        },
+        "zh": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Only when the input is in Chinese, else null."
+        },
+        "ko": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Only when the input is in Korean, else null."
+        },
+        "vi": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Only when the input is in Vietnamese, else null."
+        },
+        "easy_ja": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Always null: written by the translate call."
+        }
+      },
+      "description": "ja and en always. zh, ko and vi only when it is the input's own language. Every other language null: a separate translate call writes them after the card is on the board."
     }
   }
 }

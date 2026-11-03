@@ -264,5 +264,7 @@
   "about.back_board": "Back to the board",
   "about.back_home": "All boards",
   "board.footer_about": "About this board and what happens to your data",
-  "poster.about": "About the board and your data: {url}"
+  "poster.about": "About the board and your data: {url}",
+  "dropin.step.translating": "Translating",
+  "card.translating": "Translation coming soon."
 }

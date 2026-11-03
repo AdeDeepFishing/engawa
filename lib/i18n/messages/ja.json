@@ -264,5 +264,7 @@
   "about.back_board": "掲示板に戻る",
   "about.back_home": "掲示板の一覧",
   "board.footer_about": "この掲示板と、あなたのデータの扱いについて",
-  "poster.about": "この掲示板とデータの扱いについて: {url}"
+  "poster.about": "この掲示板とデータの扱いについて: {url}",
+  "dropin.step.translating": "翻訳",
+  "card.translating": "翻訳を準備しています。"
 }

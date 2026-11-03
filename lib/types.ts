@@ -1,6 +1,19 @@
 import type { CardLang, Lang } from "@/lib/i18n";
 
+/**
+ * Card text in all six languages, as readers get it. A stored row can lack
+ * languages for a few seconds (see PartialMultilingual); the public and
+ * admin projections fill the gaps with English or Japanese before a card
+ * reaches any reader (lib/cards/langs.ts), so reader code may index freely.
+ */
 export type Multilingual = Record<CardLang, string>;
+
+/**
+ * Card text as extract writes it and as a row can hold it: Japanese and
+ * English always, the other four only once the translate call has filled
+ * them (lib/db/translate.ts), a few seconds after the card is written.
+ */
+export type PartialMultilingual = { ja: string; en: string } & Partial<Record<Exclude<CardLang, "ja" | "en">, string>>;
 
 export const CATEGORIES = [
   "water",
@@ -95,8 +108,8 @@ export interface ConflictStatement {
   kind?: "superseded" | "conflict";
   /** Japanese body, plain text. */
   text: string;
-  title?: Multilingual;
-  body?: Multilingual;
+  title?: PartialMultilingual;
+  body?: PartialMultilingual;
   status?: CardStatus | null;
   valid_from?: string | null;
   valid_until?: string | null;
@@ -183,6 +196,13 @@ export interface Card {
    * Storage path itself (cards.masked_image_path) never leaves the server.
    */
   has_masked_image: boolean;
+  /**
+   * Languages the card does not have yet (its translation is on its way or
+   * failed; the next drop-in on the board fills it). Set by the public
+   * projection, whose title and body then carry English or Japanese in
+   * their place so nothing renders blank. Absent on rows read raw.
+   */
+  missing_langs?: CardLang[];
 }
 
 export type SubmissionStatus = "received" | "processing" | "done" | "held" | "failed";

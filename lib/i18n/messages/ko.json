@@ -264,5 +264,7 @@
   "about.back_board": "게시판으로 돌아가기",
   "about.back_home": "모든 게시판",
   "board.footer_about": "이 게시판과 데이터 처리에 대해",
-  "poster.about": "게시판과 데이터 처리에 대해: {url}"
+  "poster.about": "게시판과 데이터 처리에 대해: {url}",
+  "dropin.step.translating": "번역",
+  "card.translating": "번역이 곧 표시됩니다."
 }

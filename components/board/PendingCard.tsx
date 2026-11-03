@@ -17,17 +17,19 @@ const STAGE_KEYS: Record<string, MessageKey> = {
 };
 
 /**
- * The four steps a drop-in goes through, as the uploader sees them. The
+ * The five steps a drop-in goes through, as the uploader sees them. The
  * pipeline's finer stages map onto them: uploading, received and stripping
  * are "received"; extracting is "reading"; masking and reconciling are
- * "checking"; translating happens inside extract today, so "done" follows.
+ * "checking"; "translating" runs after the card is already on the board,
+ * in Japanese, English and the input's language, and fills the rest.
  */
-const STEPS = ["received", "reading", "checking", "done"] as const;
+const STEPS = ["received", "reading", "checking", "translating", "done"] as const;
 type Step = (typeof STEPS)[number];
 const STEP_KEYS: Record<Step, MessageKey> = {
   received: "dropin.step.received",
   reading: "dropin.step.reading",
   checking: "dropin.step.checking",
+  translating: "dropin.step.translating",
   done: "dropin.step.done",
 };
 
@@ -39,10 +41,11 @@ function currentStep(item: PendingItem): number {
       return 1;
     case "masking":
     case "reconciling":
-    case "translating":
       return 2;
-    case "done":
+    case "translating":
       return 3;
+    case "done":
+      return 4;
     default:
       return 0;
   }
@@ -87,7 +90,7 @@ function useElapsedSeconds(running: boolean): number {
 /**
  * Placeholder shown at the top of the list while a submission is processed.
  * A drop-in takes 10 to 20 seconds, so the card shows where the work is: a
- * four step stepper driven by the real pipeline stages (never by a timer),
+ * five step stepper driven by the real pipeline stages (never by a timer),
  * the stage in words, and the usual duration with the seconds so far. The
  * active step pulses; under prefers-reduced-motion the steps still fill.
  */

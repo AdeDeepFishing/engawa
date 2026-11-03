@@ -434,3 +434,56 @@ The admin page of the test board was measured too: no text under 16 px, no contr
 - Review and merge the PR. Nothing new in Vercel or the database.
 - Tick in `docs/PLAN.md` under 2026-11-05: "N11 Fable versus Opus on the eval" and "N13 Claude Code visible in the repo; N14 about page".
 - Confirm the hook fires in a fresh session, then open `/about` on the deployed URL in two languages.
+
+## 2026-11-04 (Wed) early morning, extract split from translate: the first card in about 8 seconds
+
+**Model:** `claude-fable-5-1` in Claude Code, implementation role, in its own worktree (branch `split-translate`, cut from `main` after PR #11) while two other sessions worked on their own file lists. Extract and translate both run on `claude-opus-5-5`; `claude-sonnet-5-5` was measured for translate (below) and not chosen.
+
+**Why.** Until today one extract call wrote the card in six languages and took a median of 13 seconds on the fixtures, almost all of it output tokens. The PLAN's S3 fallback (split extract from translate) was written for the case of more than 20 seconds; it is used now for a different reason: the uploader should see their card as soon as it exists, and the other languages can follow a few seconds later.
+
+**Done**
+- Extract writes Japanese, English and the input's own language when that is Chinese, Korean or Vietnamese. In `schemas/extract.schema.json` the other languages are `["string", "null"]` and the prompt says to set them to null; validation (`toMultilingual` in `lib/claude/extract.ts`) requires `ja` and `en` and keeps any other non-empty string. The stored shape is `PartialMultilingual`; readers keep `Multilingual` (all six) because the projections below fill it.
+- `lib/claude/translate.ts`: one structured-outputs call per submission over the day 0 prompt and schema. The schema is cut in code to the languages asked for (a Chinese input already has Chinese), one variant per subset; the prompt and the same board context block as extract (known places with their names in each language) are cached. Code checks one entry per item, every asked-for language non-empty, and no phone number or email (`TranslateError("pii_leak")`). `translateFacts` serves the scripts.
+- `lib/db/translate.ts`: `fillCardLanguages` reads the written cards, builds one item per card and per conflict statement that lacks a language, makes one call for all of them and writes only the missing languages under the `updated_at` the row had when it was read. A row that changed meanwhile is read again and filled only if its Japanese and English are still the text that was translated. A card that lacks nothing causes no call: a merge target with six languages is read, found complete and left alone (checked live, step 3 below). `listCardsMissingLanguages` names up to 3 older public or held cards of the board still missing a language, so a translation that failed earlier is filled by the next drop-in on the board.
+- `app/api/process/[id]/route.ts`: after reconcile and `finishSubmission` (status `done`, cards recorded) the route sends a `cards` event, then `stage: translating`, runs the fill with one retry (none after the daily cap), then `done` with `translate_ms` and `translated`. A failed translate never fails the submission. The translation state lives on the cards, not on the submission row.
+- Client: `DropIn` refreshes the list on the `cards` event, so the card appears while translate runs; `PendingCard` has a fifth step, Translating; `dropin.step.translating` and `card.translating` were appended to the five message files (231 keys each, parity checked, no dashes).
+- Readers: `lib/cards/langs.ts` fills a missing language with English, then Japanese (やさしい日本語 with Japanese first), in `toPublicCard` and the admin list, never in the row, and sets `missing_langs` on the card. `CardItem` marks the title with the language it is really in (`lang` attribute) and says "Translation coming soon." under it. The sheet, the card page, share and ask read the same filled records and show the fallback text without the hint (their files belong to other sessions this week; `missing_langs` is there for them).
+- `pnpm eval` runs translate after extract and scores six languages on the result, with a translate column; `pnpm latency` prints extract and translate side by side (`--no-translate` for extract alone). `lib/claude/README.md` and `.env.example` (`TRANSLATE_MODEL`) updated.
+
+**Latency, before and after** (`pnpm latency`, all 23 fixture inputs one after another, `claude-opus-5-5`, effort low, prompt cache warm; the first column is the code on `main` at 18ced70, the others this branch)
+
+| ms | before: one call, six languages | after: extract (ja, en, input language) | after: translate | after: extract plus translate |
+|---|---:|---:|---:|---:|
+| median | 12980 | 8296 | 8635 | 15798 |
+| mean | 12662 | 7947 | 8605 | 16552 |
+| min | 7147 | 4766 | 4528 | 10321 |
+| max | 22519 | 10589 | 12898 | 22944 |
+
+The time to the first card is the extract column: 13.0 to 8.3 seconds at the median, 22.5 to 10.6 at the worst (the p09 photo). Extract output tokens over the 23 inputs went from 28385 to 16839. The full set of six languages now lands about 2.8 seconds later than before at the median, as a second step the reader does not wait for.
+
+**Eval** (`pnpm eval --no-write`, 15 inputs, concurrency 3; `docs/EVAL.md` is another session's file this week, so the numbers are here): 100/100 fields, 0 PII leaks, 0 invented facts, risk flags 15/15, six languages present on every fact after translate 15/15, extract median 7391 ms. `pnpm eval --reconcile --now 2026-11-03T10:00:00+09:00 --no-write`: 11/11 (create 4/4, merge 6/6, update 1/1), reconcile median 2323 ms; t03 merges since the PR #9 prompt rule.
+
+**Translate model.** Same eval with `--translate-model claude-sonnet-5-5`: 100/100, 0 leaks, 0 invented, 15/15 six languages, translate median 7780 ms against 9991 ms for Opus in the eval (both ran beside the latency run) and 8635 ms for Opus in the sequential latency run. Decision: translate stays on `claude-opus-5-5`. The card is already on the board when translate runs, so the second saved buys little, and the Korean and Vietnamese text is what native speakers read on 11/05. `TRANSLATE_MODEL=claude-sonnet-5-5` switches it in one variable.
+
+**Acceptance** (local dev server on port 3131 against the shared Supabase project; throwaway board `split-acceptance-0323`, a copy of the 武蔵小杉 row; a script sent the text through the two routes and polled the public cards API every second as a reader's browser would; the built-in browser pane watched the board with the interface in Vietnamese; the live board was not touched). Times are from the submission's creation.
+
+| step | input | `cards` event | a poll saw the card | `done`, six languages | what the Vietnamese browser showed |
+|---|---|---:|---:|---:|---|
+| 1 | `t02` water notice text (ja) | 10.2 s (extract 8.2 s; the first request compiled the route) | 11.9 s, `missing_langs` zh ko vi easy_ja, title in English | 17.5 s (translate 7.3 s) | the Vietnamese title after the poll |
+| 2 | `t03` WeChat text (zh) | 5.8 s (extract 5.1 s) | 6.1 s, `missing_langs` ko vi easy_ja | 10.9 s (translate 5.0 s, ko vi easy_ja only) | first the English title with "Bản dịch sẽ có trong giây lát.", on the next poll "Cửa hàng tiện lợi trước Ga Musashi-Kosugi (武蔵小杉駅), đang mở cửa, còn nước" |
+| 3 | `t02` again | 15.5 s, merge into step 1's card (extract 12.2 s, reconcile 2.9 s) | complete at once | 15.6 s, translate stage 0.1 s | no translate call in the server log: the complete merge target was left alone |
+
+After each step the row in the database had no missing language. Deleted afterwards: the 2 cards, 3 source rows, 3 submissions, 0 storage objects, 3 device rows and the board. `pnpm typecheck`, `pnpm lint` and `pnpm build` clean.
+
+**Decisions taken in this session, open for review**
+- The card appears on a `cards` event sent before `done`, with `done` after translate, rather than `done` first and translate after it. The client already treats `done` as the end of the stream and removes the placeholder 2.5 seconds later, and the whole pipeline stays inside the uploader's open connection as the architecture says. The uploader sees the card at the same moment either way; the placeholder shows Translating for the remaining seconds.
+- Fallback order English, then Japanese, for zh, ko and vi; Japanese first for やさしい日本語.
+- The fill happens in the public and admin projections, so every reader gets complete records without touching their files; the stored row stays partial until translate writes it.
+- Null in the schema rather than optional properties: the structured outputs documentation lists nullable types as supported and says nothing about optional properties.
+- The sweep is capped at 3 older cards per drop-in, in the same call as the submission's own cards.
+- `docs/EVAL.md` not updated from this branch; run `pnpm eval` after the merge to refresh its table (the header and columns changed).
+
+**Needed a human**
+- Review and merge the branch (Fable). Nothing new in Vercel; `TRANSLATE_MODEL` is optional.
+- The Korean and Vietnamese card text now comes from the translate prompt, not from extract; the native speaker read on 11/05 reads that.
+- `CardSheet`, `CardPage`, share and ask show English for a language that is not there yet without the "Translation coming soon." line; one line each with `shownLang` from `lib/cards/langs.ts` once their owners are done.

@@ -264,5 +264,7 @@
   "about.back_board": "返回公告板",
   "about.back_home": "所有公告板",
   "board.footer_about": "关于这个公告板，以及你的数据会怎样",
-  "poster.about": "关于公告板与数据的处理：{url}"
+  "poster.about": "关于公告板与数据的处理：{url}",
+  "dropin.step.translating": "翻译",
+  "card.translating": "翻译稍后显示。"
 }

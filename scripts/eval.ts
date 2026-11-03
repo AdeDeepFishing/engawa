@@ -9,6 +9,7 @@
  *   pnpm eval                              default extract model (EXTRACT_MODEL, else Opus)
  *   pnpm eval --model claude-sonnet-5-5
  *   pnpm eval --only p02,p11 --no-write    a quick look without touching docs/EVAL.md
+ *   pnpm eval --translate-model claude-sonnet-5-5
  *   pnpm eval --concurrency 2
  *
  * What is scored (see fixtures/README.md for the expected file shape):
@@ -20,7 +21,9 @@
  * - invented facts: extracted facts that match no expected fact; must be 0
  * - risk flags: expected flags present, and no flag where none is expected
  * - six languages: title and body non-empty in ja, en, zh, ko, vi, easy_ja
- * - latency per call
+ *   after the translate call (extract writes ja, en and the input's language;
+ *   lib/claude/translate.ts fills the rest, as the process route does)
+ * - latency per call, extract and translate
  *
  * The fixtures say 本日 14:00 to 16:00, so a card that is already expired
  * in the evening is expected: only the time of day is checked for those.
@@ -51,6 +54,7 @@ import { extname, join } from "node:path";
 import { randomUUID } from "node:crypto";
 import { extract, ExtractError, type ExtractFact, type ExtractInput, type ExtractResult } from "../lib/claude/extract";
 import { extractModel } from "../lib/claude/client";
+import { translateFacts, translateModel } from "../lib/claude/translate";
 import { reconcile, reconcileModel, type ReconcileCandidate, type ReconcileDecision } from "../lib/claude/reconcile";
 import { addHours, DEFAULT_VALID_HOURS } from "../lib/cards/categories";
 import { trustRank } from "../lib/cards/trust";
@@ -74,6 +78,7 @@ const concurrency = Number(flag("--concurrency") ?? 3);
 const write = !argv.includes("--no-write");
 const reconcileMode = argv.includes("--reconcile");
 const rModel = flag("--reconcile-model") ?? reconcileModel();
+const tModel = flag("--translate-model") ?? translateModel();
 const fixedNow = flag("--now");
 if (fixedNow !== undefined && Number.isNaN(new Date(fixedNow).getTime())) {
   console.error(`--now needs an ISO 8601 time, got ${fixedNow}`);
@@ -239,8 +244,8 @@ function boardTexts(r: ExtractResult): { where: string; text: string }[] {
   const out: { where: string; text: string }[] = [];
   r.facts.forEach((f, i) => {
     for (const l of CARD_LANGS) {
-      out.push({ where: `fact ${i} title.${l}`, text: f.title[l] });
-      out.push({ where: `fact ${i} body.${l}`, text: f.body[l] });
+      out.push({ where: `fact ${i} title.${l}`, text: f.title[l] ?? "" });
+      out.push({ where: `fact ${i} body.${l}`, text: f.body[l] ?? "" });
     }
     out.push({ where: `fact ${i} original_excerpt`, text: f.original_excerpt });
     out.push({ where: `fact ${i} place_text_ja`, text: f.place_text_ja ?? "" });
@@ -254,6 +259,8 @@ interface Row {
   id: string;
   file: string;
   ms: number;
+  /** The translate call that filled the missing languages; 0 when none was needed. */
+  translateMs: number;
   error?: string;
   factsGot: number;
   factsExpected: number;
@@ -275,6 +282,7 @@ async function runOne(exp: Expected, file: string): Promise<Row> {
     id: exp.id,
     file,
     ms: 0,
+    translateMs: 0,
     factsGot: 0,
     factsExpected: exp.facts.length,
     tally: emptyTally(),
@@ -306,6 +314,15 @@ async function runOne(exp: Expected, file: string): Promise<Row> {
     for (const ef of exp.facts) for (const f of FIELDS) row.tally[f].of += countChecks(ef, f);
     row.missed = exp.facts.length;
     return row;
+  }
+
+  // The other languages, as the process route adds them after the card is written.
+  try {
+    const tr = await translateFacts(board, result.facts, { model: tModel });
+    row.translateMs = tr.latencyMs;
+    result = { ...result, facts: tr.facts };
+  } catch (e) {
+    row.problems.push(`translate: ${e instanceof Error ? `${e.name}: ${e.message}` : String(e)}`);
   }
 
   row.factsGot = result.facts.length;
@@ -390,20 +407,20 @@ function report(rows: Row[], startedAt: Date): string {
   const lines: string[] = [];
   const jstNow = new Date(startedAt.getTime() + 9 * 3_600_000).toISOString().slice(0, 16).replace("T", " ");
   const expectedIds = new Set(rows.map((r) => r.id));
-  lines.push(`Run ${jstNow} JST, model \`${model}\`, effort low, ${rows.length} inputs from ${expectedIds.size} expected files, concurrency ${concurrency}${clockNote}.`);
+  lines.push(`Run ${jstNow} JST, extract \`${model}\`, translate \`${tModel}\`, effort low, ${rows.length} inputs from ${expectedIds.size} expected files, concurrency ${concurrency}${clockNote}.`);
   lines.push("");
-  lines.push("| input | ms | facts | category | place | times | status | source | conditions | en | flags | PII leaks | invented | 6 langs |");
-  lines.push("|---|---:|---:|---|---|---|---|---|---|---|---|---:|---:|---|");
+  lines.push("| input | extract ms | translate ms | facts | category | place | times | status | source | conditions | en | flags | PII leaks | invented | 6 langs |");
+  lines.push("|---|---:|---:|---:|---|---|---|---|---|---|---|---|---:|---:|---|");
   for (const r of rows) {
     if (r.error) {
-      lines.push(`| ${r.file} | ${r.ms} | error | ${r.error.replace(/\|/g, "/")} | | | | | | | | | | |`);
+      lines.push(`| ${r.file} | ${r.ms} | | error | ${r.error.replace(/\|/g, "/")} | | | | | | | | | | |`);
       continue;
     }
     const flags = r.flagsMissing.length || r.flagsExtra.length
       ? [r.flagsMissing.length ? `missing ${r.flagsMissing.join(" ")}` : "", r.flagsExtra.length ? `extra ${r.flagsExtra.join(" ")}` : ""].filter(Boolean).join(", ")
       : "ok";
     lines.push(
-      `| ${r.file} | ${r.ms} | ${r.factsGot}/${r.factsExpected} | ${FIELDS.map((f) => cell(r.tally[f])).join(" | ")} | ${flags} | ${r.leaks.length} | ${r.invented.length} | ${r.langsComplete ? "yes" : "no"} |`,
+      `| ${r.file} | ${r.ms} | ${r.translateMs} | ${r.factsGot}/${r.factsExpected} | ${FIELDS.map((f) => cell(r.tally[f])).join(" | ")} | ${flags} | ${r.leaks.length} | ${r.invented.length} | ${r.langsComplete ? "yes" : "no"} |`,
     );
   }
 
@@ -419,6 +436,8 @@ function report(rows: Row[], startedAt: Date): string {
   const median = ms.length ? ms[Math.floor(ms.length / 2)] : 0;
   const p90 = ms.length ? ms[Math.min(ms.length - 1, Math.ceil(ms.length * 0.9) - 1)] : 0;
   const mean = ms.length ? Math.round(ms.reduce((a, b) => a + b, 0) / ms.length) : 0;
+  const tms = ok.filter((r) => r.translateMs > 0).map((r) => r.translateMs).sort((a, b) => a - b);
+  const tMedian = tms.length ? tms[Math.floor(tms.length / 2)] : 0;
   const leaks = rows.reduce((n, r) => n + r.leaks.length, 0);
   const invented = rows.reduce((n, r) => n + r.invented.length, 0);
   const missed = rows.reduce((n, r) => n + r.missed, 0);
@@ -437,9 +456,10 @@ function report(rows: Row[], startedAt: Date): string {
   lines.push(`- PII leaks: ${leaks} (must be 0).`);
   lines.push(`- Invented facts: ${invented} (must be 0). Missed expected facts: ${missed} of ${expectedFacts}.`);
   lines.push(`- Risk flags as expected: ${ok.length - flagRows}/${ok.length} inputs.`);
-  lines.push(`- Six languages present on every fact: ${langRows}/${ok.length} inputs.`);
+  lines.push(`- Six languages present on every fact after translate: ${langRows}/${ok.length} inputs.`);
   lines.push(`- Errors: ${rows.length - ok.length}.`);
-  lines.push(`- Latency: median ${median} ms, p90 ${p90} ms, mean ${mean} ms, min ${ms[0] ?? 0} ms, max ${ms[ms.length - 1] ?? 0} ms.`);
+  lines.push(`- Extract latency (time to the first card): median ${median} ms, p90 ${p90} ms, mean ${mean} ms, min ${ms[0] ?? 0} ms, max ${ms[ms.length - 1] ?? 0} ms.`);
+  lines.push(`- Translate latency over ${tms.length} calls: median ${tMedian} ms, min ${tms[0] ?? 0} ms, max ${tms[tms.length - 1] ?? 0} ms.`);
   lines.push(`- Tokens: input ${usage.input}, cache read ${usage.cacheRead}, cache write ${usage.cacheWrite}, output ${usage.output}.`);
   const per = (n: number) => (ok.length ? Math.round(n / ok.length) : 0);
   lines.push(`- Tokens per call: input ${per(usage.input)} (plus ${per(usage.cacheRead)} read from cache), output ${per(usage.output)}.`);
