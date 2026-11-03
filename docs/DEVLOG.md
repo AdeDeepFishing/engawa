@@ -255,7 +255,21 @@ Poster: `page.pdf({ format: "A4" })` gives one page of 595.9 by 842.9 pt (A4) wi
 | text size toggle | root 16 px to 18.88 px, still large after a reload (cookie and localStorage) | unchanged |
 | `<html lang>` | follows the switch at once and after a reload | unchanged |
 
-**Acceptance run.** Pending at the time of writing: migration 0004 is not yet applied to the shared project (see "Needed a human"), so the throwaway-board run (two cards from text through the drop-in flow, one hidden as a duplicate of the other on the admin page, the drawer with one item linking to the original, a plain hidden card and a held card absent from it, then the board's rows and objects removed) runs once it is. The scripts for it are ready outside the repo; this paragraph is replaced by the results.
+**Acceptance run** (local dev server on port 3410 against the shared Supabase project, after migration 0004; throwaway board `polish-acceptance`, a copy of the 武蔵小杉 row with its own slug and name, deleted afterwards with its 4 submissions, 4 cards, 4 source rows, 2 device rows and no storage objects; Playwright 1.62 Chromium at 390 px, UI in English; the live board was not changed: 7 cards before and after, none with `duplicate_of`)
+
+| step | input, through the real drop-in panel | result |
+|---|---|---|
+| A | `t02` water notice text (11月3日 14:00 to 16:00) | card in 14.9 s, no candidates, no reconcile call |
+| B | the same fact in the uploader's own words with 今日 | separate card in 18.1 s: reconcile (5.8 s) saw A and chose `create`, because at 02:02 JST on 11/04 "today" is 11/04 while A says 11/03. The same date reading as in the eval chain; it gave the two cards this run needs |
+| C | phone charging at 中原区役所 | card in 9.8 s, other category, no candidates |
+| R | `p06` aftershock rumour, from a second device (the first had hit the 3 a minute device limit, shown as "Busy right now") | held in 12.8 s, "Not public yet", on the admin page under "Waiting for a check" |
+| admin | B hidden as a duplicate of A through the select under B; C hidden with the plain Hide | hidden list: B shows "Duplicate of: <A's title>" and Unhide, C shows Unhide only |
+| API | `GET /api/b/<slug>/cards` | `hidden_duplicates` holds B alone with `duplicate_of`, `original_title` and `has_masked_image: false`, no `masked_image_path` key; R (held) and C (plain hidden) absent |
+| refusals | `POST /api/b/<slug>/admin` | A as a duplicate of hidden B: 409 `target_not_public`; of itself: 409 `same_card`; unknown id: 409 `target_not_found`; no target: 400 `bad_target_card_id`; no cookie: 403 |
+| board | the drawer | present with summary "1 hidden duplicate" (Japanese: 非表示の重複カード 1件), one read-only item (title, body, time, source type, no buttons) whose "Duplicate of" link points at `#card-<A>`; Enter on the link opened A's sheet |
+| unhide | Unhide on B, then hide as a duplicate again, then plain-hide A, then unhide A | Unhide cleared `duplicate_of` and emptied the drawer; with A hidden the drawer was empty again (a duplicate shows only while its original is public); with A back it showed B again |
+
+The admin page of the test board was measured too: no text under 16 px, no control under 44 px, no text under AA, no control border under 3:1; the new select and its label and button are in the tab order with the focus ring.
 
 **Decisions taken in this session, open for review**
 - Prompt rule rather than a wider candidate query for t03 (reason above). The rule also applies to screenshots, so p03 keeps extracting to the station.
@@ -264,11 +278,13 @@ Poster: `page.pdf({ format: "A4" })` gives one page of 595.9 by 842.9 pt (A4) wi
 - The drawer shows a duplicate only while its original is public. If the admin later hides the original (plainly or as a duplicate of a third card), its duplicates leave the drawer with it, since the original was hidden for a reason.
 - `listHiddenDuplicates` fails soft (logs, returns none) so a board whose database lacks migration 0004 still renders its cards. The admin page does not: it embeds the original through the new foreign key and errors until the migration is applied.
 - `duplicate_of` is typed locally (`AdminCard` in `lib/db/admin.ts`, `HiddenDuplicate` in `lib/db/boards.ts`) because `lib/types.ts` belongs to the other session this week; one optional field `duplicate_of?: string | null` on `Card` would let both go.
+- The original is embedded through the foreign key column (`original:duplicate_of(id, title, visibility)`), the PostgREST form for a recursive relationship. The constraint name as a hint was not found in the schema cache and the table hint on the column returns the children, so the first version of the query failed on the live project; verified after the migration.
 - The stronger border applies to every control that used the hairline, including the card buttons, so a card's edge reads at 3:1 like any other button.
 
 **Needed a human**
-- Apply migration 0004 to the shared project from this worktree: `pnpm db:migrate --include-all`. The plain `pnpm db:migrate` refuses because the remote history already holds version 0005 from the judge session's worktree, which this branch does not carry, and the `--include-all` push was blocked for this session as a production change. Until it is applied, the deployed admin page would fail and the drawer stays empty, so the migration goes first and the merge second.
-- Review and merge the branch (Fable).
+- Migration 0004 was applied by the human from this worktree with `pnpm db:migrate --include-all`: the plain push refused because the remote history already held version 0005 from the judge session's worktree, and the `--include-all` push was blocked for this session as a production change.
+- Review and merge the branch (Fable). Nothing new in Vercel.
+- On the live board the two water duplicates hidden by hand on 11/03 have `duplicate_of` null, so the drawer stays empty there until an admin unhides them and hides them again as a duplicate of the remaining card.
 - Optional, for the owner of `lib/types.ts`: add `duplicate_of?: string | null` to `Card`.
 
 **Seen along the way, not changed (other session's files)**
