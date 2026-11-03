@@ -23,5 +23,8 @@
   "must_not_contain": [],
   "risk_flags": [],
   "merges_with": [],
+  "creates_beside": [
+    "p02"
+  ],
   "notes": "Diapers, formula and blankets, one blanket and one pack of diapers per household, families with infants first. Same shelter as the water card but a different category: it must not merge into it."
 }

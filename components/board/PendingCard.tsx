@@ -8,6 +8,7 @@ const STAGE_KEYS: Record<string, MessageKey> = {
   received: "dropin.stage.received",
   stripping: "dropin.stage.stripping",
   extracting: "dropin.stage.extracting",
+  masking: "mask.stage",
   reconciling: "dropin.stage.reconciling",
   translating: "dropin.stage.translating",
   done: "dropin.stage.done",

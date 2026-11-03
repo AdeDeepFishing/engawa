@@ -65,6 +65,7 @@ export function seedCardToCard(c: SeedCard, boardId: string, id: string, now: Da
     pinned: false,
     created_at: created,
     updated_at: created,
+    has_masked_image: false,
   };
 }
 

@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "MaskBoxes",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["width", "height", "boxes"],
+  "properties": {
+    "width": {
+      "type": "number",
+      "description": "Width in pixels of the image frame the boxes are in, as given in the message."
+    },
+    "height": {
+      "type": "number",
+      "description": "Height in pixels of the image frame the boxes are in, as given in the message."
+    },
+    "boxes": {
+      "type": "array",
+      "description": "One box per avatar, name, handle, phone number, room number or vehicle number plate. At most 60.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "label", "x", "y", "w", "h"],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": ["avatar", "name", "handle", "phone", "room", "plate"]
+          },
+          "label": {
+            "type": "string",
+            "description": "The visible text, or for an avatar the owner's name or self."
+          },
+          "x": { "type": "number", "description": "Left edge in pixels." },
+          "y": { "type": "number", "description": "Top edge in pixels." },
+          "w": { "type": "number", "description": "Width in pixels." },
+          "h": { "type": "number", "description": "Height in pixels." }
+        }
+      }
+    }
+  }
+}

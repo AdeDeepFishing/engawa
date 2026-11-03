@@ -1,4 +1,7 @@
 {
+  "mask.caption": "名前とアイコンは隠してあります",
+  "mask.alt": "名前とアイコンを隠したチャット画面のコピー",
+  "mask.stage": "名前とアイコンを隠しています",
   "ask.heading": "この掲示板に質問する",
   "ask.label": "質問",
   "ask.placeholder": "どこで水がもらえますか",

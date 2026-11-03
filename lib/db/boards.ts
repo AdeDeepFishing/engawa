@@ -46,7 +46,7 @@ export async function listPublicCards(board: Board): Promise<Card[]> {
     .order("created_at", { ascending: false })
     .limit(200);
   if (error) throw error;
-  return ((data ?? []) as Card[]).map(withSortedSources);
+  return ((data ?? []) as PublicCardRow[]).map(toPublicCard);
 }
 
 export async function getPublicCard(board: Board, cardId: string): Promise<Card | null> {
@@ -59,7 +59,19 @@ export async function getPublicCard(board: Board, cardId: string): Promise<Card 
     .eq("visibility", "public")
     .maybeSingle();
   if (error) throw error;
-  return data ? withSortedSources(data as Card) : null;
+  return data ? toPublicCard(data as PublicCardRow) : null;
+}
+
+/** A cards row as the query returns it: the Card fields plus the storage path, which readers never get. */
+type PublicCardRow = Omit<Card, "has_masked_image"> & { masked_image_path?: string | null };
+
+/**
+ * What readers get: the row without `masked_image_path` (it names the board
+ * and the submission) and with `has_masked_image` instead, sources sorted.
+ */
+export function toPublicCard(row: PublicCardRow): Card {
+  const { masked_image_path, ...rest } = row;
+  return withSortedSources({ ...rest, has_masked_image: Boolean(masked_image_path) });
 }
 
 export function sortCards(cards: Card[]): Card[] {

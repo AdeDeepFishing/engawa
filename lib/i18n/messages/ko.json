@@ -1,4 +1,7 @@
 {
+  "mask.caption": "이름과 프로필 사진은 가려져 있습니다",
+  "mask.alt": "이름과 프로필 사진을 가린 채팅 화면 사본",
+  "mask.stage": "이름과 프로필 사진을 가리는 중",
   "ask.heading": "이 게시판에 질문하기",
   "ask.label": "질문",
   "ask.placeholder": "어디에서 물을 받을 수 있나요?",
