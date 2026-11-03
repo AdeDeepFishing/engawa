@@ -1,4 +1,7 @@
 {
+  "mask.caption": "Names and avatars are masked",
+  "mask.alt": "Copy of the chat screenshot with names and avatars masked",
+  "mask.stage": "Masking names and avatars",
   "ask.heading": "Ask this board",
   "ask.label": "Your question",
   "ask.placeholder": "Where can I get water?",

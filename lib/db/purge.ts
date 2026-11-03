@@ -10,8 +10,8 @@ export interface PurgeReport {
 }
 
 /**
- * Deletes everything whose purge_after has passed: storage objects first,
- * then rows. Runs once a day from the Vercel cron and on demand via
+ * Deletes everything whose purge_after has passed: storage objects first
+ * (submission images, then masked copies that belong to cards), then rows. Runs once a day from the Vercel cron and on demand via
  * `pnpm purge`. card_sources go with their card or submission (cascade).
  */
 export async function runPurge(now = new Date()): Promise<PurgeReport> {
@@ -48,13 +48,21 @@ export async function runPurge(now = new Date()): Promise<PurgeReport> {
     else report.submissionsDeleted = ids.length;
   }
 
-  // 2. Cards past purge_after.
+  // 2. Cards past purge_after: their masked screenshot copies first, then the rows.
   const { data: cards, error: cardErr } = await client
     .from("cards")
-    .select("id")
+    .select("id, masked_image_path")
     .lt("purge_after", nowIso)
     .limit(500);
   if (cardErr) report.errors.push(`select cards: ${cardErr.message}`);
+  const maskedPaths = (cards ?? [])
+    .map((c) => c.masked_image_path as string | null)
+    .filter((p): p is string => Boolean(p));
+  if (maskedPaths.length) {
+    const { data: removed, error } = await client.storage.from(SUBMISSIONS_BUCKET).remove(maskedPaths);
+    if (error) report.errors.push(`storage remove masked: ${error.message}`);
+    report.storageObjectsDeleted += removed?.length ?? 0;
+  }
   if (cards?.length) {
     const ids = cards.map((c) => c.id);
     const { error } = await client.from("cards").delete().in("id", ids);
