@@ -19,6 +19,7 @@ import type { Board, Card, CardTrace } from "@/lib/types";
 import { Statement } from "./CardSheet";
 import { CardTraceView } from "./CardTrace";
 import { ReadAloud } from "./ReadAloud";
+import { fallbackLangAttr } from "@/lib/cards/langs";
 
 /**
  * One card on its own page, reached from a shared link. The same content as
@@ -65,7 +66,7 @@ export function CardPage({
             </span>
             <div className="min-w-0 flex-1">
               <p className="text-base font-medium text-muted">{t(`category.${card.category}`)}</p>
-              <h1 className="text-2xl font-bold leading-snug">{card.title[lang]}</h1>
+              <h1 lang={fallbackLangAttr(card, lang)} className="text-2xl font-bold leading-snug">{card.title[lang]}</h1>
             </div>
           </div>
 
@@ -90,7 +91,8 @@ export function CardPage({
             </div>
           ) : null}
 
-          <p className="mt-4 text-lg">{card.body[lang]}</p>
+          <p lang={fallbackLangAttr(card, lang)} className="mt-4 text-lg">{card.body[lang]}</p>
+          {fallbackLangAttr(card, lang) ? <p className="mt-1 text-base text-muted">{t("card.translating")}</p> : null}
           <ReadAloud key={card.id} card={card} />
 
           <dl className="mt-4 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-base">

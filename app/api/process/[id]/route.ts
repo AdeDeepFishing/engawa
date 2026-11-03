@@ -5,7 +5,7 @@ import { reconcile, type ReconcileDecision } from "@/lib/claude/reconcile";
 import { translate, type TranslateItem, type TranslateLang } from "@/lib/claude/translate";
 import { BusyError, withUsage } from "@/lib/claude/usage";
 import { hasDb } from "@/lib/db/client";
-import { fillCardLanguages, listCardsMissingLanguages, type FillOutcome } from "@/lib/db/translate";
+import { cardsStillMissing, fillCardLanguages, listCardsMissingLanguages, type FillOutcome } from "@/lib/db/translate";
 import { getBoardById } from "@/lib/db/boards";
 import { attachMaskedImage, cardsWithoutMaskedImage, removeMaskedImage, uploadMaskedImage } from "@/lib/db/masked";
 import {
@@ -180,17 +180,23 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
             console.error(`translate ${id}: listing older cards failed:`, err instanceof Error ? err.message : String(err));
             return [] as string[];
           });
-          fill = await translateWithRetry(board, id, [...cardIds, ...older]);
+          fill = await translateWithRetry(board, id, cardIds);
           translateMs = Math.round(performance.now() - translateStarted);
           if (fill) {
             console.log(
               `translate ${id}: ${fill.langs.join(",")} on ${fill.filled.length} cards` +
-                (older.length ? ` (${older.length} older)` : "") +
                 (fill.skipped.length ? `, ${fill.skipped.length} skipped` : "") +
                 ` in ${fill.latencyMs} ms on ${fill.model}` +
                 ` (tokens in ${fill.usage.inputTokens}, cache read ${fill.usage.cacheReadTokens},` +
                 ` cache write ${fill.usage.cacheWriteTokens}, out ${fill.usage.outputTokens})`,
             );
+          }
+          // The sweep is a separate, single-try call: one older card that keeps
+          // failing (a refusal, a rejected answer) must not take this
+          // submission's own translation down with it.
+          if (older.length > 0) {
+            const sweep = await translateWithRetry(board, id, older, 1);
+            if (sweep) console.log(`translate ${id}: sweep filled ${sweep.filled.length} of ${older.length} older cards in ${sweep.latencyMs} ms`);
           }
         }
         send({
@@ -303,13 +309,13 @@ const SWEEP_LIMIT = 3;
  * their card already, readers see a fallback language, and the next drop-in
  * on the board fills what is missing.
  */
-async function translateWithRetry(board: Board, submissionId: string, cardIds: string[]): Promise<FillOutcome | null> {
+async function translateWithRetry(board: Board, submissionId: string, cardIds: string[], attempts = 2): Promise<FillOutcome | null> {
   const translator = (items: TranslateItem[], langs: readonly TranslateLang[]) =>
     withUsage(async () => {
       const o = await translate(board, items, langs);
       return { value: o, inputTokens: o.usage.inputTokens, outputTokens: o.usage.outputTokens };
     });
-  for (let attempt = 1; attempt <= 2; attempt++) {
+  for (let attempt = 1; attempt <= attempts; attempt++) {
     try {
       return await fillCardLanguages(board, cardIds, { translator });
     } catch (err) {
@@ -325,8 +331,7 @@ async function translateWithRetry(board: Board, submissionId: string, cardIds: s
 /** Whether every card named still lacks nothing (used when no call was needed or the call failed). */
 async function allTranslated(board: Board, cardIds: string[]): Promise<boolean> {
   try {
-    const missing = await listCardsMissingLanguages(board.id, cardIds.length, []);
-    return cardIds.every((c) => !missing.includes(c));
+    return (await cardsStillMissing(cardIds)).length === 0;
   } catch {
     return false;
   }

@@ -5,6 +5,7 @@ import { sourceLabel, timeAgo } from "@/lib/cards/display";
 import type { HiddenDuplicate } from "@/lib/db/boards";
 import { tCount } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n/LangProvider";
+import { fallbackLangAttr } from "@/lib/cards/langs";
 
 /**
  * Hidden duplicates, readable on request. A collapsed <details> at the end
@@ -44,8 +45,9 @@ export function HiddenDrawer({
                   <span>{t("card.hidden_duplicate")}</span>
                   <span>{t(`category.${card.category}`)}</span>
                 </p>
-                <h3 className="mt-0.5 text-lg font-bold leading-snug">{card.title[lang]}</h3>
-                <p className="mt-1 text-base">{card.body[lang]}</p>
+                <h3 lang={fallbackLangAttr(card, lang)} className="mt-0.5 text-lg font-bold leading-snug">{card.title[lang]}</h3>
+                <p lang={fallbackLangAttr(card, lang)} className="mt-1 text-base">{card.body[lang]}</p>
+                {fallbackLangAttr(card, lang) ? <p className="mt-1 text-base text-muted">{t("card.translating")}</p> : null}
                 <p className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-base text-muted">
                   <span>{timeAgo(card.created_at, now, lang)}</span>
                   <span>{sourceLabel(card.source_type, card.official_confirmed, lang)}</span>

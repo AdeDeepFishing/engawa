@@ -81,16 +81,18 @@ async function readRows(ids: string[]): Promise<TextRow[]> {
 
 /**
  * Cards on the board that still lack a language, newest first, at most
- * `limit`, leaving out `exclude`. Public and held cards only: a hidden card
- * is not read by anyone. The rows are filtered in code; a board has few
- * cards and the check is on JSON keys.
+ * `limit`, leaving out `exclude`. Public cards and hidden duplicates (which
+ * the drawer shows) only: a held card waits for the admin and is the likeliest
+ * to make the model refuse, and a plain hidden card is read by no one. The
+ * rows are filtered in code; a board has few cards and the check is on JSON
+ * keys.
  */
 export async function listCardsMissingLanguages(boardId: string, limit: number, exclude: string[] = []): Promise<string[]> {
   const { data, error } = await db()
     .from("cards")
     .select(TEXT_COLUMNS)
     .eq("board_id", boardId)
-    .in("visibility", ["public", "held"])
+    .or("visibility.eq.public,and(visibility.eq.hidden,duplicate_of.not.is.null)")
     .order("updated_at", { ascending: false })
     .limit(30);
   if (error) throw error;
@@ -98,6 +100,11 @@ export async function listCardsMissingLanguages(boardId: string, limit: number, 
     .filter((r) => !exclude.includes(r.id) && slotsOf(r).length > 0)
     .slice(0, limit)
     .map((r) => r.id);
+}
+
+/** Among the given cards, whatever their visibility, the ones that still lack a language translate can write. */
+export async function cardsStillMissing(ids: string[]): Promise<string[]> {
+  return (await readRows(ids)).filter((r) => slotsOf(r).length > 0).map((r) => r.id);
 }
 
 /**

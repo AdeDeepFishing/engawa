@@ -91,3 +91,14 @@ export function shownLang(card: Pick<Card, "missing_langs">, lang: CardLang): Ca
 export function htmlLang(lang: CardLang): string {
   return lang === "easy_ja" ? "ja" : lang;
 }
+
+/**
+ * The `lang` attribute for a card text shown to a reader of `lang`: the
+ * fallback language's tag while the card still lacks `lang`, else undefined
+ * (the element inherits the page language). Truthy also means "show the
+ * translation hint".
+ */
+export function fallbackLangAttr(card: Pick<Card, "missing_langs">, lang: CardLang): string | undefined {
+  const shown = shownLang(card, lang);
+  return shown === lang ? undefined : htmlLang(shown);
+}
