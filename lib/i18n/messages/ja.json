@@ -160,5 +160,14 @@
   "admin.error": "保存できませんでした。もう一度お試しください。",
   "admin.open_board": "掲示板を開く",
   "card.status": "状況",
-  "conflict.statement": "{summary}（{source}、{time}）"
+  "conflict.statement": "{summary}（{source}、{time}）",
+  "area.opt_in": "自分のエリアを付ける（自己申告）",
+  "area.explain": "送るのはエリア名（町丁目）だけです。位置情報そのものは端末の外に出ません。",
+  "area.locating": "エリアを調べています…",
+  "area.resolved": "あなたのエリア：{area}",
+  "area.outside": "この掲示板の範囲外のようです。エリアなしで送ります。",
+  "area.denied": "位置情報が許可されませんでした。エリアなしで送ります。",
+  "area.failed": "位置情報を取得できませんでした。エリアなしで送ります。",
+  "area.badge": "自己申告のエリア：{area}",
+  "area.label": "自己申告のエリア"
 }

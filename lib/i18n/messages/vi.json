@@ -160,5 +160,14 @@
   "admin.error": "Không lưu được. Vui lòng thử lại.",
   "admin.open_board": "Mở bảng tin",
   "card.status": "Tình trạng",
-  "conflict.statement": "{summary} ({source}, {time})"
+  "conflict.statement": "{summary} ({source}, {time})",
+  "area.opt_in": "Thêm khu vực của tôi (tự khai)",
+  "area.explain": "Chỉ gửi tên khu vực (cấp khu phố), không bao giờ gửi vị trí của bạn. Điện thoại tự xác định.",
+  "area.locating": "Đang xác định khu vực…",
+  "area.resolved": "Khu vực của bạn: {area}",
+  "area.outside": "Có vẻ bạn đang ở ngoài phạm vi của bảng này. Sẽ gửi mà không kèm khu vực.",
+  "area.denied": "Không được phép dùng vị trí. Sẽ gửi mà không kèm khu vực.",
+  "area.failed": "Không lấy được vị trí. Sẽ gửi mà không kèm khu vực.",
+  "area.badge": "Khu vực tự khai: {area}",
+  "area.label": "Khu vực tự khai"
 }

@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getBoardBySlug } from "@/lib/db/boards";
+import { isBoardAreaCode } from "@/lib/geo";
 import { assertUnderCap, BusyError } from "@/lib/claude/usage";
 import { hasDb } from "@/lib/db/client";
 import {
@@ -41,6 +42,8 @@ function tooLarge() {
  *   consent   "1" when the purpose notice was accepted
  *   image     the browser-compressed JPEG (or PNG)
  *   text      pasted text
+ *   area_code optional 町丁目 code the browser resolved from the board's polygons
+ *             (G2, self-reported); anything not among the board's areas is stored as null
  * The image is stripped of metadata here, before it is stored, so no
  * unstripped copy ever exists on the server side.
  */
@@ -60,6 +63,9 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
   const kind = form.get("kind");
   const deviceId = form.get("device_id");
   const consent = form.get("consent") === "1";
+  // The browser only ever sends a code, never a position; the code must be one of this board's areas.
+  const areaRaw = form.get("area_code");
+  const uploaderAreaCode = isBoardAreaCode(board, areaRaw) ? areaRaw : null;
   if ((kind !== "image" && kind !== "text") || typeof deviceId !== "string" || !DEVICE_RE.test(deviceId)) {
     return NextResponse.json({ error: "bad_request" }, { status: 400 });
   }
@@ -115,6 +121,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
     inputKind: kind,
     text,
     image,
+    uploaderAreaCode,
   });
   return NextResponse.json({ id: sub.id, status: sub.status }, { status: 201 });
 }

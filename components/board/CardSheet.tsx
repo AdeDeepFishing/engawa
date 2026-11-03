@@ -13,6 +13,7 @@ import {
   timeAgo,
   timeRange,
 } from "@/lib/cards/display";
+import { areaName } from "@/lib/geo";
 import { CARD_LANGS, tCount, type Lang } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n/LangProvider";
 import type { Board, Card, ConflictStatement } from "@/lib/types";
@@ -45,6 +46,7 @@ export function CardSheet({
   }, [onClose, card.id]);
 
   const place = placeLabel(card, board, lang);
+  const area = areaName(board, card.area_code);
   const expired = isExpired(card.valid_until, now);
   const conditions = card.facts.conditions ?? [];
   const conflicts = conflictStatements(card);
@@ -107,6 +109,12 @@ export function CardSheet({
             <>
               <dt className="text-muted">{t("sheet.place")}</dt>
               <dd>{place}</dd>
+            </>
+          ) : null}
+          {area ? (
+            <>
+              <dt className="text-muted">{t("area.label")}</dt>
+              <dd>{area}</dd>
             </>
           ) : null}
           {card.facts.status ? (

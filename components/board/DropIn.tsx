@@ -1,11 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { MessageKey } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n/LangProvider";
 import { getDeviceId, hasConsented, setConsented } from "@/lib/device";
+import { boardPolygons, resolveArea } from "@/lib/geo";
 import { ImageTooLargeError, prepareImage } from "@/lib/image/browser";
 import { readSse } from "@/lib/sse";
+import type { Board } from "@/lib/types";
 
 export type PendingStatus = "uploading" | "processing" | "done" | "held" | "nothing" | "failed";
 
@@ -43,12 +45,49 @@ type DoneEvent = {
   actions?: string[];
 };
 
+/**
+ * Self-reported area (G2). The position is read in the browser and mapped to
+ * one of the board's 町丁目 polygons right here; only the resolved code is
+ * ever sent, and only while the uploader keeps the box ticked.
+ */
+type AreaState =
+  | { status: "idle" }
+  | { status: "locating" }
+  | { status: "resolved"; code: string; name: string }
+  | { status: "outside" }
+  | { status: "denied" }
+  | { status: "failed" };
+
+const AREA_OPT_IN_KEY = "engawa.areaOptIn";
+const LOCATE_TIMEOUT_MS = 10_000;
+const LOCATE_MAX_AGE_MS = 60_000;
+
+function readAreaOptIn(): boolean {
+  try {
+    return window.localStorage.getItem(AREA_OPT_IN_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function writeAreaOptIn(on: boolean): void {
+  try {
+    if (on) window.localStorage.setItem(AREA_OPT_IN_KEY, "1");
+    else window.localStorage.removeItem(AREA_OPT_IN_KEY);
+  } catch {
+    // Blocked storage: the choice lasts for this page only.
+  }
+}
+
 export function DropIn({
   boardSlug,
+  areaNames,
   onPending,
   retryRequest,
 }: {
   boardSlug: string;
+  /** The board's 町丁目 list; the area control appears only when polygons exist for it. */
+  areaNames: Board["area_names"];
   /** Receives every status change; the parent refreshes the list when a status is done. */
   onPending: (item: PendingItem) => void;
   /** Set by the parent when the user taps retry on a failed item. */
@@ -59,14 +98,23 @@ export function DropIn({
   const [needsConsent, setNeedsConsent] = useState(false);
   const [mode, setMode] = useState<"choose" | "text">("choose");
   const [text, setText] = useState("");
+  const [areaOptIn, setAreaOptIn] = useState(false);
+  const [area, setArea] = useState<AreaState>({ status: "idle" });
   const panelRef = useRef<HTMLDivElement>(null);
   const cameraRef = useRef<HTMLInputElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const areaBoard = useMemo(() => ({ area_names: areaNames }), [areaNames]);
+  const hasAreas = useMemo(() => boardPolygons(areaBoard).length > 0, [areaBoard]);
 
   const openPanel = () => {
     setNeedsConsent(!hasConsented());
     // Text kept after a refused send opens straight in the text box.
     setMode(text.trim() ? "text" : "choose");
+    // The area choice is remembered; the position is read again each time, since the phone moves.
+    const optIn = hasAreas && readAreaOptIn();
+    setAreaOptIn(optIn);
+    if (optIn) locate();
+    else setArea({ status: "idle" });
     setOpen(true);
   };
 
@@ -88,6 +136,31 @@ export function DropIn({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [retryRequest]);
+
+  function locate() {
+    if (typeof navigator === "undefined" || !navigator.geolocation) {
+      setArea({ status: "failed" });
+      return;
+    }
+    setArea({ status: "locating" });
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        // The coordinates exist only inside this callback: matched against the
+        // board's polygons here, never stored, logged or sent.
+        const hit = resolveArea(areaBoard, pos.coords.longitude, pos.coords.latitude);
+        setArea(hit ? { status: "resolved", code: hit.code, name: hit.name_ja } : { status: "outside" });
+      },
+      (err) => setArea({ status: err.code === err.PERMISSION_DENIED ? "denied" : "failed" }),
+      { enableHighAccuracy: true, timeout: LOCATE_TIMEOUT_MS, maximumAge: LOCATE_MAX_AGE_MS },
+    );
+  }
+
+  function onAreaToggle(on: boolean) {
+    setAreaOptIn(on);
+    writeAreaOptIn(on);
+    if (on) locate();
+    else setArea({ status: "idle" });
+  }
 
   async function runProcessing(localId: string, submissionId: string) {
     onPending({ id: localId, submissionId, status: "processing", stage: "received" });
@@ -144,6 +217,9 @@ export function DropIn({
     try {
       form.set("device_id", getDeviceId());
       form.set("consent", "1");
+      // Only the area code travels, and only when it resolved; a denied or
+      // unresolved position sends nothing about location at all.
+      if (areaOptIn && area.status === "resolved") form.set("area_code", area.code);
       const res = await fetch(`/api/b/${boardSlug}/submissions`, { method: "POST", body: form });
       if (!res.ok) {
         const body = (await res.json().catch(() => null)) as { error?: string; scope?: string } | null;
@@ -197,6 +273,40 @@ export function DropIn({
 
   const choice = "flex min-h-14 w-full items-center justify-center rounded-xl border border-line bg-surface px-4 text-lg font-semibold hover:border-accent";
 
+  const areaLine =
+    area.status === "locating"
+      ? t("area.locating")
+      : area.status === "resolved"
+        ? t("area.resolved", { area: area.name })
+        : area.status === "outside"
+          ? t("area.outside")
+          : area.status === "denied"
+            ? t("area.denied")
+            : area.status === "failed"
+              ? t("area.failed")
+              : "";
+
+  // Opt-in control for the self-reported area, shown with both ways of sending.
+  const areaControl = hasAreas ? (
+    <div className="mt-4 rounded-xl border border-line bg-held-bg p-3" data-area-control>
+      <label className="flex min-h-11 cursor-pointer items-center gap-3">
+        <input
+          type="checkbox"
+          checked={areaOptIn}
+          onChange={(e) => onAreaToggle(e.target.checked)}
+          className="h-6 w-6 shrink-0 accent-accent"
+        />
+        <span className="text-base font-semibold">{t("area.opt_in")}</span>
+      </label>
+      <p className="mt-1 text-base text-muted">{t("area.explain")}</p>
+      {areaOptIn ? (
+        <p role="status" aria-live="polite" className="mt-2 min-h-6 text-base font-semibold" data-area-status={area.status}>
+          {areaLine}
+        </p>
+      ) : null}
+    </div>
+  ) : null;
+
   return (
     <>
       <div className="pointer-events-none fixed inset-x-0 bottom-4 z-10 flex justify-center px-4">
@@ -215,7 +325,7 @@ export function DropIn({
           role="dialog"
           aria-modal="false"
           aria-labelledby="dropin-title"
-          className="fixed inset-x-0 bottom-0 z-30 rounded-t-2xl border-t border-line bg-surface shadow-2xl"
+          className="fixed inset-x-0 bottom-0 z-30 max-h-[85vh] overflow-y-auto rounded-t-2xl border-t border-line bg-surface shadow-2xl"
         >
           <div className="mx-auto w-full max-w-2xl px-4 pb-8 pt-3">
             <div className="flex items-center justify-between gap-3">
@@ -274,6 +384,7 @@ export function DropIn({
                   <span aria-hidden="true" className="mr-2">📝</span>
                   {t("dropin.text")}
                 </button>
+                {areaControl}
               </div>
             ) : (
               <div className="mt-4 flex flex-col gap-3">
@@ -285,6 +396,7 @@ export function DropIn({
                   autoFocus
                   className="w-full rounded-xl border border-line bg-surface p-3 text-base"
                 />
+                {areaControl}
                 <div className="flex gap-3">
                   <button
                     type="button"

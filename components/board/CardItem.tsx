@@ -10,6 +10,7 @@ import {
   supersededStatements,
   timeAgo,
 } from "@/lib/cards/display";
+import { areaName } from "@/lib/geo";
 import { tCount } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n/LangProvider";
 import type { Board, Card } from "@/lib/types";
@@ -28,6 +29,8 @@ export function CardItem({
   const { lang, t } = useLang();
   const expired = isExpired(card.valid_until, now);
   const place = placeLabel(card, board, lang);
+  // Self-reported by the uploader's phone (G2); shown only when the board lists the code.
+  const area = areaName(board, card.area_code);
   const conflicts = conflictStatements(card);
   const previous = supersededStatements(card)[0];
   const current = { valid_from: card.valid_from, valid_until: card.valid_until, status: card.facts.status };
@@ -37,6 +40,7 @@ export function CardItem({
   // The button's accessible name replaces its content, so the warnings go into it too.
   const label = [
     card.title[lang],
+    area ? t("area.badge", { area }) : null,
     conflicts.length ? t("conflict.label") : null,
     previous ? t("card.updated") : null,
     expired ? t("card.outdated") : null,
@@ -46,7 +50,7 @@ export function CardItem({
     .join(". ");
 
   return (
-    <li data-card-id={card.id}>
+    <li data-card-id={card.id} data-area-code={card.area_code ?? undefined}>
       <button
         type="button"
         onClick={() => onOpen(card)}
@@ -70,6 +74,12 @@ export function CardItem({
               </span>
               <span>{tCount("card.source_count", lang, card.source_count)}</span>
             </p>
+            {area ? (
+              <span className="mt-2 inline-flex items-center gap-1 rounded-md bg-held-bg px-2 py-0.5 text-base text-muted">
+                <span aria-hidden="true">📍</span>
+                {t("area.badge", { area })}
+              </span>
+            ) : null}
             {conflicts.length ? (
               <span className="mt-2 block rounded-md bg-warn-bg px-2 py-1 text-base text-warn-ink">
                 <span className="block font-semibold">
