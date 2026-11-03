@@ -25,18 +25,34 @@ const hasSpeech = () =>
   typeof window !== "undefined" && "speechSynthesis" in window && typeof window.SpeechSynthesisUtterance === "function";
 const noSpeechOnServer = () => false;
 
-/** The installed voice for a tag: an exact match, else the first voice of that language, else none (the engine then picks). */
+/** Lower-case primary language of a tag or a voice: "ja" from "ja-JP" or "ja_JP". */
+const primary = (tag: string) => tag.replace("_", "-").toLowerCase().split("-")[0];
+
+/**
+ * Which languages have an installed voice, as a sorted list of primary tags
+ * joined by commas, read as an external store (the list arrives late in
+ * Chrome, with a voiceschanged event). Empty while the list is unknown; a
+ * language is then still offered and the engine picks its default voice.
+ */
+function subscribeVoices(onChange: () => void) {
+  if (!hasSpeech()) return () => {};
+  window.speechSynthesis.addEventListener("voiceschanged", onChange);
+  return () => window.speechSynthesis.removeEventListener("voiceschanged", onChange);
+}
+const voiceLangs = () =>
+  hasSpeech() ? [...new Set(window.speechSynthesis.getVoices().map((v) => primary(v.lang)))].sort().join(",") : "";
+const noVoicesOnServer = () => "";
+
+/**
+ * The voice for a tag: the system default for that language, else the first
+ * plain system voice (macOS lists novelty voices such as "Eddy (Japanese)"
+ * before Kyoko; their names carry a parenthesis), else the first match, else
+ * none, and the engine chooses by the utterance's lang.
+ */
 function pickVoice(tag: string): SpeechSynthesisVoice | null {
-  const voices = window.speechSynthesis.getVoices();
-  const want = tag.toLowerCase();
-  const primary = want.split("-")[0];
-  const norm = (v: SpeechSynthesisVoice) => v.lang.replace("_", "-").toLowerCase();
-  return (
-    voices.find((v) => norm(v) === want && v.default) ??
-    voices.find((v) => norm(v) === want) ??
-    voices.find((v) => norm(v).startsWith(`${primary}-`) || norm(v) === primary) ??
-    null
-  );
+  const want = primary(tag);
+  const voices = window.speechSynthesis.getVoices().filter((v) => primary(v.lang) === want);
+  return voices.find((v) => v.default) ?? voices.find((v) => !v.name.includes("(")) ?? voices[0] ?? null;
 }
 
 /** Title and body split into sentences: Chrome stops long utterances after about 15 seconds, short ones are safe. */
@@ -52,12 +68,13 @@ function sentences(card: Card, l: CardLang): string[] {
  * "Read aloud": the card title and body through the Web Speech API in the
  * reader's language, and the easy Japanese version, each a 44 px button that
  * becomes "Stop" while it speaks. Rendered only when the browser can speak,
- * decided after hydration. Vietnamese may have no installed voice on some
- * phones; the engine then falls back to a default voice or stays silent.
+ * decided after hydration, and only for languages with an installed voice
+ * once the browser has listed them (Vietnamese is often missing on phones).
  */
 export function ReadAloud({ card }: { card: Card }) {
   const { lang, t } = useLang();
   const available = useSyncExternalStore(subscribeNever, hasSpeech, noSpeechOnServer);
+  const known = useSyncExternalStore(subscribeVoices, voiceLangs, noVoicesOnServer);
   const [speaking, setSpeaking] = useState<CardLang | null>(null);
   // Utterances are kept referenced until they end: Safari drops the speech
   // when the object is collected mid-sentence.
@@ -103,7 +120,12 @@ export function ReadAloud({ card }: { card: Card }) {
   }
 
   if (!available) return null;
-  const options: CardLang[] = lang === "ja" ? ["ja", "easy_ja"] : [lang, "easy_ja"];
+  // A language without an installed voice is left out once the list is
+  // known, rather than read in another language's voice (Vietnamese is the
+  // usual gap on phones).
+  const hasVoice = (l: CardLang) => known === "" || known.split(",").includes(primary(VOICE_LANG[l]));
+  const options = (lang === "ja" ? (["ja", "easy_ja"] as CardLang[]) : ([lang, "easy_ja"] as CardLang[])).filter(hasVoice);
+  if (!options.length) return null;
   return (
     <div className="mt-3 flex flex-wrap gap-2" data-read-aloud>
       {options.map((l) => {

@@ -5,7 +5,7 @@ import { PrintButton } from "@/app/b/[slug]/poster/PrintButton";
 import { encodeQr, qrPath } from "@/components/share/qr";
 import { appBase } from "@/lib/app-url";
 import { isExpired } from "@/lib/cards/categories";
-import { formatFullDateTime, placeLabel, sourceLabel, timeRange } from "@/lib/cards/display";
+import { formatFullDateTime, placeLabel, timeRange } from "@/lib/cards/display";
 import { cardPath } from "@/lib/cards/share";
 import { traceInputKey } from "@/lib/cards/trace";
 import { loadPublicCard } from "@/lib/db/public-card";
@@ -18,8 +18,14 @@ type Props = { params: Promise<{ slug: string; id: string }> };
 const QR_MARGIN = 4;
 /** Japanese first because the paper hangs in Japan, easy Japanese next to it, then the other languages. */
 const NOTICE_LANGS: CardLang[] = ["ja", "easy_ja", "en", "zh", "ko", "vi"];
-/** Estimated print lines of all six texts above which the body drops from 12 pt to 11 pt. */
-const COMPACT_LINES = 30;
+/**
+ * Estimated print lines of all six titles and bodies above which the body
+ * drops from 12 pt to 11 pt, the floor. Measured on 2026-11-04 with
+ * Playwright page.pdf (docs/DEVLOG.md): 12 pt holds about 28 lines on one
+ * A4 page, 11 pt about 41; beyond that the notice runs to a second page
+ * rather than getting smaller.
+ */
+const COMPACT_LINES = 28;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug, id } = await params;
@@ -67,6 +73,7 @@ const CSS = `
 .notice-body { margin: 4px 0 0; font-size: 1.125rem; line-height: 1.5; white-space: pre-line; }
 .notice-about { margin-top: 12px; padding-top: 8px; border-top: 1px solid #bbbbbb; font-size: 1rem; color: #333333; }
 .notice-about p { margin: 0; }
+.notice-about p + p { margin-top: 2px; }
 .notice-foot { display: flex; align-items: center; gap: 14px; margin-top: 14px; padding-top: 10px; border-top: 2px solid #111111; }
 .notice-qr { display: block; flex: none; width: 112px; height: auto; }
 .notice-scan { margin: 0; padding: 0; list-style: none; font-size: 1rem; line-height: 1.4; }
@@ -79,13 +86,13 @@ const CSS = `
   .notice-board { font-size: 10pt; }
   .notice-meta { font-size: 10.5pt; margin-top: 3mm; }
   .notice-block { margin-top: 2.5mm; padding-top: 1.5mm; break-inside: avoid; }
-  .notice-lang { font-size: 8.5pt; }
-  .notice-title { font-size: 13pt; }
+  .notice-lang { display: inline; margin-right: 3mm; font-size: 8.5pt; vertical-align: 0.1em; }
+  .notice-title { display: inline; font-size: 13pt; }
   .notice-body { font-size: 12pt; line-height: 1.4; }
-  .notice-about { font-size: 9pt; margin-top: 2.5mm; padding-top: 1.5mm; }
+  .notice-about { font-size: 9pt; line-height: 1.35; margin-top: 2.5mm; padding-top: 1.5mm; }
   .notice-foot { margin-top: 3mm; padding-top: 2mm; break-inside: avoid; }
   .notice-qr { width: 28mm; }
-  .notice-scan { font-size: 8.5pt; line-height: 1.3; }
+  .notice-scan { columns: 2; column-gap: 5mm; font-size: 8.5pt; line-height: 1.3; }
   .notice-url { font-size: 9pt; }
   .notice-compact .notice-title { font-size: 12pt; }
   .notice-compact .notice-body { font-size: 11pt; line-height: 1.3; }
@@ -116,20 +123,22 @@ function Meta({ card, board, lang, now }: { card: Card; board: Board; lang: Lang
   );
 }
 
-/** The source line in words and the date the paper was made, in one language. */
+/** The source line in words and the date the paper was made, one line per language. */
 function About({ card, lang, now }: { card: Card; lang: Lang; now: Date }) {
   const platform = card.sources?.[0]?.platform ?? card.facts.platform ?? null;
+  const source = card.official_confirmed
+    ? t("card.official_confirmed", lang)
+    : t(`trace.source.${card.source_type}`, lang);
   return (
-    <div lang={lang}>
-      <p>
-        {t("notice.source", lang, {
-          input: t(traceInputKey(platform), lang),
-          source: sourceLabel(card.source_type, card.official_confirmed, lang),
-          count: tCount("card.source_count", lang, card.source_count),
-        })}
-      </p>
-      <p>{t("notice.generated", lang, { date: formatFullDateTime(now, lang) })}</p>
-    </div>
+    <p lang={lang}>
+      {t("notice.source", lang, {
+        input: t(traceInputKey(platform), lang),
+        source,
+        count: tCount("card.source_count", lang, card.source_count),
+      })}
+      {" · "}
+      {t("notice.generated", lang, { date: formatFullDateTime(now, lang) })}
+    </p>
   );
 }
 
