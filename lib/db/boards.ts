@@ -84,7 +84,10 @@ export async function listHiddenDuplicates(boardId: string): Promise<HiddenDupli
   if (!hasDb()) return [];
   const { data, error } = await db()
     .from("cards")
-    .select(`${CARD_WITH_SOURCES}, original:cards!cards_duplicate_of_fkey(id, title, visibility)`)
+    // The original is embedded through the foreign key column itself
+    // (PostgREST resolves `duplicate_of(...)` to the parent row); naming the
+    // constraint is not needed and a table hint would give the children instead.
+    .select(`${CARD_WITH_SOURCES}, original:duplicate_of(id, title, visibility)`)
     .eq("board_id", boardId)
     .eq("visibility", "hidden")
     .not("duplicate_of", "is", null)

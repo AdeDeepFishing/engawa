@@ -80,8 +80,8 @@ export interface AdminCardLists {
   hidden: AdminCard[];
 }
 
-/** The admin query: every column, the sources, and the title of the card a duplicate repeats. */
-const ADMIN_CARD_COLUMNS = `${CARD_WITH_SOURCES}, original:cards!cards_duplicate_of_fkey(id, title)`;
+/** The admin query: every column, the sources, and the title of the card a duplicate repeats (embedded through the foreign key column). */
+const ADMIN_CARD_COLUMNS = `${CARD_WITH_SOURCES}, original:duplicate_of(id, title)`;
 
 /** Everything the admin page shows: the held queue, then public and hidden cards, newest first. */
 export async function listCardsForAdmin(board: Board): Promise<AdminCardLists> {
