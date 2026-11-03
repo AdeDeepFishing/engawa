@@ -37,8 +37,8 @@ Everything (fixtures, known places, prompts, seed, recording) is built around th
 
 ### Only after every must item is green, in this order
 
-- G2 uploader area badge: only this board's simplified polygons (a few KB) shipped to the client, point-in-polygon in the browser, only the area code sent. Wording: "self-reported area". About 2 hours. Done 2026-11-04.
-- G3 printable A4 QR poster page `/b/[slug]/poster`. About 1 hour. Done 2026-11-04.
+- G2 uploader area badge: only this board's simplified polygons (a few KB) shipped to the client, point-in-polygon in the browser, only the area code sent. Wording: "self-reported area". About 2 hours. Done 2026-11-03.
+- G3 printable A4 QR poster page `/b/[slug]/poster`. About 1 hour. Done 2026-11-03.
 - G1 pink masking of names and avatars in chat screenshots. Hard 3 hour time box. Ships only at 100% coverage on the masking fixtures; otherwise chat screenshots stay text-only.
 
 ### Not this week
@@ -127,7 +127,7 @@ Owner for implementation: Claude Code with `claude-opus-5-5`. Planning, prompt d
 ### 2026-11-06 (Fri): polish, G items, freeze
 - [ ] Phone UI polish, accessibility pass (16px, 44px targets, contrast, focus order, reduced motion)
 - [ ] Korean and Vietnamese native speakers read the demo cards; fix wording
-- [x] G2 area badge (2h), then G3 poster (1h): done on 2026-11-04 on branch `g2-area-g3-poster`
+- [x] G2 area badge (2h), then G3 poster (1h): done on 2026-11-03 on branch `g2-area-g3-poster`
 - [ ] G1 masking (3h hard stop)
 - [ ] Fable review of the whole repo; fix findings; freeze at 20:00
 - [ ] Seed the demo board; record rough footage
