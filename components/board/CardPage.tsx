@@ -17,7 +17,7 @@ import { areaName } from "@/lib/geo";
 import { tCount } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n/LangProvider";
 import type { Board, Card, CardTrace } from "@/lib/types";
-import { Statement } from "./CardSheet";
+import { Statement } from "./CardDetail";
 import { CardReactions } from "./CardReactions";
 import { CardTraceView } from "./CardTrace";
 import { ReadAloud } from "./ReadAloud";
