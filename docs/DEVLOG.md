@@ -742,7 +742,7 @@ Playwright: 30 of 32 checks as run. The two misses were the test's: an exact tex
 
 The forwarder from `docs/INBOX.md` is live. `engawaboard.com` was bought on Cloudflare Registrar and is the production host (www redirects to it, the vercel.app host still answers). Email Routing on that domain sends `bousai-musashikosugi@engawaboard.com` to the Worker `engawa-inbox` (its project lives outside the repository, the secret set from a local file, never typed in chat). The chain was checked in order: a Gmail test reached the worker and the board answered 403 `sender_not_allowed`, with the stored secret accepted (a wrong one gives `forbidden`). The city's list registers by empty mail, which a receive-only address cannot send, so a Gmail sits in front: forwarding address confirmed through the worker log, a filter on `sg-p.jp`, the empty mail, then the registration form filled in the browser with 緊急情報 and 防災行政無線 only. The city's reply came through that path (`From: kawasaki@sg-p.jp` preserved), so the sender list now holds that address. Human steps: the domain purchase, Vercel domain and env, the DNS records (the wrangler OAuth token cannot write DNS), the Gmail clicks. Everything else ran from the session through the Cloudflare API and the board's admin API.
 
-## 2026-11-04 (Wed), open in maps, place view, one ask panel
+## 2026-11-04 (Wed), open in maps, place view, one ask panel, shared links in the reader's language
 
 **Model:** `claude-opus-5-5` in Claude Code, implementation role, in its own worktree (branch `day5-places`) beside the `day5-home` session, whose files (home page, brand assets, `app/layout.tsx`, `components/TopBar.tsx`, `lib/db/boards.ts`, the inbox admin, the react route) were left alone.
 
@@ -779,7 +779,7 @@ The forwarder from `docs/INBOX.md` is live. `engawaboard.com` was bought on Clou
 Playwright: 47 checks, all passing in the end. Misses on the way were the test's: a programmatic focus after a mouse click does not match `:focus-visible` (redone with Tab), the raw fetch of the page had no `Accept-Language` and got the Japanese heading, and the Japanese group text starts with its icon. One real miss: the card page had no maps link, because it does not render `CardDetail`; fixed with the shared `MapsLink`. Claude calls in the run: 3 drop-ins, 1 question.
 
 **Other measurements**
-- `pnpm typecheck`, `pnpm lint` (the one existing warning, a missing `cardButton` dependency in `closePanel`, fixed), `pnpm guard --all`, `pnpm check:places` 24 of 24, `pnpm build` clean.
+- `pnpm typecheck`, `pnpm lint` (the one existing warning, a missing `cardButton` dependency in `closePanel`, fixed), `pnpm guard --all`, `pnpm check:places` 28 of 28 (24 for places and maps, 4 for the `?lang=` helpers), `pnpm build` clean.
 
 **Decisions taken in this session, open for review**
 - The city. The board row has no city, and neither `area_names` (町丁目 names) nor `address_ja` (小杉町2-295-1) holds one, so the brief's "川崎市 comes from the board" is read as: from the board's area codes, through a one-line table in `lib/geo` (14133 川崎市中原区). The Shibuya board (N18) adds 13113 東京都渋谷区. Without a known city the board's Japanese name (武蔵小杉) narrows the search instead.
@@ -789,6 +789,28 @@ Playwright: 47 checks, all passing in the end. Misses on the way were the test's
 - One ask panel: the server and the hydration render take the phone placement (hidden by CSS from 768 px), so on a tablet or laptop the ask panel appears once the page is hydrated, not with the first HTML. Crossing a breakpoint remounts the panel: the thread and the typed question stay, the focus inside the question box does not.
 - Group order is by newest content, not by kind; the other group always comes last.
 - `public/samples/notice.jpg` (the N1 sample) is the building water outage notice, not the 小杉小学校 water notice the brief named; the run used `p02` for that, so it made three drop-ins instead of two.
+
+**Item 4, shared links in the reader's language** (asked by the reviewing session after a card shared from the Chinese UI into WeChat previewed in English on the live board: the crawlers of WeChat and LINE send neither the language cookie nor Accept-Language)
+- Copied and shared links end in `?lang=<reader's language>`: the card's "Copy link", "Copy text" and system share (`CardShare`), and the top bar's copy link and system share (`ShareButton`). The on-screen QR code keeps the plain URL, as do the printed poster and notice QR codes (both link to the board, not a card): whoever scans them stands next to the sharer with a phone in their own language.
+- `proxy.ts` (Next 16's name for middleware; none existed) runs only on page requests that carry `lang` (a `has` query matcher, `api/` and `_next/` excluded) and passes a valid value on as the request header `x-engawa-link-lang`. `getRequestLang` reads it before the cookie and Accept-Language, so the layout's `<html lang>`, the provider's first language and every `generateMetadata` follow the link without touching `app/layout.tsx`. `getLinkLang` keeps the parameter on og:url for crawlers that follow it. `LANGS`, `isLang` and the helpers moved to `lib/i18n/langs.ts`, which imports no message file, so the proxy stays small; `lib/i18n/index.ts` re-exports them.
+- `LangProvider` adopts a valid `?lang=` on first load as if the reader had picked it (state, localStorage, cookie), ahead of the stored preference, and removes the parameter from the address bar with `replaceState`, so a reload or a later switch is not overruled by the link. An invalid value is removed and ignored.
+- Caching: the pages answer `Cache-Control: no-store` before and after; the language now also depends on the URL, which is its own cache key, and the offline worker stores pages by full URL.
+- The OG image route was left as it is (the other session's file).
+
+Acceptance on the throwaway board `lang-acceptance` (one text drop-in through the two routes, water at `kosugi-es`, 17 s to done; deleted afterwards: 1 card, 1 card_sources, 1 submission, 1 device, 0 storage objects; live board untouched):
+
+| check | result |
+|---|---|
+| copy the card link from the zh UI (sheet) | `.../b/lang-acceptance/c/<id>?lang=zh`; "Copy text" ends with the same link; the top bar copy gives `.../b/lang-acceptance?lang=zh`; the on-screen QR encodes `.../b/lang-acceptance` |
+| that link with curl, no cookie, no Accept-Language | `<html lang="zh">`, `<title>` 小杉小学（小杉小学校）体育馆前供水，今天18:00开始 \| 武藏小杉 ..., `og:description` 今天18:00起，在小杉小学（小杉小学校）体育馆前供水..., `og:locale` zh_CN, `og:url` ends `?lang=zh` |
+| the same link without the parameter | no headers: Japanese (ja_JP); Accept-Language en: English (en_GB); cookie ko: Korean; og:url without the parameter |
+| `?lang=vi` with cookie ko and Accept-Language en | Vietnamese: the link wins |
+| `?lang=fr` with Accept-Language en | English: an unknown value is ignored |
+| board `?lang=zh`, board `?view=places&lang=ko` | Chinese, Korean; og:url keeps `?lang=` |
+| recipient in an English browser (cookie and localStorage en) opening the zh link | first HTML already Chinese; still Chinese after hydration; `?lang=` gone from the address bar; zh stored in localStorage and the cookie; a reload stays Chinese; switching to Korean then reloading stays Korean |
+| cache headers | `Cache-Control: no-store`, before and after |
+
+Playwright 10 of 10 after one fix to the test (the QR check first read the page text, which still held the share panel's `?lang=` link behind the QR screen; it now reads the QR's own label). One known limit: a client can send `x-engawa-link-lang` itself on a request without `?lang=` (the proxy does not run there to strip it); all it can do is pick one of the five languages for its own response. The acceptance skill's curl example for `/api/process/<id>` lacks the JSON body `{"device_id": ...}` the route requires (400 `bad_request` without it). Claude calls: 1 drop-in.
 
 **Needed a human**
 - Nothing during the session. Native read of the Korean and Vietnamese `maps.*`, `view.*` and `places.*` strings. `docs/PLAN.md` lines N17 and N10 are for the reviewing session to tick.
