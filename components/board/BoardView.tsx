@@ -276,7 +276,7 @@ export function BoardView({
         }
         actions={<ShareButton boardSlug={board.slug} boardName={board.name[lang]} />}
       />
-      <main className="mx-auto w-full max-w-2xl flex-1 px-4 pb-24 pt-4 md:grid md:min-h-0 md:max-w-[1600px] md:grid-cols-[340px_minmax(0,1fr)] md:grid-rows-[minmax(0,1fr)] md:gap-6 md:px-6 md:py-0 lg:grid-cols-[340px_minmax(0,1fr)_300px] xl:grid-cols-[440px_minmax(0,1fr)_380px]">
+      <main className="mx-auto w-full max-w-2xl flex-1 px-4 pb-24 pt-4 md:grid md:min-h-0 md:max-w-[1600px] md:grid-cols-[clamp(300px,42vw,380px)_minmax(0,1fr)] md:grid-rows-[minmax(0,1fr)] md:gap-4 md:px-4 md:py-0 lg:grid-cols-[clamp(300px,30vw,460px)_minmax(0,1fr)_clamp(280px,26vw,400px)] xl:gap-6 xl:px-6">
         <h1 className="sr-only">{board.name[lang]}</h1>
         {/* Phone: the ask panel above the list, as before. */}
         <div className="md:hidden">{askPanel}</div>

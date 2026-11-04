@@ -36,24 +36,22 @@ export function CardPanel({
     <section
       ref={ref}
       aria-labelledby={cardTitleId(card.id)}
-      className="rounded-2xl border border-line bg-surface p-4 shadow-sm lg:p-6"
+      className="rounded-2xl border border-line bg-surface p-4 shadow-sm xl:p-6"
       data-card-panel={card.id}
     >
-      <CardDetail
-        card={card}
-        board={board}
-        now={now}
-        action={
-          <button
-            type="button"
-            onClick={onClose}
-            className="shrink-0 rounded-lg border border-line bg-surface px-3 font-semibold hover:border-accent active:bg-held-bg"
-            data-card-panel-close
-          >
-            {t("layout.close_card")}
-          </button>
-        }
-      />
+      {/* The close button gets its own row: beside the title it left a narrow column a word wide at 1024 px. */}
+      <div className="mb-2 flex items-center justify-between gap-4">
+        <p className="text-base font-medium text-muted">{t("layout.detail_label")}</p>
+        <button
+          type="button"
+          onClick={onClose}
+          className="shrink-0 rounded-lg border border-line bg-surface px-3 font-semibold hover:border-accent active:bg-held-bg"
+          data-card-panel-close
+        >
+          {t("layout.close_card")}
+        </button>
+      </div>
+      <CardDetail card={card} board={board} now={now} />
     </section>
   );
 }

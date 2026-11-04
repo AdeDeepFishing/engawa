@@ -41,10 +41,15 @@ export function timeAgo(iso: string, now: Date, lang: Lang): string {
 
 const TZ = "Asia/Tokyo";
 
+/**
+ * Day and time in the reader's locale with the month as a word, so it reads
+ * the same way for everyone: "3 Nov, 07:29", "11月3日 07:29", "07:29 3 thg 11".
+ * (en-GB "03/11" was read as 11 March by American readers.)
+ */
 export function formatDateTime(iso: string, lang: Lang): string {
   return new Intl.DateTimeFormat(INTL_LOCALE[lang], {
     timeZone: TZ,
-    month: "numeric",
+    month: "short",
     day: "numeric",
     hour: "2-digit",
     minute: "2-digit",

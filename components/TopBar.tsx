@@ -30,7 +30,7 @@ export function TopBar({
     <header className="sticky top-0 z-10 border-b border-line bg-surface/95 backdrop-blur">
       <div
         className={`relative mx-auto flex w-full max-w-2xl flex-wrap items-center gap-x-3 gap-y-2 px-4 py-2 ${
-          wide ? "md:max-w-[1600px] md:px-6 lg:flex-nowrap" : ""
+          wide ? "md:max-w-[1600px] lg:flex-nowrap xl:px-6" : ""
         }`}
       >
         <Link href="/" className="tap flex shrink-0 items-center font-bold hover:text-accent" aria-label={t("app.name")}>
