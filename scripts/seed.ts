@@ -5,7 +5,7 @@
  *   pnpm db:seed                    every board: create the missing ones, refresh the others
  *   pnpm db:seed --board <slug>     one board only
  *   pnpm db:seed --dry-run          print what would be written; never connects to the database
- *   pnpm db:seed --rotate-token     issue a new admin token for an existing board
+ *   pnpm db:seed --rotate-token     issue a new admin token for every selected board (use --board)
  *   pnpm db:seed --board <slug> --reset-cards
  *                                   delete that board's cards and re-insert its samples (needs --board)
  *   pnpm db:seed --token-file .env.admin-token.local

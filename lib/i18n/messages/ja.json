@@ -404,5 +404,6 @@
   "about.credits_heading": "クレジット",
   "about.credits_map": "トップページの地図にある都道府県の形は、Victor Cazanave による svg-maps（MapSVG の日本地図がもと）を縁側用に簡略化したものです（小さな島を省き、座標を丸めています）。クリエイティブ・コモンズ 表示 4.0 国際 ライセンス（CC BY 4.0）のもとで使っています。",
   "home.source": "GitHub のソースコード",
-  "home.tagline_easy_ja": "きんじょの じょうほうを、みんなの ことばで。"
+  "home.tagline_easy_ja": "きんじょの じょうほうを、みんなの ことばで。",
+  "places.kind.office": "区役所・市役所"
 }

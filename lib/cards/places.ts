@@ -40,6 +40,7 @@ const KIND_KEYS: Record<string, MessageKey> = {
   station: "places.kind.station",
   park: "places.kind.park",
   commuter_shelter: "places.kind.commuter_shelter",
+  office: "places.kind.office",
 };
 
 const KIND_ICONS: Record<string, string> = {
@@ -48,6 +49,7 @@ const KIND_ICONS: Record<string, string> = {
   station: CATEGORY_ICON.transport,
   park: "🌳",
   commuter_shelter: "🏢",
+  office: "🏛️",
 };
 
 /** The label key for a known place's kind; a kind the board invents later reads "Place". */

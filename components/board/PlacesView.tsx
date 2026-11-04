@@ -216,6 +216,11 @@ function PlaceGroupItem({
                 ) : null}
               </span>
             ) : null}
+            {place?.notes_ja ? (
+              <span lang="ja" className="mt-0.5 block text-base text-warn-ink" data-place-note>
+                {place.notes_ja}
+              </span>
+            ) : null}
             <span className="mt-1 flex flex-wrap gap-x-3 text-base text-muted">
               <span className="font-semibold text-foreground" data-place-count>
                 {tCount("places.count", lang, group.cards.length)}

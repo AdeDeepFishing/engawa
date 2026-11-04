@@ -404,5 +404,6 @@
   "about.credits_heading": "출처",
   "about.credits_map": "첫 페이지 지도의 도도부현 윤곽은 Victor Cazanave의 svg-maps(MapSVG의 일본 지도 기반)를 엔가와에 맞게 단순화한 것입니다(작은 섬 생략, 좌표 반올림). 크리에이티브 커먼즈 저작자표시 4.0 국제 라이선스(CC BY 4.0)에 따라 사용합니다.",
   "home.source": "GitHub 소스 코드",
-  "home.tagline_easy_ja": "きんじょの じょうほうを、みんなの ことばで。"
+  "home.tagline_easy_ja": "きんじょの じょうほうを、みんなの ことばで。",
+  "places.kind.office": "구청·시청"
 }

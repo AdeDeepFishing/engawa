@@ -404,5 +404,6 @@
   "about.credits_heading": "Credits",
   "about.credits_map": "The prefecture outlines on the home page map are from svg-maps by Victor Cazanave, based on the MapSVG map of Japan, simplified for Engawa (small islands dropped, coordinates rounded). They are used under the Creative Commons Attribution 4.0 International licence (CC BY 4.0).",
   "home.source": "Source on GitHub",
-  "home.tagline_easy_ja": "きんじょの じょうほうを、みんなの ことばで。"
+  "home.tagline_easy_ja": "きんじょの じょうほうを、みんなの ことばで。",
+  "places.kind.office": "City or ward office"
 }
