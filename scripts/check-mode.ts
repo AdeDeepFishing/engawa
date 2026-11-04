@@ -66,6 +66,14 @@ check("no term: a drill named only in the source excerpt", emergencyTerm({ ...fa
 check("term: 訓練ではありません in the body still switches", emergencyTerm(fact("official_notice", "避難指示", "これは訓練ではありません。警戒レベル4、避難指示を発令しました。")) === "避難指示");
 check("term: 洪水浸水想定区域 in the body still switches", emergencyTerm(fact("official_notice", "避難指示", "多摩川の洪水浸水想定区域に避難指示を発令しました。")) === "避難指示");
 check("term: 浸水が想定される in the body still switches", emergencyTerm(fact("danger", "大雨特別警報", "浸水が想定される地域の方は直ちに避難してください。")) === "特別警報");
+check("term: これは訓練ではございません still switches", emergencyTerm(fact("official_notice", "避難指示", "これは訓練ではございません。避難指示を発令しました。")) === "避難指示");
+check("term: 訓練ではなく、実際の避難指示です still switches", emergencyTerm(fact("official_notice", "避難指示", "訓練ではなく、実際の避難指示です。直ちに避難してください。")) === "避難指示");
+check("term: これは訓練放送ではありません still switches", emergencyTerm(fact("official_notice", "避難指示", "これは訓練放送ではありません。警戒レベル4、避難指示を発令しました。")) === "避難指示");
+check("term: a cancelled drill mentioned in passing still switches", emergencyTerm(fact("official_notice", "避難指示", "避難指示を発令しました。なお本日予定の防災訓練は中止します。")) === "避難指示");
+check("term: 浸水が想定されている地域 still switches", emergencyTerm(fact("official_notice", "避難指示", "浸水が想定されている地域に避難指示を発令しました。")) === "避難指示");
+check("term: 想定以上の降雨 still switches", emergencyTerm(fact("danger", "大雨", "想定以上の降雨により、警戒レベル4、避難指示を発令しました。")) === "避難指示");
+check("term: 想定外の水位上昇 still switches", emergencyTerm(fact("danger", "河川情報", "想定外の水位上昇のため、緊急安全確保を発令しました。")) === "緊急安全確保");
+check("no term: 訓練を実施します in the body", emergencyTerm(fact("official_notice", "お知らせ", "本日、避難指示の発令を想定した訓練を実施します。")) === null);
 check("term: 解除 in the body only does not block (解除されるまで)", emergencyTerm(fact("official_notice", "避難指示", "警戒レベル4、避難指示を発令しました。解除されるまで避難所にとどまってください。")) === "避難指示");
 check("term: an evacuation order filed as shelter", emergencyTerm({ ...evacuation, category: "shelter" }) === "避難指示");
 check("no term: a shelter opening without an order", emergencyTerm(fact("shelter", "避難所の開設", "小杉小学校を避難所として開設しました")) === null);

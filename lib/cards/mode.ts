@@ -77,13 +77,13 @@ const NOT_AN_EMERGENCY = /解除|訓練|想定/;
 /**
  * A drill or a scenario can also be named only in the text: "これは訓練放送です"
  * or "震度6強の地震を想定し" under a plain title. So the body and the source
- * excerpt are tested for 訓練 and 想定 as well, minus the phrases a real order
- * uses: "これは訓練ではありません" (this is not a drill), and the hazard map
- * terms of an evacuation order (洪水浸水想定区域, 浸水が想定される, 想定最大規模,
- * 想定を超える). 解除 stays a title word: a real order's text can say
- * "解除されるまで" (until it is lifted).
+ * excerpt are tested for the phrases that announce a drill or a scenario,
+ * positively: a bare 訓練 or 想定 is not enough, because a real order says
+ * "これは訓練ではありません", "浸水が想定される地域", "想定外の水位" or "本日の
+ * 防災訓練は中止します" and must switch the board all the same. 解除 stays a
+ * title word: a real order's text can say "解除されるまで" (until it is lifted).
  */
-const DRILL_IN_TEXT = /訓練(?!では(?:ありません|ない))|想定(?!区域|される|最大|を超え)/;
+const DRILL_IN_TEXT = /【訓練】|訓練放送(?!では)|訓練です|訓練を実施|訓練のお知らせ|訓練を行|を想定し|想定した訓練|想定シナリオ/;
 
 function normalized(text: string): string {
   return text.normalize("NFKC").replace(/\s+/g, "");

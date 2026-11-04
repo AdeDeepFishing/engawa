@@ -63,7 +63,7 @@ export function useBoardView(initial: BoardViewMode): [BoardViewMode, (view: Boa
       const fromUrl = parseBoardView(new URLSearchParams(window.location.search).get(PARAM));
       const stored = readStored();
       if (stored && readCookie() !== stored) writeCookie(stored);
-      const next = fromUrl ?? stored;
+      const next = fromUrl ?? stored ?? readCookie();
       if (!next) return;
       setViewState(next);
       if (!fromUrl) writeUrl(next);

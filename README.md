@@ -11,7 +11,7 @@ A neighbourhood board for Japan that everyone can read in their own language. In
 1. Open the [武蔵小杉 board](https://engawaboard.com/b/musashikosugi) and pick your language at the top right.
 2. Tap **Drop in a notice**, then under **Try with a sample** pick the photo of a paper notice, the chat screenshot or the pasted text. They are fictional test inputs (made-up names and numbers, real public places). A waiting card shows the real pipeline steps; the card appears in about 10 to 15 seconds in Japanese, English and the input's language, and the other languages follow a few seconds later. The sample adds a test card to the live board.
 3. In **Ask this board**, ask "Where can I get water?". The answer cites cards; tap a citation to open the card. Ask "Can I bring my cat to the shelter?" and it says the board has no information about that yet.
-4. Open a card and **Share this card**: **Copy link** or **Copy as text**. The link carries your language (`?lang=`), so the preview in LINE or WeChat shows the card in your language, not the sharer's.
+4. Open a card and **Share this card**: **Copy link** or **Copy as text**. The link carries your language (`?lang=`), so the preview in LINE or WeChat shows the card in the sharer's language, not the recipient's default.
 5. Switch **List** to **Places**: cards grouped by known place, with the address, the latest shelter status and **Open in maps**.
 6. From the same share panel, **Print as a notice (six languages)**: an A4 notice with the board's QR code, made to be taped up next to the Japanese original. The whole board has a poster too: [/b/musashikosugi/poster](https://engawaboard.com/b/musashikosugi/poster).
 
@@ -41,7 +41,7 @@ What code checks, every time: each output against its JSON schema (`lib/claude/s
 
 A neighbour can also tap **I heard the loudspeaker** and send what the browser's speech recognition wrote down, after correcting it; that is always `secondhand`, and when the city's text arrives reconcile merges it and the card takes the city's wording.
 
-**Disaster mode** is a board state (migration 0009, `lib/cards/mode.ts`, `pnpm check:mode`). The admin can switch it with the reason recorded. The inbox switches a board in peace mode on when an official city mail lands on a public card in category danger, official notice or shelter and names an emergency (避難指示, 緊急安全確保, 警戒レベル4 or 5, 津波警報, 特別警報, 震度5弱 or stronger), but never for 解除, 訓練 or 想定. A neighbour's text never switches it. An automatic switch returns to peace after 7 days without a new official emergency card; a switch the admin made stays until the admin changes it.
+**Disaster mode** is a board state (migration 0009, `lib/cards/mode.ts`, `pnpm check:mode`). The admin can switch it with the reason recorded. The inbox switches a board in peace mode on when an official city mail lands on a public card in category danger, official notice or shelter and names an emergency (避難指示, 避難命令, 緊急安全確保, 警戒レベル4 or 5, 津波警報, 特別警報, 震度5弱 or stronger), but never when it lifts an order (解除) or announces a drill or a scenario (訓練放送, 想定した訓練). A neighbour's text never switches it. An automatic switch returns to peace after 7 days without a new official emergency card; a switch the admin made stays until the admin changes it.
 
 The architecture and the reasons behind it are in [docs/PLAN.md](docs/PLAN.md).
 
@@ -91,7 +91,7 @@ Requirements: Node.js 20 or later, pnpm 10, a Supabase project, an Anthropic API
 ```bash
 pnpm install
 cp .env.example .env.local      # fill in the keys; the comments say what each is for
-pnpm db:migrate                 # applies supabase/migrations 0001 to 0009 through the session pooler
+pnpm db:migrate                 # applies every file in supabase/migrations through the session pooler
 pnpm db:seed --token-file .env.admin-token.local   # both boards, their known places, sample cards
 pnpm dev                        # http://localhost:3000/b/musashikosugi
 ```
