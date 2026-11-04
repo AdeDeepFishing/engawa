@@ -356,5 +356,12 @@
   "home.try": "Để thử, hãy mở bảng tin, nhấn “{button}” và chọn một mục trong “{samples}”. Các mẫu đều là hư cấu.",
   "home.footer_about": "Giới thiệu Engawa",
   "home.built_with": "Phát triển bằng Claude Code",
-  "inbox.senders_too_many": "Chỉ lưu được tối đa {max} địa chỉ. Bạn đã nhập {n}: hãy xóa {extra} địa chỉ rồi lưu lại."
+  "inbox.senders_too_many": "Chỉ lưu được tối đa {max} địa chỉ. Bạn đã nhập {n}: hãy xóa {extra} địa chỉ rồi lưu lại.",
+  "home.map_heading": "Nơi có bảng tin",
+  "home.map_label": "Bản đồ Nhật Bản. Các tỉnh có bảng tin được tô màu xanh.",
+  "home.map_hint": "Nhấn vào tỉnh màu xanh để đến bảng tin ở đó.",
+  "home.map_pref_one": "{pref}: {n} bảng tin",
+  "home.map_pref_other": "{pref}: {n} bảng tin",
+  "home.map_credit": "Bản đồ: svg-maps (Victor Cazanave, dựa trên MapSVG), đã giản lược.",
+  "home.map_licence": "CC BY 4.0"
 }

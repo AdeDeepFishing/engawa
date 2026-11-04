@@ -356,5 +356,12 @@
   "home.try": "해보려면 게시판을 열고 「{button}」 버튼을 누른 뒤 「{samples}」에서 하나를 고르세요. 샘플은 가상의 자료입니다.",
   "home.footer_about": "Engawa 소개",
   "home.built_with": "Claude Code로 개발",
-  "inbox.senders_too_many": "주소는 최대 {max}개까지 저장할 수 있습니다. {n}개를 입력했으니 {extra}개를 지우고 다시 저장하세요."
+  "inbox.senders_too_many": "주소는 최대 {max}개까지 저장할 수 있습니다. {n}개를 입력했으니 {extra}개를 지우고 다시 저장하세요.",
+  "home.map_heading": "게시판이 있는 지역",
+  "home.map_label": "일본 지도. 게시판이 있는 도도부현은 초록색으로 표시됩니다.",
+  "home.map_hint": "초록색 도도부현을 누르면 그 지역의 게시판으로 이동합니다.",
+  "home.map_pref_one": "{pref}: 게시판 {n}개",
+  "home.map_pref_other": "{pref}: 게시판 {n}개",
+  "home.map_credit": "지도: svg-maps(Victor Cazanave, MapSVG 기반)를 단순화.",
+  "home.map_licence": "CC BY 4.0"
 }

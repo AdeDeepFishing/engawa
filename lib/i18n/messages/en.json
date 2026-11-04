@@ -356,5 +356,12 @@
   "home.try": "To try it, open the board, tap “{button}” and pick one under “{samples}”. The samples are fictional.",
   "home.footer_about": "About Engawa",
   "home.built_with": "Built with Claude Code",
-  "inbox.senders_too_many": "At most {max} addresses can be saved. You entered {n}: remove {extra} and save again."
+  "inbox.senders_too_many": "At most {max} addresses can be saved. You entered {n}: remove {extra} and save again.",
+  "home.map_heading": "Where the boards are",
+  "home.map_label": "Map of Japan. Prefectures with a board are in green.",
+  "home.map_hint": "Tap a green prefecture to go to its boards.",
+  "home.map_pref_one": "{pref}: {n} board",
+  "home.map_pref_other": "{pref}: {n} boards",
+  "home.map_credit": "Map: svg-maps by Victor Cazanave, after MapSVG, simplified.",
+  "home.map_licence": "CC BY 4.0"
 }

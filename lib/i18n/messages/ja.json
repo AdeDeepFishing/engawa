@@ -356,5 +356,12 @@
   "home.try": "試すには、掲示板を開いて「{button}」を押し、「{samples}」から一つ選んでください。サンプルは架空のものです。",
   "home.footer_about": "Engawa について",
   "home.built_with": "Claude Code で開発",
-  "inbox.senders_too_many": "保存できるアドレスは{max}件までです。{n}件入力されています。{extra}件消してから、もう一度保存してください。"
+  "inbox.senders_too_many": "保存できるアドレスは{max}件までです。{n}件入力されています。{extra}件消してから、もう一度保存してください。",
+  "home.map_heading": "掲示板のある地域",
+  "home.map_label": "日本地図。掲示板のある都道府県を緑で示しています。",
+  "home.map_hint": "緑の都道府県を押すと、その地域の掲示板に移動します。",
+  "home.map_pref_one": "{pref}: 掲示板 {n} 件",
+  "home.map_pref_other": "{pref}: 掲示板 {n} 件",
+  "home.map_credit": "地図: svg-maps（Victor Cazanave、MapSVG がもと）を簡略化。",
+  "home.map_licence": "CC BY 4.0"
 }

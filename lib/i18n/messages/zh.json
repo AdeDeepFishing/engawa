@@ -356,5 +356,12 @@
   "home.try": "想试试的话，打开公告板，点“{button}”，在“{samples}”里选一个。示例都是虚构的。",
   "home.footer_about": "关于 Engawa",
   "home.built_with": "使用 Claude Code 开发",
-  "inbox.senders_too_many": "最多只能保存{max}个地址。你输入了{n}个，请删掉{extra}个后再保存。"
+  "inbox.senders_too_many": "最多只能保存{max}个地址。你输入了{n}个，请删掉{extra}个后再保存。",
+  "home.map_heading": "公告板所在地区",
+  "home.map_label": "日本地图。有公告板的都道府县以绿色显示。",
+  "home.map_hint": "点绿色的都道府县，即可跳到那里的公告板。",
+  "home.map_pref_one": "{pref}：{n} 个公告板",
+  "home.map_pref_other": "{pref}：{n} 个公告板",
+  "home.map_credit": "地图：svg-maps（Victor Cazanave，源自 MapSVG），已简化。",
+  "home.map_licence": "CC BY 4.0"
 }

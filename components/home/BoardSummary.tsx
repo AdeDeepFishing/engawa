@@ -12,8 +12,15 @@ export interface HomeBoard {
   slug: string;
   name: Board["name"];
   area_names: Board["area_names"];
+  /** JIS prefecture code ("14"), or null when the board has no area codes: it is then listed but not on the map. */
+  prefecture: string | null;
   public_cards: number;
   newest_card_at: string | null;
+}
+
+/** Element id of a board's card on the home page, the map's jump target. */
+export function boardAnchor(slug: string): string {
+  return `board-${slug}`;
 }
 
 /** Towns shown before "and N more"; the pilot board has 23 districts in 15 towns. */
@@ -44,8 +51,10 @@ export function BoardSummary({ board, now }: { board: HomeBoard; now: string }) 
 
   return (
     <article
+      id={boardAnchor(board.slug)}
+      tabIndex={-1}
       aria-labelledby={nameId}
-      className="rounded-2xl border border-line bg-surface p-5"
+      className="scroll-mt-24 rounded-2xl border border-line bg-surface p-5 focus:outline-[3px] focus:outline-offset-2 focus:outline-accent focus:outline-solid"
       data-home-board={board.slug}
     >
       <h3 id={nameId} className="text-2xl font-bold">

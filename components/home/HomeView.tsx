@@ -4,7 +4,8 @@ import Link from "next/link";
 import { BRAND_JA, Mark } from "@/components/brand/Mark";
 import type { MessageKey } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n/LangProvider";
-import { BoardSummary, type HomeBoard } from "./BoardSummary";
+import { BoardSummary, boardAnchor, type HomeBoard } from "./BoardSummary";
+import { JapanMap } from "./JapanMap";
 
 const STEPS: { title: MessageKey; body: MessageKey }[] = [
   { title: "home.step1_title", body: "home.step1_body" },
@@ -16,19 +17,34 @@ const linkClass =
   "tap inline-flex items-center text-base underline underline-offset-4 hover:text-accent";
 
 /**
- * The home page body (/): what Engawa is and for whom, the listed boards with
- * their live facts, the three steps in the words the board itself uses, how
- * to try it with a sample, and the footer. Client component so the language
+ * The home page body (/): what Engawa is and for whom, a map of Japan with
+ * the prefectures that have a listed board (beside the intro from 1024 px,
+ * under it on a phone), the listed boards with their live facts, the three
+ * steps in the words the board itself uses, how to try it with a sample,
+ * and the footer. Client component so the language
  * switch in the top bar applies at once, like the about page; the board
  * facts and `now` come from the server render, so both renders agree.
  */
 export function HomeView({ boards, now }: { boards: HomeBoard[]; now: string }) {
   const { t } = useLang();
+  const counts: Record<string, number> = {};
+  for (const b of boards) if (b.prefecture) counts[b.prefecture] = (counts[b.prefecture] ?? 0) + 1;
+
+  /** From the map: bring the prefecture's first board into view and move focus to it, so a screen reader follows. */
+  function goToPrefecture(code: string) {
+    const first = boards.find((b) => b.prefecture === code);
+    const el = first ? document.getElementById(boardAnchor(first.slug)) : null;
+    if (!el) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // Focus first: a focus() after a smooth scrollIntoView cancels the scroll in Chrome.
+    el.focus({ preventScroll: true });
+    el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+  }
 
   return (
     <>
       <main className="mx-auto w-full max-w-5xl flex-1 px-4 pt-8 pb-4 md:px-6 lg:pt-14">
-        <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,30rem)] lg:items-start lg:gap-14">
+        <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:items-start lg:gap-14">
           <section aria-labelledby="home-title">
             <Mark className="size-16 text-accent" />
             <h1 id="home-title" className="mt-4 text-4xl font-bold">
@@ -38,23 +54,39 @@ export function HomeView({ boards, now }: { boards: HomeBoard[]; now: string }) 
             <p className="mt-3 text-lg leading-relaxed text-muted">{t("home.for_whom")}</p>
           </section>
 
-          <section aria-labelledby="home-boards" className="mt-10 lg:mt-0">
-            <h2 id="home-boards" className="text-xl font-bold">
-              {t("index.title")}
+          <section aria-labelledby="home-map" className="mt-10 lg:mt-0">
+            <h2 id="home-map" className="text-xl font-bold">
+              {t("home.map_heading")}
             </h2>
-            {boards.length ? (
-              <ul className="mt-3 flex flex-col gap-4">
-                {boards.map((b) => (
-                  <li key={b.slug}>
-                    <BoardSummary board={b} now={now} />
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="mt-3 text-base text-muted">{t("home.no_boards")}</p>
-            )}
+            <div className="mt-3">
+              <JapanMap counts={counts} onSelect={goToPrefecture} />
+            </div>
+            <p className="mt-3 text-base">{t("home.map_hint")}</p>
+            <p className="text-base text-muted">
+              {t("home.map_credit")}{" "}
+              <a href="https://creativecommons.org/licenses/by/4.0/" className="tap inline-flex items-center underline underline-offset-4 hover:text-accent">
+                {t("home.map_licence")}
+              </a>
+            </p>
           </section>
         </div>
+
+        <section aria-labelledby="home-boards" className="mt-10 lg:mt-14">
+          <h2 id="home-boards" className="text-xl font-bold">
+            {t("index.title")}
+          </h2>
+          {boards.length ? (
+            <ul className="mt-3 grid gap-4 md:grid-cols-2">
+              {boards.map((b) => (
+                <li key={b.slug}>
+                  <BoardSummary board={b} now={now} />
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="mt-3 text-base text-muted">{t("home.no_boards")}</p>
+          )}
+        </section>
 
         <section aria-labelledby="home-steps" className="mt-12 lg:mt-16">
           <h2 id="home-steps" className="text-xl font-bold">
