@@ -125,7 +125,10 @@ function Meta({ card, board, lang, now }: { card: Card; board: Board; lang: Lang
 
 /** The source line in words and the date the paper was made, one line per language. */
 function About({ card, lang, now }: { card: Card; lang: Lang; now: Date }) {
-  const platform = card.sources?.[0]?.platform ?? card.facts.platform ?? null;
+  // The card's own platform first: it names where the current wording and
+  // label come from (an update or a stronger confirming source moves it),
+  // so "the city's broadcast mail (official)" never reads as "the loudspeaker (official)".
+  const platform = card.facts.platform ?? card.sources?.[0]?.platform ?? null;
   const source = card.official_confirmed
     ? t("card.official_confirmed", lang)
     : t(`trace.source.${card.source_type}`, lang);

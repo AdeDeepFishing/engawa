@@ -108,6 +108,8 @@ interface Expected {
   input: string;
   variants?: string[];
   source_platform?: string;
+  /** The input channel code passes to extract: a loudspeaker transcript or an official inbox mail. */
+  channel?: "loudspeaker" | "city_mail";
   facts: ExpectedFact[];
   must_not_contain: string[];
   risk_flags: string[];
@@ -298,7 +300,7 @@ async function runOne(exp: Expected, file: string): Promise<Row> {
   const started = performance.now();
   let result: ExtractResult;
   try {
-    const o = await extract(board, toInput(file), { model, now: clock() });
+    const o = await extract(board, { ...toInput(file), channel: exp.channel }, { model, now: clock() });
     row.ms = o.latencyMs;
     row.usage = {
       input: o.usage.inputTokens,

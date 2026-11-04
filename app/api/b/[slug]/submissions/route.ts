@@ -44,6 +44,9 @@ function tooLarge() {
  *   text      pasted text
  *   area_code optional 町丁目 code the browser resolved from the board's polygons
  *             (G2, self-reported); anything not among the board's areas is stored as null
+ *   heard     "1" when the text is what the uploader heard from the 防災行政無線
+ *             loudspeaker (typed, or transcribed in the browser); text only. Extract
+ *             is told so, and every fact from it is secondhand (lib/claude/extract.ts)
  * The image is stripped of metadata here, before it is stored, so no
  * unstripped copy ever exists on the server side.
  */
@@ -66,7 +69,13 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
   // The browser only ever sends a code, never a position; the code must be one of this board's areas.
   const areaRaw = form.get("area_code");
   const uploaderAreaCode = isBoardAreaCode(board, areaRaw) ? areaRaw : null;
-  if ((kind !== "image" && kind !== "text") || typeof deviceId !== "string" || !DEVICE_RE.test(deviceId)) {
+  const heard = form.get("heard") === "1";
+  if (
+    (kind !== "image" && kind !== "text") ||
+    typeof deviceId !== "string" ||
+    !DEVICE_RE.test(deviceId) ||
+    (heard && kind !== "text")
+  ) {
     return NextResponse.json({ error: "bad_request" }, { status: 400 });
   }
 
@@ -122,6 +131,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
     text,
     image,
     uploaderAreaCode,
+    heard,
   });
   return NextResponse.json({ id: sub.id, status: sub.status }, { status: 201 });
 }

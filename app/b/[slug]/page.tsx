@@ -46,18 +46,13 @@ export default async function BoardPage({ params }: Props) {
   if (!board) notFound();
   const [cards, hiddenDuplicates] = await Promise.all([listPublicCards(board), listHiddenDuplicates(board.id)]);
   return (
-    <>
-      <BoardView
-        board={board}
-        initialCards={cards}
-        initialHiddenDuplicates={hiddenDuplicates}
-        serverNow={new Date().toISOString()}
-        canSubmit={hasDb()}
-      />
-      {/* Sits inside the list's bottom padding and clears the floating drop-in button. */}
-      <footer className="mx-auto -mt-24 w-full max-w-2xl px-4 pb-24">
-        <AboutLink boardSlug={board.slug} />
-      </footer>
-    </>
+    <BoardView
+      board={board}
+      initialCards={cards}
+      initialHiddenDuplicates={hiddenDuplicates}
+      serverNow={new Date().toISOString()}
+      canSubmit={hasDb()}
+      footer={<AboutLink boardSlug={board.slug} />}
+    />
   );
 }

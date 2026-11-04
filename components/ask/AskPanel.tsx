@@ -1,123 +1,71 @@
 "use client";
 
-import { useRef, useState, type FormEvent } from "react";
+import { useId, type FormEvent } from "react";
 import { CATEGORY_ICON } from "@/lib/cards/categories";
-import type { AskAnswer, AskTurn } from "@/lib/claude/ask";
-import { getDeviceId } from "@/lib/device";
+import type { AskAnswer } from "@/lib/claude/ask";
 import type { MessageKey } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n/LangProvider";
 import type { BoardMode, Card } from "@/lib/types";
+import type { AskController } from "./useAsk";
 
 const MAX_QUESTION_CHARS = 500;
-/** Question and answer pairs kept on screen; the oldest drops off. Client state only, never stored. */
-const MAX_TURNS = 5;
 /** Questions a reader of this kind of board is likely to have, so a tap does not land on "no information yet". */
 const SUGGESTIONS: Record<BoardMode, MessageKey[]> = {
   disaster: ["ask.suggest_1", "ask.suggest_2", "ask.suggest_3"],
   peace: ["ask.suggest_peace_1", "ask.suggest_peace_2", "ask.suggest_peace_3"],
 };
 
-type Turn =
-  | { id: number; question: string; kind: "loading" }
-  | { id: number; question: string; kind: "answer"; answer: AskAnswer }
-  | { id: number; question: string; kind: "error"; key: MessageKey };
-
-function errorKey(status: number): MessageKey {
-  if (status === 429) return "limit.ask_rate";
-  if (status === 503) return "limit.ask_busy";
-  return "ask.error";
-}
-
-/** The answer as plain text, for the history sent with a follow-up question. */
-function answerText(answer: AskAnswer): string {
-  return answer.segments.map((s) => s.text).join("");
-}
-
 /**
  * The question box with three suggested questions above it and the thread
  * of earlier question and answer pairs. Each answer comes back whole (no
  * streaming); a skeleton covers the wait. Cited cards are listed as chips
- * under each answer, and a chip opens its card on the board. Earlier pairs
- * go along with a follow-up question as context; nothing is stored anywhere.
+ * under each answer, and a chip opens its card on the board. The thread
+ * lives in `ask` (useAsk), so the phone and laptop placements share it; ids
+ * come from useId, so two placements in one page never share one.
  */
 export function AskPanel({
-  boardSlug,
+  ask,
   mode,
   cards,
   onOpenCard,
+  onDropIn,
 }: {
-  boardSlug: string;
+  ask: AskController;
   /** The board's mode picks the suggested questions. */
   mode: BoardMode;
   /** Cards currently on the board, to label the chips. */
   cards: Card[];
   onOpenCard: (cardId: string) => void;
+  /** Opens the drop-in; offered under an answer that found nothing. Absent when drop-in is off. */
+  onDropIn?: () => void;
 }) {
-  const { lang, t } = useLang();
-  const [question, setQuestion] = useState("");
-  const [turns, setTurns] = useState<Turn[]>([]);
-  const requestId = useRef(0);
-  const loading = turns.some((turn) => turn.kind === "loading");
-
-  async function send(raw: string) {
-    const q = raw.trim();
-    if (!q || loading) return;
-    const id = ++requestId.current;
-    const history: AskTurn[] = turns
-      .filter((turn): turn is Extract<Turn, { kind: "answer" }> => turn.kind === "answer" && !turn.answer.noInfo)
-      .map((turn) => ({ question: turn.question, answer: answerText(turn.answer) }));
-    const pending: Turn = { id, question: q, kind: "loading" };
-    setTurns((prev) => [...prev, pending].slice(-MAX_TURNS));
-    setQuestion("");
-    const settle = (turn: Turn) => setTurns((prev) => prev.map((x) => (x.id === id ? turn : x)));
-    try {
-      const res = await fetch(`/api/b/${boardSlug}/ask`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: q, lang, device_id: getDeviceId(), history }),
-      });
-      if (id !== requestId.current) return;
-      if (!res.ok) {
-        settle({ id, question: q, kind: "error", key: errorKey(res.status) });
-        return;
-      }
-      const data = (await res.json()) as { answer: AskAnswer };
-      if (id === requestId.current) settle({ id, question: q, kind: "answer", answer: data.answer });
-    } catch {
-      if (id === requestId.current) settle({ id, question: q, kind: "error", key: "ask.error" });
-    }
-  }
+  const { t } = useLang();
+  const { question, setQuestion, turns, loading, send, clear } = ask;
+  const uid = useId();
+  const headingId = `${uid}-heading`;
+  const suggestId = `${uid}-suggest`;
+  const inputId = `${uid}-input`;
 
   function onSubmit(e: FormEvent) {
     e.preventDefault();
     void send(question);
   }
 
-  function onSuggest(text: string) {
-    void send(text);
-  }
-
-  function clear() {
-    // A reply still in flight is dropped when it arrives.
-    requestId.current++;
-    setTurns([]);
-  }
-
   const byId = new Map(cards.map((c) => [c.id, c]));
   const chip =
-    "inline-flex min-h-11 items-center rounded-full border border-line bg-surface px-4 text-left text-base font-semibold hover:border-accent disabled:opacity-50";
+    "inline-flex min-h-11 items-center rounded-full border border-line bg-surface px-4 text-left text-base font-semibold hover:border-accent hover:bg-held-bg active:bg-held-bg disabled:opacity-50 disabled:hover:border-line disabled:hover:bg-surface";
 
   return (
-    <section aria-labelledby="ask-heading" className="rounded-xl border border-line bg-surface p-4 shadow-sm">
+    <section aria-labelledby={headingId} className="rounded-xl border border-line bg-surface p-4 shadow-sm">
       <div className="flex items-start justify-between gap-3">
-        <h2 id="ask-heading" className="text-lg font-bold">
+        <h2 id={headingId} className="text-lg font-bold">
           {t("ask.heading")}
         </h2>
         {turns.length ? (
           <button
             type="button"
             onClick={clear}
-            className="shrink-0 rounded-lg border border-line min-h-11 px-4 text-base font-semibold"
+            className="min-h-11 shrink-0 rounded-lg border border-line px-4 text-base font-semibold hover:border-accent active:bg-held-bg"
             data-ask-clear
           >
             {t("ask.clear")}
@@ -150,21 +98,21 @@ export function AskPanel({
               {turn.kind === "error" ? (
                 <p className="mt-3 rounded-lg bg-warn-bg p-3 text-base text-warn-ink">{t(turn.key)}</p>
               ) : null}
-              {turn.kind === "answer" ? <Answer answer={turn.answer} byId={byId} onOpenCard={onOpenCard} /> : null}
+              {turn.kind === "answer" ? <Answer answer={turn.answer} byId={byId} onOpenCard={onOpenCard} onDropIn={onDropIn} /> : null}
             </li>
           ))}
         </ol>
       ) : null}
 
-      <p className="mt-3 text-base text-muted" id="ask-suggest-heading">
+      <p className="mt-3 text-base text-muted" id={suggestId}>
         {t("ask.suggest_heading")}
       </p>
-      <ul className="mt-2 flex flex-wrap gap-2" aria-labelledby="ask-suggest-heading" data-ask-suggestions>
+      <ul className="mt-2 flex flex-wrap gap-2" aria-labelledby={suggestId} data-ask-suggestions>
         {SUGGESTIONS[mode].map((key) => {
           const text = t(key);
           return (
             <li key={key}>
-              <button type="button" className={chip} disabled={loading} onClick={() => onSuggest(text)}>
+              <button type="button" className={chip} disabled={loading} onClick={() => void send(text)}>
                 {text}
               </button>
             </li>
@@ -173,11 +121,11 @@ export function AskPanel({
       </ul>
 
       <form onSubmit={onSubmit} className="mt-3 flex gap-2">
-        <label htmlFor="ask-input" className="sr-only">
+        <label htmlFor={inputId} className="sr-only">
           {t("ask.label")}
         </label>
         <input
-          id="ask-input"
+          id={inputId}
           type="text"
           enterKeyHint="send"
           value={question}
@@ -189,7 +137,7 @@ export function AskPanel({
         <button
           type="submit"
           disabled={!question.trim() || loading}
-          className="min-h-12 shrink-0 rounded-xl bg-accent px-5 text-lg font-bold text-accent-ink disabled:opacity-50"
+          className="min-h-12 shrink-0 rounded-xl bg-accent px-5 text-lg font-bold text-accent-ink hover:bg-accent-hover active:bg-accent-hover disabled:opacity-50 disabled:hover:bg-accent"
         >
           {t("ask.submit")}
         </button>
@@ -203,10 +151,12 @@ function Answer({
   answer,
   byId,
   onOpenCard,
+  onDropIn,
 }: {
   answer: AskAnswer;
   byId: Map<string, Card>;
   onOpenCard: (cardId: string) => void;
+  onDropIn?: () => void;
 }) {
   const { lang, t } = useLang();
   // Chips are numbered in order of first citation; the text carries the numbers.
@@ -240,7 +190,7 @@ function Answer({
                     disabled={!card}
                     onClick={() => onOpenCard(id)}
                     aria-label={card ? t("ask.open_card", { title }) : title}
-                    className="flex min-h-11 w-full items-center gap-2 rounded-xl border border-accent bg-surface px-3 py-2 text-left text-base hover:bg-held-bg disabled:border-line disabled:text-muted"
+                    className="flex min-h-11 w-full items-center gap-2 rounded-xl border border-accent bg-surface px-3 py-2 text-left text-base hover:bg-held-bg active:bg-held-bg disabled:border-line disabled:text-muted disabled:hover:bg-surface"
                     data-ask-citation={id}
                   >
                     <span className="shrink-0 font-bold text-accent">[{number.get(id)}]</span>
@@ -261,6 +211,18 @@ function Answer({
             })}
           </ul>
         </>
+      ) : null}
+      {/* An answer that cites no card found nothing on the board (answers use only cards), so the
+          reader is offered the drop-in, as "no information yet" already suggests in words. */}
+      {(answer.noInfo || answer.cardIds.length === 0) && onDropIn ? (
+        <button
+          type="button"
+          onClick={onDropIn}
+          className="mt-3 inline-flex min-h-11 items-center rounded-xl border border-accent bg-surface px-4 text-base font-semibold text-accent hover:bg-held-bg active:bg-held-bg"
+          data-ask-dropin
+        >
+          {t("empty.ask_cta")}
+        </button>
       ) : null}
     </div>
   );

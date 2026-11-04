@@ -32,7 +32,17 @@ function sameCounts(a: ReactionCounts, b: ReactionCounts): boolean {
  * its own, not the bare id a sibling such as ReadAloud already uses):
  * the sheet is reused across cards and this state belongs to one card.
  */
-export function CardReactions({ card, onReacted }: { card: Card; onReacted?: () => void }) {
+export function CardReactions({
+  card,
+  onReacted,
+  headingLevel = 3,
+}: {
+  card: Card;
+  onReacted?: () => void;
+  /** 3 inside the sheet and the panel; 2 on the card page, under its h1. */
+  headingLevel?: 2 | 3;
+}) {
+  const Heading = headingLevel === 2 ? "h2" : "h3";
   const { lang, t } = useLang();
   const snapshot = useSyncExternalStore(subscribeReactions, reactionsSnapshot, reactionsServerSnapshot);
   const mine = myReaction(snapshot, card);
@@ -69,9 +79,9 @@ export function CardReactions({ card, onReacted }: { card: Card; onReacted?: () 
 
   return (
     <section className="mt-5 rounded-xl border border-line p-3" aria-labelledby={`react-${card.id}`} data-reactions>
-      <h3 id={`react-${card.id}`} className="font-semibold">
+      <Heading id={`react-${card.id}`} className="font-semibold">
         {t("react.question")}
-      </h3>
+      </Heading>
       <div className="mt-2 flex flex-wrap gap-2">
         {REACTION_KINDS.map((kind) => {
           const pressed = mine === kind;
@@ -84,7 +94,7 @@ export function CardReactions({ card, onReacted }: { card: Card; onReacted?: () 
               data-reaction={kind}
               onClick={() => tap(kind)}
               className={`inline-flex min-h-11 items-center gap-2 rounded-xl border px-4 text-base font-semibold ${
-                pressed ? "border-accent bg-accent text-accent-ink" : "border-line bg-surface hover:border-accent"
+                pressed ? "border-accent bg-accent text-accent-ink hover:bg-accent-hover" : "border-line bg-surface hover:border-accent active:bg-held-bg"
               }`}
             >
               <span aria-hidden="true">{ICON[kind]}</span>

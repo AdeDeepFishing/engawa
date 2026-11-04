@@ -22,11 +22,14 @@ export function CardItem({
   board,
   now,
   onOpen,
+  selected = false,
 }: {
   card: Card;
   board: Board;
   now: Date;
   onOpen: (card: Card) => void;
+  /** Open in the panel beside the list (tablet and laptop): marked with aria-current and an accent edge. */
+  selected?: boolean;
 }) {
   const { lang, t } = useLang();
   const expired = isExpired(card.valid_until, now);
@@ -65,8 +68,9 @@ export function CardItem({
         type="button"
         onClick={() => onOpen(card)}
         aria-label={label}
-        className={`w-full rounded-xl border p-4 text-left shadow-sm hover:border-accent ${
-          conflicts.length ? "border-warn-ink" : "border-line"
+        aria-current={selected ? "true" : undefined}
+        className={`w-full rounded-xl border p-4 text-left shadow-sm hover:border-accent active:bg-held-bg ${
+          selected ? "border-accent ring-2 ring-accent" : conflicts.length ? "border-warn-ink" : "border-line"
         } ${expired ? "bg-held-bg" : "bg-surface"}`}
       >
         <div className="flex items-start gap-3">
@@ -93,7 +97,7 @@ export function CardItem({
             <p className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-base text-muted">
               <span>{when}</span>
               <span className={card.official_confirmed ? "font-semibold text-accent" : undefined}>
-                {sourceLabel(card.source_type, card.official_confirmed, lang)}
+                {sourceLabel(card.source_type, card.official_confirmed, lang, card.facts.platform)}
               </span>
               <span>{tCount("card.source_count", lang, card.source_count)}</span>
             </p>

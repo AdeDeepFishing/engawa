@@ -59,6 +59,8 @@ Ranked by value on the judging axes (impact, demo, use of Claude, depth) against
 - N12 Board index and a "make a board" form (name, area, places from the city list) that shows the admin link once. Impact. About 3 hours.
 - N13 Claude Code visible in the repo: a pre-commit hook that runs the dash scan and the i18n parity check, a project skill for the throwaway-board acceptance run, the review subagent definition, and a README section on which model and which Claude Code feature did what and why. Use of Claude (the criteria ask for Skills, subagents, MCP and hooks chosen by purpose). About 1.5 hours. Done 2026-11-04.
 - N14 About page `/about` in five languages: who the board is for (named people and scenes, with numbers for 中原区), what it does with their data, who runs it after the event. Impact (the criteria ask who, in what scene, how much, and who keeps using it). About 1 hour. Done 2026-11-04.
+- N15 Loudspeaker broadcasts into the board: an "I heard the loudspeaker" input that transcribes the 防災行政無線 with the browser's speech recognition into an editable box (secondhand, platform loudspeaker), and an official inbox that turns the city's broadcast mail (メールニュースかわさき, forwarded by a mail worker the human wires) into official cards. Impact (foreign and hard-of-hearing residents miss the loudspeaker). About 4 hours. Done 2026-11-04.
+- N16 Laptop layout: three columns at 1024 px and wider (list, card in place, ask), two on tablets, keyboard navigation, the open card in the URL; plus a polish pass on empty states, spacing, hover and focus. Demo (the video is recorded on a laptop). About 4 hours. Done 2026-11-04.
 
 ### Not this week
 
@@ -172,7 +174,9 @@ Owner for implementation: Claude Code. The plan said `claude-opus-5-5`; in pract
 - [x] N9 offline snapshot: service worker keeps the board, card pages, the cards poll and the about page; banner with the saved time, drop-in disabled while offline (PR #16)
 - [x] Peace-mode suggested questions; eval refreshed for the split pipeline (100/100, 0 PII leaks, six languages 15/15) (PR #16)
 - [x] Leftovers from the day 4 reviews: `lib/ids.ts`, usage recorded for rejected responses, placeholder check on translate output (PR #17)
-- [ ] N10 place view, N12 make a board: only if the day is clear
+- [x] N15 loudspeaker broadcasts: heard input and official inbox (migration 0007, PR #20); the mail forwarding and the city list subscription are the human's
+- [x] N16 laptop layout and polish pass (PR #19)
+- [ ] N10 place view, N12 make a board, web push for official and danger cards: only if the day is clear
 
 ### 2026-11-06 (Fri): review, freeze, demo prep
 - [ ] Full run of the 7-step demo scenario on the deployed URL; fix what breaks

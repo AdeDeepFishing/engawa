@@ -8,6 +8,7 @@ import { boardPolygons, resolveArea } from "@/lib/geo";
 import { ImageTooLargeError, prepareImage } from "@/lib/image/browser";
 import { readSse } from "@/lib/sse";
 import type { Board } from "@/lib/types";
+import { HeardInput } from "./HeardInput";
 
 export type PendingStatus = "uploading" | "processing" | "done" | "held" | "nothing" | "failed";
 
@@ -119,8 +120,10 @@ export function DropIn({
   const { lang, t } = useLang();
   const [open, setOpen] = useState(false);
   const [needsConsent, setNeedsConsent] = useState(false);
-  const [mode, setMode] = useState<"choose" | "text">("choose");
+  const [mode, setMode] = useState<"choose" | "text" | "heard">("choose");
   const [text, setText] = useState("");
+  /** Which box the kept text belongs to: pasted text, or what the uploader heard from the loudspeaker. */
+  const [textMode, setTextMode] = useState<"text" | "heard">("text");
   const [areaOptIn, setAreaOptIn] = useState(false);
   const [area, setArea] = useState<AreaState>({ status: "idle" });
   /** True while a send waits for a position fix still in flight. */
@@ -142,8 +145,8 @@ export function DropIn({
   const openPanel = () => {
     const consented = hasConsented();
     setNeedsConsent(!consented);
-    // Text kept after a refused send opens straight in the text box.
-    setMode(text.trim() ? "text" : "choose");
+    // Text kept after a refused send opens straight in its box.
+    setMode(text.trim() ? textMode : "choose");
     // The area choice is remembered; the position is read again each time, since the phone moves.
     const optIn = hasAreas && readAreaOptIn();
     setAreaOptIn(optIn);
@@ -347,12 +350,14 @@ export function DropIn({
     await submit(form);
   }
 
-  async function onTextSend() {
+  /** `heard`: the text is what the uploader heard from the loudspeaker; the server tells extract so. */
+  async function onTextSend(heard: boolean) {
     if (!text.trim()) return;
     const sent = text.trim();
     const form = new FormData();
     form.set("kind", "text");
     form.set("text", sent);
+    if (heard) form.set("heard", "1");
     setText("");
     await submit(form, sent);
   }
@@ -504,9 +509,28 @@ export function DropIn({
                   <span aria-hidden="true" className="mr-2">🖼️</span>
                   {t("dropin.choose_image")}
                 </button>
-                <button type="button" className={choice} onClick={() => setMode("text")}>
+                <button
+                  type="button"
+                  className={choice}
+                  onClick={() => {
+                    setTextMode("text");
+                    setMode("text");
+                  }}
+                >
                   <span aria-hidden="true" className="mr-2">📝</span>
                   {t("dropin.text")}
+                </button>
+                <button
+                  type="button"
+                  className={choice}
+                  onClick={() => {
+                    setTextMode("heard");
+                    setMode("heard");
+                  }}
+                  data-dropin-heard
+                >
+                  <span aria-hidden="true" className="mr-2">📢</span>
+                  {t("dropin.heard")}
                 </button>
                 <div className="mt-1 rounded-xl border border-dashed border-line p-3" data-sample-row>
                   <p className="text-base font-semibold">{t("sample.heading")}</p>
@@ -532,14 +556,18 @@ export function DropIn({
               </div>
             ) : (
               <div className="mt-4 flex flex-col gap-3">
-                <textarea
-                  value={text}
-                  onChange={(e) => setText(e.target.value)}
-                  placeholder={t("dropin.text_placeholder")}
-                  rows={5}
-                  autoFocus
-                  className="w-full rounded-xl border border-line bg-surface p-3 text-base"
-                />
+                {mode === "heard" ? (
+                  <HeardInput value={text} onChange={setText} />
+                ) : (
+                  <textarea
+                    value={text}
+                    onChange={(e) => setText(e.target.value)}
+                    placeholder={t("dropin.text_placeholder")}
+                    rows={5}
+                    autoFocus
+                    className="w-full rounded-xl border border-line bg-surface p-3 text-base"
+                  />
+                )}
                 {areaControl}
                 <div className="flex gap-3">
                   <button
@@ -553,7 +581,7 @@ export function DropIn({
                     type="button"
                     disabled={!text.trim() || waitingForArea}
                     aria-busy={waitingForArea}
-                    onClick={() => void onTextSend()}
+                    onClick={() => void onTextSend(mode === "heard")}
                     className="min-h-12 flex-1 rounded-xl bg-accent px-4 text-lg font-bold text-accent-ink disabled:opacity-50"
                   >
                     {waitingForArea ? t("area.locating") : t("dropin.send")}

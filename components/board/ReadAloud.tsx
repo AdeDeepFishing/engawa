@@ -136,7 +136,7 @@ export function ReadAloud({ card }: { card: Card }) {
             type="button"
             aria-pressed={on}
             onClick={() => (on ? stop() : speak(l))}
-            className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-line bg-surface px-4 text-base font-semibold hover:border-accent"
+            className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-line bg-surface px-4 text-base font-semibold hover:border-accent active:bg-held-bg"
             data-read-lang={l}
           >
             <span aria-hidden="true">{on ? "⏹" : "🔊"}</span>

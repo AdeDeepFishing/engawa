@@ -55,8 +55,17 @@ export const PLATFORMS = [
   "paper",
   "other",
   "unknown",
+  "loudspeaker",
+  "city_mail",
 ] as const;
 export type Platform = (typeof PLATFORMS)[number];
+
+/**
+ * Platforms that name the channel a text came through rather than what it
+ * looks like. Only code sets them (lib/claude/extract.ts applyChannel):
+ * `loudspeaker` for the heard input, `city_mail` for the official inbox.
+ */
+export const CHANNEL_PLATFORMS = ["loudspeaker", "city_mail"] as const satisfies readonly Platform[];
 
 /** Platforms whose images are chat or social screenshots: originals are deleted and a masked copy may be kept. */
 export const CHAT_PLATFORMS = ["line", "wechat", "x", "xiaohongshu", "facebook"] as const satisfies readonly Platform[];
@@ -240,6 +249,10 @@ export interface Submission {
   image_deleted_at: string | null;
   detected_platform: Platform | null;
   uploader_area_code: string | null;
+  /** True when the uploader sent what they heard from the 防災行政無線 loudspeaker (migration 0007). */
+  heard?: boolean | null;
+  /** "official" when the submission came through the board's official inbox (migration 0007). */
+  source_hint?: "official" | null;
   status: SubmissionStatus;
   stage: Stage | null;
   held_reason: string | null;

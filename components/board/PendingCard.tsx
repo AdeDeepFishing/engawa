@@ -183,7 +183,7 @@ export function PendingCard({
                   <button
                     type="button"
                     onClick={() => onRetry(item)}
-                    className="rounded-lg bg-accent px-4 font-semibold text-accent-ink"
+                    className="rounded-lg bg-accent px-4 font-semibold text-accent-ink hover:bg-accent-hover active:bg-accent-hover"
                   >
                     {t("dropin.retry")}
                   </button>
@@ -191,7 +191,7 @@ export function PendingCard({
                 <button
                   type="button"
                   onClick={() => onDismiss(item.id)}
-                  className="rounded-lg border border-line bg-surface px-4 font-semibold"
+                  className="rounded-lg border border-line bg-surface px-4 font-semibold hover:border-accent active:bg-held-bg"
                 >
                   {t("sheet.close")}
                 </button>

@@ -607,3 +607,133 @@ Playwright: 24 of 24 checks after one test fix (a step read the list before its 
 - Migration 0006 was applied to the shared project by this session after the human allowed it (the first attempt was blocked by the permission check); nothing new in Vercel.
 - Review and merge the PR. Tick in `docs/PLAN.md`: N6 in the nice-to-have list ("Done 2026-11-04") and "N6 reader confirmations" under 2026-11-05.
 - The Korean and Vietnamese `react.*` strings are mine; add them to the native read on 11/05.
+
+## 2026-11-04 (Wed), laptop layout and polish pass
+
+**Model:** `claude-opus-5-5` in Claude Code, implementation role, in its own worktree (branch `day5-laptop`) beside the `day5-broadcast` session, whose files (`DropIn.tsx`, `HeardInput.tsx`, the inbox, submissions and process routes, `lib/claude/**`, `lib/db/**`, migration 0007) were left alone.
+
+**Done**
+- **One source for the card content.** The body of `CardSheet` moved into `components/board/CardDetail.tsx` (title, body, read aloud, facts, sources, reader confirmations, earlier versions, share, how it was made, all languages, original, and the trace fetch). The phone sheet keeps its focus, Escape and close behaviour and renders `CardDetail`; the laptop panel renders the same component. `Statement` moved with it and is re-exported from `CardSheet`.
+- **Laptop workspace, 1024 px and wider.** The top bar holds the board name, a mode badge (Everyday mode / Disaster mode), the drop-in as the primary button, share, text size and language on one line. Three columns under it, each scrolling on its own inside a viewport-high shell: the card list with the hidden duplicates drawer and the about link at its end; the centre panel (`components/board/layout/CardPanel.tsx`) with the selected card, or "Pick a card" with a one-line keyboard hint; the ask panel. The offline banner stays across the top. The drop-in opens as a 480 px drawer on the right, under the top bar, over the ask column, non-modal like before.
+- **Tablet, 768 to 1023 px.** Two columns: the list, and the selected card stacked above the ask panel. The floating drop-in button and its bottom-sheet panel stay as on the phone (touch tablets).
+- **Phone, under 768 px.** Laid out as before: ask panel above the list, cards open in the bottom sheet, floating drop-in.
+- **Keyboard and URL.** Arrow keys, Home and End move focus through the cards of the list; Enter or Space opens the focused card in the panel and focus stays in the list, so the arrows keep working; Escape closes the panel (after the drop-in or the share panel, which close first) and hands focus back to the card when it was in the panel. The open card is kept in the hash as `#card-<id>` (the list item's own id) with `replaceState`, so a refresh or a copied link opens it again and the back button still leaves the board. The selected list item carries `aria-current` and an accent ring. When the drop-in closes with focus inside it, focus goes back to the button that opened it (top bar on a laptop, the floating button on a phone, where it used to drop to the page).
+- **Ask placements share one thread.** The ask state moved into `components/ask/useAsk.ts`; `AskPanel` renders from it with ids from `useId`, so the phone, tablet and laptop placements (two hidden by CSS at any width) show the same thread and a resize loses nothing.
+- **Polish pass** (board, card page, admin and about page at 390 and 1440 px, read as a first-time reader):
+  - Empty states: an empty board says "No cards yet." with a one-line hint and, from 768 px, a "Drop in the first notice" button (on a phone the floating button sits right under the hint); a board with cards and nothing hidden says "No duplicate cards are hidden on this board."; an answer that cites no card offers "Drop in what you know", which opens the drop-in.
+  - Dates show the month as a word in every locale (`formatDateTime`): "3 Nov, 07:29", "11月3日 07:29", "11월 3일 07:29", "07:29 3 thg 11". In en-GB the numeric "03/11" read as March to many readers. The printed notice keeps `formatFullDateTime`, unchanged. Relative times already come from `t()` in all five languages.
+  - Hover and pressed states on laptop for the top bar controls, card list items, the card detail's buttons (read aloud, reactions, share actions, the two disclosures), ask chips, citations, submit and clear, the pending card's buttons and the card page links. A new token `--accent-hover` (#163f2c, white on it 11.8:1) for filled buttons.
+  - Headings: on the card page the reactions, share and trace sections were h3 straight under the h1; `CardReactions`, `CardShare` and `CardTraceView` take `headingLevel` and are h2 there (h3 in the sheet and panel, under the card's h2).
+  - Button labels: "Close card" in the panel, "Drop in the first notice", "Drop in what you know".
+  - Checked without a change: the language switch already lists every language in its own script with a `lang` attribute; the text size toggle enlarges the panel (everything inside is in rem; checked in Japanese at 1440 px, large); no new transition, and the existing smooth scroll already honours reduced motion; the pending stepper shows in the list column while the laptop drawer closes on send.
+  - Spacing and radius: the new layout keeps to 8 px steps (gaps 16 and 24, padding 16 and 24, column bottoms 32 and 96) and the existing radii (cards and inputs 12 px, panels and sheets 16 px, top bar controls 8 px, chips round). The 12 px paddings inside existing cards were left as they are to keep the look.
+- Ten keys inserted at the TOP of the five message files (`layout.*`, `empty.*`).
+
+**Screenshots** (Playwright 1.62 Chromium against the dev server on port 3480; the live board was only read, the drop-ins and questions ran on the throwaway board below; image files deleted afterwards)
+
+| width | layout | what it shows |
+|---|---|---|
+| 390 | one column, as before | top bar on two rows (logo and board name, then share, text size, language); ask panel; Notices; floating "Drop in a notice". A card opens as the bottom sheet with focus on Close; the drop-in panel is the bottom sheet. Empty board: hint under "No cards yet." with the floating button. |
+| 768 | two columns | top bar on one line with the mode badge; list column 322 px scrolling on its own; right column: the selected card ("Selected card", "Close card") above the ask panel; floating drop-in and bottom-sheet panel as on the phone. |
+| 1024 | three columns | "+ Drop in a notice" leads the top bar; list 307 px, centre 373 px, ask 280 px. The close button moved to its own row above the title: beside it, a first version with fixed 340 and 300 px columns left a 288 px centre with the title one word a line. The drawer is 480 px wide from under the top bar to the bottom. |
+| 1440 | three columns | list 432 px, centre 538 px, ask 374 px. Before a card is picked the centre shows "Pick a card" and the keyboard hint; after a question the right column holds the thread and the cited card opens in the centre. |
+
+Other pages: the about page, the card page, the poster, the printed notice and the start page render at 390 and 1440 px without console errors. The poster and notice pages import nothing this branch changed; the about page gets the top bar's hover states only.
+
+Measured on the board at all four widths with a card open (and the drawer open at 1024 and 1440): no visible text under 16 px, no control under 44 by 44 px. New colour pairs: badge text on beige 15.0:1, warn pair as before, muted on white 6.7:1 and on the page 6.4:1, accent on white 7.9:1 and on beige 6.9:1, white on the hover shade 11.8:1.
+
+**Acceptance** (throwaway board `laptop-acceptance`, a copy of the 武蔵小杉 row; dev server on port 3480 against the shared Supabase project; Playwright 1.62 Chromium; the drop-ins went through the samples in the drawer, the same path a user's file or text takes)
+
+| step | what | result |
+|---|---|---|
+| 1 | empty board at 1440 and 390 | list hint with the drop-in button (from 768 px), centre shows "Pick a card"; on the phone the hint sits above the floating button |
+| 2 | paper notice sample (p01) through the top bar drawer | the drawer closes on send, the stepper runs in the list column, Done in 23.9 s, 1 card |
+| 3 | text sample (p08) | Done in 11.8 s, 2 cards |
+| 4 | Tab into the list, arrows, Enter at 1440 | the centre panel shows "Water distribution at Kosugi Elementary School (小杉小学校), short line now", hash `#card-4a20164f...`, the trace shown, focus still on the list item |
+| 5 | "Is a water outage planned?" in the right column | answer in 3.8 s with 1 citation |
+| 6 | the citation chip | opens the cited card in the centre and marks it in the list |
+| 7 | "Is there a summer festival this weekend?" | first run: an answer without citations and no button (`noInfo` is set only for a board without cards); after the change, the "Drop in what you know" button (1.3 s) |
+| 8 | that button, then Escape | the drawer opens with focus inside; Escape closes it; the card stays open; a second Escape closes the card |
+| 9 | refresh | the same card open in the centre panel |
+| 10 | keyboard script at 1440 (also on the pilot board, read only) | 26 of 26: Tab reaches the first card after 6 stops, ArrowDown, ArrowUp, End, Home, Enter, no sheet at this width, hash, `aria-current`, 3 px focus outline, refresh, Escape and hash cleared, drawer at the right edge under the top bar, focus into the drawer, `aria-expanded`, Escape order, focus back on the top bar button, the page itself does not scroll |
+| 11 | phone and tablet script | 20 of 20: at 390 one ask panel, tap opens the bottom sheet with focus on Close, Escape and Close dismiss it, the drop-in is the bottom sheet, Escape closes it, the page scrolls; at 768 the card opens beside the list above the ask panel, Escape closes it |
+| 12 | admin page at 390 and 1440 | renders; notes below |
+| 13 | delete the board | 1 storage object, 2 card_sources, 2 cards, 2 submissions, 1 device removed |
+
+No console errors on any run. Claude calls spent: 2 drop-ins (extract, reconcile, translate) and 3 questions. `pnpm typecheck`, `pnpm lint`, `pnpm build` clean.
+
+**Decisions taken in this session, open for review**
+- `DropIn.tsx` belongs to the other session, so the laptop drives it from outside: BoardView wraps it in `[data-dropin-host]`, the top bar button calls `.click()` on DropIn's own `[data-dropin-button]` (hidden from 1024 px), and `app/globals.css` restyles DropIn's `section[role=dialog]` as the right drawer from 1024 px (`components/board/layout/dropInBridge.ts`). The `day5-broadcast` session was told which two hooks to keep. Props on DropIn would replace this (follow-ups below).
+- The URL hash, not a search param: no server round trip, no new cache key for the offline worker, and the browser scrolls the list to `#card-<id>` on load. A phone refresh now reopens the sheet too.
+- Arrow keys move focus and Enter opens, rather than opening on every arrow press, so a screen reader moving through the list is not interrupted by the centre changing. Every card stays in the Tab order (no roving tabindex), so nothing changes for a keyboard on a phone.
+- The ask panel is rendered in three places with one shared thread instead of one element moved by the grid: a single element placed on the right by CSS would put the focus order out of line with the reading order on one of the layouts.
+- Column widths are `clamp()` in px, not rem: the large text setting enlarges the text without squeezing the centre. The list is 432 px at 1440 and 460 px from 1534 px; at 1024 px it is 307 px so the centre keeps 373 px.
+- An answer that cites no card counts as "nothing found" for the button; `lib/claude/ask.ts` keeps `noInfo` for an empty board only.
+- Demo note: three windows side by side on a 1440 px screen are 480 px each, which is the phone layout. For the laptop view on camera one window needs at least 1024 px (for example one window at 1024 and two at phone width).
+
+**Polish items left for files this session does not own**
+- `components/board/DropIn.tsx`: take `open` and `onOpenChange` (or an imperative handle) and a `placement` ("sheet" or "drawer"), so BoardView stops clicking the hidden button and the drawer styles move out of `globals.css`; move focus into the panel on open (BoardView does it now); the top "Cancel" closes the panel while the text step's "Cancel" goes back to the choices, one label for two actions ("Close" for the first); the "Got it" and "Send" buttons have no hover state (`hover:bg-accent-hover` is available).
+- Pipeline (`lib/claude/**`): `note_for_uploader` comes back in Japanese on an English board ("どのマンションのお知らせか、建物名を教えてください。" after the p01 sample); `facts.conditions` are shown as extracted, so a Japanese reader sees "5 packs per person" under 条件.
+- `app/b/[slug]/admin/AdminView.tsx`: at 1440 px the page is a 672 px column (a laptop layout with the queue beside the public cards would use the space); "Hidden cards (0)" opens to nothing where "Waiting for a check" says "Nothing is waiting."; its buttons have no hover state; the long title "<board>: Board admin" pushes the controls onto a second row at 1440 px.
+- `.claude/skills/acceptance-run/SKILL.md`: the curl line for `/api/process/<id>` still lacks the `{"device_id"}` body (noted by two earlier sessions).
+
+**Needed a human**
+- Review and merge the PR, then a look at the deployed board at 1440 px and on a phone.
+- `docs/PLAN.md` has no line for this work; a line under 2026-11-05 (Thu) could read: "Laptop layout (three columns from 1024 px, two from 768) and polish pass (PR #N)".
+- The ten new strings in Korean and Vietnamese are mine; add them to the native read.
+
+## 2026-11-04 (Wed), loudspeaker broadcasts: heard input and official inbox
+
+Model: `claude-opus-5-5` in Claude Code, implementation role, in its own worktree (`day5-broadcast`), brief from the reviewing session. Pipeline models unchanged (extract, reconcile and translate on `claude-opus-5-5`).
+
+Why: the 防災行政無線 loudspeakers broadcast in Japanese only, and outdoors they are often muffled. Foreign residents and hard of hearing Japanese residents miss them. Kawasaki publishes the text of each broadcast by email (メールニュースかわさき), in the かわさき防災アプリ and on a phone line; there is no feed or API. Two ways in, from both ends: a neighbour who heard the loudspeaker sends what they heard, and the city's own mail arrives through a forwarder and settles it.
+
+**What was done**
+- "I heard the loudspeaker", a fourth choice in the drop-in panel (`components/board/HeardInput.tsx`, wired in `DropIn.tsx`). The browser's speech recognition (`SpeechRecognition` or `webkitSpeechRecognition`, `continuous` and `interimResults` on, ja-JP by default, the five UI languages selectable) writes into an editable box: interim words muted under it, each final piece appended, restarted after a silence while the reader keeps listening. A 44 px start and stop button, a line that recognition can mishear names, numbers and times and that the text can be corrected before sending, a line that the browser's speech service does the transcription, and the same box without the mic button when recognition is missing. Availability is read through `useSyncExternalStore` after hydration, as ReadAloud does. Sending goes down the text path with `heard=1`, stored on the submission (`submissions.heard`, migration 0007).
+- Extract channels (`lib/claude/extract.ts`, prompt rule 14, schema enum): the user turn says when the text was heard from the loudspeaker ("may contain recognition errors") or came through the official inbox. Rule 14: the opening formula (こちらは防災かわさきです) is not a fact, a misheard place resolves to a known place only when exactly one matches, otherwise `place_id` null with the heard spelling kept, nothing a typical broadcast would have said is filled in, a missing person broadcast is `sensitive_personal`. After validation `applyChannel` fixes in code what the model can only guess: a heard transcript is always `secondhand` on platform `loudspeaker`, an inbox mail always `official` on `city_mail`, and no other input can carry either platform.
+- The pipeline moved from the process route into `lib/pipeline.ts` unchanged (same events, same order), so the inbox can run it synchronously. The process route refuses inbox submissions.
+- `POST /api/b/[slug]/inbox` (docs/INBOX.md): JSON `{from, subject, text, received_at?}` with the board's bearer secret. 403 for a bad or missing secret, 413 over 20 KB, 400 for a malformed body, 403 `sender_not_allowed` (logged with the domain only), 429 over 60 accepted mails an hour, 503 over the daily cap. Code strips the signature and footer (`lib/inbox/clean.ts`), stores a text submission with `source_hint = 'official'` and device id `inbox`, runs extract, reconcile and translate, and answers with the card ids. `received_at` within the last 24 hours is extract's reference time.
+- Admin section "Official inbox" (`components/admin/InboxAdmin.tsx`, `POST /api/b/[slug]/admin/inbox`): the address to post to, a secret generated and shown once (sha256 digest stored in `boards.inbox_secret_hash`, replacing takes a second tap), the allowed senders (`boards.inbox_senders`, lower case, at most ten), the last five accepted mails by time only.
+- Merge, `lib/db/cards.ts`: when a stronger source raises a card's label, the card's platform moves with it, and a loudspeaker card takes the stronger source's title, body and place, so a recognition error does not outlive the city's text; translate then writes the other languages again.
+- Source line: `sourceLabel` takes an optional platform. "Heard from the disaster radio" for a secondhand loudspeaker card, "From the city's broadcast mail" for an official inbox card, each with one line of explanation on the card page (`sourceExplanation`); share text, trace lines ("the disaster radio loudspeaker, as a neighbour heard it") and the printable notice use them too. 42 keys appended at the end of the five message files.
+- `pnpm check:inbox` (`scripts/check-inbox.ts`): footer and signature stripping on the city's mail layout, sender parsing and normalization, the secret comparison, the channel rule. 23 of 23.
+- docs/INBOX.md (request format, curl with placeholders, the Cloudflare Email Routing worker outline), docs/PRIVACY.md rows, lib/claude/README.md.
+
+**Acceptance** on the throwaway board `broadcast-acceptance` (dev server on 3470, Playwright 1.62 Chromium at 390 px, deleted afterwards: 1 card, 2 card_sources, 61 submissions of which 59 were seeded rows for the rate limit, 1 device, 0 storage objects; live board untouched):
+
+| step | what | result |
+|---|---|---|
+| 1 | open the panel | fourth choice "📢 I heard the loudspeaker"; headless Chromium has `webkitSpeechRecognition`, so the mic button shows (56 px); the misheard warning shows |
+| 2 | a context without `SpeechRecognition` | typed fallback line, no mic button, same box |
+| 3 | typed transcript こちらは防災かわさきです。小杉小学校で本日15時から給水を行います。容器をお持ちください。 | multipart with `kind=text` and `heard=1`, 201; `create` in 13.7 s to `done` (extract 4.6 s, reconcile 0.1 s with no candidates, translate 6.1 s); one card: water, `kosugi-es`, 15:00, `secondhand`, platform `loudspeaker`; the opening formula made no card |
+| 4 | the card page | "Heard from the disaster radio · 1 source" with the explanation; body ends "Heard from the disaster radio loudspeaker (防災行政無線) and transcribed by speech recognition."; trace "Created from the disaster radio loudspeaker, as a neighbour heard it (heard from others)" |
+| 5 | admin, Official inbox | no secret, generate: 43 character secret shown once; senders saved lower case; after a reload the secret is set and not shown; replacing asks for a second tap |
+| 6 | refusals | wrong secret 403, no secret 403, sender off the list 403 `sender_not_allowed` (log: domain only), 24 KB body 413, not JSON 400 |
+| 7 | the same fact as the city's mail (メールニュースかわさき layout with heading rule and footer) | 201 in 15.6 s, `merge` onto the heard card (reconcile 2.7 s, translate 5.9 s), still 1 card: `official`, platform `city_mail`, 2 sources, not confirmed; title and body now the city's wording ("From the city's broadcast mail (防災行政無線の放送内容)"), six languages present; card page "From the city's broadcast mail · 2 sources"; trace: created by the loudspeaker (heard from others), confirmed by the city's broadcast mail (official) with Claude's reason |
+| 8 | 59 accepted mails seeded in the hour, then one more | 429 `rate_limited`; the admin lists the last five by time |
+
+Playwright: 30 of 32 checks as run. The two misses were the test's: an exact text match on the card page's source label, which shares its line with the source count; the screenshots show both labels as in steps 4 and 7.
+
+**Other measurements**
+- `pnpm eval --no-write` after the prompt and schema change: 100/100 fields, 0 PII leaks, 0 invented facts, risk flags 15/15, six languages 15/15, extract median 8942 ms, translate median 9094 ms.
+- `pnpm typecheck`, `pnpm lint`, `pnpm build` clean; `pnpm guard --all` clean.
+
+**Decisions taken in this session, open for review**
+- Code, not the model, decides source type and platform for the two channels. Anyone can type into the heard box, so its facts are capped at `secondhand`; the inbox passed the secret and the sender list, so its facts are `official` (still unconfirmed). A text pasted the usual way that the model labels `loudspeaker` or `city_mail` becomes `other`.
+- Reconcile chose `merge`, not `update`, for the same fact from the city: same place, same time. The merge path now carries the stronger source's platform and, for a loudspeaker card only, its wording. Other merges keep their wording as before.
+- The admin section is mounted from `app/b/[slug]/admin/page.tsx`, after `AdminView`, so `AdminView.tsx` is unchanged (zero lines instead of the one line the brief allowed).
+- `sourceLabel` gained an optional platform argument. The call sites in `CardItem.tsx`, `CardSheet.tsx`, `HiddenDrawer.tsx` and `AdminView.tsx` belong to the other session and were left as they are, so the board list and the sheet still say "Heard from others" or "Official notice (unconfirmed)" for these cards until each passes `card.facts.platform` as a fourth argument (one token per call). The card page, share text, notice and trace already use it.
+- The printable notice names the card's own platform first (`card.facts.platform`), then the first source's: after an update or a raising merge it is where the current wording comes from.
+- The rate limit counts accepted mails (submissions with `source_hint`), not refused requests. A mail that fails processing is not retried by the board; posting it again makes a new submission.
+- Footer rule: cut at a `-- ` line, at the first 配信停止, 登録解除, 送信専用 or unsubscribe line after the broadcast, or at the last rule line when only links, addresses and the publisher follow it; other rule lines are dropped as decoration. Written against a layout modelled on the city's mail, not a real one: check it against the first real mail.
+- Chrome sends the audio to Google's speech service, Safari to Apple's (or on the device). The panel says so in one line; docs/PRIVACY.md has the rows.
+
+**Files of the other session.** None edited. The `sourceLabel` call sites above are the one place where this feature needs a token in their files. `PendingCard` needs nothing: the heard input goes through the same stages.
+
+**Needed a human**
+- Migration 0007 was applied to the shared project by this session after the human allowed it (the first attempt was blocked by the permission check). The deployed code does not read the new columns, so applying it before the merge is harmless.
+- The Cloudflare wiring (docs/INBOX.md): an Email Routing address, the Email Worker with `postal-mime`, the secret from the board's admin page as a Worker secret, the inbox URL, a verified `COPY_TO` address while the subscription is confirmed.
+- The メールニュースかわさき subscription with 防災行政無線 ticked, sent to that address; then read the real From address off the first mail and enter it in the admin list.
+- A real phone test of the recognition (iPhone Safari, Android Chrome) next to a broadcast or a recording of one; headless Chromium cannot run it.
+- Native read of the Korean and Vietnamese `heard.*`, `inbox.*` and `source.*` strings.
+- `docs/PLAN.md` has no line for this work; the reviewing session decides where to record it.

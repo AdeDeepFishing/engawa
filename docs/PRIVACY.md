@@ -18,6 +18,12 @@ Engawa is built for a moment when people share screenshots of other people's mes
 
 The drop-in panel has an opt-in box, "Add my area (self-reported)", off by default and remembered only in the uploader's own browser. When it is on, the browser asks the phone for its position, matches it against this board's simplified 町丁目 polygons (a few KB bundled with the page, built from e-Stat census boundaries), and shows the resolved area name before anything is sent. The submission then carries that one area code and nothing else about location: no coordinates, no accuracy, no timestamp of the fix, and nothing is logged. A denied, unavailable or unresolved position sends no area at all and the drop-in goes ahead as usual. The server accepts only codes that belong to the board, stores the code on the submission and copies it to the card (and, for a merge, to that source row) as "self-reported area", which readers see as a badge. It is a trust signal the uploader chose to add, never a verification, and it is deleted with the card.
 
+## Loudspeaker broadcasts
+
+"I heard the loudspeaker" in the drop-in panel uses the browser's own speech recognition (the Web Speech API). The sound goes to the speech service the browser uses (in Chrome, Google's; in Safari, Apple's, on the phone or on their servers), never to Engawa. What reaches the board is the text the uploader chose to send, after they could read and correct it, down the same path as pasted text: same consent, same rate limits, same deletion of the raw text after processing. A heard transcript is always labelled secondhand.
+
+The official inbox (docs/INBOX.md) receives the city's broadcast mail through a forwarder the board admin runs. The sender address is compared with the board's list and not stored; a refused mail is logged with the sender's domain only. The mail text is stored like pasted text and cleared when processing ends. The inbox secret is stored only as its sha256 digest.
+
 ## Retention
 
 | Data | Stored? | Deleted when |
@@ -29,6 +35,12 @@ The drop-in panel has an opt-in box, "Add my area (self-reported)", off by defau
 | Original image: chat screenshot | Temporarily | Right after processing, at most 24 hours if processing fails |
 | Masked screenshot (only if the masking feature ships) | Only if it passed the second check | With the card |
 | Pasted raw text | Cleared after processing | Immediately; only the stripped text remains |
+| Heard input audio | Never sent to Engawa; the browser's speech service turns it into text | n/a |
+| Heard input transcript | Like pasted text, with a flag that it was heard | Immediately after processing; only the stripped text remains |
+| Official inbox mail: sender address | Checked against the board's list, not stored; refusals logged with the domain only | n/a |
+| Official inbox mail: subject and text | Like pasted text, after code removed the signature and footer | Immediately after processing; only the stripped text remains |
+| Inbox secret | Only its sha256 digest, on the board row; the secret is shown to the admin once | When the admin replaces it |
+| Allowed sender addresses of the inbox | On the board row (the city's sending addresses) | When the admin edits the list |
 | Cards | Yes | `valid_until` + 30 days |
 | Questions | No | n/a |
 | Device identifier | Yes | 90 days after last activity |

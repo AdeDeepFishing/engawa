@@ -23,7 +23,19 @@ const noShareOnServer = () => false;
  * the printable six-language notice in a new tab. Used in the card sheet
  * and on the card page. Everything happens in the browser.
  */
-export function CardShare({ card, board, now }: { card: Card; board: Board; now: Date }) {
+export function CardShare({
+  card,
+  board,
+  now,
+  headingLevel = 3,
+}: {
+  card: Card;
+  board: Board;
+  now: Date;
+  /** 3 inside the sheet and the panel; 2 on the card page, under its h1. */
+  headingLevel?: 2 | 3;
+}) {
+  const Heading = headingLevel === 2 ? "h2" : "h3";
   const { lang, t } = useLang();
   const [copy, setCopy] = useState<CopyState>("idle");
   const [url, setUrl] = useState<string | null>(null);
@@ -53,7 +65,7 @@ export function CardShare({ card, board, now }: { card: Card; board: Board; now:
   }
 
   const action =
-    "flex min-h-12 w-full items-center gap-3 rounded-xl border border-line bg-surface px-4 text-left text-base font-semibold hover:border-accent";
+    "flex min-h-12 w-full items-center gap-3 rounded-xl border border-line bg-surface px-4 text-left text-base font-semibold hover:border-accent active:bg-held-bg";
   const status =
     copy === "link"
       ? t("share.copied")
@@ -65,9 +77,9 @@ export function CardShare({ card, board, now }: { card: Card; board: Board; now:
 
   return (
     <section className="mt-5 rounded-xl border border-line p-3" aria-labelledby={`share-title-${card.id}`} data-card-share>
-      <h3 id={`share-title-${card.id}`} className="font-semibold">
+      <Heading id={`share-title-${card.id}`} className="font-semibold">
         {t("share.card_title")}
-      </h3>
+      </Heading>
       <div className="mt-2 flex flex-col gap-2">
         {canShare ? (
           <button type="button" className={action} onClick={() => void onNativeShare()} data-share-native>

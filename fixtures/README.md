@@ -121,3 +121,5 @@ Boxes are in pixels of the input image, measured with `getClientRects` at render
 - The 「訓練用・想定シナリオ」 stamp is part of every paper notice. If the extractor treats a stamped notice as a drill (`daily_notice`) or mentions the stamp in card text, that is a real finding: fix it in the prompt, not by removing the stamp.
 - `p09` answers "can I bring my cat to the shelter". Keep it off the board before demo step 5, which expects "no information yet".
 - `p10` and the water card share a place but not a category. They must stay separate cards.
+
+- `h01-loudspeaker-garbled-ja.txt`: a fragmentary speech-recognition transcript of a 防災行政無線 broadcast (written 2026-11-04 during the event): a place heard as なかはら…がっこう that matches two known schools, a garbled hour, a repeat. Scored with `channel: loudspeaker`; the expected file says place and time stay null.
