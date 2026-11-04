@@ -9,7 +9,7 @@ import { TextSizeToggle } from "@/components/TextSizeToggle";
 
 /**
  * `wide` lets the bar span the board's workspace from 768 px up and keeps it
- * on one line from 1024 px; `home` matches the home page's 1024 px column;
+ * on one line from 1024 px; `home` matches the home page's 1152 px column;
  * every other page keeps the phone column.
  * `badge` follows the title (the board's mode); `primary` leads the controls
  * (the laptop drop-in button).
@@ -34,7 +34,7 @@ export function TopBar({
     <header className="sticky top-0 z-10 border-b border-line bg-accent-soft">
       <div
         className={`relative mx-auto flex w-full max-w-2xl flex-wrap items-center gap-x-3 gap-y-2 px-4 py-2 ${
-          wide ? "md:max-w-[1600px] lg:flex-nowrap xl:px-6" : home ? "md:max-w-5xl md:px-6" : ""
+          wide ? "md:max-w-[1600px] lg:flex-nowrap xl:px-6" : home ? "md:max-w-6xl md:px-6" : ""
         }`}
       >
         <Link href="/" className="tap flex shrink-0 items-center font-bold hover:text-accent" aria-label={t("app.name")}>
