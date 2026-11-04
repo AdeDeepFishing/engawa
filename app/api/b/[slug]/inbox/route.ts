@@ -30,7 +30,7 @@ const MAX_CLOCK_SKEW_MS = 5 * 60_000;
  * with the text marked as official mail, and answers with the card ids.
  *
  * Checks, in this order, each answered with a stable code:
- *   403 forbidden          no inbox secret on the board, or a wrong one
+ *   403 forbidden          no such board, no inbox secret on the board, or a wrong one
  *   413 too_large          body over 20 KB (header or actual size)
  *   400 bad_request        not JSON, or from, subject or text missing
  *   403 sender_not_allowed from is not on the board's list (logged with the domain only)
@@ -47,11 +47,10 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
   if (!hasDb()) return Response.json({ error: "no_database" }, { status: 503 });
   const { slug } = await params;
   const board = await getBoardBySlug(slug);
-  if (!board) return Response.json({ error: "board_not_found" }, { status: 404 });
-
-  const config = await getInboxConfig(board.id);
+  // An unknown board answers exactly like a wrong secret, so the route does not tell which boards exist.
+  const config = board ? await getInboxConfig(board.id) : null;
   const bearer = /^Bearer\s+(\S+)\s*$/i.exec(req.headers.get("authorization") ?? "")?.[1];
-  if (!config || !inboxSecretMatches(bearer, config.secretHash)) {
+  if (!board || !config || !inboxSecretMatches(bearer, config.secretHash)) {
     return Response.json({ error: "forbidden" }, { status: 403 });
   }
 

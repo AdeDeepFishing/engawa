@@ -816,3 +816,130 @@ Playwright 10 of 10 after one fix to the test (the QR check first read the page 
 - Nothing during the session. Native read of the Korean and Vietnamese `maps.*`, `view.*` and `places.*` strings. `docs/PLAN.md` lines N17 and N10 are for the reviewing session to tick.
 
 **Review fixes for PR #23 (Fable, reviewing session):** the maps query leaves an address alone when it already names a city, ward or prefecture (no doubled 川崎市); a place text that only makes sense from where the writer stood (当マンション, この建物, 本施設) gets no maps link; a Places group is ordered by its newest card still in force, so an expired notice cannot lift a stale shelter to the top; Vietnamese view label is "Chế độ xem". The read-only review found no privacy or correctness blockers; left as follow-ups: mirroring the view preference in a cookie to avoid the post-hydration flash, and running the proxy on every page request instead of only when `?lang=` is present.
+
+## 2026-11-04 (Wed), home page, brand mark and icons, listed boards, inbox and reaction fixes
+
+**Model:** `claude-opus-5-5` in Claude Code, implementation role, in its own worktree (branch `day5-home`) beside the `day5-places` session, whose files (`components/board/**`, `lib/cards/**`) were left alone. Brief from the reviewing session (N19 home page, N20 logo and icons, four small fixes). No pipeline or prompt change.
+
+**N20 brand mark.** Sketched as inline SVG on a 32 unit grid in a scratch page (outside the repository) and judged at 16, 20, 32 and 64 px, in a mock browser tab, in green on the paper background and in the paper colour on a dark one, and on the accent tile. The criteria from the brief: readable at 16 px, one colour on light and on dark, no text inside the mark, no generic AI gradient blob, at home on the warm paper (`--background` #fbfaf7) with the accent (`--accent` #1f5c3f).
+
+A first round was thrown away before the three finalists: a side section of the veranda (eave, post, floor, stepping stone) read as the letter F or E at 16 px, a roof over a rounded card read as the archive box icon of mail apps, and a roof over a stepping stone read as the kanji 亠.
+
+| sketch | idea | path (viewBox 0 0 32 32, even-odd) | verdict |
+|---|---|---|---|
+| eave and plank | the veranda as a bench under a roof, seen from the garden | `M8 4h16l6 6H2z M4 19h24v4H4z M6 23h3v5H6z M23 23h3v5h-3z` | rejected: at 16 px a table under a roof, and close enough to a torii, the map symbol for a shrine, to send a reader the wrong way |
+| two under the eave | two neighbours sitting on the plank under the roof | `M8 3h16l6 6H2z M2 21h28v4H2z M8 15.5a3.5 3.5 0 0 1 7 0V21H8z M17 15.5a3.5 3.5 0 0 1 7 0V21h-7z` | rejected: the figures merge into two columns at 16 px and the whole reads as a bank or temple front |
+| **roofed speech bubble** (chosen) | the eave of the veranda over a speech bubble that holds two lines of a notice: where neighbours talk, and the notice they talk about | `M8 2h16l6 6H2z M7 10h18a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H14l-6 6v-6H7a3 3 0 0 1-3-3v-8a3 3 0 0 1 3-3z M8 14v2h16v-2z M8 18v2h10v-2z` | chosen: the only silhouette that stays distinct at 16 px (a wide eave over a rounded block with a tail), reads as neither a letter nor a stock icon, and says both halves of the product |
+
+Every edge of the chosen mark sits on an even unit, so at 16 px it lands on whole pixels; the eave overhangs the bubble by one pixel on each side, like a real eave; the two lines are holes, so the mark stays one colour. It lives once in `components/brand/Mark.tsx` (path, colours, a `Mark` component in the current text colour, a data URL for `next/og`).
+
+**Done**
+- Brand files: `app/icon.svg` (the mark alone, green, the paper colour under `prefers-color-scheme: dark`), `app/icon.tsx` (32 px PNG, the mark on a rounded accent tile), `app/apple-icon.tsx` (180 px, square, iOS rounds it), `app/icons/[size]/route.tsx` (one handler, 192 and 512 built at build time with `generateStaticParams`, anything else 404), `app/manifest.ts` (`name` Engawa, `short_name` 縁側 Engawa, standalone, start_url `/`, theme the accent, background the paper, 192 and 512 any plus 512 maskable: the mark sits inside the maskable circle), all PNGs from one `iconResponse` in `components/brand/icon-image.tsx`. `app/favicon.ico` from the create-next-app scaffold replaced by an ICO that wraps the 32 px PNG, so a client that asks for `/favicon.ico` gets the mark too. The five template files in `public/` deleted (nothing referenced them).
+- `app/layout.tsx`: `generateMetadata` with `metadataBase` from `appBase()` (the root preview image gets an absolute URL on every host), `icons` listed explicitly (SVG first, then the PNG, then the apple icon), `appleWebApp` (title 縁側 Engawa, capable), `viewport.themeColor` the accent, and the one-line description.
+- Top bar: the mark (1.25rem, the size of the 縁 glyph it replaces, in the accent) before the wordmark; the link and its 44 px target unchanged. A `home` width so the bar lines up with the home page's 1024 px column; the other pages keep theirs.
+- Link previews: `app/opengraph-image.tsx` (mark, 縁側 Engawa, the description in Japanese and English, the six language chips); the board's preview keeps its layout with the mark in place of the 縁 glyph on its tile.
+- N19 home page (`app/page.tsx`, `components/home/HomeView.tsx`, `components/home/BoardSummary.tsx`): the mark, 縁側 Engawa, one sentence on what it is, one line for whom; the boards as cards with the name in the reader's language and the Japanese name, the card count, the newest card's age (`timeAgo`, the board's own helper, with the server's `now` so both renders agree), the area folded from 町丁目 to towns (小杉町、小杉陣屋町、小杉御殿町 and 12 more), the six languages each in its own script, and one "Open the board" link; three steps in the board's own words (drop in; organized and checked, with the stage words "checks it against other cards" and "translates"; read and ask); a line on trying a sample whose button and heading names are the drop-in panel's own strings (`dropin.button`, `sample.heading`) passed in, so they never drift; a footer with About Engawa, Privacy and retention (`/about#about-data`), Built with Claude Code, and the existing "An entry for Built with Claude: Japan 2026". Client component like the about page, so the language switch applies at once. Japanese inside other languages carries `lang="ja"`. Title 縁側 Engawa with the description and Open Graph tags in the reader's language.
+- `listBoardsWithStats` in `lib/db/boards.ts`: one round trip for every board, the count and the newest public card as two filtered embeds of `cards` (an aggregate and a one-row ordered embed). Only `listed` boards; when the column is unknown (Postgres 42703 naming `listed`) the same query runs without the filter and a warning is logged, so the page never breaks before 0008.
+- Migration `0008_boards_listed.sql`: `boards.listed boolean not null default true`. `scripts/throwaway-board.ts` creates with `listed = false`, and when the column is missing creates the board anyway and prints that it is listed until 0008 is applied. Boards stay reachable by URL either way: only the index reads the column.
+- `POST /api/b/[slug]/inbox`: an unknown slug answers 403 `forbidden`, the same body as a wrong or missing secret, so the route no longer tells which boards exist.
+- `InboxAdmin.tsx`: more than ten distinct addresses show "At most 10 addresses can be saved. You entered 11: remove 1 and save again." (an alert, five languages) and nothing is sent. Before, the eleventh address came back from the server as "These are not email addresses: ...", which was wrong, and more than fifty lines as the generic error.
+- `POST|DELETE /api/cards/[id]/react`: 60 taps per client address per hour on top of the per-device limits, checked before any database read, answered 429 `{"error":"rate_limited","scope":"ip","limit_per_hour":60}` with Retry-After 3600; the device limit now says `scope: "device"`. The card's existing 429 message covers both.
+- 22 keys appended at the end of the five message files (`home.*`, `inbox.senders_too_many`).
+
+**Acceptance** (dev server on port 3497 against the shared Supabase project; built-in browser for the home page, headless Chrome over the DevTools protocol for the manifest, the tab icon and the admin page; throwaway board `home-acceptance`, deleted afterwards; the live board was only read)
+
+| check | result |
+|---|---|
+| home page, 390 px, en, ja, vi | one column: mark, 縁側 Engawa, sentence, for whom; Musashi-Kosugi 武蔵小杉 card with "4 cards on the board", "Newest card: 2 d ago" (the pilot board's real numbers), area, six language tags, Open the board; steps; sample line; footer. No text under 16 px, no control under 44 by 44 px, no sideways scroll, in all three |
+| home page, 1280 px, en, ja, vi | intro left and boards right in a 1024 px column, the top bar aligned with it (both start at 128 px), steps in three columns; same measurements, all clean |
+| language switch on the page | ko chosen in the top bar: headings, count (카드 4개), newest (최신 카드: 2일 전), area (외 12곳) and the sample line change without a reload |
+| favicon | Chrome's tab icon is `/icon.svg` on `/` and on `/b/musashikosugi` |
+| manifest | Chrome `Page.getAppManifest`: no errors; `Page.getInstallabilityErrors`: none |
+| icons | `/icons/192` 192x192, `/icons/512` 512x512, `/apple-icon` 180x180, `/icon` 32x32 PNG; `/icon.svg` SVG; `/favicon.ico` 32x32; `/icons/64` 404 |
+| preview images | `/opengraph-image` and `/b/musashikosugi/opengraph-image` render (1200x630 PNG), the board's with the mark on its tile |
+| throwaway board, 0008 not applied | migration 0008 is not applied to the shared database (the human's step), so the fallback was proven: the script created the board and printed that it is listed until 0008; the home page logged the missing column and listed both boards; `/b/home-acceptance` answered 200. The unlisted path waits for 0008 (see below) |
+| inbox, unknown slug | `{"error":"forbidden"}` 403, the same as a wrong secret on an existing board and as no secret |
+| eleven senders | en: "At most 10 addresses can be saved. You entered 11: remove 1 and save again." as an alert, nothing saved; ja: 「保存できるアドレスは10件までです。11件入力されています。1件消してから、もう一度保存してください。」; ten addresses save and are there after a reload |
+| reactions | one text drop-in (fixture t02: create in 21 s, extract 10.1 s, reconcile 0.3 s, translate 8.4 s) for a public card; 61 taps from one address with 61 fresh device ids: 60 answered 200, the 61st 429 with scope ip and Retry-After 3600; a tap from another address still 200 |
+| cleanup | `board:throwaway delete`: 1 card, 1 card_sources, 1 submission, 1 device, 0 storage objects; the 61 reactions went with the card (0 left); only `musashikosugi` remains |
+
+Claude calls spent: one drop-in (extract, reconcile, translate). `pnpm typecheck`, `pnpm lint` (one existing warning in `BoardView.tsx`, not this branch), `pnpm guard --all` and `pnpm build` clean.
+
+Seen during the run: the `day5-places` session's throwaway board `places-acceptance` appeared on this branch's home page while it existed (the fallback listing every board), which is the leak 0008 closes; that session deleted it itself. In the built-in browser pane the offline worker's registration fails with "An unknown error occurred when fetching the script" on every page, `/about` included, so it is not from this branch; headless Chrome was used for the checks that need a clean browser.
+
+**Decisions taken in this session, open for review**
+- Icons are listed in `metadata.icons` because Next drops the file-based icon tags as soon as the layout sets `icons` (`resolve-metadata.js`): the explicit list keeps the order (SVG, PNG, apple). The files still serve the routes.
+- `short_name` is 縁側 Engawa, as the brief and `appleWebApp.title` have it; `name` is Engawa. Theme colour is the accent, in the manifest and in `viewport`, so a standalone window and Android's address bar are green.
+- The per-address reaction limit is a sliding window in memory on each server instance, the pattern of the ask limit and of the existing per-device tap limit. There is no table that counts by address, and adding one would store a new kind of identifier about readers (even hashed), against the privacy rules; the durable limit stays the per-device row count. The window holds an address only while it has taps in the last hour and never logs it. On Vercel `x-forwarded-for` is set by the platform, so a client cannot choose its own key.
+- The privacy link goes to the about page's data section (`/about#about-data`): there is no `/privacy` route, and `docs/PRIVACY.md` lives in the repository, which is private until submission. Built with Claude Code links to claude.com/claude-code.
+- The sample line invites a reader to try a sample on the board, as N1 intended for judges on the deployed URL; on the live board that adds a fictional card each time.
+- `index.pick` is no longer read (the heading reuses `index.title`); the key stays so the message files are not edited in the middle.
+
+**Files of the other session.** None edited.
+
+**Needed a human**
+- Apply migration 0008 (`pnpm db:migrate` from the main checkout) before the merge. Additive and harmless to the deployed code. Afterwards `pnpm board:throwaway create <slug>` prints `unlisted` and the home page leaves that board out, which is the half of the acceptance this session could not run.
+- Review and merge the PR. `docs/PLAN.md` has no line for N19 and N20; the reviewing session decides where to record them.
+- Native read of the Korean and Vietnamese `home.*` and `inbox.senders_too_many` strings.
+- A look at the home page and the home screen icon on a real phone after the deploy.
+
+### 2026-11-04 evening, home page map of Japan and the language switch (same session, same PR)
+
+Two additions the user asked for through the reviewing session after the PR was opened.
+
+**Map of Japan.** The home page's main visual is now all 47 prefectures as inline SVG paths (`components/home/JapanMap.tsx`), land in a quiet neutral (`--map-land` #e2ded5, borders in the page colour), the prefectures with a listed board in the accent with the board count on a badge. On a phone the map sits between the intro and the board list at full width; from 1024 px it sits beside the intro (416 by 468 px at 1280) and the board cards follow below in two columns. No external fetch, no tiles.
+- Source and licence: the brief suggested geolonia's japanese-prefectures or `@svg-maps/japan` as MIT. Neither is: geolonia's README says GFDL (the map is derived from the Wikipedia map of Japan), and `@svg-maps/japan` is CC BY 4.0 from 1.0.1 on (Victor Cazanave, itself based on the MapSVG map of Japan, also CC BY 4.0). CC BY 4.0 only asks for attribution with a link to the licence and a note of changes, so `@svg-maps/japan` 2.0.0 was used: the credit and the licence link are under the map in five languages, and the generated file says the same.
+- `scripts/japan-map.ts` reads the package as data (never imported or run) and writes `components/home/japan-map-paths.ts`: outlines simplified (Ramer-Douglas-Peucker at 0.45 units), islands under 2 square units dropped, coordinates rounded to one decimal, a label point inside each prefecture's largest island. Okinawa is moved into a framed inset in the empty sea at the top left and enlarged 1.5 times, as Japanese maps usually do; the script refuses to write when any other land crosses the inset frame (1.6 times reached Hokkaido). The view box is cropped to the land (347 by 390 instead of 438 by 516), so the map is a quarter larger at the same width. 64 KB of source paths became 21 KB.
+- `components/home/prefectures.ts`: the 47 prefectures with their JIS code and names in the five languages, kept out of the message files as reference data.
+- Which prefecture a board is in: the first two digits of its 町丁目 codes, taken through `boardAreas` (`lib/geo`) on the server. The live pilot row still has `code: null` on every area (the seed with codes was never re-run on it), and `boardAreas` fills the codes from the bundled e-Stat polygons by name, so the board lands on 神奈川県. A board without codes stays in the list and off the map.
+- Interaction: a prefecture with a board is a `role="button"` group with `aria-label` "神奈川県: 掲示板 1 件" (in the reader's language), Tab stop, Enter and Space, pointer. It moves focus to the first board card of that prefecture and scrolls it into view (smooth unless reduced motion; focus first, because a `focus()` after a smooth `scrollIntoView` cancels the scroll in Chrome); the card shows a 3 px accent outline. Prefectures without a board are plain paths with their name in a `<title>`. The badge digits are 16.5 px and the invisible hit circle 45 px across at a 390 px phone, larger on wider maps; keyboard focus draws a round accent ring around the badge (the site-wide square outline is turned off for the map button only, in `globals.css`). Nothing depends on hover. Badges that would overlap (Tokyo next to Kanagawa, once N18 lands) are moved apart to the east.
+
+**Language switch** (`components/LanguageSwitch.tsx`): `appearance-none`, a 16 px chevron 12 px from the right edge, 40 px right padding so the text never runs under it, same 44 px height and focus ring.
+
+**Checks**
+
+| check | result |
+|---|---|
+| map at 390 px, en, ja, vi | between intro and boards; 47 outlines, one button (神奈川県 / Kanagawa: 1 board / Kanagawa: 1 bảng tin), 46 inert outlines with titles; no text under 16 px, no target under 44 px (the map button measured by its hit circle, 45 by 45), no sideways scroll |
+| map at 1280 px, en, ja | beside the intro (intro at x 152, map at x 712); same measurements |
+| tap on the badge | focus on the Musashi-Kosugi card, scrolled to 96 px from the top (under the top bar), 3 px outline |
+| keyboard | Tab reaches the map button after the three top bar controls; round focus ring, no square outline; Enter and Space both move focus to the card |
+| language switch, Chrome at 390 px | select 128 by 44, chevron 16 px wide and 12 px from the right edge |
+| language switch and map, Safari | macOS Safari 18.6 (WebKit), the page framed at 390 px (media queries follow the frame): the chevron sits inside the select near the edge, the same height as the text size button, text clear of it; the map, the inset and the board card render as in Chrome. Real iPhone Safari not checked (no simulator on this Mac) |
+
+`pnpm typecheck`, `pnpm lint` (the same existing warning in `BoardView.tsx`), `pnpm guard --all`, `pnpm build` clean. No Claude calls. Seven more keys appended at the end of the five message files (`home.map_*`).
+
+Seen while building: the dev server's file watcher missed one edit to `app/globals.css` (written by a script) and kept serving the old CSS until it was restarted; `touch` did not help.
+
+**Needed a human**
+- The licence differs from the brief (CC BY 4.0, not MIT); the credit under the map is how it is met. If a credit on the home page is not wanted, the alternative is drawing our own outlines.
+- Native read of the Korean and Vietnamese prefecture names and `home.map_*` strings.
+- A look on a real iPhone: the select's chevron and the map's tap target.
+
+### 2026-11-04 night, the accent turns from green to deep rose (same session, same PR)
+
+The user chose a deep rose over the green before the mark is final. The accent is a token, so one change in `app/globals.css` reaches every button, link, ring and badge; the brand files that carry a hex value (`components/brand/Mark.tsx` `BRAND.accent`, `app/icon.svg`, the board preview image, which now reads `BRAND.accent`) changed with it, and `app/favicon.ico` was rebuilt from the new 32 px PNG. The icons, the manifest theme colour, `viewport.themeColor` and the root preview image follow `BRAND`.
+
+| token | value | pair | contrast |
+|---|---|---|---|
+| `--accent` | #ad235d | white text on it | 6.61:1 |
+| | | it on the page (#fbfaf7), as 16 px text and as a focus ring | 6.34:1 |
+| | | it on white (#ffffff) | 6.61:1 |
+| | | it on `--accent-soft` | 5.67:1 |
+| | | it on the held grey (#f3efe6) | 5.76:1 |
+| | | it on the map's land (#e2ded5) | 4.93:1 |
+| `--accent-hover` | #861846 | white text on it | 9.41:1 |
+| `--accent-soft` | #fbe9f0 | ink (#1b1b1b) on it | 14.78:1 |
+| | | muted (#5c5c5c) on it | 5.74:1 |
+| | | control borders (#87837a) on it | 3.24:1 |
+| | | warn ink (#5a3d00) on it | 8.57:1 |
+
+Candidates across the requested range, white on them and them on the page: #b42a63 6.08 and 5.83, #b02660 6.38 and 6.11, #ad235d 6.61 and 6.34, #a8205a 6.96 and 6.66. #ad235d keeps the rose hue clearly pink rather than wine and clears every pair with room, including accent text on the soft tint.
+
+Where the soft tint went: the top bar band on every page (it was white at 95 %, there was no mint band in the code), and the pressed reaction chips ("Still true", "No longer true"), which were a full accent fill and are now the tint with an accent border and accent text. The text size toggle, which lives inside the band, shows its pressed state as an accent border and accent text on white, because the tint on the tint band disappeared. The active List / Places toggle is in PR #23 (`day5-places`), not on this branch; there it is `bg-accent text-accent-ink` and after this merge it would be a full rose fill. For the soft look it needs one class change at the merge: `pressed ? "bg-accent-soft text-accent border-accent"`.
+
+Unchanged on purpose: the paper background, the amber `--warn-*` (disaster mode badge, may be outdated, warnings), the held grey, and the pink masking boxes in chat screenshots (`lib/image/mask.ts`). There is no red in the interface today (danger cards carry the ⚠️ icon and disaster mode is amber), so there was nothing to move to the orange-red the brief named; a future danger colour should be about #c2410c (4.96:1 on the page, white on it 5.18:1), well apart from the rose.
+
+**Looked at, 390 px:** home (band, mark, map badge), board (band, share and text size on it, ask chips, the disabled Ask button which is dimmed as before, "Confirmed official" in rose, the floating drop-in button), the card sheet (sources, reactions with the pressed tint applied in the page only, nothing written, share, trace), the about page and the admin page (pilot board, opened read only in headless Chrome through the entry link, no click). A sweep of every visible text node against its background found nothing under 4.5:1 and nothing under 16 px on the about and admin pages; the home measurements above still hold. The rebuilt icons, the favicon and both preview images were checked as images.
+
+Seen during the run: the dev server again missed an edit and served the old class for the text size toggle until a restart, which showed as a hydration warning; after the restart the server HTML and the client script carry the same class. A board `mode-acceptance` from another session existed on the shared database at the time and showed on the home page through the 0008 fallback; it is not this session's and was left alone.
