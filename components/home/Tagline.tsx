@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CARD_LANGS, t as translate, type CardLang } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n/LangProvider";
 
@@ -19,7 +19,10 @@ function taglineIn(l: CardLang): string {
  * stays (nothing on the page loops). All six sit in one grid cell, so the
  * line is as tall as the tallest and the layout never moves; each carries
  * its own lang. Screen readers get the reader's language only. Under
- * reduced motion it does not cycle.
+ * reduced motion it does not cycle. The pass pauses while the pointer
+ * rests on the line, and it stops for good, back on the reader's language,
+ * as soon as the reader does anything (a tap, a scroll, a key): WCAG 2.2.2
+ * asks for a way to pause or stop content that updates by itself.
  */
 export function Tagline({ className = "" }: { className?: string }) {
   const { lang } = useLang();
@@ -27,21 +30,40 @@ export function Tagline({ className = "" }: { className?: string }) {
   const [step, setStep] = useState<{ from: CardLang; at: CardLang } | null>(null);
   const shown = step && step.from === lang ? step.at : lang;
 
+  const paused = useRef(false);
+
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const start = CARD_LANGS.indexOf(lang);
     const order = CARD_LANGS.map((_, i) => CARD_LANGS[(start + i + 1) % CARD_LANGS.length]);
     let i = 0;
     const timer = window.setInterval(() => {
+      if (paused.current) return;
       setStep({ from: lang, at: order[i] });
       i += 1;
       if (i === order.length) window.clearInterval(timer);
     }, STEP_MS);
-    return () => window.clearInterval(timer);
+    // The reader has started reading or moving: stop the pass where the line is useful, in their language.
+    const stop = () => {
+      window.clearInterval(timer);
+      setStep(null);
+      remove();
+    };
+    const events = ["pointerdown", "keydown", "wheel", "touchmove", "scroll"] as const;
+    const remove = () => events.forEach((e) => window.removeEventListener(e, stop));
+    events.forEach((e) => window.addEventListener(e, stop, { passive: true }));
+    return () => {
+      window.clearInterval(timer);
+      remove();
+    };
   }, [lang]);
 
   return (
-    <p className={`grid ${className}`}>
+    <p
+      className={`grid ${className}`}
+      onPointerEnter={() => (paused.current = true)}
+      onPointerLeave={() => (paused.current = false)}
+    >
       {CARD_LANGS.map((l) => (
         <span
           key={l}

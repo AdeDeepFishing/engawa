@@ -194,7 +194,9 @@ export function HomeView({ boards, now }: { boards: HomeBoard[]; now: string }) 
               </FooterLink>
             </li>
             <li>
-              <FooterLink href="https://claude.com/claude-code">{t("home.built_with")}</FooterLink>
+              <FooterLink href="https://claude.com/claude-code" external="source">
+                {t("home.built_with")}
+              </FooterLink>
             </li>
             <li>
               <FooterLink href="/about">{t("home.footer_about")}</FooterLink>

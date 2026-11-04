@@ -21,6 +21,10 @@
   --warn-bg: #fff4d6;
   --warn-ink: #5a3d00;
   --held-bg: #f3efe6;
+  /* Card shadows from the ink colour, so a palette change moves them too. */
+  --shadow-rest: 0 1px 2px color-mix(in srgb, var(--foreground) 4%, transparent);
+  --shadow-lift: 0 8px 24px color-mix(in srgb, var(--foreground) 8%, transparent);
+  --shadow-press: 0 1px 2px color-mix(in srgb, var(--foreground) 6%, transparent);
   /* Home page map: land a step darker than the paper, warm like it; the
      prefectures with a board in a rose tint, a step deeper on hover and focus. */
   --map-land: #ebe7de;

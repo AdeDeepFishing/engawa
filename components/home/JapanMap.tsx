@@ -17,7 +17,7 @@ const HALO_R = BADGE_R + 8;
 const HIT_R = 24;
 /** Distance between two badge centres, so neither halo covers the other. */
 const BADGE_GAP = HALO_R * 2 + 2;
-const INSET_NAME_FONT = 15.5;
+const INSET_NAME_FONT = 16.5;
 
 const [VB_X, VB_Y, VB_W, VB_H] = JAPAN_VIEWBOX.split(" ").map(Number);
 const OKINAWA = PREFECTURES.find((p) => p.id === "okinawa");

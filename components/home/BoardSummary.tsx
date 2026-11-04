@@ -56,7 +56,7 @@ export function BoardSummary({ board, now }: { board: HomeBoard; now: string }) 
       id={boardAnchor(board.slug)}
       tabIndex={-1}
       aria-labelledby={nameId}
-      className="relative scroll-mt-24 rounded-2xl border border-line bg-surface p-6 shadow-[0_1px_2px_rgb(27_27_27/0.04)] transition-[translate,box-shadow] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgb(27_27_27/0.08)] focus:outline-[3px] focus:outline-offset-2 focus:outline-accent focus:outline-solid active:translate-y-0 active:shadow-[0_1px_2px_rgb(27_27_27/0.06)]"
+      className="relative scroll-mt-24 rounded-2xl border border-line bg-surface p-6 shadow-[var(--shadow-rest)] transition-[translate,box-shadow] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-[var(--shadow-lift)] focus:outline-[3px] focus:outline-offset-2 focus:outline-accent focus:outline-solid active:translate-y-0 active:shadow-[var(--shadow-press)]"
       data-home-board={board.slug}
     >
       <h3 id={nameId} className="text-2xl font-bold">
