@@ -80,7 +80,7 @@ export function ShareButton({ boardSlug, boardName }: { boardSlug: string; board
         onClick={toggle}
         aria-expanded={open}
         aria-controls="share-panel"
-        className="flex items-center gap-1 rounded-lg border border-line bg-surface px-3 font-semibold"
+        className="flex items-center gap-1 rounded-lg border border-line bg-surface px-3 font-semibold hover:border-accent active:bg-held-bg"
       >
         <span aria-hidden="true">↗</span>
         {t("share.button")}

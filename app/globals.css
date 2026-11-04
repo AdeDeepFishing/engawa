@@ -9,6 +9,8 @@
   /* Borders of controls: at least 3:1 on white, on the page and on the beige (WCAG 1.4.11). */
   --line-strong: #87837a;
   --accent: #1f5c3f;
+  /* Hover and pressed shade of the accent fill: white on it is 10.6:1. */
+  --accent-hover: #163f2c;
   --accent-ink: #ffffff;
   --warn-bg: #fff4d6;
   --warn-ink: #5a3d00;
@@ -23,6 +25,7 @@
   --color-line: var(--line);
   --color-line-strong: var(--line-strong);
   --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
   --color-accent-ink: var(--accent-ink);
   --color-warn-bg: var(--warn-bg);
   --color-warn-ink: var(--warn-ink);
@@ -70,6 +73,29 @@ summary {
 :focus-visible {
   outline: 3px solid var(--accent);
   outline-offset: 2px;
+}
+
+/* Laptop workspace (1024 px and wider). DropIn belongs to another module and
+   is driven from BoardView through two hooks it keeps stable: the floating
+   button carries data-dropin-button, and the panel is a role=dialog section.
+   Here the floating button gives way to the top bar button, and the panel
+   becomes a drawer on the right, under the top bar, over the ask column.
+   Unlayered, so it wins over the panel's own utility classes. */
+@media (min-width: 1024px) {
+  [data-dropin-host] > div:has(> [data-dropin-button]) {
+    display: none;
+  }
+  [data-dropin-host] > section[role="dialog"] {
+    top: var(--board-top, 0px);
+    left: auto;
+    right: 0;
+    bottom: 0;
+    width: min(30rem, 100vw);
+    max-height: none;
+    border-radius: 0;
+    border-top-width: 0;
+    border-left: 1px solid var(--line-strong);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
