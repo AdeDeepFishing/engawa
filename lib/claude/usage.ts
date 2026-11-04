@@ -40,15 +40,36 @@ export async function recordUsage(inputTokens: number, outputTokens: number): Pr
   if (error) console.error("bump_usage failed", error.message);
 }
 
+/** Token counts of one response. */
+export interface TokenCounts {
+  inputTokens: number;
+  outputTokens: number;
+}
+
 /**
- * Budget guard around a Claude call. The call returns its token usage so the
- * counter can be bumped afterwards.
+ * Told the token counts of each response the moment it is back, before any
+ * check of its content can throw. The call wrappers in this folder take it
+ * as `onUsage`.
  */
-export async function withUsage<T>(
-  fn: () => Promise<{ value: T; inputTokens: number; outputTokens: number }>,
-): Promise<T> {
+export type UsageMeter = (counts: TokenCounts) => void;
+
+/**
+ * Budget guard around Claude calls: refuses with BusyError over the daily
+ * cap, then runs `fn`, which hands the meter to the call it makes. Every
+ * response the meter was told about is counted in `finally`, so a response
+ * that the caller's validation rejects (not JSON, a refusal, a phone number
+ * in the output) still counts toward DAILY_CLAUDE_CALL_CAP, and a retry
+ * after it counts again. An API error before any response reports nothing
+ * and records nothing.
+ */
+export async function withUsage<T>(fn: (meter: UsageMeter) => Promise<T>): Promise<T> {
   await assertUnderCap();
-  const { value, inputTokens, outputTokens } = await fn();
-  await recordUsage(inputTokens, outputTokens);
-  return value;
+  const responses: TokenCounts[] = [];
+  try {
+    return await fn((counts) => {
+      responses.push(counts);
+    });
+  } finally {
+    for (const c of responses) await recordUsage(c.inputTokens, c.outputTokens);
+  }
 }

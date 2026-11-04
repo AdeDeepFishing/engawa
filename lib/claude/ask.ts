@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type Anthropic from "@anthropic-ai/sdk";
 import { anthropic, MODELS, type ModelId } from "./client";
+import type { UsageMeter } from "./usage";
 import { nowJst } from "./extract";
 import { isExpired } from "@/lib/cards/categories";
 import { conflictStatements, placeLabel, statementText } from "@/lib/cards/display";
@@ -157,7 +158,7 @@ export async function ask(
   cards: Card[],
   question: string,
   lang: Lang,
-  options: { model?: ModelId; now?: Date; history?: AskTurn[] } = {},
+  options: { model?: ModelId; now?: Date; history?: AskTurn[]; onUsage?: UsageMeter } = {},
 ): Promise<AskOutcome> {
   const q = question.trim();
   if (!q) throw new Error("ask needs a question");
@@ -222,6 +223,7 @@ export async function ask(
     cacheReadTokens: message.usage.cache_read_input_tokens ?? 0,
     cacheWriteTokens: message.usage.cache_creation_input_tokens ?? 0,
   };
+  options.onUsage?.(usage);
 
   if (message.stop_reason === "refusal") {
     throw new AskError("refusal", message.stop_details?.explanation ?? "refused");

@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type Anthropic from "@anthropic-ai/sdk";
 import { anthropic, extractModel, type ModelId } from "./client";
+import type { UsageMeter } from "./usage";
 import { CATEGORIES, PLATFORMS, RISK_FLAGS, SOURCE_TYPES, CARD_STATUSES } from "@/lib/types";
 import type { Board, Category, PartialMultilingual, Platform, RiskFlag, SourceType, CardStatus } from "@/lib/types";
 import { CARD_LANGS } from "@/lib/i18n";
@@ -111,7 +112,7 @@ export function nowJst(now = new Date()): string {
 export async function extract(
   board: Board,
   input: ExtractInput,
-  options: { model?: ModelId; now?: Date; maxTokens?: number } = {},
+  options: { model?: ModelId; now?: Date; maxTokens?: number; onUsage?: UsageMeter } = {},
 ): Promise<ExtractOutcome> {
   if (!input.image && !input.text?.trim()) {
     throw new Error("extract needs an image or text");
@@ -157,6 +158,7 @@ export async function extract(
     cacheReadTokens: message.usage.cache_read_input_tokens ?? 0,
     cacheWriteTokens: message.usage.cache_creation_input_tokens ?? 0,
   };
+  options.onUsage?.(usage);
 
   if (message.stop_reason === "refusal") {
     throw new ExtractError("refusal", message.stop_details?.explanation ?? "refused");

@@ -273,5 +273,14 @@
   "board.footer_about": "この掲示板と、あなたのデータの扱いについて",
   "poster.about": "この掲示板とデータの扱いについて: {url}",
   "dropin.step.translating": "翻訳",
-  "card.translating": "翻訳を準備しています。"
+  "card.translating": "翻訳を準備しています。",
+  "react.question": "この情報はまだ正しいですか？",
+  "react.still_true": "まだ正しい",
+  "react.no_longer_true": "もう違う",
+  "react.readers_one": "1人",
+  "react.readers_other": "{n}人",
+  "react.explain": "1台につき1回です。もう一度押すと取り消せます。人数はほかの人への目安として表示されます。",
+  "react.hint": "読んだ人から「もう違うかもしれない」という報告があります",
+  "react.rate_limited": "この1時間に押した回数が多すぎます。しばらくしてからもう一度お試しください。",
+  "react.failed": "送れませんでした。もう一度お試しください。"
 }

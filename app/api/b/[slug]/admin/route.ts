@@ -9,11 +9,10 @@ import {
 } from "@/lib/db/admin";
 import { getBoardBySlug } from "@/lib/db/boards";
 import { hasDb } from "@/lib/db/client";
+import { isUuid } from "@/lib/ids";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
-
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 
 /**
  * Admin writes for one board. Body: JSON {card_id, action} with action
@@ -44,11 +43,11 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
   if (typeof action !== "string" || !(ADMIN_ACTIONS as readonly string[]).includes(action)) {
     return Response.json({ error: "bad_action" }, { status: 400 });
   }
-  if (typeof cardId !== "string" || !UUID_RE.test(cardId)) {
+  if (!isUuid(cardId)) {
     return Response.json({ error: "bad_card_id" }, { status: 400 });
   }
   const targetCardId = body.target_card_id;
-  if (action === "hide_as_duplicate" && (typeof targetCardId !== "string" || !UUID_RE.test(targetCardId))) {
+  if (action === "hide_as_duplicate" && !isUuid(targetCardId)) {
     return Response.json({ error: "bad_target_card_id" }, { status: 400 });
   }
   let card;
