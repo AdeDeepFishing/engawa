@@ -28,7 +28,8 @@ function sameCounts(a: ReactionCounts, b: ReactionCounts): boolean {
  * on the pressed button takes it back, a tap on the other changes it. The
  * device's choice lives in this browser only (lib/cards/reactions.ts); the
  * counts come from the card and, right after a tap, from the route's answer
- * until the card itself brings new counts. Render it with `key={card.id}`:
+ * until the card itself brings new counts. Key it by the card id (a key of
+ * its own, not the bare id a sibling such as ReadAloud already uses):
  * the sheet is reused across cards and this state belongs to one card.
  */
 export function CardReactions({ card, onReacted }: { card: Card; onReacted?: () => void }) {

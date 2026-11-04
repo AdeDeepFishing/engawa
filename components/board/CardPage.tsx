@@ -150,7 +150,7 @@ export function CardPage({
           </dl>
 
           {/* A refresh brings the new last confirmed time and the counts from the server. */}
-          <CardReactions key={card.id} card={card} onReacted={() => router.refresh()} />
+          <CardReactions key={`reactions-${card.id}`} card={card} onReacted={() => router.refresh()} />
 
           {previous.length ? (
             <section className="mt-5 rounded-xl border border-line p-3">

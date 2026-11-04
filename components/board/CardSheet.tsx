@@ -202,7 +202,7 @@ export function CardSheet({
           <dd>{formatDateTime(card.created_at, lang)}</dd>
         </dl>
 
-        <CardReactions key={card.id} card={card} />
+        <CardReactions key={`reactions-${card.id}`} card={card} />
 
         {previous.length ? (
           <section className="mt-5 rounded-xl border border-line p-3">
