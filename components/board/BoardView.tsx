@@ -183,11 +183,23 @@ export function BoardView({
 
   /** Opens DropIn's panel from any of its triggers and moves focus into it. */
   const startDropIn = useCallback(() => {
+    // Already open (a photo being picked): keep its state, just move focus in.
+    if (dropInPanel(dropInHost.current)) {
+      dropInPanel(dropInHost.current)?.querySelector<HTMLElement>("button, textarea, input:not([type=file])")?.focus();
+      return;
+    }
     if (!openDropIn(dropInHost.current)) return;
     window.requestAnimationFrame(() => {
       dropInPanel(dropInHost.current)?.querySelector<HTMLElement>("button, textarea, input:not([type=file])")?.focus();
     });
   }, []);
+
+  /** Closes the laptop or tablet card panel and returns focus to the card's button in the list. */
+  const closePanel = useCallback(() => {
+    const id = selected?.id ?? null;
+    close();
+    if (id) cardButton(id)?.focus();
+  }, [selected, close]);
 
   // When the drop-in closes with focus inside it, focus goes back to the
   // button that opens it instead of being lost on the page.
@@ -321,7 +333,7 @@ export function BoardView({
           )}
           <HiddenDrawer items={hidden} now={now} onOpenOriginal={openFromAnswer} />
           {hidden.length === 0 && cards.length > 0 ? (
-            <p className="mt-6 text-base text-muted" data-hidden-none>
+            <p className="mt-6 hidden text-base text-muted md:block" data-hidden-none>
               {t("empty.hidden_none")}
             </p>
           ) : null}
@@ -331,7 +343,7 @@ export function BoardView({
         {/* Tablet: the open card above the ask panel. Laptop: the open card, or what to do before one is picked. */}
         <div className={`hidden md:block ${column}`} data-board-column="detail">
           {tablet && selected ? (
-            <CardPanel card={selected} board={board} now={now} onClose={close} />
+            <CardPanel card={selected} board={board} now={now} onClose={closePanel} />
           ) : (
             <div className="hidden h-full lg:block">
               <CardPanelEmpty />

@@ -15,7 +15,13 @@ const CHANGE = "engawa:cardhash";
 
 function read(): string | null {
   const hash = window.location.hash;
-  return hash.startsWith(PREFIX) && hash.length > PREFIX.length ? decodeURIComponent(hash.slice(PREFIX.length)) : null;
+  if (!hash.startsWith(PREFIX) || hash.length <= PREFIX.length) return null;
+  try {
+    return decodeURIComponent(hash.slice(PREFIX.length));
+  } catch {
+    // A malformed hash (a stray percent sign) must not take the board down.
+    return null;
+  }
 }
 
 function subscribe(onChange: () => void) {

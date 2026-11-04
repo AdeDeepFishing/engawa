@@ -5,7 +5,6 @@ import { useLang } from "@/lib/i18n/LangProvider";
 import type { Board, Card } from "@/lib/types";
 import { CardDetail, cardTitleId } from "./CardDetail";
 
-export { Statement } from "./CardDetail";
 
 /**
  * Non-modal detail sheet on a phone. It does not trap focus: the page behind
