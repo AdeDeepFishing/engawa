@@ -807,3 +807,36 @@ Seen during the run: the `day5-places` session's throwaway board `places-accepta
 - Review and merge the PR. `docs/PLAN.md` has no line for N19 and N20; the reviewing session decides where to record them.
 - Native read of the Korean and Vietnamese `home.*` and `inbox.senders_too_many` strings.
 - A look at the home page and the home screen icon on a real phone after the deploy.
+
+### 2026-11-04 evening, home page map of Japan and the language switch (same session, same PR)
+
+Two additions the user asked for through the reviewing session after the PR was opened.
+
+**Map of Japan.** The home page's main visual is now all 47 prefectures as inline SVG paths (`components/home/JapanMap.tsx`), land in a quiet neutral (`--map-land` #e2ded5, borders in the page colour), the prefectures with a listed board in the accent with the board count on a badge. On a phone the map sits between the intro and the board list at full width; from 1024 px it sits beside the intro (416 by 468 px at 1280) and the board cards follow below in two columns. No external fetch, no tiles.
+- Source and licence: the brief suggested geolonia's japanese-prefectures or `@svg-maps/japan` as MIT. Neither is: geolonia's README says GFDL (the map is derived from the Wikipedia map of Japan), and `@svg-maps/japan` is CC BY 4.0 from 1.0.1 on (Victor Cazanave, itself based on the MapSVG map of Japan, also CC BY 4.0). CC BY 4.0 only asks for attribution with a link to the licence and a note of changes, so `@svg-maps/japan` 2.0.0 was used: the credit and the licence link are under the map in five languages, and the generated file says the same.
+- `scripts/japan-map.ts` reads the package as data (never imported or run) and writes `components/home/japan-map-paths.ts`: outlines simplified (Ramer-Douglas-Peucker at 0.45 units), islands under 2 square units dropped, coordinates rounded to one decimal, a label point inside each prefecture's largest island. Okinawa is moved into a framed inset in the empty sea at the top left and enlarged 1.5 times, as Japanese maps usually do; the script refuses to write when any other land crosses the inset frame (1.6 times reached Hokkaido). The view box is cropped to the land (347 by 390 instead of 438 by 516), so the map is a quarter larger at the same width. 64 KB of source paths became 21 KB.
+- `components/home/prefectures.ts`: the 47 prefectures with their JIS code and names in the five languages, kept out of the message files as reference data.
+- Which prefecture a board is in: the first two digits of its 町丁目 codes, taken through `boardAreas` (`lib/geo`) on the server. The live pilot row still has `code: null` on every area (the seed with codes was never re-run on it), and `boardAreas` fills the codes from the bundled e-Stat polygons by name, so the board lands on 神奈川県. A board without codes stays in the list and off the map.
+- Interaction: a prefecture with a board is a `role="button"` group with `aria-label` "神奈川県: 掲示板 1 件" (in the reader's language), Tab stop, Enter and Space, pointer. It moves focus to the first board card of that prefecture and scrolls it into view (smooth unless reduced motion; focus first, because a `focus()` after a smooth `scrollIntoView` cancels the scroll in Chrome); the card shows a 3 px accent outline. Prefectures without a board are plain paths with their name in a `<title>`. The badge digits are 16.5 px and the invisible hit circle 45 px across at a 390 px phone, larger on wider maps; keyboard focus draws a round accent ring around the badge (the site-wide square outline is turned off for the map button only, in `globals.css`). Nothing depends on hover. Badges that would overlap (Tokyo next to Kanagawa, once N18 lands) are moved apart to the east.
+
+**Language switch** (`components/LanguageSwitch.tsx`): `appearance-none`, a 16 px chevron 12 px from the right edge, 40 px right padding so the text never runs under it, same 44 px height and focus ring.
+
+**Checks**
+
+| check | result |
+|---|---|
+| map at 390 px, en, ja, vi | between intro and boards; 47 outlines, one button (神奈川県 / Kanagawa: 1 board / Kanagawa: 1 bảng tin), 46 inert outlines with titles; no text under 16 px, no target under 44 px (the map button measured by its hit circle, 45 by 45), no sideways scroll |
+| map at 1280 px, en, ja | beside the intro (intro at x 152, map at x 712); same measurements |
+| tap on the badge | focus on the Musashi-Kosugi card, scrolled to 96 px from the top (under the top bar), 3 px outline |
+| keyboard | Tab reaches the map button after the three top bar controls; round focus ring, no square outline; Enter and Space both move focus to the card |
+| language switch, Chrome at 390 px | select 128 by 44, chevron 16 px wide and 12 px from the right edge |
+| language switch and map, Safari | macOS Safari 18.6 (WebKit), the page framed at 390 px (media queries follow the frame): the chevron sits inside the select near the edge, the same height as the text size button, text clear of it; the map, the inset and the board card render as in Chrome. Real iPhone Safari not checked (no simulator on this Mac) |
+
+`pnpm typecheck`, `pnpm lint` (the same existing warning in `BoardView.tsx`), `pnpm guard --all`, `pnpm build` clean. No Claude calls. Seven more keys appended at the end of the five message files (`home.map_*`).
+
+Seen while building: the dev server's file watcher missed one edit to `app/globals.css` (written by a script) and kept serving the old CSS until it was restarted; `touch` did not help.
+
+**Needed a human**
+- The licence differs from the brief (CC BY 4.0, not MIT); the credit under the map is how it is met. If a credit on the home page is not wanted, the alternative is drawing our own outlines.
+- Native read of the Korean and Vietnamese prefecture names and `home.map_*` strings.
+- A look on a real iPhone: the select's chevron and the map's tap target.
