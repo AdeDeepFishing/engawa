@@ -1,11 +1,13 @@
 "use client";
 
+import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
-import { BRAND_JA, Mark } from "@/components/brand/Mark";
+import { BRAND_JA } from "@/components/brand/Mark";
 import type { MessageKey } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n/LangProvider";
 import { BoardSummary, boardAnchor, type HomeBoard } from "./BoardSummary";
 import { JapanMap } from "./JapanMap";
+import { Tagline } from "./Tagline";
 
 const STEPS: { title: MessageKey; body: MessageKey }[] = [
   { title: "home.step1_title", body: "home.step1_body" },
@@ -13,17 +15,59 @@ const STEPS: { title: MessageKey; body: MessageKey }[] = [
   { title: "home.step3_title", body: "home.step3_body" },
 ];
 
-const linkClass =
-  "tap inline-flex items-center text-base underline underline-offset-4 hover:text-accent";
+/** Body text on the home page: 17 px at the default size, in rem so the text size toggle scales it. */
+const BODY = "text-[1.0625rem] leading-relaxed";
+
+/** Entrance delay for the `home-rise` and `home-pop` animations (app/globals.css). */
+function rise(ms: number): CSSProperties {
+  return { "--rise-delay": `${ms}ms` } as CSSProperties;
+}
 
 /**
- * The home page body (/): what Engawa is and for whom, a map of Japan with
- * the prefectures that have a listed board (beside the intro from 1024 px,
- * under it on a phone), the listed boards with their live facts, the three
- * steps in the words the board itself uses, how to try it with a sample,
- * and the footer. Client component so the language
- * switch in the top bar applies at once, like the about page; the board
- * facts and `now` come from the server render, so both renders agree.
+ * A footer link: 44 px target, no underline at rest, one drawn from the
+ * left on hover and on keyboard focus.
+ */
+function FooterLink({ href, external, children }: { href: string; external?: "me" | "source"; children: ReactNode }) {
+  const { t } = useLang();
+  const className = "tap group inline-flex items-center text-base hover:text-accent";
+  const label = (
+    <span className="bg-[linear-gradient(currentColor,currentColor)] bg-[length:0%_1px] bg-left-bottom bg-no-repeat pb-0.5 transition-[background-size] duration-200 ease-out group-hover:bg-[length:100%_1px] group-focus-visible:bg-[length:100%_1px]">
+      {children}
+    </span>
+  );
+  if (href.startsWith("/")) {
+    return (
+      <Link href={href} className={className}>
+        {label}
+      </Link>
+    );
+  }
+  if (!external) {
+    return (
+      <a href={href} className={className}>
+        {label}
+      </a>
+    );
+  }
+  return (
+    <a href={href} target="_blank" rel={external === "me" ? "me noopener noreferrer" : "noopener noreferrer"} className={className}>
+      {label}
+      <span className="sr-only"> {t("maps.new_tab")}</span>
+    </a>
+  );
+}
+
+/**
+ * The home page body (/). From 1024 px two columns, 7 to 5: the
+ * hero (縁側 Engawa, what it is, the tagline in six languages, for whom),
+ * and the listed boards resting on the plank (two hairlines, the
+ * veranda's edge) on the left; the map of Japan on the right, held in view while the boards
+ * scroll. On a phone: hero, boards, map. Then the three steps in the words
+ * the board itself uses, how to try it with a sample, and the footer. The
+ * hero lines, the boards and the map rise in once, 60 ms apart (none of it
+ * under reduced motion). Client component so the language switch in the
+ * top bar applies at once, like the about page; the board facts and `now`
+ * come from the server render, so both renders agree.
  */
 export function HomeView({ boards, now }: { boards: HomeBoard[]; now: string }) {
   const { t } = useLang();
@@ -43,97 +87,123 @@ export function HomeView({ boards, now }: { boards: HomeBoard[]; now: string }) 
 
   return (
     <>
-      <main className="mx-auto w-full max-w-5xl flex-1 px-4 pt-8 pb-4 md:px-6 lg:pt-14">
-        <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:items-start lg:gap-14">
-          <section aria-labelledby="home-title">
-            <Mark className="size-16 text-accent" />
-            <h1 id="home-title" className="mt-4 text-4xl font-bold">
-              <span lang="ja">{BRAND_JA}</span> {t("app.name")}
-            </h1>
-            <p className="mt-4 text-xl leading-relaxed">{t("home.lead")}</p>
-            <p className="mt-3 text-lg leading-relaxed text-muted">{t("home.for_whom")}</p>
-          </section>
+      <main className="mx-auto w-full max-w-6xl flex-1 px-4 pt-10 md:px-6 lg:pt-20">
+        <div className="lg:grid lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:items-start lg:gap-20">
+          <div>
+            <section aria-labelledby="home-title">
+              <h1
+                id="home-title"
+                className="home-rise flex flex-wrap items-baseline gap-x-4 text-[clamp(2.5rem,1.75rem+3vw,3.5rem)] leading-[1.1] font-bold"
+                style={rise(0)}
+              >
+                <span lang="ja" className="tracking-[0.08em]">
+                  {BRAND_JA}
+                </span>
+                <span className="tracking-[-0.01em]">{t("app.name")}</span>
+              </h1>
+              <p className="home-rise mt-6 max-w-[60ch] text-xl leading-relaxed" style={rise(60)}>
+                {t("home.lead")}
+              </p>
+              <div className="home-rise mt-4" style={rise(120)}>
+                <Tagline className="text-lg font-semibold" />
+              </div>
+              <p className={`home-rise mt-4 max-w-[60ch] text-muted ${BODY}`} style={rise(180)}>
+                {t("home.for_whom")}
+              </p>
+            </section>
 
-          <section aria-labelledby="home-map" className="mt-10 lg:mt-0">
+            <section aria-labelledby="home-boards" className="mt-12 lg:mt-16">
+              <h2 id="home-boards" className="home-rise text-xl font-bold" style={rise(240)}>
+                {t("index.title")}
+              </h2>
+              {/* The plank: two hairlines with the paper between, the edge of the veranda the boards rest on. */}
+              <div aria-hidden="true" className="home-rise mt-3 h-2 border-y border-line" style={rise(240)} />
+              {boards.length ? (
+                <ul className="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-1">
+                  {boards.map((b, i) => (
+                    <li key={b.slug} className="home-rise" style={rise(360 + i * 60)}>
+                      <BoardSummary board={b} now={now} />
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className={`mt-4 text-muted ${BODY}`}>{t("home.no_boards")}</p>
+              )}
+            </section>
+          </div>
+
+          <section aria-labelledby="home-map" className="home-rise mt-12 lg:sticky lg:top-24 lg:mt-0" style={rise(300)}>
             <h2 id="home-map" className="text-xl font-bold">
               {t("home.map_heading")}
             </h2>
-            <div className="mt-3">
+            <div className="mt-4 md:max-w-[30rem] lg:max-w-none">
               <JapanMap counts={counts} onSelect={goToPrefecture} />
             </div>
-            <p className="mt-3 text-base">{t("home.map_hint")}</p>
-            <p className="text-base text-muted">
-              {t("home.map_credit")}{" "}
-              <a href="https://creativecommons.org/licenses/by/4.0/" className="tap inline-flex items-center underline underline-offset-4 hover:text-accent">
-                {t("home.map_licence")}
-              </a>
+            <p className={`mt-4 ${BODY}`}>{t("home.map_hint")}</p>
+            {/* The CC BY 4.0 credit for the outlines is on the about page, one tap away. */}
+            <p>
+              <Link
+                href="/about#credits"
+                className="tap inline-flex items-center text-base text-muted underline underline-offset-4 hover:text-accent"
+              >
+                {t("home.map_credits_link")}
+              </Link>
             </p>
           </section>
         </div>
 
-        <section aria-labelledby="home-boards" className="mt-10 lg:mt-14">
-          <h2 id="home-boards" className="text-xl font-bold">
-            {t("index.title")}
-          </h2>
-          {boards.length ? (
-            <ul className="mt-3 grid gap-4 md:grid-cols-2">
-              {boards.map((b) => (
-                <li key={b.slug}>
-                  <BoardSummary board={b} now={now} />
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="mt-3 text-base text-muted">{t("home.no_boards")}</p>
-          )}
-        </section>
-
-        <section aria-labelledby="home-steps" className="mt-12 lg:mt-16">
+        <section aria-labelledby="home-steps" className="mt-14 lg:mt-24">
           <h2 id="home-steps" className="text-xl font-bold">
             {t("home.steps_heading")}
           </h2>
-          <ol className="mt-4 grid gap-4 md:grid-cols-3">
+          <ol className="mt-6 grid gap-4 lg:grid-cols-3 lg:gap-6">
             {STEPS.map((step, i) => (
-              <li key={step.title} className="flex gap-4 rounded-2xl border border-line bg-surface p-5 md:flex-col md:gap-3">
+              <li key={step.title} className="flex gap-4 rounded-2xl border border-line bg-surface p-6 lg:flex-col">
                 <span
                   aria-hidden="true"
-                  className="flex size-10 shrink-0 items-center justify-center rounded-full bg-held-bg text-lg font-bold text-accent"
+                  className="flex size-10 shrink-0 items-center justify-center rounded-full bg-held-bg text-lg font-bold"
                 >
                   {i + 1}
                 </span>
                 <div>
                   <h3 className="text-lg font-bold">{t(step.title)}</h3>
-                  <p className="mt-1 text-base leading-relaxed">{t(step.body)}</p>
+                  <p className={`mt-2 ${BODY}`}>{t(step.body)}</p>
                 </div>
               </li>
             ))}
           </ol>
-          <p className="mt-4 rounded-xl bg-held-bg px-4 py-3 text-base leading-relaxed" data-home-try>
+          <p className={`mt-6 rounded-xl bg-held-bg px-6 py-4 ${BODY}`} data-home-try>
             {t("home.try", { button: t("dropin.button"), samples: t("sample.heading") })}
           </p>
         </section>
       </main>
 
-      <footer className="mx-auto w-full max-w-5xl px-4 pt-6 pb-10 md:px-6">
-        <div className="border-t border-line pt-4">
+      <footer className="mx-auto w-full max-w-6xl px-4 pt-14 pb-10 md:px-6 lg:pt-24">
+        {/* The same plank closes the page. */}
+        <div aria-hidden="true" className="h-2 border-y border-line" />
+        <div className="pt-4">
           <ul className="flex flex-wrap gap-x-6">
             <li>
-              <Link href="/about" className={linkClass}>
-                {t("home.footer_about")}
-              </Link>
+              <FooterLink href="https://www.yanwensworld.com/" external="me">
+                {t("home.made_by")}
+              </FooterLink>
             </li>
             <li>
-              <Link href="/about#about-data" className={linkClass}>
-                {t("footer.privacy")}
-              </Link>
+              <FooterLink href="https://github.com/AdeDeepFishing/engawa" external="source">
+                {t("home.source")}
+              </FooterLink>
             </li>
             <li>
-              <a href="https://claude.com/claude-code" className={linkClass}>
-                {t("home.built_with")}
-              </a>
+              <FooterLink href="https://claude.com/claude-code">{t("home.built_with")}</FooterLink>
+            </li>
+            <li>
+              <FooterLink href="/about">{t("home.footer_about")}</FooterLink>
+            </li>
+            <li>
+              <FooterLink href="/about#about-data">{t("footer.privacy")}</FooterLink>
             </li>
           </ul>
-          <p className="mt-2 text-base text-muted">{t("footer.made_for")}</p>
+          <p className="mt-4 text-base text-muted">{t("footer.made_for")}</p>
         </div>
       </footer>
     </>

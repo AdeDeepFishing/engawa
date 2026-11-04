@@ -39,8 +39,10 @@ export function townsOf(areas: Board["area_names"]): string[] {
 /**
  * One board on the home page: its name in the reader's language with the
  * Japanese name, the area, the live facts (public cards, the newest one's
- * age, the six languages) and one link into the board. Japanese text inside
- * another language carries lang="ja"; each language name carries its own.
+ * age, the six languages) and one link into the board, whose target covers
+ * the whole card: the card lifts 2 px on hover and settles when pressed.
+ * Japanese text inside another language carries lang="ja"; each language
+ * name carries its own.
  */
 export function BoardSummary({ board, now }: { board: HomeBoard; now: string }) {
   const { lang, t } = useLang();
@@ -54,7 +56,7 @@ export function BoardSummary({ board, now }: { board: HomeBoard; now: string }) 
       id={boardAnchor(board.slug)}
       tabIndex={-1}
       aria-labelledby={nameId}
-      className="scroll-mt-24 rounded-2xl border border-line bg-surface p-5 focus:outline-[3px] focus:outline-offset-2 focus:outline-accent focus:outline-solid"
+      className="relative scroll-mt-24 rounded-2xl border border-line bg-surface p-6 shadow-[0_1px_2px_rgb(27_27_27/0.04)] transition-[translate,box-shadow] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgb(27_27_27/0.08)] focus:outline-[3px] focus:outline-offset-2 focus:outline-accent focus:outline-solid active:translate-y-0 active:shadow-[0_1px_2px_rgb(27_27_27/0.06)]"
       data-home-board={board.slug}
     >
       <h3 id={nameId} className="text-2xl font-bold">
@@ -66,16 +68,16 @@ export function BoardSummary({ board, now }: { board: HomeBoard; now: string }) 
         ) : null}
       </h3>
 
-      <p className="mt-2 text-base font-semibold" data-home-count={board.public_cards}>
+      <p className="mt-2 text-[1.0625rem] font-semibold" data-home-count={board.public_cards}>
         {board.public_cards > 0 ? tCount("home.cards", lang, board.public_cards) : t("home.no_cards")}
       </p>
       {board.newest_card_at ? (
-        <p className="text-base" data-home-newest={board.newest_card_at}>
+        <p className="text-[1.0625rem]" data-home-newest={board.newest_card_at}>
           {t("home.newest", { time: timeAgo(board.newest_card_at, new Date(now), lang) })}
         </p>
       ) : null}
 
-      <dl className="mt-3 flex flex-col gap-2 text-base">
+      <dl className="mt-4 flex flex-col gap-2 text-[1.0625rem]">
         {towns.length ? (
           <div className="flex flex-wrap gap-x-2">
             <dt className="font-semibold">{t("home.area")}</dt>
@@ -102,7 +104,7 @@ export function BoardSummary({ board, now }: { board: HomeBoard; now: string }) 
       <Link
         href={`/b/${board.slug}`}
         aria-describedby={nameId}
-        className="tap mt-5 inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-6 text-lg font-semibold text-accent-ink hover:bg-accent-hover"
+        className="tap mt-6 inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-6 text-lg font-semibold text-accent-ink after:absolute after:inset-0 after:rounded-2xl after:content-[''] hover:bg-accent-hover"
       >
         {t("home.open")}
         <span aria-hidden="true">→</span>

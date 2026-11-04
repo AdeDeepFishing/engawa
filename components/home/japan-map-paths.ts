@@ -6,7 +6,8 @@
 // Attribution 4.0 International licence
 // (https://creativecommons.org/licenses/by/4.0/). Changes: outlines
 // simplified, small islands dropped, coordinates rounded, a label point
-// added per prefecture. The home page credits the source under the map.
+// added per prefecture. The credit is on the about page (/about#credits),
+// linked from under the home page map.
 
 export const JAPAN_VIEWBOX = "93 -4 347 390";
 

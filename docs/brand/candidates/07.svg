@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- 07 Knot (結び). Engawa mark candidate: one path, even-odd, in the current text colour. -->
+  <path fill="currentColor" fill-rule="evenodd" d="M16 44H4V4h40v40H32v-8h4V12H12v24h4ZM48 20h12v40H20V20h12v8h-4v24h24V28h-4Z"/>
+</svg>

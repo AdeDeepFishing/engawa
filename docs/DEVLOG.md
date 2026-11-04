@@ -1115,3 +1115,92 @@ board shibuya
 - Native read of the Korean and Vietnamese place names and the `places.kind.commuter_shelter` label.
 - The inbox for Shibuya: the two Gmail steps in `docs/BOARDS.md`, and whether the Worker becomes one per board or a map of address to board.
 - Whether to ask 渋谷区防災課 about reading the portal's broadcast feed.
+
+## 2026-11-04 (Wed) late, home footer credit, map credit moved, mark candidates
+
+**Model:** `claude-opus-5-5` in Claude Code, implementation role, in its own worktree (branch `day6-home-polish`, cut from `main` after PR #27), brief from the reviewing session (Fable). The day6-shibuya session worked on the second board at the same time; none of its files (`supabase/seed/boards.json`, `lib/geo/**`, `scripts/geo/**`, `scripts/seed.ts`) were touched. No pipeline, prompt or database change.
+
+**Done**
+- Footer credit (`components/home/HomeView.tsx`): a fourth footer link, after "Built with Claude Code", to https://www.yanwensworld.com/ in a new tab with `rel="me noopener noreferrer"`, the same 44 px link style as the other three, and the shared screen reader hint `maps.new_tab` ("(opens in a new tab)"). Words through `home.made_by`: Made by Yanwen, 制作: Yanwen, 作者：Yanwen, 만든 사람: Yanwen, Thực hiện: Yanwen. The about page has no footer of its own (it ends with the back link), so it got none.
+- Map credit: the full CC BY 4.0 attribution moved from under the home page map to a Credits section at the end of the about page (`#credits`, `components/about/AboutView.tsx`): one paragraph in five languages (svg-maps by Victor Cazanave, based on the MapSVG map of Japan, simplified for Engawa, small islands dropped, coordinates rounded, used under CC BY 4.0) and three 44 px links: svg-maps (the GitHub repository), MapSVG (its Japan map page) and CC BY 4.0 (the licence). Under the map only "Map credits" remains (`home.map_credits_link`, 16 px, muted, 44 px target) linking to `/about#credits`, so the attribution stays one tap from the map. The section has `scroll-mt-32` so the sticky top bar never covers its heading. `home.map_credit` and `home.map_licence` were used nowhere else and are removed; the comment in `components/home/japan-map-paths.ts` and the generator that writes it (`scripts/japan-map.ts`) say where the credit lives now.
+- Four keys appended at the end of the five message files (`home.made_by`, `home.map_credits_link`, `about.credits_heading`, `about.credits_map`), two removed.
+- Mark candidates: `docs/brand/candidates/01.svg` to `08.svg` and `docs/brand/candidates.html`. Each candidate is one even-odd path on a 64 unit grid in `currentColor`, no text, no gradient, so the chosen one drops into `MARK_PATH` (with `MARK_VIEWBOX` changed from 32 to 64 units). The page is self-contained (inline SVG and CSS, no request of any kind) and shows each candidate as a numbered row with a two line rationale: at 16, 32, 64 and 180 px in the rose `#ad235d` on the paper `#fbfaf7` and on white; in a mock of the top bar; as the home heading lockup; in a browser tab; and as the app icon (white on a rounded rose tile at 180 px and at the 32 px favicon size). Today's mark is the last row, only for comparison. The live mark, icons and preview images are unchanged.
+
+**The eight candidates**
+
+| # | name | idea | note |
+|---|---|---|---|
+| 01 | Sitting on the edge (縁に腰掛ける) | A neighbour sits on the veranda's edge, legs over the side; the two lines are the floor and the ground. | The most literal engawa and the warmest; at 16 px it can pass for a person at a desk or a priority seat. |
+| 02 | Bubble on the plank (縁側の話) | A speech bubble at the end of the veranda plank, its tail hanging over the edge like a neighbour's legs. | Talk and place in two shapes, solid at 16 px; today's idea without the roof and the lines. |
+| 03 | Folded notice (貼り紙) | A paper notice with a folded corner and two lines of text: the thing people actually drop in. | Clear at every size, but it is the generic document icon, so it says board more than engawa. |
+| 04 | Tatami edges (四畳半の畳縁) | A four-and-a-half mat room drawn by its tatami edges (畳縁, the same 縁): four mats around a half mat. | A room where people sit together; every edge lands on the pixel grid, the crispest at 16 px. |
+| 05 | Petal on the plank (縁側に花びら) | One sakura petal falling onto the veranda plank: the season and the street coming in. | Soft and plainly Japanese, but at 16 px the notch is gone, and sakura is a crowded motif. |
+| 06 | Lantern (提灯) | A paper lantern, the light at a festival gate or a shop door: where neighbours gather after dark. | Reads at once at any size, but in rose it can suggest a red-lantern izakaya. |
+| 07 | Knot (結び) | Two square links passing over and under each other: 縁 as the bond between people, like the 組み角 crest. | Ownable and on the pixel grid; at 16 px it can be taken for the copy icon. |
+| 08 | Sun on the plank (日向) | A round community split by the veranda plank, or the sun low over the engawa (日向ぼっこ). | The boldest silhouette, but close to a sunset weather icon, and a bar across a disc recalls a no-entry sign. |
+
+The brief's ninth idea, a roof over an open floor, was not drawn again: three roof sketches were rejected on 11/04 (table or torii, bank or temple front, the kanji 亠, see the home page entry above), and today's mark already carries a roof.
+
+How they were made: one list in a scratch script outside the repository writes both the SVG files and the page, so the two cannot drift apart. Each candidate was judged at 1x in headless Chrome and as a 16 px raster blown up pixelated. Three were redrawn on the way: the knot was first two square U hooks, which read as a barcode at 16 px, and became two interlocked square links; the petal's notch was too wide and read as a bite out of a heart, so it got a narrow V, straighter sides and a 40 degree tilt; the notice's first text line sat on a half pixel and moved onto the grid.
+
+**Ranking (my top three, the user decides)**
+1. **04 Tatami edges.** The only candidate with no curve, every edge on a 4 unit (one pixel at 16 px) line, so it is the sharpest in the tab and on the 32 px tile. It reads as no letter and no stock icon. It carries 縁 a second time (畳縁 is the cloth edge of a mat, the same character as 縁側), and a four-and-a-half mat room is the smallest room where people sit down together. Calm enough to stay on the page in disaster mode.
+2. **02 Bubble on the plank.** It says the product (neighbours talking) and the place (the plank) in two shapes and stays one silhouette at 16 px. It keeps the idea behind today's mark in half the parts, so the change is easiest to explain.
+3. **07 Knot.** 縁 in its main sense, the bond between people, drawn like the 組み角 family crest: Japanese without sakura or lanterns, and on the pixel grid. The risk is the copy icon at 16 px; at 32 px and up the over and under is clear.
+
+**Acceptance** (dev server on port 3533 against the shared Supabase project, read only, nothing created; headless Chrome over the DevTools protocol from a helper outside the repository)
+
+| check | result |
+|---|---|
+| footer, 390 px, en and ja | four links in two lines of two: About Engawa, Privacy and retention / Built with Claude Code, Made by Yanwen (ja: Engawa について, プライバシーと保存期間 / Claude Code で開発, 制作: Yanwen); every link 44 px tall, 16 px text; the new link has href https://www.yanwensworld.com/, target _blank, rel `me noopener noreferrer` and the hidden "(opens in a new tab)" / （新しいタブで開きます）; no sideways scroll |
+| footer, 1280 px, en and ja | the four links on one line in the 1024 px column, same measurements |
+| under the map, 390 and 1280 px, en and ja | only "Map credits" / 地図のクレジット under the hint, 16 px, #5c5c5c, 44 px tall; "Victor Cazanave" no longer appears on the home page |
+| anchor from the map link | tapped on the home page (client navigation), 390 and 1280 px, en and ja: URL `/about#credits`, the page scrolled to its end (Credits is the last section), the heading Credits / クレジット visible below the sticky top bar (its top at 492 px under a bar ending at 113 px at 390; 600 under 61 at 1280); a direct load of `/about#credits` lands the same; the three credit links are 44 px |
+| `docs/brand/candidates.html` from the file system | opened as a `file://` URL in headless Chrome at 1280 px and at 390 px: nine rows (eight candidates and today's mark), 13 SVGs each, every path painted, at 16, 32, 64 and 180 px (and 20, 40, 16 in the bar, the heading and the tab, 126 and 22 inside the tiles); no link, script, img or iframe element; no sideways scroll at 390 px (the size swatches wrap) |
+
+**Measurements**: `pnpm typecheck`, `pnpm lint`, `pnpm guard --all` clean; `pnpm build` at the end (PR description).
+
+**Decisions taken in this session, open for review**
+- The brief called the top bar wordmark "縁 Engawa". The live bar reads the mark and "Engawa", and the home heading "縁側 Engawa", so the mock shows the bar as it is live and the heading lockup under it.
+- The about page has no list of data sources: the residents' figures name their sources inside the text (`about.numbers_body`). Credits therefore holds the map attribution only.
+- The link labels svg-maps, MapSVG and CC BY 4.0 are names, the same in every language, so they live in a constant beside their URLs in `AboutView.tsx` rather than in the message files.
+- Not checked here: whether the footer's privacy link (`/about#about-data`) also lands under the sticky top bar; the same `scroll-mt-32` would fix it if so.
+
+**Needed a human**
+- Pick a mark from `docs/brand/candidates.html`. The follow-up replaces `MARK_PATH` and `MARK_VIEWBOX` in `components/brand/Mark.tsx`, `app/icon.svg` and `app/favicon.ico`, and checks the icons and preview images built from them.
+- Native read of the Korean and Vietnamese credit and footer strings.
+
+### Same PR, later: the home page raised to an awards-site bar
+
+Scope added by the reviewing session on the user's behalf, about two hours, same model and worktree. Board page and other sessions' files untouched; `components/TopBar.tsx` changed only in its `home` branch (width), which only the home page uses.
+
+**What changed**
+- Layout (`components/home/HomeView.tsx`): from 1024 px two columns, 7 to 5, in a 1152 px column (the top bar's `home` width follows, so the bar and the page share their left edge): the hero, then the boards resting on the plank, on the left; the map on the right, sticky under the top bar while the boards scroll past. On a phone: hero, boards, map. Steps in three columns only from 1024 px (they were cramped at 768), one per row below.
+- Hero: 縁側 Engawa is now the dominant element, fluid from 40 to 56 px (`clamp(2.5rem, 1.75rem + 3vw, 3.5rem)`), the kanji tracked at 0.08em and set in Japanese (`lang="ja"`, so Chinese readers see the Japanese glyphs), the Latin word at -0.01em, 16 px apart on one baseline. The 64 px mark above it is gone: it was larger than the name, and the top bar already carries the mark. The description at 20 px with a 60ch measure (about 60 Latin or 34 Japanese characters per line), the tagline at 18 px semibold, for whom at 17 px muted.
+- Plank: two hairlines in the line colour with the paper between (8 px), under the Boards heading with the cards resting under it, and again as the footer's top rule.
+- Tagline (`components/home/Tagline.tsx`): `app.tagline` in ja, en, zh, ko, vi and the new `home.tagline_easy_ja` (きんじょの じょうほうを、みんなの ことばで。, the same in all five files for key parity). All six sit in one grid cell with their own `lang`, so the line is as tall as the tallest and never moves the layout; it starts in the reader's language, steps through the other five every 4 s and stops back on the reader's language. The outgoing line fades out (300 ms) before the next fades in, so two scripts never overlap. Screen readers get the reader's language only. Static under reduced motion.
+- Map (`components/home/JapanMap.tsx`): land `--map-land` #ebe7de (a step darker than the paper, warm like it; was #e2ded5), 1 px borders in the line colour (non-scaling), no box. Okinawa stays in its inset, now a dotted 1 px frame in `--line-strong` with the prefecture's name in the reader's language (16 px at phone width) and its islands outlined so they show. Prefectures with a board: rose tint `--map-active` with a 1 px accent outline (5.4:1 on the land), a step deeper (`--map-active-hover`) on hover and keyboard focus, eased 150 ms, and the prefecture's name in a small label above the badge (HTML, kept inside the map near its edges, hidden from screen readers, which already hear "Kanagawa: 1 board"). Badge in the accent with a soft halo; badges are spaced so halos never overlap (Tokyo next to Kanagawa once the Shibuya board lands).
+- Motion (`app/globals.css`, appended): `home-rise`, opacity and an 8 px rise in 360 ms, staggered 60 ms through the hero lines, the Boards heading and plank, each card and the map; `home-pop`, the badge scaling in once from 0.6 in 400 ms. Transforms only. Board cards lift 2 px with a deeper shadow on hover and settle on press (the link's target now covers the whole card); footer links draw their underline from the left on hover and keyboard focus (200 ms). Nothing loops, nothing bounces; the existing reduced motion block turns all of it off and leaves the end state.
+- Type and rhythm: hero 40 to 56 px, section titles 20 px, body 17 px (`1.0625rem`, so the text size toggle still scales it), muted 16 px minimum; spacing on the 8 px grid, sections 56 px apart on phones and 96 px on desktop.
+- Colour: the accent only on the badge, the board's link, focus, links on hover and the prefectures with a board; the step numbers are ink now. The top bar's rose band is shared with the board page and was left as it is.
+- Footer: Made by Yanwen, Source on GitHub (`home.source`, https://github.com/AdeDeepFishing/engawa, new tab, `rel="noopener noreferrer"`), Built with Claude Code, About, Privacy.
+
+**Self-review rounds** (dev server on port 3533, headless Chrome over the DevTools protocol; full-page captures at 390, 768 and 1280 px in ja and en, plus zh at 1787 px, the width the user saw)
+
+| round | seen | changed |
+|---|---|---|
+| before | an empty-looking rounded box at the map's top left (Okinawa's islands are specks in it); grey land in a cold tone against the paper; the 64 px mark larger than the name; two short text lines over a long map column; credit text under the map | everything above |
+| 1 | 1280 en: the name leads, plank and warm map read well, but the description wrapped at 47 characters (a 456 px column), the Boards heading floated between the plank and the card, the land was a touch pale. 768 en: the map ran 720 px wide and dominated; the three step cards were cramped; Privacy wrapped alone onto a second footer line. 390 ja: order hero, boards, map, all clean | 1152 px column with 7:5 columns (the description now 2 lines of about 60 characters), Boards heading sitting on the plank with the card under it, land #ebe7de, map capped at 30rem below 1024 px, steps in three columns only from 1024 px, footer gaps 24 px, the plank as the footer rule |
+| 2 | 1280 en: balanced, the top bar aligned with the column; 768 ja: map capped, steps one per row, the Japanese measure about 35 characters; 390 en: the English and Vietnamese taglines wrap to two lines on a phone, which the stack holds at a fixed height | nothing; behaviour checked next |
+| 3 | hover on Kanagawa: tint deepens, label 神奈川県 above the badge; hover on the card: lifted, deeper shadow, the button darkens. Tagline pass en, zh, ko, vi, やさしい日本語, ja, back to en; height fixed at 56 px; layout shift 0; footer never moved. Reduced motion: no animation, tagline static in the reader's language, shift 0. At 1787 px zh a capture caught the tagline mid crossfade with zh and ko overlapping | the tagline fades out, then in (never two lines visible at once, measured over a switch) |
+
+**Measurements** (all on the final state)
+- Every text pair: ink on paper 16.5:1, on white 17.2, on the beige 15.0; muted on paper 6.4, on white 6.7; white on the accent 6.6, on its hover shade 9.4; the accent on paper 6.3; ink on the top bar 14.8. Non-text: the inset's dotted frame 3.6:1 on the paper, the active prefecture's outline 5.4:1 on the land.
+- At 390 (ja, en), 768 (ja), 1280 (en) and 1787 px (zh): no text under 16 px (SVG labels measured at their drawn size), no link or button under 44 by 44 px, no sideways scroll, and keyboard focus on a prefecture shows the ring and its name inside the map.
+- `pnpm typecheck`, `pnpm lint`, `pnpm guard --all` clean; `pnpm build` at the end.
+
+**Decisions open for review**
+- The tagline makes one pass and stops instead of cycling for ever: the brief also says nothing loops, and WCAG 2.2.2 asks for a pause control on content that updates by itself for more than 5 seconds. The pass still takes 24 seconds, so a pause button or a shorter pass may be wanted.
+- "The board cards resting on the plank": the Boards heading stands on the plank and the cards sit right under it; the plank is the divider between the hero and the boards.
+- The hero mark was removed rather than shrunk; the chosen mark from `docs/brand/candidates.html` can come back there at the size of the name's cap height.
+- The map is sticky within the two-column row only, so with one board it travels about 150 px before it scrolls away with the cards.
