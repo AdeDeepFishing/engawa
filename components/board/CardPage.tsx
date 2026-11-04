@@ -9,6 +9,7 @@ import {
   conflictStatements,
   formatDateTime,
   placeLabel,
+  sourceExplanation,
   sourceLabel,
   supersededStatements,
   timeAgo,
@@ -49,6 +50,7 @@ export function CardPage({
   const conditions = card.facts.conditions ?? [];
   const conflicts = conflictStatements(card);
   const previous = supersededStatements(card);
+  const explanation = sourceExplanation(card.source_type, card.official_confirmed, lang, card.facts.platform);
   const boardHref = `/b/${board.slug}`;
   const link =
     "tap inline-flex items-center justify-center rounded-xl border border-line bg-surface px-4 font-semibold hover:border-accent";
@@ -137,8 +139,9 @@ export function CardPage({
             ) : null}
             <dt className="text-muted">{t("sheet.sources")}</dt>
             <dd>
-              {sourceLabel(card.source_type, card.official_confirmed, lang)} ·{" "}
+              {sourceLabel(card.source_type, card.official_confirmed, lang, card.facts.platform)} ·{" "}
               {tCount("card.source_count", lang, card.source_count)}
+              {explanation ? <span className="block text-muted">{explanation}</span> : null}
               {card.last_confirmed_at ? (
                 <span className="block text-muted">
                   {t("card.last_confirmed", { time: timeAgo(card.last_confirmed_at, now, lang) })}

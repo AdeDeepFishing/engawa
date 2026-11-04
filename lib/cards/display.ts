@@ -117,9 +117,41 @@ export function jstDay(iso: string | Date): string {
   return new Date(new Date(iso).getTime() + 9 * 3_600_000).toISOString().slice(0, 10);
 }
 
-/** "Confirmed official" replaces "official notice (unconfirmed)" once the admin confirmed it. */
-export function sourceLabel(sourceType: SourceType, officialConfirmed: boolean | undefined, lang: Lang): string {
-  return officialConfirmed ? t("card.official_confirmed", lang) : t(`source.${sourceType}`, lang);
+/**
+ * "Confirmed official" replaces "official notice (unconfirmed)" once the
+ * admin confirmed it. With the card's platform, the two broadcast channels
+ * get their own words: "heard from the disaster radio" for a loudspeaker
+ * transcript, "from the city's broadcast mail" for the official inbox. Each
+ * applies only with the source type its channel implies, so a card whose
+ * label a stronger source raised never keeps the weaker channel's words.
+ */
+export function sourceLabel(
+  sourceType: SourceType,
+  officialConfirmed: boolean | undefined,
+  lang: Lang,
+  platform?: Platform | null,
+): string {
+  if (officialConfirmed) return t("card.official_confirmed", lang);
+  const channel = channelSource(sourceType, platform);
+  return channel ? t(`source.${channel}`, lang) : t(`source.${sourceType}`, lang);
+}
+
+/** One sentence on what a broadcast channel's label means, or null for every other source. */
+export function sourceExplanation(
+  sourceType: SourceType,
+  officialConfirmed: boolean | undefined,
+  lang: Lang,
+  platform?: Platform | null,
+): string | null {
+  if (officialConfirmed) return null;
+  const channel = channelSource(sourceType, platform);
+  return channel ? t(`source.${channel}_explain`, lang) : null;
+}
+
+function channelSource(sourceType: SourceType, platform: Platform | null | undefined): "loudspeaker" | "city_mail" | null {
+  if (platform === "loudspeaker" && sourceType === "secondhand") return "loudspeaker";
+  if (platform === "city_mail" && sourceType === "official") return "city_mail";
+  return null;
 }
 
 export function platformLabel(platform: Platform | null, lang: Lang): string {
