@@ -41,6 +41,7 @@ The official inbox (docs/INBOX.md) receives the city's broadcast mail through a 
 | Official inbox mail: subject and text | Like pasted text, after code removed the signature and footer | Immediately after processing; only the stripped text remains |
 | Inbox secret | Only its sha256 digest, on the board row; the secret is shown to the admin once | When the admin replaces it |
 | Allowed sender addresses of the inbox | On the board row (the city's sending addresses) | When the admin edits the list |
+| Board mode change (time and reason: `admin`, `auto_return` or `inbox:<submission id>`) | On the board row; readers and the admin page get the kind of reason only, never the id; the server log names the board slug only | Replaced by the next change |
 | Cards | Yes | `valid_until` + 30 days |
 | Questions | No | n/a |
 | Device identifier | Yes | 90 days after last activity |

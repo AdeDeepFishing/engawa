@@ -18,7 +18,8 @@
     "board:throwaway": "node --env-file-if-exists=.env.local --import=tsx scripts/throwaway-board.ts",
     "check:placeholders": "node --import=tsx scripts/check-placeholders.ts",
     "check:inbox": "node --import=tsx scripts/check-inbox.ts",
-    "check:places": "node --import=tsx scripts/check-places.ts"
+    "check:places": "node --import=tsx scripts/check-places.ts",
+    "check:mode": "node --import=tsx scripts/check-mode.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "1.3.0",
