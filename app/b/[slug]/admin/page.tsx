@@ -2,14 +2,17 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import { InboxAdmin } from "@/components/admin/InboxAdmin";
+import { PushAdmin } from "@/components/admin/PushAdmin";
 import { appBase } from "@/lib/app-url";
 import { ADMIN_PAGE_COOKIE, isAdminCookie, listCardsForAdmin } from "@/lib/db/admin";
 import { getBoardBySlug } from "@/lib/db/boards";
 import { hasDb } from "@/lib/db/client";
 import { getInboxAdminState } from "@/lib/db/inbox";
 import { getModeState, toModeView } from "@/lib/db/mode";
+import { countSubscriptions } from "@/lib/db/push";
 import { t } from "@/lib/i18n";
 import { getRequestLang } from "@/lib/i18n/server";
+import { vapid } from "@/lib/push/config";
 import { AdminView, InvalidAdminLink } from "./AdminView";
 
 export const dynamic = "force-dynamic";
@@ -33,22 +36,25 @@ export async function generateMetadata(): Promise<Metadata> {
  * cookie; this page reads only that cookie, so the URL carries no secret.
  * Without a valid cookie nothing about the cards is rendered.
  * The official inbox settings follow the card lists as their own section
- * (components/admin/InboxAdmin.tsx), mounted here so AdminView stays as it is.
+ * (components/admin/InboxAdmin.tsx), mounted here so AdminView stays as it is,
+ * and so does the count of devices that get web push from the board.
  */
 export default async function AdminPage({ params }: Props) {
   const [{ slug }, store] = await Promise.all([params, cookies()]);
   const board = await getBoardBySlug(slug);
   if (!board) notFound();
   if (!hasDb() || !isAdminCookie(store.get(ADMIN_PAGE_COOKIE)?.value)) return <InvalidAdminLink />;
-  const [lists, inbox, base, mode] = await Promise.all([
+  const [lists, inbox, base, mode, pushCount] = await Promise.all([
     listCardsForAdmin(board),
     getInboxAdminState(board.id),
     appBase(),
     getModeState(board),
+    vapid() ? countSubscriptions(board.id).catch(() => null) : null,
   ]);
   return (
     <>
       <AdminView board={board} lists={lists} serverNow={new Date().toISOString()} mode={toModeView(mode)} />
+      <PushAdmin count={pushCount} />
       <InboxAdmin slug={board.slug} inboxUrl={new URL(`/api/b/${board.slug}/inbox`, base).toString()} initial={inbox} />
     </>
   );

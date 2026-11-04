@@ -12,6 +12,7 @@ import { DropIn, type PendingItem } from "./DropIn";
 import { HiddenDrawer } from "./HiddenDrawer";
 import { ModeStrip } from "./ModeStrip";
 import { PendingCard } from "./PendingCard";
+import { PushOptIn } from "./PushOptIn";
 import { PlacesView, ViewToggle } from "./PlacesView";
 import { CardPanel, CardPanelEmpty } from "./layout/CardPanel";
 import { dropInPanel, openDropIn, useDropInOpen } from "./layout/dropInBridge";
@@ -346,6 +347,8 @@ export function BoardView({
             <h2 className="text-base font-semibold text-muted">{t("board.cards_heading")}</h2>
             {cards.length ? <ViewToggle view={view} onChange={setView} /> : null}
           </div>
+          {/* "Get alerts": renders nothing unless this browser can do push and the server has push on. */}
+          <PushOptIn boardSlug={board.slug} offline={offline} />
           {cards.length === 0 && pending.length === 0 ? (
             <div className="mt-4 rounded-xl border border-dashed border-line p-6 text-center" data-board-empty>
               <p className="text-lg font-semibold">{t("board.empty")}</p>
