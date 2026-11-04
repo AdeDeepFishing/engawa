@@ -1,0 +1,45 @@
+{
+  "Update_At" : "2026/10/16 12:41",
+  "BosaiRadio" : {
+    "month" : "202610",
+    "information" : [ {
+      "update_at" : "2026/10/16 12:40",
+      "title" : "緊急地震速報",
+      "message" : "緊急地震速報。大地震です。大地震です。\n",
+      "url" : "",
+      "important" : 0,
+      "multi_lang" : {
+        "ja" : {
+          "title" : "緊急地震速報",
+          "message" : "緊急地震速報。大地震です。大地震です。\n",
+          "attachments" : [ { "type" : 2, "title" : "緊急地震速報（音声）", "url" : "https://bosai.city.shibuya.tokyo.jp/fixture/audio/202610161240_ja.mp3" } ]
+        },
+        "en" : {
+          "title" : "Earthquake Early Warning",
+          "message" : "Earthquake Early Warning. Major earthquake. Major earthquake.\n",
+          "attachments" : [ { "type" : 2, "title" : "Earthquake Early Warning (audio)", "url" : "https://bosai.city.shibuya.tokyo.jp/fixture/audio/202610161240_en.mp3" } ]
+        },
+        "zh-cn" : {
+          "title" : "紧急地震速报",
+          "message" : "紧急地震速报。强烈地震。强烈地震。\n",
+          "attachments" : [ { "type" : 2, "title" : "紧急地震速报（音频）", "url" : "https://bosai.city.shibuya.tokyo.jp/fixture/audio/202610161240_zh-cn.mp3" } ]
+        },
+        "zh-tw" : {
+          "title" : "緊急地震速報",
+          "message" : "緊急地震速報。強烈地震。強烈地震。\n",
+          "attachments" : [ { "type" : 2, "title" : "緊急地震速報（音訊）", "url" : "https://bosai.city.shibuya.tokyo.jp/fixture/audio/202610161240_zh-tw.mp3" } ]
+        },
+        "ko" : {
+          "title" : "긴급지진속보",
+          "message" : "긴급지진속보. 큰 지진입니다. 큰 지진입니다.\n",
+          "attachments" : [ { "type" : 2, "title" : "긴급지진속보 (음성)", "url" : "https://bosai.city.shibuya.tokyo.jp/fixture/audio/202610161240_ko.mp3" } ]
+        },
+        "fr" : {
+          "title" : "Alerte sismique précoce",
+          "message" : "Alerte sismique précoce. Séisme majeur. Séisme majeur.\n",
+          "attachments" : [ { "type" : 2, "title" : "Alerte sismique précoce (audio)", "url" : "https://bosai.city.shibuya.tokyo.jp/fixture/audio/202610161240_fr.mp3" } ]
+        }
+      }
+    } ]
+  }
+}

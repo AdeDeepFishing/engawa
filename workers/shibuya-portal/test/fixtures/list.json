@@ -1,0 +1,15 @@
+{
+  "Update_At" : "2026/10/16 12:41",
+  "BosaiRadioList" : {
+    "content" : [ {
+      "month" : "202610",
+      "filename" : "renkei_73_bosai_radio_202610.js"
+    }, {
+      "month" : "202608",
+      "filename" : "renkei_73_bosai_radio_202608.js"
+    }, {
+      "month" : "202607",
+      "filename" : "renkei_73_bosai_radio_202607.js"
+    } ]
+  }
+}

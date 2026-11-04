@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Cloudflare Workers: their own package, tsconfig and tests (workers/*/README.md).
+    "workers/**",
   ]),
 ]);
 

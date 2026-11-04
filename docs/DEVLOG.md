@@ -831,7 +831,9 @@ A first round was thrown away before the three finalists: a side section of the 
 | two under the eave | two neighbours sitting on the plank under the roof | `M8 3h16l6 6H2z M2 21h28v4H2z M8 15.5a3.5 3.5 0 0 1 7 0V21H8z M17 15.5a3.5 3.5 0 0 1 7 0V21h-7z` | rejected: the figures merge into two columns at 16 px and the whole reads as a bank or temple front |
 | **roofed speech bubble** (chosen) | the eave of the veranda over a speech bubble that holds two lines of a notice: where neighbours talk, and the notice they talk about | `M8 2h16l6 6H2z M7 10h18a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H14l-6 6v-6H7a3 3 0 0 1-3-3v-8a3 3 0 0 1 3-3z M8 14v2h16v-2z M8 18v2h10v-2z` | chosen: the only silhouette that stays distinct at 16 px (a wide eave over a rounded block with a tail), reads as neither a letter nor a stock icon, and says both halves of the product |
 
-Every edge of the chosen mark sits on an even unit, so at 16 px it lands on whole pixels; the eave overhangs the bubble by one pixel on each side, like a real eave; the two lines are holes, so the mark stays one colour. It lives once in `components/brand/Mark.tsx` (path, colours, a `Mark` component in the current text colour, a data URL for `next/og`).
+Every edge of the chosen mark sits on an even unit, so at 16 px it lands on whole pixels; the eave overhangs the bubble by one pixel on each side, like a real eave; the two lines are holes, so the mark stays one colour.
+
+*Follow-up, same night:* the roofed bubble was replaced by candidate 04, Tatami edges (四畳半の畳縁), which the user chose from `docs/brand/candidates.html`: a four-and-a-half mat room drawn by its mats, the gaps between them being the mat edges. 04 says the name twice, since 畳縁 and 縁側 share the 縁 (the edge, and the bond between people), and a 四畳半 is the smallest room where people sit down together; it has no curve and lands on whole pixels at 16 px, where the bubble's tail and lines were the first parts to blur. The mark now lives in `components/brand/Mark.tsx` as two variants (`solid` and `edges`) behind one switch, `MARK_VARIANT`; `app/icon.svg` and `app/favicon.ico` are written from it by `pnpm brand:icons`. Details in the entry "mark 04 Tatami edges" at the end of this file.
 
 **Done**
 - Brand files: `app/icon.svg` (the mark alone, green, the paper colour under `prefers-color-scheme: dark`), `app/icon.tsx` (32 px PNG, the mark on a rounded accent tile), `app/apple-icon.tsx` (180 px, square, iOS rounds it), `app/icons/[size]/route.tsx` (one handler, 192 and 512 built at build time with `generateStaticParams`, anything else 404), `app/manifest.ts` (`name` Engawa, `short_name` 縁側 Engawa, standalone, start_url `/`, theme the accent, background the paper, 192 and 512 any plus 512 maskable: the mark sits inside the maskable circle), all PNGs from one `iconResponse` in `components/brand/icon-image.tsx`. `app/favicon.ico` from the create-next-app scaffold replaced by an ICO that wraps the 32 px PNG, so a client that asks for `/favicon.ico` gets the mark too. The five template files in `public/` deleted (nothing referenced them).
@@ -1209,3 +1211,113 @@ Scope added by the reviewing session on the user's behalf, about two hours, same
 
 **Review fixes for PR #28 (Fable, reviewing session, on the integration branch):** a known place's official note (`notes_ja`: a shelter closed for rebuilding and its substitute, a substitute reserved for 要配慮者) now reaches Claude in the board context and is shown under the place in the Places view, so a closed school is never offered as an open shelter; the `office` kind has a label in five languages and an icon; Chinese reads 无法回家人员临时安置设施 for the commuter shelters and the Chinese and Korean place names use a middle dot instead of the katakana dot; the vendor intrusion note in `docs/BOARDS.md` moved under Not confirmed since its URL was not kept; the seed header says what `--rotate-token` does without `--board`. The pilot board has three places with notes, so its extract context grew by those lines; the eval was re-run on the integration branch (result below). Left for later: `server-only` on the polygon loader once that package is a dependency.
 Eval on the integration branch with the pilot's place notes in the context (`pnpm eval --no-write`, 16 inputs): 105/105 fields, 0 PII leaks, 0 invented facts, risk flags 16/16, six languages 16/16, extract median 9.3 s (p90 10.8 s), translate median 10.1 s.
+
+## 2026-11-04 (Wed) night, Shibuya portal poller: ward broadcasts into the board inbox
+
+**Model:** `claude-opus-5-5` in Claude Code, implementation role, in its own worktree (branch `day6-poller`, cut from `main` at `1b0db05`) while another session worked on the brand files. Fable (the reviewing session) wrote the brief and integrates. No Claude API call was added or changed. The database was not touched and nothing was posted to the live inbox: the tests run on fixtures, and the portal was read once by hand (the list and the October file, one request each) to check the brief's shape before writing them.
+
+**What it is.** `workers/shibuya-portal/`, the Cloudflare Worker `engawa-shibuya-portal`: a cron trigger every 5 minutes, KV binding `STATE`, `workers_dev = false`, no secret and no account id in the repository. A run reads the month list and the newest month of the 渋谷区防災ポータル 防災行政無線 feed, sorts the broadcasts oldest first and posts each one after the stored `last_update_at` to `/api/b/shibuya/inbox` as `{from: PORTAL_SENDER, subject: the Japanese title, text: the Japanese message, received_at: update_at read as +09:00}`, storing each `update_at` after its 201 and stopping at the first answer that is not 201. The first run stores the newest `update_at` and posts nothing. Pure functions in `src/feed.ts`, the run in `src/run.ts` with fetch, KV, the clock and the log passed in, `src/index.ts` wires the bindings. The README has the deploy steps, the first run, re-posting one broadcast by hand and the free plan limits. The worker has its own `package.json`, lockfile, `tsconfig.json` and pnpm root (`pnpm-workspace.yaml` in its folder), so the app's install on Vercel never pulls wrangler; `workers/` is excluded from the app's `tsconfig.json` and eslint ignores.
+
+**The feed as read** (2026-11-04): both files served as `application/json`; the list names 7 months, newest first, and only months that had a broadcast (202610, 202608, 202607, 202602, ...); 202610 holds one broadcast, `update_at` `2026/10/16 12:40`, `important` 0, messages ending in a newline, all six `multi_lang` entries with an mp3 attachment. The fixtures copy that shape; only the 緊急地震速報 entry's title and Japanese and English messages are the feed's, the rest is written for the tests (`test/fixtures/README.md`).
+
+**Decisions open for review** (where the brief was read or extended)
+- **The inbox post waits up to 310 s, not 15 s.** The inbox answers after its whole pipeline (15 to 30 s, at most the route's 300 s) and finishes the run when the caller hangs up, so a 15 s timeout would count a broadcast the board took as failed and post it again next run. The portal fetches keep the 15 s.
+- **Retries are bounded.** On 500 (and 400, 413, 422, a 504, a network error, a timeout) nothing is stored as posted, the error code is logged and the run stops; the next run tries again. After 3 failed attempts in a row on one broadcast the next run passes it over and goes on. Without a bound a broadcast the pipeline refuses (`pii_leak`, `refusal`) would be posted 288 times a day, each spending Claude calls toward the daily cap, and would hold back every broadcast after it, an evacuation order included. The README shows how to re-post it by hand. 429, 503 and 403 stop the run without counting an attempt.
+- **A broadcast older than 24 hours at its turn is passed over.** The inbox ignores a `received_at` that old and reads 本日 against the time of the request, so a stale alert would come out as today's and could switch the board to disaster mode.
+- **The key is `update_at` plus an FNV-1a hash of the Japanese title and message.** Two broadcasts in the same minute are both posted; the 20 keys in KV are checked before every post, so a run that read an old state still posts nothing twice.
+- **A lease key in KV while a run posts**, an 8 minute budget and at most 5 posts per run, so a slow run and the next cron run never post the same broadcast and a run ends inside the 15 minutes a cron run may take. A run with nothing new reads one key and writes nothing.
+- **The month before is also read** when the newest month's oldest broadcast is after the stored time (a broadcast late in a month, or a poller that was down), as well as when the newest month is empty.
+- **"English differs materially"** is read as: the English is real English (more Latin letters than Japanese characters, not a copy) and carries a number other than zero or a link the Japanese lacks. A 12 hour time beside 15時 counts as a difference and adds one harmless line.
+- Dependencies pinned to releases about two weeks old: wrangler 4.151.3 (2026-10-20), `@cloudflare/workers-types` 5.20261019.1; TypeScript 5.9.3 and tsx 4.23.15 as in the app. A `typecheck` script beside `deploy`, `tail` and `test` checks the worker against the Workers types and the tests against the Node types.
+
+**Follow-ups, not done here**
+- Cards from the poller read "From the city's broadcast mail": `applyChannel` sets platform `city_mail` for every inbox post. A `city_portal` platform with its own source line in the five message files would say where the text came from.
+- The ward's consent to polling the feed (`docs/BOARDS.md`) comes before the deploy.
+- The feed's `important` flag is not used (0 on the one broadcast read).
+
+**Tests** (`pnpm test` in `workers/shibuya-portal`, `node --import=tsx --test test/*.test.ts`, durations cut)
+
+```
+✔ JST conversion: update_at is read as +09:00
+✔ first run stores the newest update_at and posts nothing
+✔ a new entry after the stored time is posted once
+✔ two new entries post oldest first, the English line only where it adds a fact
+✔ a failure stops the sequence and the next run retries from it
+✔ 429 and 503 stop the run without counting an attempt, 403 points at the setup
+✔ a broadcast that fails three times is passed over on the fourth run
+✔ a duplicate key is skipped even when the stored time is behind
+✔ two broadcasts in the same minute are both posted
+✔ the month before is read when the newest month has no broadcast
+✔ a broadcast older than 24 hours is passed over, not posted
+✔ a run holding the lease keeps the next one from posting
+✔ without the secret nothing is posted and nothing is stored
+✔ a portal error stops the run before anything is posted
+✔ log lines carry counts, statuses and times, never broadcast text
+✔ the English line: only a real English text with a number or link the Japanese lacks
+✔ month files: newest first, anything else dropped
+✔ the inbox's answer: 201 counts cards, error codes are kept short
+ℹ tests 18
+ℹ pass 18
+ℹ fail 0
+```
+
+**Acceptance**
+
+| check | result |
+|---|---|
+| `node --test` (`pnpm test` in the worker folder) | 18 of 18 pass |
+| the tests catch a broken order and a missing key guard | sorting newest first fails 5 tests; skipping the key check fails 5 |
+| `pnpm typecheck` in the worker folder (Workers types for `src`, Node types for `test`) | clean |
+| `wrangler deploy --dry-run` in the worker folder, no login | built, 14.29 KiB (4.76 KiB gzip); bindings `STATE` (placeholder id), `ENGAWA_INBOX_URL`, `PORTAL_SENDER` |
+| `pnpm typecheck` at the root, `workers/` excluded | clean |
+| `pnpm lint` at the root, `workers/**` ignored | clean |
+| `pnpm guard --all` | clean |
+| `pnpm build` | compiled, 12 static pages; no worker code in `.next` |
+
+## 2026-11-04 (Wed) night, mark 04 Tatami edges: solid and edges variants
+
+**Model:** `claude-opus-5-5` in Claude Code, implementation role, in its own worktree (branch `day6-mark`, cut from `main` after PR #30), brief from the reviewing session (Fable). Another session worked at the same time under `workers/**`, `docs/BOARDS.md`, `docs/INBOX.md`, `.gitignore`, `tsconfig.json` and `eslint.config.*`; none of those were touched. No pipeline, prompt, database or message file change.
+
+**Done**
+- `components/brand/Mark.tsx`: the five mats as one table of rectangles on the 64 unit grid (`MATS`), and both variants derived from it as path constants in `MARK_PATHS`: `solid` (filled blocks, the edges as gaps, as `docs/brand/candidates/04.svg`) and `edges` (each mat a rounded outline, mats hollow). `MARK_VARIANT: "solid" | "edges"` is the one switch; `MARK_PATH` follows it, and so does every consumer. `MARK_VIEWBOX` is now `0 0 64 64`. `markSvg` and `markDataUrl` take an optional variant for the preview script.
+- `components/brand/icon-image.tsx`: the mark for every `next/og` image goes through it: `MarkImage` (the mark as an `<img>`), `MarkTile` (white mark on the accent tile, sized by the margin around the drawn mark) and `iconResponse`, with the margins in one place (`ICON_MARGIN`). `app/icon.tsx`, `app/apple-icon.tsx`, `app/icons/[size]/route.tsx`, `app/opengraph-image.tsx` and `app/b/[slug]/opengraph-image.tsx` use them; none keeps a path or a data URL of its own. The board preview's tile, which repeated the tile markup, is now `MarkTile`.
+- Tiles: the mark is white on the accent (it was the paper colour). Margins between the drawn mark and each side: apple icon 18 %; manifest icons 22 %, because they double as maskable and the mark is a square with filled corners, so it may span at most 80 % / sqrt(2) (56.6 %) of the side to stay inside Android's safe circle; the 32 px favicon tile 17 %, which keeps the mark's grid at 24 px as before.
+- `scripts/brand/icons.ts` (`pnpm brand:icons`, `--check` to only compare): writes `app/icon.svg` (the mark alone in the accent, the paper colour under `prefers-color-scheme: dark`, as before) and `app/favicon.ico` (an ICO around the 32 px PNG of `app/icon.tsx`) from `Mark.tsx`, so the two static files cannot drift. The output is byte for byte stable, so `--check` can run anywhere.
+- `docs/brand/mark-04-variants.html`, written by `scripts/brand/variants-page.tsx` (`pnpm brand:preview`) from the same constants: two columns (solid, edges), each at 16, 32, 64 and 180 px on the paper and on white; the 16 px tab, 20 px top bar and 32 px tile as the pixels a 1x screen gets (PNG from `next/og`, the renderer of the real icons, enlarged 6 times); the top bar at 390 px with "Engawa" and the 縁側 Engawa lockup; the iOS tile, the Android circle mask and the favicon tile; the favicon in a light and a dark browser tab; one line under each with my pick. Self-contained (inline SVG through `<symbol>`, CSS, PNG data URLs).
+- `docs/brand/candidates.html`: the last row, "Today's mark", is now "Previous mark" and the intro says 04 replaced it; its path stays as the comparison. Nothing in `app`, `components` or `public` carries the bubble any more (grep for its path data and for "bubble": only that row and candidate 02, "Bubble on the plank", which is a different candidate).
+
+**Geometry**
+- `solid`: candidate 04 was already right and is unchanged: every gap 4 units (1 px at 16 px); every mat 16 wide and the half mat 16 by 16; a full mat 36 long, two half mats plus one gap, so with half a gap around each a full mat is 40 by 20 and the half mat 20 by 20, exactly 2:1 and half, as with real tatami whose edges belong to the mat. The pinwheel maps onto itself under a quarter turn about the centre, so it is centred optically as well as geometrically, 4 units from every side; the drawn extent (56 of 64) is the bubble's (28 of 32), so nothing around the mark moves.
+- `edges`: the brief's stroke of about 5 units was drawn first and judged as 16 px rasters: 5 units is 1.25 px, the lines blur, and the half mat's hole (1.5 px) fills in, so the mats read as pink blocks with darker borders, a muddy copy of `solid`. A thicker stroke (6 with a 3 unit gap) closes the holes further. Stroke 4 is exactly 1 px at 16 px and 2 px at 32 px: five crisp outlines with 2 px holes and 1 px gaps, so the variant uses 4, with the same 4 unit gap and footprint as `solid`. Corners: outer radius 5, inner 1 (a 4 unit stroke around a 3 unit centre radius); at 180 px radii of 6 and up turned the long mats into pills and the half mat into the letter o. A simplification was also drawn, a floor plan with shared lines (one frame and the four inner edges, as a 間取り draws a 四畳半): crisp and very much a room, but it reads as the layout icon of UI kits and is not each mat's own edge, so it was not shipped.
+
+**Acceptance** (production build, `pnpm start` on port 3611; images fetched with curl and looked at; headless Chrome over the DevTools protocol for the top bar and the preview page; the live site was only read)
+
+| check | result |
+|---|---|
+| `/icon.svg` | 200 `image/svg+xml`, the five mats; computed fill #ad235d with `prefers-color-scheme: light` and #fbfaf7 with dark (emulated) |
+| `/icon` | 200 PNG 32x32: the white mark on the rounded accent tile |
+| `/favicon.ico` | 200 ICO, 32x32 PNG inside, the same image |
+| `/apple-icon` | 200 PNG 180x180, square, the mark 18 % from each side |
+| `/icons/192`, `/icons/512` | 200 PNG, the mark 22 % from each side; the 512 under an 80 % circle mask keeps the whole mark; `/icons/64` still 404 |
+| `/opengraph-image` | 200 PNG 1200x630: the mark in the accent at 168 px before 縁側 Engawa |
+| `/b/musashikosugi/opengraph-image` | 200 PNG 1200x630: the white mark on the 96 px accent tile before Engawa / 縁側, then 武蔵小杉 |
+| top bar, 390 px, home and board | engawaboard.com (the bubble, `main`) against this build: the mark's box 20 by 20 at (16, 20), its drawn part 17.5 px at (17.25, 21.25), centre at y 30 like the centre of the "Engawa" text, the link 86.38 by 44 at (16, 8): the same numbers on both, on both pages |
+| `edges` through the routes | `MARK_VARIANT` set to `edges` in the working tree and the six route functions called directly (icon, apple icon, icons 192 and 512, both preview images): all render the outlines; `pnpm brand:icons --check` then reports both static files stale, as it should; set back to `solid`, check clean |
+| `docs/brand/mark-04-variants.html` from `file://` | 1280 px: two columns; 390 px: one column, no sideways scroll (scroll width 390), 30 marks painted, 6 PNGs decoded, no link, script or iframe element |
+
+`pnpm typecheck`, `pnpm lint`, `pnpm guard --all` and `pnpm build` clean.
+
+**Decisions taken in this session, open for review**
+- `edges` uses a 4 unit stroke instead of about 5, for the 16 px reason above.
+- My pick is `solid`, and it is what the build ships until the user says otherwise: it keeps the most colour at 16 to 32 px, where the mark is seen most (tab, top bar, small tile), and it matches the bold wordmark; `edges` is lighter and closer to the word 畳縁, at its best from 64 px.
+- `app/icon.svg` keeps its dark mode rule: in a dark tab strip the rose would be 1.8:1 on #35363a and 2.4:1 on #202124, the paper colour 11.6:1 and 15.4:1. In light mode it is the accent, as the brief asks.
+- The top bar takes `Mark` from `Mark.tsx` directly; only the image consumers go through `icon-image.tsx`, which imports `next/og` and has no place in the client bundle.
+- The preview's top bar mock reads "Engawa", as the live bar does (the brief said 縁 Engawa); the 縁側 Engawa lockup of the preview image is shown under it.
+- Two scripts in `package.json`: `brand:icons` and `brand:preview`.
+
+**Needed a human**
+- Pick `solid` or `edges` in `docs/brand/mark-04-variants.html`. To ship `edges`: set `MARK_VARIANT = "edges"` in `components/brand/Mark.tsx`, run `pnpm brand:icons`, commit the two static files with it.
+- After the deploy, a look at the home screen icon on a real phone. Browsers cache favicons hard: an old tab can keep the bubble until a hard reload.
+
+**Review fixes for PR #31 (Fable, reviewing session, on the integration branch):** the run reads the KV state again under its lease before posting, so a run that finished meanwhile cannot make it post the same broadcast (KV propagation lag remains the one gap, worth one merged duplicate at most); only a coded answer from the pipeline counts toward the three attempts, an outage, a timeout or an uncoded 5xx never passes an evacuation order over; an empty `ENGAWA_INBOX_URL` or `PORTAL_SENDER` stops the run with `no_config` instead of burning attempts; the README says the repository commits the KV namespace id and that a broadcast the ward edits is posted again and merged by reconcile. The STATE namespace was created on the account and its id committed; 18 of 18 tests pass with the updated log expectation.
+The human picked the solid variant of mark 04 (2026-11-05 00:45 JST), which is the default; `MARK_VARIANT` stays `solid` and the committed `app/icon.svg` and `app/favicon.ico` already match it.

@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
-import { BRAND, BRAND_JA, markDataUrl } from "@/components/brand/Mark";
+import { BRAND, BRAND_JA } from "@/components/brand/Mark";
+import { MarkImage } from "@/components/brand/icon-image";
 import { LANGS, t } from "@/lib/i18n";
 
 export const alt = "縁側 Engawa: a neighbourhood board that turns paper notices, chat screenshots and text into cards in six languages";
@@ -30,7 +31,7 @@ export default function Image() {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 40 }}>
-          <img src={markDataUrl(BRAND.accent)} width={168} height={168} alt="" />
+          <MarkImage color={BRAND.accent} box={168} />
           <div style={{ display: "flex", alignItems: "baseline", gap: 28, fontSize: 112, fontWeight: 700 }}>
             <div>{BRAND_JA}</div>
             <div>Engawa</div>

@@ -66,7 +66,8 @@ Ranked by value on the judging axes (impact, demo, use of Claude, depth) against
 - N19 Home page: what the board is in one sentence, a Japan map of prefecture polygons with the boards' prefectures highlighted, board cards with live counts, three steps in the UI's own words, footer links; only listed boards (migration 0008) so acceptance leftovers never show. Demo and impact. About 2 hours. Done 2026-11-04.
 - N20 Brand: a mark that reads at 16 px, favicon, apple icon, manifest icons, root and board OG images, the accent colour changed from green to a deep rose with a contrast table. Demo. About 1.5 hours. Done 2026-11-04.
 - N21 Disaster mode as a real state: admin switch with the reason recorded (migration 0009), automatic switch when the city's broadcast mail carries an evacuation order or a strong quake, automatic return after 7 quiet days, and a visibly different board in disaster mode (red strip, official and danger first, water, shelter, medical and danger filters pinned, loudspeaker input first). Impact and demo. About 3 hours. Done 2026-11-04.
-- N22 More cities on the map: Sapporo and Fukuoka boards by the checklist in `docs/BOARDS.md`, so the map has a board in the north, the centre and the south. Data work per city (shelters, water points, polygons, seed) plus the city's broadcast mail. About 3 hours each.
+- N22 More cities on the map: Sapporo and Fukuoka boards by the checklist in `docs/BOARDS.md`, so the map has a board in the north, the centre and the south. Data work per city (shelters, water points, polygons, seed) plus the city's broadcast mail. About 3 hours each. Planned after the video.
+- N23 Two more boards after the video, lower priority: 高津区 (川崎市, its own board beside 武蔵小杉; the city's mail already covers it, so the forwarder learns to post one mail to two boards) and 上野 (台東区; check whether the ward publishes its broadcasts like 渋谷区). About 3 hours each.
 
 ### Not this week
 
@@ -178,12 +179,15 @@ Session PRs were merged in pairs after review through the integration PRs #11, #
 - [x] N21 disaster mode: admin switch with the reason (migration 0009), automatic switch from the city's mail, automatic return after a quiet week for automatic switches only, the disaster layout (PR #25)
 - [x] N18 Shibuya board data: 渋谷駅 area 町丁目, shelters and places from the ward's lists, e-Stat polygons, per-board polygon loading, multi-board seed with a dry run, `docs/BOARDS.md` with the city checklist (PR #28); seeded after the merge
 - [x] Home page rework to the design bar: wordmark hero, plank divider, warm map with the islands inset and tooltips, quiet entrance motion, six-language tagline, footer with Made by Yanwen and Source on GitHub, map credit moved to the about page, eight mark candidates for the human to pick (PR #29)
+- [x] Mark 04 (Tatami edges) applied to the favicon, the icons, the manifest and both OG images, solid and outlined variants behind one switch (PR #32); the human picked solid, the default, so nothing to flip
+- [x] Shibuya broadcasts: a Cloudflare cron Worker polls the ward portal's feed and posts new broadcasts to the board inbox (PR #31); the human generated the board's inbox secret, the portal sender is on the allowlist
 
-### 2026-11-05 (Thu): native reads, the inbox wired, remaining nice-to-haves
-- [ ] Korean and Vietnamese native speakers read the demo cards; fix wording
+### 2026-11-05 (Thu): demo walk-through, README, remaining nice-to-haves
+- [ ] A read-only pass over the five message files and the about page for natural Korean and Vietnamese and consistent terms (at the 11/06 review; the human decided against outside native readers)
 - [ ] Human: try the heard input on a real phone next to a broadcast; watch the first real city mail become a card and confirm it on the admin page
-- [ ] Apply the mark the human picks from `docs/brand/candidates.html` to the icons and OG images
-- [ ] N22 Sapporo and Fukuoka boards, N12 make a board, web push for official and danger cards: only if the day is clear
+- [ ] Demo walk-through on the deployed URL with the disaster mode switch; decide the demo board content for 11/06
+- [ ] README final with the new domain, home page, two boards, the three ways into the inbox, disaster mode; README.ja.md; the about page's two-layer maintenance model
+- [ ] Planned, in this order as time allows: N22 Sapporo and Fukuoka, web push for official and danger cards (VAPID keys from the human), N12 make a board with per-board admin tokens; N23 after the video
 
 ### 2026-11-06 (Fri): review, freeze, demo prep
 - [ ] Full run of the 7-step demo scenario on the deployed URL; fix what breaks

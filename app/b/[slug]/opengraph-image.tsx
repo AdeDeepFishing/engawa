@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
-import { BRAND, markDataUrl } from "@/components/brand/Mark";
+import { BRAND } from "@/components/brand/Mark";
+import { MarkTile } from "@/components/brand/icon-image";
 import { getBoardBySlug } from "@/lib/db/boards";
 import { LANGS, t } from "@/lib/i18n";
 
@@ -42,19 +43,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
-          <div
-            style={{
-              width: 96,
-              height: 96,
-              borderRadius: 24,
-              background: ACCENT,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <img src={markDataUrl(PAPER)} width={60} height={60} alt="" />
-          </div>
+          <MarkTile size={96} margin={0.22} /* a visual choice for the preview tile, not the maskable safe zone */ radius={24} />
           <div style={{ display: "flex", flexDirection: "column" }}>
             <div style={{ fontSize: 48, fontWeight: 700 }}>Engawa</div>
             <div style={{ fontSize: 28, color: MUTED }}>縁側</div>

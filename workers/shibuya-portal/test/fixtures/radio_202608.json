@@ -1,0 +1,25 @@
+{
+  "Update_At" : "2026/08/26 11:01",
+  "BosaiRadio" : {
+    "month" : "202608",
+    "information" : [ {
+      "update_at" : "2026/08/26 11:00",
+      "title" : "全国瞬時警報システム（Jアラート）の試験放送",
+      "message" : "これは、Jアラートのテストです。\nこれは、Jアラートのテストです。\nこれは、Jアラートのテストです。\nこちらは、ぼうさいしぶやです。\n",
+      "url" : "",
+      "important" : 0,
+      "multi_lang" : {
+        "ja" : {
+          "title" : "全国瞬時警報システム（Jアラート）の試験放送",
+          "message" : "これは、Jアラートのテストです。\nこれは、Jアラートのテストです。\nこれは、Jアラートのテストです。\nこちらは、ぼうさいしぶやです。\n",
+          "attachments" : [ ]
+        },
+        "en" : {
+          "title" : "J-ALERT test broadcast",
+          "message" : "This is a J-ALERT test.\nThis is a J-ALERT test.\nThis is a J-ALERT test.\nThis is Bosai Shibuya.\n",
+          "attachments" : [ ]
+        }
+      }
+    } ]
+  }
+}

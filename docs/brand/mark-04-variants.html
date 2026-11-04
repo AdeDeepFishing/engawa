@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Engawa mark 04, two variants</title>
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #fbfaf7; color: #1b1b1b; line-height: 1.5;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", Meiryo, sans-serif; }
+  main { max-width: 1240px; margin: 0 auto; padding: 32px 16px 64px; }
+  h1 { font-size: 28px; margin: 0 0 8px; }
+  .intro { font-size: 16px; color: #5c5c5c; max-width: 80ch; margin: 0 0 24px; }
+  code { font-size: 14px; background: #fff; border: 1px solid #d9d6cf; border-radius: 6px; padding: 0 6px; }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+  .col { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+  h2 { font-size: 22px; margin: 0; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .ja { color: #5c5c5c; font-weight: 600; font-size: 18px; }
+  .what { margin: 0; font-size: 16px; }
+  .panel { background: #fff; border: 1px solid #d9d6cf; border-radius: 14px; padding: 12px; }
+  h3 { font-size: 13px; font-weight: 600; color: #5c5c5c; margin: 0 0 8px; }
+  .swatch, .row { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 16px; }
+  .swatch { padding: 16px; border-radius: 10px; border: 1px solid #d9d6cf; }
+  figure { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  figcaption { font-size: 12px; color: #5c5c5c; font-variant-numeric: tabular-nums; }
+  svg { display: block; }
+  img.px { image-rendering: pixelated; border: 1px solid #d9d6cf; }
+  .bar { display: flex; align-items: center; background: #fbe9f0; border: 1px solid #d9d6cf; border-radius: 10px; padding: 0 16px; height: 60px; max-width: 390px; font-size: 16px; }
+  .bar svg { margin-right: 6px; flex: none; }
+  .bar .ctl { border: 1px solid #87837a; border-radius: 10px; padding: 0 10px; height: 36px; display: inline-flex; align-items: center; font-size: 14px; background: #fff; margin-left: 8px; }
+  .bar .ctl:first-of-type { margin-left: auto; }
+  .lockup { display: flex; align-items: center; gap: 14px; font-size: 37px; font-weight: 700; margin-top: 16px; }
+  .tile { background: #ad235d; display: flex; align-items: center; justify-content: center; }
+  .strip { display: flex; padding: 8px 8px 0; border-radius: 8px; margin-top: 8px; }
+  .strip.light { background: #dfe1e5; }
+  .strip.dark { background: #202124; }
+  .tab { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 8px 8px 0 0; font-size: 13px; width: 220px; }
+  .light .tab { background: #fff; color: #1f1f1f; }
+  .dark .tab { background: #35363a; color: #e8eaed; }
+  .verdict { margin: 0; font-size: 16px; padding: 12px 14px; border-left: 4px solid #ad235d; background: #fff; border-radius: 0 10px 10px 0; }
+  @media (max-width: 860px) {
+    .cols { grid-template-columns: 1fr; }
+    .swatch { gap: 12px; padding: 12px; }
+  }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="m-solid" viewBox="0 0 64 64"><path fill-rule="evenodd" d="M4 4h36v16h-36ZM44 4h16v36h-16ZM24 44h36v16h-36ZM4 24h16v36h-16ZM24 24h16v16h-16Z"/></symbol><symbol id="m-edges" viewBox="0 0 64 64"><path fill-rule="evenodd" d="M9 4h26a5 5 0 0 1 5 5v6a5 5 0 0 1 -5 5h-26a5 5 0 0 1 -5 -5v-6a5 5 0 0 1 5 -5ZM9 8h26a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-26a1 1 0 0 1 -1 -1v-6a1 1 0 0 1 1 -1ZM49 4h6a5 5 0 0 1 5 5v26a5 5 0 0 1 -5 5h-6a5 5 0 0 1 -5 -5v-26a5 5 0 0 1 5 -5ZM49 8h6a1 1 0 0 1 1 1v26a1 1 0 0 1 -1 1h-6a1 1 0 0 1 -1 -1v-26a1 1 0 0 1 1 -1ZM29 44h26a5 5 0 0 1 5 5v6a5 5 0 0 1 -5 5h-26a5 5 0 0 1 -5 -5v-6a5 5 0 0 1 5 -5ZM29 48h26a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-26a1 1 0 0 1 -1 -1v-6a1 1 0 0 1 1 -1ZM9 24h6a5 5 0 0 1 5 5v26a5 5 0 0 1 -5 5h-6a5 5 0 0 1 -5 -5v-26a5 5 0 0 1 5 -5ZM9 28h6a1 1 0 0 1 1 1v26a1 1 0 0 1 -1 1h-6a1 1 0 0 1 -1 -1v-26a1 1 0 0 1 1 -1ZM29 24h6a5 5 0 0 1 5 5v6a5 5 0 0 1 -5 5h-6a5 5 0 0 1 -5 -5v-6a5 5 0 0 1 5 -5ZM29 28h6a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-6a1 1 0 0 1 -1 -1v-6a1 1 0 0 1 1 -1Z"/></symbol></defs></svg>
+<main>
+  <h1>Engawa mark 04, Tatami edges: two variants</h1>
+  <p class="intro">Candidate 04 (四畳半の畳縁: four mats around a half mat) in the two variants the site can ship. Both are one path on the same 64 unit grid with the same footprint, 4 units from each side, so the pick changes nothing else on any page. The switch is one line: <code>MARK_VARIANT</code> in components/brand/Mark.tsx, "solid" or "edges", then <code>pnpm brand:icons</code> for app/icon.svg and app/favicon.ico. The build uses solid until then. Written by scripts/brand/variants-page.tsx from the same constants; the page makes no request.</p>
+  <div class="cols">
+<section class="col" aria-labelledby="h-solid">
+  <h2 id="h-solid">Solid <span lang="ja" class="ja">塗り</span> <code>"solid"</code></h2>
+  <p class="what">The five mats as filled blocks; the 4 unit gaps between them are the edges (1 px at 16 px).</p>
+  <div class="panel"><h3>On the paper #fbfaf7</h3><div class="swatch" style="background:#fbfaf7"><figure><svg viewBox="0 0 64 64" width="16" height="16" aria-hidden="true"><use href="#m-solid" fill="#ad235d"/></svg><figcaption>16</figcaption></figure><figure><svg viewBox="0 0 64 64" width="32" height="32" aria-hidden="true"><use href="#m-solid" fill="#ad235d"/></svg><figcaption>32</figcaption></figure><figure><svg viewBox="0 0 64 64" width="64" height="64" aria-hidden="true"><use href="#m-solid" fill="#ad235d"/></svg><figcaption>64</figcaption></figure><figure><svg viewBox="0 0 64 64" width="180" height="180" aria-hidden="true"><use href="#m-solid" fill="#ad235d"/></svg><figcaption>180</figcaption></figure></div></div>
+  <div class="panel"><h3>On white</h3><div class="swatch" style="background:#ffffff"><figure><svg viewBox="0 0 64 64" width="16" height="16" aria-hidden="true"><use href="#m-solid" fill="#ad235d"/></svg><figcaption>16</figcaption></figure><figure><svg viewBox="0 0 64 64" width="32" height="32" aria-hidden="true"><use href="#m-solid" fill="#ad235d"/></svg><figcaption>32</figcaption></figure><figure><svg viewBox="0 0 64 64" width="64" height="64" aria-hidden="true"><use href="#m-solid" fill="#ad235d"/></svg><figcaption>64</figcaption></figure><figure><svg viewBox="0 0 64 64" width="180" height="180" aria-hidden="true"><use href="#m-solid" fill="#ad235d"/></svg><figcaption>180</figcaption></figure></div></div>
+  <div class="panel"><h3>As the pixels a 1x screen gets, enlarged 6 times</h3><div class="row"><figure><img class="px" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAANklEQVQ4jWP4/ev7f0owA4hYqxxLEGNTN5wM+E0kJtoFv0kQYxjGBvymJCX+JiFqGYaJAZRgANZz07+qLOaCAAAAAElFTkSuQmCC" width="96" height="96" alt="Solid at 16 px, enlarged 6 times"><figcaption>16 px, the tab</figcaption></figure><figure><img class="px" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAmUlEQVQ4jWP4/fLDf2piBhBxvnLu/wMhjUThe/N2/n975CqG+PnKuQgDQQJrlWOJwlfalv9/vuM0hviBkMYRbeDbI1fBiojBny7cI2zgvXk7wTYjY5hGdHGYwSR7+TnUMKqF4fORaeBzHJECijB08XvzdhI2EBbTxOC3R66S52Vc+AC5YThMDDyPpYAFBTIo5ogteFEKWGpiAB2QXH1XsJCtAAAAAElFTkSuQmCC" width="120" height="120" alt="Solid at 20 px, enlarged 6 times"><figcaption>20 px, the top bar</figcaption></figure><figure><img class="px" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAABT0lEQVRYhWP4/ev7fxj+8vzV/8vdy//v9q78v1En5f9a5ViqYJBZe3yq/l/uWQG2A9lOBhjj4eYj/zfqpVLNUpyO0Uv9/3DLUVQHPNx85P9alTiaWw7HKnFwRzCAgoQePscICf20/19evP7PAIpzelsOw5d7V/xn2O1dhSFxKKrt/7WJ60jG+PSCxNHtASVMho26mMEP0kAOwKcX5kD0BMmALWjo5QAQHnUAw6CMgkMU5AKqOGAtBZimifAa1BCaR8G1UQdMHI2CdYM7Ea6lImYgxwHkFFLYqmOqZ0N8gC7lAD4w6oBruKJgI5YWMb2iANQyZgD1goitjmEpmVq5ANwoBXWXqJ23icVX+lYOXMdkk0H6/68vX0O7ZluO0r1r9mjrMbTO6Zaj4ERBD5/DLEdxALh7/uI1uLu0x7f6P7YOC7kYZBbITFCcg4Id2U4A/R+IRd+TENAAAAAASUVORK5CYII=" width="192" height="192" alt="Solid at 32 px, enlarged 6 times"><figcaption>32 px tile, /icon</figcaption></figure></div></div>
+  <div class="panel"><h3>Top bar at 390 px, and the lockup of the preview image</h3>
+    <div class="bar"><svg viewBox="0 0 64 64" width="20" height="20" aria-hidden="true"><use href="#m-solid" fill="#ad235d"/></svg><b>Engawa</b><span class="ctl">A+</span><span class="ctl">日本語</span></div>
+    <div class="lockup"><svg viewBox="0 0 64 64" width="56" height="56" aria-hidden="true"><use href="#m-solid" fill="#ad235d"/></svg><span lang="ja">縁側</span>&nbsp;Engawa</div>
+  </div>
+  <div class="panel"><h3>App icon: iOS 180 (18 % margin), Android maskable 96 (22 %), favicon tile 32 (17 %)</h3><div class="row tiles">
+    <figure><div class="tile" style="width:180px;height:180px;border-radius:40px"><svg viewBox="0 0 64 64" width="132" height="132" aria-hidden="true"><use href="#m-solid" fill="#ffffff"/></svg></div><figcaption>180, iOS rounds it</figcaption></figure>
+    <figure><div class="tile" style="width:96px;height:96px;border-radius:50%"><svg viewBox="0 0 64 64" width="61" height="61" aria-hidden="true"><use href="#m-solid" fill="#ffffff"/></svg></div><figcaption>96, in the circle mask</figcaption></figure>
+    <figure><div class="tile" style="width:32px;height:32px;border-radius:7px"><svg viewBox="0 0 64 64" width="24" height="24" aria-hidden="true"><use href="#m-solid" fill="#ffffff"/></svg></div><figcaption>32</figcaption></figure>
+  </div></div>
+  <div class="panel"><h3>Favicon in a browser tab (app/icon.svg: the accent, the paper colour in dark mode)</h3>
+    <div class="strip light"><span class="tab"><svg viewBox="0 0 64 64" width="16" height="16" aria-hidden="true"><use href="#m-solid" fill="#ad235d"/></svg><span>縁側 Engawa</span></span></div>
+    <div class="strip dark"><span class="tab"><svg viewBox="0 0 64 64" width="16" height="16" aria-hidden="true"><use href="#m-solid" fill="#fbfaf7"/></svg><span>縁側 Engawa</span></span></div>
+  </div>
+  <p class="verdict">My choice: it keeps the most colour at 16 to 32 px, so it holds in the tab, the top bar and the small tile, it matches the bold wordmark, and the gaps already are the 縁.</p>
+</section>
+<section class="col" aria-labelledby="h-edges">
+  <h2 id="h-edges">Edges <span lang="ja" class="ja">縁だけ</span> <code>"edges"</code></h2>
+  <p class="what">Only the edges: each mat a rounded outline 4 units thick (1 px at 16 px), mats hollow, the five outlines 4 units apart.</p>
+  <div class="panel"><h3>On the paper #fbfaf7</h3><div class="swatch" style="background:#fbfaf7"><figure><svg viewBox="0 0 64 64" width="16" height="16" aria-hidden="true"><use href="#m-edges" fill="#ad235d"/></svg><figcaption>16</figcaption></figure><figure><svg viewBox="0 0 64 64" width="32" height="32" aria-hidden="true"><use href="#m-edges" fill="#ad235d"/></svg><figcaption>32</figcaption></figure><figure><svg viewBox="0 0 64 64" width="64" height="64" aria-hidden="true"><use href="#m-edges" fill="#ad235d"/></svg><figcaption>64</figcaption></figure><figure><svg viewBox="0 0 64 64" width="180" height="180" aria-hidden="true"><use href="#m-edges" fill="#ad235d"/></svg><figcaption>180</figcaption></figure></div></div>
+  <div class="panel"><h3>On white</h3><div class="swatch" style="background:#ffffff"><figure><svg viewBox="0 0 64 64" width="16" height="16" aria-hidden="true"><use href="#m-edges" fill="#ad235d"/></svg><figcaption>16</figcaption></figure><figure><svg viewBox="0 0 64 64" width="32" height="32" aria-hidden="true"><use href="#m-edges" fill="#ad235d"/></svg><figcaption>32</figcaption></figure><figure><svg viewBox="0 0 64 64" width="64" height="64" aria-hidden="true"><use href="#m-edges" fill="#ad235d"/></svg><figcaption>64</figcaption></figure><figure><svg viewBox="0 0 64 64" width="180" height="180" aria-hidden="true"><use href="#m-edges" fill="#ad235d"/></svg><figcaption>180</figcaption></figure></div></div>
+  <div class="panel"><h3>As the pixels a 1x screen gets, enlarged 6 times</h3><div class="row"><figure><img class="px" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAnklEQVQ4jaWSUQ6DIBBE9y7iseQGGs/Seg08h17HfrQpH2vmg4SmswLxYzdk2DxgGInft94pQdvGhwbnNXTDfzmv+/TUn7lME7S19/p5HfQE6NjP53JNWgC4UdLTWtBwHQyxJ0Df5+UaECvLBGzEHKaZgJWYwzQTEMhGLVQsQDI2N5FpYgGakhgIoDadUvKgFK7iL1QBrgwrpbMpiaxOXSJINnkiuLkAAAAASUVORK5CYII=" width="96" height="96" alt="Edges at 16 px, enlarged 6 times"><figcaption>16 px, the tab</figcaption></figure><figure><img class="px" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAAsTAAALEwEAmpwYAAABrUlEQVQ4jc2UT0sCYRDG/S4dhL5AnyKKkNBDUFG3jnWKMvMPQSUSRdShg9AahJpU0KFW8qBFmqWbml7cS7UbbIsXAw8TM+LKRu548NDhWZbZmR/7vjPP2FqKDoOUDR96tgqZuW1IOX2Wyi0dQlNWqbAcjELK5ac41iLDAGJAHF2B57WwpS5HFqC6lwAtXYLo0BQ8LR9RHGuRYQBvHesgBSLscTp571cPBOzEpUCEvnWBk14oeMIsUBxbhZeNEx5YCcUogVPcPgOqmOeBLUUHLVOGt4t7SzUkmXJZYFNWobZ/DuWtU5J6k28nf3xBXRCNOL5jjAVmFw+ogzgCyQk3Ha1RrBPgbHjWGBt8xxjfFIe5y5iMRVJAMBK7ecI/Atb/OLIcSdJ14LXg9aScProudBEL7DQFZxSFMIxhDjau6D0mp1R3E/Atf/YBVHT6G26ctHTJvBx6AZXrR4jbp/sa+kooxgPRZmg3zpIFT5js20eXu92zkvS7y7h6kuNucoPkFwio3VVoVWEHS5ttp/QS1prWl2nBuvzwuhOnj2hJHAdu8Wbmg6DnaublMCj9AJVhCjfVOHoXAAAAAElFTkSuQmCC" width="120" height="120" alt="Edges at 20 px, enlarged 6 times"><figcaption>20 px, the top bar</figcaption></figure><figure><img class="px" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAACbElEQVRYhc1Xz08TQRSe/0WOpfB/gDfBk1xk8SSewQRjPYGVRANGPfjj5JKwytqSkEBCgdakJ7QrjQ2BpF4sFprQYKyy7DPf6K677ZTd7o7VSV52Z3a/ed+892a/HXb64xvZdvL5Cxl3X9LqwATpsVHSLlyRYphrbXCSjKTKfbh9MvumnMqSHlekOW1LJq5QOZ3zEiinsqT1jPx15471jDgkGELSjZW3RKJvjE4qVWLIebed22bcU4mtDkwKH2aGE2RMq2TMLPja9tRz0nsVMXZa5X2RDxQmcwOdCS7fIbIs6qRVNgvtsZZFmaFWEkg9EzHbmV3kuKXY1UChLD1ZJss0hVhc0TAuwjLRYPH+Kw4Kmkv3+yIsGsYDE9iJEAEpBDLDCbLOOqyBjffyCGggMZSg4oPXVHqU8jX3LpBGQAtpUgjocYUOtgyeV76LTJMqW4azyvyNefpeqzvhbxzVKT8+J4/A9q0XHLT7dIWHePfZCu8j1HgO57XCvpMC3IOENAJFn0maJ5S+DYv/O4HGUZ1q7/YcLcB94/DYk76PD3X+DFd3+qQQyI/PcRJOER4eU/76ryJEoUIXPAW8WfCIVWQCmkRjYQhgmyKkQaT6PDkOTQDfiI5aGzkOTcAyz6j0OB0oxNLk+Lxt6GeR5ViPjXpWgcqGBAdx3oxtIaAL/ohFcoy+nUfoQifNjfWQ6xvDT+mErxzjun7p9h9gr8I/OEGkuhnb8lNqJNVI+ziKfZhd+HcHkzf91+jrQfX30Syd6/rR7NPy26bDaTrHi6IbK7edewjw43mlyo9LaxdvthWPMIa5MCdyjrC7ff4EXB13A/ryRpoAAAAASUVORK5CYII=" width="192" height="192" alt="Edges at 32 px, enlarged 6 times"><figcaption>32 px tile, /icon</figcaption></figure></div></div>
+  <div class="panel"><h3>Top bar at 390 px, and the lockup of the preview image</h3>
+    <div class="bar"><svg viewBox="0 0 64 64" width="20" height="20" aria-hidden="true"><use href="#m-edges" fill="#ad235d"/></svg><b>Engawa</b><span class="ctl">A+</span><span class="ctl">日本語</span></div>
+    <div class="lockup"><svg viewBox="0 0 64 64" width="56" height="56" aria-hidden="true"><use href="#m-edges" fill="#ad235d"/></svg><span lang="ja">縁側</span>&nbsp;Engawa</div>
+  </div>
+  <div class="panel"><h3>App icon: iOS 180 (18 % margin), Android maskable 96 (22 %), favicon tile 32 (17 %)</h3><div class="row tiles">
+    <figure><div class="tile" style="width:180px;height:180px;border-radius:40px"><svg viewBox="0 0 64 64" width="132" height="132" aria-hidden="true"><use href="#m-edges" fill="#ffffff"/></svg></div><figcaption>180, iOS rounds it</figcaption></figure>
+    <figure><div class="tile" style="width:96px;height:96px;border-radius:50%"><svg viewBox="0 0 64 64" width="61" height="61" aria-hidden="true"><use href="#m-edges" fill="#ffffff"/></svg></div><figcaption>96, in the circle mask</figcaption></figure>
+    <figure><div class="tile" style="width:32px;height:32px;border-radius:7px"><svg viewBox="0 0 64 64" width="24" height="24" aria-hidden="true"><use href="#m-edges" fill="#ffffff"/></svg></div><figcaption>32</figcaption></figure>
+  </div></div>
+  <div class="panel"><h3>Favicon in a browser tab (app/icon.svg: the accent, the paper colour in dark mode)</h3>
+    <div class="strip light"><span class="tab"><svg viewBox="0 0 64 64" width="16" height="16" aria-hidden="true"><use href="#m-edges" fill="#ad235d"/></svg><span>縁側 Engawa</span></span></div>
+    <div class="strip dark"><span class="tab"><svg viewBox="0 0 64 64" width="16" height="16" aria-hidden="true"><use href="#m-edges" fill="#fbfaf7"/></svg><span>縁側 Engawa</span></span></div>
+  </div>
+  <p class="verdict">Second: closer to the word 畳縁 and lighter at 64 px and up, but at 16 to 20 px the outlines become a fine lattice with the half mat as a dot, so it is weaker exactly where the mark is seen most.</p>
+</section>
+  </div>
+</main>
+</body>
+</html>
