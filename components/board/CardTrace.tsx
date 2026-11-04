@@ -11,14 +11,26 @@ import type { CardTrace } from "@/lib/types";
  * reason shows none. `trace` null means the rows are still loading (sheet)
  * or there is no database (seed cards); the page then passes nothing.
  */
-export function CardTraceView({ cardId, trace, now }: { cardId: string; trace: CardTrace | null; now: Date }) {
+export function CardTraceView({
+  cardId,
+  trace,
+  now,
+  headingLevel = 3,
+}: {
+  cardId: string;
+  trace: CardTrace | null;
+  now: Date;
+  /** 3 inside the sheet and the panel (under the card's h2); 2 on the card page (under its h1). */
+  headingLevel?: 2 | 3;
+}) {
   const { lang, t } = useLang();
+  const Heading = headingLevel === 2 ? "h2" : "h3";
   const modelsLine = trace ? traceModelsLine(trace.models, lang) : "";
   return (
     <section className="mt-5 rounded-xl border border-line p-3" aria-labelledby={`trace-title-${cardId}`} data-trace>
-      <h3 id={`trace-title-${cardId}`} className="font-semibold">
+      <Heading id={`trace-title-${cardId}`} className="font-semibold">
         {t("trace.heading")}
-      </h3>
+      </Heading>
       <p className="mt-1 text-base text-muted">{t("trace.intro")}</p>
       {trace ? (
         <>

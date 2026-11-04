@@ -203,7 +203,7 @@ export function CardDetail({
       {traceAbsent ? null : <CardTraceView cardId={card.id} trace={traceState?.data ?? null} now={now} />}
 
       <details className="mt-5 rounded-xl border border-line p-3">
-        <summary className="cursor-pointer py-2 font-semibold">{t("sheet.all_languages")}</summary>
+        <summary className="cursor-pointer py-2 font-semibold hover:text-accent">{t("sheet.all_languages")}</summary>
         <ul className="mt-2 flex flex-col gap-3">
           {CARD_LANGS.filter((l) => l !== lang && !(card.missing_langs ?? []).includes(l)).map((l) => (
             <li key={l} lang={l === "easy_ja" ? "ja" : l}>
@@ -217,7 +217,7 @@ export function CardDetail({
 
       {card.original_text || card.has_masked_image ? (
         <details className="mt-3 rounded-xl border border-line p-3">
-          <summary className="cursor-pointer py-2 font-semibold">{t("sheet.original")}</summary>
+          <summary className="cursor-pointer py-2 font-semibold hover:text-accent">{t("sheet.original")}</summary>
           {card.original_text ? (
             <p lang={card.original_lang ?? undefined} className="mt-2 whitespace-pre-wrap text-muted">
               {card.original_text}

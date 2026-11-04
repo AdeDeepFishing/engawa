@@ -29,7 +29,7 @@ export function HiddenDrawer({
   if (items.length === 0) return null;
   return (
     <details className="mt-6 rounded-xl border border-line bg-held-bg" data-hidden-drawer>
-      <summary className="cursor-pointer px-4 py-2 text-base font-semibold">
+      <summary className="cursor-pointer px-4 py-2 text-base font-semibold hover:text-accent">
         {tCount("board.hidden_duplicates", lang, items.length)}
       </summary>
       <p className="px-4 text-base text-muted">{t("board.hidden_duplicates_note")}</p>

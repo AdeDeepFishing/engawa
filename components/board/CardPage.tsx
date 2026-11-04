@@ -51,7 +51,7 @@ export function CardPage({
   const previous = supersededStatements(card);
   const boardHref = `/b/${board.slug}`;
   const link =
-    "tap inline-flex items-center justify-center rounded-xl border border-line bg-surface px-4 font-semibold hover:border-accent";
+    "tap inline-flex items-center justify-center rounded-xl border border-line bg-surface px-4 font-semibold hover:border-accent active:bg-held-bg";
 
   return (
     <>
@@ -150,7 +150,7 @@ export function CardPage({
           </dl>
 
           {/* A refresh brings the new last confirmed time and the counts from the server. */}
-          <CardReactions key={`reactions-${card.id}`} card={card} onReacted={() => router.refresh()} />
+          <CardReactions key={`reactions-${card.id}`} card={card} onReacted={() => router.refresh()} headingLevel={2} />
 
           {previous.length ? (
             <section className="mt-5 rounded-xl border border-line p-3">
@@ -164,15 +164,15 @@ export function CardPage({
           ) : null}
         </article>
 
-        <CardShare card={card} board={board} now={now} />
+        <CardShare card={card} board={board} now={now} headingLevel={2} />
 
-        {trace ? <CardTraceView cardId={card.id} trace={trace} now={now} /> : null}
+        {trace ? <CardTraceView cardId={card.id} trace={trace} now={now} headingLevel={2} /> : null}
 
         <section className="mt-5 rounded-xl border border-accent bg-surface p-4" data-card-cta>
           <p className="text-lg">{t("card_page.cta")}</p>
           <Link
             href={boardHref}
-            className="mt-3 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-accent px-4 text-lg font-bold text-accent-ink"
+            className="mt-3 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-accent px-4 text-lg font-bold text-accent-ink hover:bg-accent-hover active:bg-accent-hover"
           >
             {t("card_page.open_board")}
           </Link>
