@@ -88,6 +88,11 @@ async function networkFirst(event, name) {
     return withHeader(cached, FROM_CACHE, "1");
   }
   if (request.mode === "navigate") servedFromCache.delete(request.url);
+  if (name === PAGES && (response.status === 404 || response.status === 410)) {
+    // A page that is gone (a card the admin hid) must not survive in the cache.
+    event.waitUntil(caches.open(name).then((cache) => cache.delete(request, { ignoreVary: true })));
+    servedFromCache.delete(request.url);
+  }
   if (storable(response)) event.waitUntil(store(name, request, response.clone()));
   return response;
 }

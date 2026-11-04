@@ -15,6 +15,7 @@ import {
   t as translate,
   type Lang,
   type MessageKey,
+  LANGS,
   type TextSize,
 } from "./index";
 
@@ -60,6 +61,24 @@ export function LangProvider({
 }) {
   const [lang, setLangState] = useState<Lang>(initialLang);
   const [textSize, setTextSizeState] = useState<TextSize>(initialTextSize);
+
+  // The HTML may come from the service worker's cache, rendered with an older
+  // choice than the reader's current one; the localStorage mirrors are newer.
+  useEffect(() => {
+    // Deferred so the first client render matches the server HTML; the change
+    // applies right after hydration.
+    const id = window.setTimeout(() => {
+      try {
+        const l = window.localStorage.getItem(LS_LANG);
+        const s = window.localStorage.getItem(LS_TEXT);
+        if (l && (LANGS as readonly string[]).includes(l) && l !== initialLang) setLangState(l as Lang);
+        if ((s === "normal" || s === "large") && s !== initialTextSize) setTextSizeState(s);
+      } catch {
+        // Blocked storage: the cookie's choice stands.
+      }
+    }, 0);
+    return () => window.clearTimeout(id);
+  }, [initialLang, initialTextSize]);
 
   useEffect(() => {
     document.documentElement.lang = lang;
