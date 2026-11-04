@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { markDataUrl } from "@/components/brand/Mark";
 import { getBoardBySlug } from "@/lib/db/boards";
 import { LANGS, t } from "@/lib/i18n";
 
@@ -47,14 +48,12 @@ export default async function Image({ params }: { params: Promise<{ slug: string
               height: 96,
               borderRadius: 24,
               background: ACCENT,
-              color: "#ffffff",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: 64,
             }}
           >
-            縁
+            <img src={markDataUrl(PAPER)} width={60} height={60} alt="" />
           </div>
           <div style={{ display: "flex", flexDirection: "column" }}>
             <div style={{ fontSize: 48, fontWeight: 700 }}>Engawa</div>
