@@ -9,6 +9,8 @@
  * known places) minus id and created_at, with a test name in every UI
  * language and a fresh random admin token hash that nothing reads (the
  * ADMIN_TOKEN environment variable gates the admin page for every board).
+ * The copy is unlisted (`listed = false`, migration 0008): reachable at
+ * /b/<slug>, absent from the home page.
  *
  * delete removes, in this order: the storage objects of the board's
  * submissions and masked copies (referenced paths plus whatever sits under
@@ -75,10 +77,22 @@ async function create(slug: string, from: string) {
     known_places: source.known_places,
     admin_token_hash: createHash("sha256").update(randomBytes(24)).digest("hex"),
   };
-  const { data, error: insErr } = await client.from("boards").insert(row).select("id").single();
+  // Unlisted, so the home page never shows it (migration 0008). A database
+  // without the column gets the row without it, listed like every board.
+  let { data, error: insErr } = await client
+    .from("boards")
+    .insert({ ...row, listed: false })
+    .select("id")
+    .single();
+  let listedNote = "unlisted";
+  if (insErr && /\blisted\b/.test(insErr.message)) {
+    ({ data, error: insErr } = await client.from("boards").insert(row).select("id").single());
+    listedNote = "LISTED on the home page: boards.listed is missing, apply migration 0008";
+  }
   if (insErr) throw insErr;
+  if (!data) fail("insert returned no row");
   console.log(
-    `created board ${slug} (${data.id}) as a copy of ${from}: ${source.known_places.length} known places, ${source.area_names.length} areas`,
+    `created board ${slug} (${data.id}) as a copy of ${from}: ${source.known_places.length} known places, ${source.area_names.length} areas, ${listedNote}`,
   );
   console.log(`open /b/${slug} on the local server. Afterwards: pnpm board:throwaway delete ${slug}`);
 }
