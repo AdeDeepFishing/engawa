@@ -77,7 +77,7 @@ export function myReaction(snapshot: string | null, card: Pick<Card, "id" | "cre
     return null;
   }
   if (!entry || !isReactionKind(entry.kind)) return null;
-  return entry.at >= contentTime(card) ? entry.kind : null;
+  return Date.parse(entry.at) >= Date.parse(contentTime(card)) ? entry.kind : null;
 }
 
 /** Remembers (or with null forgets) the device's choice on a card and tells every subscriber. */

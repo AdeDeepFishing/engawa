@@ -35,10 +35,10 @@ export async function withReactions(cards: Card[]): Promise<Card[]> {
 }
 
 /** A card readers can react to: public, with the purge date its reactions inherit. Null otherwise. */
-export async function getReactableCard(cardId: string): Promise<{ id: string; purge_after: string } | null> {
+export async function getReactableCard(cardId: string): Promise<{ id: string; purge_after: string; valid_until: string | null } | null> {
   const { data, error } = await db()
     .from("cards")
-    .select("id, purge_after")
+    .select("id, purge_after, valid_until")
     .eq("id", cardId)
     .eq("visibility", "public")
     .maybeSingle();
@@ -90,7 +90,10 @@ export async function setReaction(
   );
   if (error) throw error;
 
-  if (kind === "still_true" && previous !== "still_true") {
+  // The confirmation line moves only on a device's first "still true" on a
+  // card that has not expired: a toggle must not re-bump it, and an expired
+  // card must not read "confirmed just now" next to its outdated badge.
+  if (kind === "still_true" && previous === null && !isExpired(card.valid_until, now)) {
     const { error: bumpErr } = await client
       .from("cards")
       .update({ last_confirmed_at: now.toISOString() })
