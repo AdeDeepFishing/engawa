@@ -1,5 +1,5 @@
 import { db, hasDb } from "./client";
-import { addDays, CARD_RETENTION_DAYS } from "@/lib/cards/categories";
+import { addDays, CARD_RETENTION_DAYS, isExpired } from "@/lib/cards/categories";
 import { NO_REACTIONS } from "@/lib/cards/reactions";
 import type { Card, ReactionCounts, ReactionKind } from "@/lib/types";
 
@@ -44,9 +44,9 @@ export async function getReactableCard(cardId: string): Promise<{ id: string; pu
     .maybeSingle();
   if (error) throw error;
   if (!data) return null;
-  const row = data as { id: string; purge_after: string | null };
+  const row = data as { id: string; purge_after: string | null; valid_until: string | null };
   // Every card gets purge_after when written; the fallback only covers a row that somehow lacks it.
-  return { id: row.id, purge_after: row.purge_after ?? addDays(new Date(), CARD_RETENTION_DAYS) };
+  return { id: row.id, purge_after: row.purge_after ?? addDays(new Date(), CARD_RETENTION_DAYS), valid_until: row.valid_until };
 }
 
 /** Reactions this device set or changed in the last hour (one row per card it reacted to). */
@@ -69,7 +69,7 @@ export async function recentReactionCount(deviceId: string, now = new Date()): P
  * That write leaves updated_at alone (trigger in migration 0006).
  */
 export async function setReaction(
-  card: { id: string; purge_after: string },
+  card: { id: string; purge_after: string; valid_until: string | null },
   deviceId: string,
   kind: ReactionKind,
   now = new Date(),
