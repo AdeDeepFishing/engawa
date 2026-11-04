@@ -341,7 +341,7 @@ test("log lines carry counts, statuses and times, never broadcast text", async (
     assert.doesNotMatch(line, /[぀-ヿ㐀-鿿]/, `no Japanese in "${line}"`);
     assert.doesNotMatch(line, /drill|earthquake|shibuya city|something/i, `no message text in "${line}"`);
   }
-  assert.ok(h1.logs.includes("stopped at 2026/11/05 10:00: 500 unknown, attempt 1 of 3, retried next run"));
+  assert.ok(h1.logs.includes("stopped at 2026/11/05 10:00: 500 unknown, not counted as an attempt, retried next run"));
 });
 
 test("the English line: only a real English text with a number or link the Japanese lacks", () => {

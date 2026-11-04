@@ -33,10 +33,12 @@ shibuya-portal: stopped at 2026/11/05 10:00: 503 busy, retried next run
 | 403 `forbidden`, `sender_not_allowed` | stops, the log says to check the secret and the sender list | tried again next run, no attempt counted |
 | anything else (500 with the pipeline's code, 400, 413, 422, a 504 from Vercel, a network error, a timeout) | stops, logs the status and the error code | nothing stored as posted; tried again next run; the attempt is counted |
 
-- After 3 failed attempts in a row, the next run passes the broadcast over (logged as `given up after 3 failed posts`) and goes on with the next. A broadcast the pipeline cannot handle (`pii_leak`, `refusal`) would otherwise be posted every 5 minutes, spend Claude calls each time and hold back every broadcast after it. Re-post it by hand once the cause is fixed (below).
+- After 3 failed attempts in a row with a coded answer from the pipeline (an outage, a timeout or an uncoded 5xx is not counted), the next run passes the broadcast over (logged as `given up after 3 failed posts`) and goes on with the next. A broadcast the pipeline cannot handle (`pii_leak`, `refusal`) would otherwise be posted every 5 minutes, spend Claude calls each time and hold back every broadcast after it. Re-post it by hand once the cause is fixed (below).
 - A broadcast whose turn comes more than 24 hours after its `update_at` is passed over, not posted: the inbox ignores a `received_at` older than 24 hours and would read 本日 in an old alert as today.
 - The inbox answers only after its whole pipeline ran (15 to 30 s, at most 300 s), and it finishes the run even when the caller hangs up. So the post's timeout is 310 s, not 15 s: a shorter one would count a broadcast the board did take as failed and post it again.
-- No new post starts after 8 minutes into a run, and a run holds a `lease` key in KV while it posts, so a slow run and the next cron run never post the same broadcast.
+- No new post starts after 8 minutes into a run, and a run holds a `lease` key in KV while it posts, and reads the state again under that lease, so a slow run and the next cron run almost never post the same broadcast; the one case left is KV propagation lag, which costs one duplicate mail that reconcile merges.
+
+- A broadcast the ward edits after publishing keeps its `update_at` but gets a new key (the key hashes title and message), so it is posted again as a fresh mail; reconcile merges or updates the card, so a second card there is not a bug.
 
 ## Deploy
 
@@ -49,7 +51,7 @@ pnpm exec wrangler login
 pnpm exec wrangler kv namespace create STATE
 ```
 
-Put the printed id into `wrangler.toml` in place of `REPLACE_WITH_STATE_NAMESPACE_ID` (the id is not a secret; committing it is fine). Then:
+Put the printed id into `wrangler.toml` in place of `REPLACE_WITH_STATE_NAMESPACE_ID` (the id is not a secret, and this repository commits it). Then:
 
 ```bash
 pnpm exec wrangler secret put ENGAWA_INBOX_SECRET

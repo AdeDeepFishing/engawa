@@ -69,7 +69,8 @@ export type RunStatus =
   | "stopped"
   | "locked"
   | "portal_error"
-  | "no_secret";
+  | "no_secret"
+  | "no_config";
 
 export interface RunResult {
   status: RunStatus;
@@ -122,11 +123,15 @@ export async function runOnce(deps: RunDeps): Promise<RunResult> {
     return { status: "seeded", posted: [], state: seeded };
   }
 
-  const { due, guarded } = dueBroadcasts(state, sorted);
+  let { due, guarded } = dueBroadcasts(state, sorted);
   const guardNote = guarded ? `, ${guarded} held back as already posted` : "";
   if (due.length === 0) {
     log(`${feedNote}, none new since ${state.last_update_at}${guardNote}`);
     return { status: "idle", posted: [], state };
+  }
+  if (!deps.inboxUrl || !deps.sender) {
+    log(`${feedNote}, ${due.length} new, ENGAWA_INBOX_URL or PORTAL_SENDER is not set, nothing posted`);
+    return { status: "no_config", posted: [], state };
   }
   if (!deps.inboxSecret) {
     log(`${feedNote}, ${due.length} new, ENGAWA_INBOX_SECRET is not set, nothing posted`);
@@ -144,6 +149,17 @@ export async function runOnce(deps: RunDeps): Promise<RunResult> {
   const posted: string[] = [];
   let status: RunStatus = "done";
   try {
+    // A run that finished while this one read the portal may have moved the
+    // state, and KV is eventually consistent: read it again under the lease.
+    const fresh = parseState(await deps.store.get(STATE_KEY));
+    if (fresh) {
+      state = fresh;
+      ({ due, guarded } = dueBroadcasts(state, sorted));
+      if (due.length === 0) {
+        log(`${feedNote}, another run posted them, nothing left`);
+        return { status: "idle", posted: [], state };
+      }
+    }
     for (const [i, b] of due.entries()) {
       if (posted.length >= MAX_POSTS_PER_RUN || now() - started > RUN_BUDGET_MS) {
         log(`${due.length - i} left for the next run`);
@@ -169,12 +185,17 @@ export async function runOnce(deps: RunDeps): Promise<RunResult> {
         continue;
       }
       status = "stopped";
-      if (outcome.kind === "failed") {
+      if (outcome.kind === "failed" && countsAsAttempt(outcome.error)) {
+        // Only a coded answer from the pipeline counts toward giving up: an
+        // outage (network error, timeout, an uncoded 5xx) must not pass an
+        // evacuation order over.
         state = afterFailure(state, b, outcome.error);
         await deps.store.put(STATE_KEY, JSON.stringify(state));
         log(
           `stopped at ${b.updateAt}: ${outcome.status} ${outcome.error}, attempt ${state.failing?.attempts} of ${MAX_ATTEMPTS}, retried next run`,
         );
+      } else if (outcome.kind === "failed") {
+        log(`stopped at ${b.updateAt}: ${outcome.status} ${outcome.error}, not counted as an attempt, retried next run`);
       } else if (outcome.kind === "busy") {
         log(`stopped at ${b.updateAt}: ${outcome.status} ${outcome.error}, retried next run`);
       } else {
@@ -228,4 +249,9 @@ async function postToInbox(deps: RunDeps, b: Broadcast): Promise<Outcome> {
 
 function isTimeout(e: unknown): boolean {
   return e instanceof Error && (e.name === "TimeoutError" || e.name === "AbortError");
+}
+
+/** Errors that mean the pipeline looked at the broadcast and refused it, as opposed to an outage. */
+function countsAsAttempt(error: string): boolean {
+  return error !== "unknown" && error !== "network_error" && error !== "timeout";
 }
