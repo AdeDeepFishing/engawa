@@ -76,6 +76,15 @@ export function BoardView({
   const dropInOpen = useDropInOpen(dropInHost);
   /** List (newest first) or Places (grouped by known place), in the URL as ?view=places. */
   const [view, setView] = useBoardView(initialView);
+  /**
+   * Where the one ask panel sits: above the list on a phone, under the open
+   * card from 768 px, in its own column from 1024 px. Only that placement is
+   * mounted, so the page never holds two question boxes. The thread lives in
+   * `ask`, above the panel, so crossing a breakpoint moves it without losing
+   * it. The server and the hydration render take the phone placement, which
+   * CSS hides from 768 px until the real width is known.
+   */
+  const askAt = laptop ? "column" : tablet ? "detail" : "phone";
 
   const refresh = useCallback(async () => {
     if (inFlight.current || document.visibilityState === "hidden") return;
@@ -299,7 +308,7 @@ export function BoardView({
       <main className="mx-auto w-full max-w-2xl flex-1 px-4 pb-24 pt-4 md:grid md:min-h-0 md:max-w-[1600px] md:grid-cols-[clamp(300px,42vw,380px)_minmax(0,1fr)] md:grid-rows-[minmax(0,1fr)] md:gap-4 md:px-4 md:py-0 lg:grid-cols-[clamp(300px,30vw,460px)_minmax(0,1fr)_clamp(280px,26vw,400px)] xl:gap-6 xl:px-6">
         <h1 className="sr-only">{board.name[lang]}</h1>
         {/* Phone: the ask panel above the list, as before. */}
-        <div className="md:hidden">{askPanel}</div>
+        {askAt === "phone" ? <div className="md:hidden">{askPanel}</div> : null}
 
         <div className={column} data-board-column="list">
           <div className="mt-6 flex flex-wrap items-center justify-between gap-x-3 gap-y-2 md:mt-0">
@@ -384,12 +393,12 @@ export function BoardView({
               <CardPanelEmpty />
             </div>
           )}
-          <div className={`lg:hidden ${tablet && selected ? "mt-6" : ""}`}>{askPanel}</div>
+          {askAt === "detail" ? <div className={`lg:hidden ${selected ? "mt-6" : ""}`}>{askPanel}</div> : null}
         </div>
 
         {/* Laptop: the ask panel in its own column. */}
         <div className={`hidden lg:block ${column}`} data-board-column="ask">
-          {askPanel}
+          {askAt === "column" ? askPanel : null}
         </div>
       </main>
       {canSubmit ? (
