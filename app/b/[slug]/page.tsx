@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getBoardBySlug, listHiddenDuplicates, listPublicCards } from "@/lib/db/boards";
 import { hasDb } from "@/lib/db/client";
+import { modeForReaders } from "@/lib/db/mode";
 import { INTL_LOCALE, LANGS, t, withLangParam } from "@/lib/i18n";
 import { getLinkLang, getRequestLang } from "@/lib/i18n/server";
 import { BoardView } from "@/components/board/BoardView";
@@ -50,10 +51,17 @@ export default async function BoardPage({ params, searchParams }: Props) {
   const [{ slug }, query] = await Promise.all([params, searchParams]);
   const board = await getBoardBySlug(slug);
   if (!board) notFound();
-  const [cards, hiddenDuplicates] = await Promise.all([listPublicCards(board), listHiddenDuplicates(board.id)]);
+  // The mode read also returns a disaster board to peace after seven quiet
+  // days (lib/db/mode.ts), so the page renders the mode it ends up in.
+  const [cards, hiddenDuplicates, mode] = await Promise.all([
+    listPublicCards(board),
+    listHiddenDuplicates(board.id),
+    modeForReaders(board, { autoReturn: true }),
+  ]);
   return (
     <BoardView
-      board={board}
+      board={{ ...board, mode: mode.mode }}
+      initialMode={mode}
       initialCards={cards}
       initialHiddenDuplicates={hiddenDuplicates}
       serverNow={new Date().toISOString()}

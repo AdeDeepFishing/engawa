@@ -106,3 +106,16 @@ summary {
     transition: none !important;
   }
 }
+
+/* Disaster mode (N21): the strip under the board's top bar and the mode
+   badge. Orange-red, apart from the accent and from the beige warnings;
+   white on it is 5.9:1, so body text passes WCAG AA. */
+:root {
+  --danger: #b8360f;
+  --danger-ink: #ffffff;
+}
+
+@theme inline {
+  --color-danger: var(--danger);
+  --color-danger-ink: var(--danger-ink);
+}

@@ -11,7 +11,7 @@ export function ModeBadge({ mode }: { mode: BoardMode }) {
   return (
     <span
       className={`hidden shrink-0 items-center gap-1 rounded-full border px-3 py-0.5 text-base font-semibold md:inline-flex ${
-        disaster ? "border-warn-ink bg-warn-bg text-warn-ink" : "border-line bg-held-bg text-foreground"
+        disaster ? "border-danger bg-danger text-danger-ink" : "border-line bg-held-bg text-foreground"
       }`}
       data-board-mode={mode}
     >

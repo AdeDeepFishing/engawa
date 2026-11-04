@@ -106,6 +106,7 @@ export function DropIn({
   offline = false,
   onPending,
   retryRequest,
+  heardFirst = false,
 }: {
   boardSlug: string;
   /** The board's 町丁目 list; the area control appears only when polygons exist for it. */
@@ -116,6 +117,8 @@ export function DropIn({
   onPending: (item: PendingItem) => void;
   /** Set by the parent when the user taps retry on a failed item. */
   retryRequest: PendingItem | null;
+  /** Disaster mode (N21): "I heard the loudspeaker" comes before the camera, the image and the text. */
+  heardFirst?: boolean;
 }) {
   const { lang, t } = useLang();
   const [open, setOpen] = useState(false);
@@ -393,6 +396,22 @@ export function DropIn({
   const sampleChoice =
     "flex min-h-12 w-full items-center gap-3 rounded-xl border border-line bg-surface px-4 text-left text-base font-semibold hover:border-accent disabled:opacity-50";
 
+  // Last of the four choices in everyday mode, first in disaster mode.
+  const heardChoice = (
+    <button
+      type="button"
+      className={choice}
+      onClick={() => {
+        setTextMode("heard");
+        setMode("heard");
+      }}
+      data-dropin-heard
+    >
+      <span aria-hidden="true" className="mr-2">📢</span>
+      {t("dropin.heard")}
+    </button>
+  );
+
   const areaLine =
     area.status === "locating"
       ? t("area.locating")
@@ -486,6 +505,7 @@ export function DropIn({
               </div>
             ) : mode === "choose" ? (
               <div className="mt-4 flex flex-col gap-3">
+                {heardFirst ? heardChoice : null}
                 <input
                   ref={cameraRef}
                   type="file"
@@ -520,18 +540,7 @@ export function DropIn({
                   <span aria-hidden="true" className="mr-2">📝</span>
                   {t("dropin.text")}
                 </button>
-                <button
-                  type="button"
-                  className={choice}
-                  onClick={() => {
-                    setTextMode("heard");
-                    setMode("heard");
-                  }}
-                  data-dropin-heard
-                >
-                  <span aria-hidden="true" className="mr-2">📢</span>
-                  {t("dropin.heard")}
-                </button>
+                {heardFirst ? null : heardChoice}
                 <div className="mt-1 rounded-xl border border-dashed border-line p-3" data-sample-row>
                   <p className="text-base font-semibold">{t("sample.heading")}</p>
                   <p className="mt-1 text-base text-muted">{t("sample.note")}</p>
