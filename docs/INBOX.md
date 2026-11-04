@@ -96,6 +96,6 @@ export default {
 
 ## Limits that are deliberate
 
-- One board per secret. A second board gets its own secret and its own forwarder address.
+- One board per secret. A second board gets its own secret; one forwarder address may fan a mail out to several boards of the same city (Kawasaki's mail goes to 武蔵小杉 and 溝の口), each posted with that board's own secret.
 - The inbox accepts only text. Attachments and HTML parts are ignored by the outline above (postal-mime's `text` is the plain text part).
 - No automatic retries: a mail that failed processing is not run again by itself. Its submission shows the error code, and the admin can post the copy again.

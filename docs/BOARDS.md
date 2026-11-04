@@ -115,12 +115,14 @@ The code is the same for every board. A board is a row in `boards` (seeded from 
   - A. 2-06 避難所（指定避難所）一覧表, 高津区 (令和7年4月1日現在); 2-04 地域防災拠点一覧表 (令和7年4月現在) for 高津中, 東高津中 and 西高津中.
   - B. 2-18 応急給水拠点一覧 (令和7年4月1日現在), 高津 4, 6, 7, 12 and 16. The ward office's address is the one this list gives.
   - C. 2-28 帰宅困難者用一時滞在施設一覧表 (令和7年5月1日現在), rows 31 to 41 (武蔵溝ノ口駅); 2-10 避難所補完施設一覧表 (令和4年8月25日時点) for 高津市民館.
-  - D. 2-05 広域避難場所一覧表 and 2-07 指定緊急避難場所一覧表.
+  - D. 2-05 広域避難場所一覧表 and 2-07 指定緊急避難場所一覧表 (the tables print no as-of date; the 資料編 page's update date applies).
   - E. 東急 https://www.tokyu.co.jp/area/mizonokuchi/station/ and JR East https://www.jreast.co.jp/estation/station/info.aspx?StationCd=1535, read in the browser pane.
 
   Left out on purpose: the other five 一時滞在施設 of the 武蔵溝ノ口駅 group (洗足学園音楽大学 久本2-3-1, 久本神社氏子会館 久本1-16-13, かながわサイエンスパーク西棟 坂戸3-2-1, ミュージション溝の口 久本3-1-5, 南武朝鮮初級学校 末長3-1-15) and the ones of other groups inside the board (川崎市立高津図書館 溝口4-16-3 and 川崎市大山街道ふるさと館 溝口3-13-3 under 高津駅, 川崎市総合教育センター 溝口6-9-3 under 二子新地駅), all addable from C the same way; the schools' 既設水栓型 taps (2-18, 高津 18 to 36, 開設不要), which are inside shelters already listed; the other 避難所補完施設 in the board's 町丁目. No page on current shelter closures in 高津区 was read; the pilot board used the 資料編 alone too.
 
 - **Where the broadcast text is published.** The same channels as the pilot board: メールニュースかわさき (topic 防災行政無線), the かわさき防災アプリ and the phone line. The pilot's subscription (防災行政無線 and 緊急情報) is not tied to a ward, so the mails that reach 武蔵小杉 today are the ones 溝の口 needs.
+
+- **Not confirmed.** (a) That the メールニュースかわさき topics the pilot subscribed to (防災行政無線, 緊急情報) carry the broadcasts made in 高津区 as well as 中原区: the registration page does not say whether the topic is city wide or per ward, and no 高津区 broadcast has arrived yet; the first one settles it. (b) The 高津区 closure and substitute page for shelters was not read; the list above comes from the 資料編 tables only.
 
 - **Wiring the inbox: one mail, two boards.** The city mail already arrives at the Email Worker `engawa-inbox` (outside the repository), which posts it to the 武蔵小杉 board. It must now post each mail to both `/api/b/musashikosugi/inbox` and `/api/b/mizonokuchi/inbox`, each with that board's own secret (one board per secret, `docs/INBOX.md`). The integrator changes the Worker. The two human steps:
   1. On `/b/mizonokuchi/admin`, section "Official inbox": generate the inbox secret (shown once) and give it to the integrator for the Worker's second secret.
@@ -174,7 +176,7 @@ The code is the same for every board. A board is a row in `boards` (seeded from 
   | `ueno-chuo-parking` | commuter_shelter | 上野中央通り地下駐車場, 上野2-13先: the ward's candidate 一時滞在施設, which "may not open" | A, D |
 
   Sources:
-  - A. 台東区地域防災計画（令和6年度修正）資料編 (page updated 2024-08-26), https://www.city.taito.lg.jp/bosai/houshin/bosaikaigi/chikibou_r6.html: 資料第126 町会別一時集合場所・避難所・避難場所一覧 (令和6年4月現在), 資料第127 避難所施設一覧 (令和6年7月現在: names, addresses, 避難予定町会, the two moves), 資料第128 避難場所と割当区分 (平成30年6月現在), 資料第129 区内帰宅困難者一時滞在施設等一覧, 資料第110 (給水拠点, 令和5年4月現在). Read from the PDF pages rendered as images, since the extracted text scrambles merged cells.
+  - A. 台東区地域防災計画（令和6年度修正）資料編 (page updated 2024-08-26), https://www.city.taito.lg.jp/bosai/houshin/bosaikaigi/chikibou_r6.html: 資料第126 町会別一時集合場所・避難所・避難場所一覧 (令和6年4月現在), 資料第127 避難所施設一覧 (令和6年7月現在: names, addresses, 避難予定町会, the two moves), 資料第128 避難場所と割当区分 (平成30年6月現在), 資料第129 区内帰宅困難者一時滞在施設等一覧, 資料第110 (給水拠点, 令和5年4月現在). Read from the PDF pages rendered as images, since the extracted text scrambles merged cells (no as-of date printed; the page's update date applies).
   - B. 町会区域一覧表 (令和8年3月修正), https://www.city.taito.lg.jp/kurashi/kyodo/tyoukai/choukaikuikiichiran.html (updated 2026-03-09): which 町丁目 and 番地 each 町会 covers.
   - C. 東京都水道局, 災害時給水ステーション（給水拠点）一覧 (区部, 令和7年11月1日現在), https://www.waterworks.metro.tokyo.lg.jp/kurashi/shinsai/ichiran.
   - D. 帰宅困難者対策 (updated 2026-09-03), https://www.city.taito.lg.jp/bosai/taisaku/kitakukonnan/kitaku.html: the ward's 17 candidate facilities.
