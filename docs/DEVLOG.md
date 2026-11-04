@@ -840,3 +840,31 @@ Seen while building: the dev server's file watcher missed one edit to `app/globa
 - The licence differs from the brief (CC BY 4.0, not MIT); the credit under the map is how it is met. If a credit on the home page is not wanted, the alternative is drawing our own outlines.
 - Native read of the Korean and Vietnamese prefecture names and `home.map_*` strings.
 - A look on a real iPhone: the select's chevron and the map's tap target.
+
+### 2026-11-04 night, the accent turns from green to deep rose (same session, same PR)
+
+The user chose a deep rose over the green before the mark is final. The accent is a token, so one change in `app/globals.css` reaches every button, link, ring and badge; the brand files that carry a hex value (`components/brand/Mark.tsx` `BRAND.accent`, `app/icon.svg`, the board preview image, which now reads `BRAND.accent`) changed with it, and `app/favicon.ico` was rebuilt from the new 32 px PNG. The icons, the manifest theme colour, `viewport.themeColor` and the root preview image follow `BRAND`.
+
+| token | value | pair | contrast |
+|---|---|---|---|
+| `--accent` | #ad235d | white text on it | 6.61:1 |
+| | | it on the page (#fbfaf7), as 16 px text and as a focus ring | 6.34:1 |
+| | | it on white (#ffffff) | 6.61:1 |
+| | | it on `--accent-soft` | 5.67:1 |
+| | | it on the held grey (#f3efe6) | 5.76:1 |
+| | | it on the map's land (#e2ded5) | 4.93:1 |
+| `--accent-hover` | #861846 | white text on it | 9.41:1 |
+| `--accent-soft` | #fbe9f0 | ink (#1b1b1b) on it | 14.78:1 |
+| | | muted (#5c5c5c) on it | 5.74:1 |
+| | | control borders (#87837a) on it | 3.24:1 |
+| | | warn ink (#5a3d00) on it | 8.57:1 |
+
+Candidates across the requested range, white on them and them on the page: #b42a63 6.08 and 5.83, #b02660 6.38 and 6.11, #ad235d 6.61 and 6.34, #a8205a 6.96 and 6.66. #ad235d keeps the rose hue clearly pink rather than wine and clears every pair with room, including accent text on the soft tint.
+
+Where the soft tint went: the top bar band on every page (it was white at 95 %, there was no mint band in the code), and the pressed reaction chips ("Still true", "No longer true"), which were a full accent fill and are now the tint with an accent border and accent text. The text size toggle, which lives inside the band, shows its pressed state as an accent border and accent text on white, because the tint on the tint band disappeared. The active List / Places toggle is in PR #23 (`day5-places`), not on this branch; there it is `bg-accent text-accent-ink` and after this merge it would be a full rose fill. For the soft look it needs one class change at the merge: `pressed ? "bg-accent-soft text-accent border-accent"`.
+
+Unchanged on purpose: the paper background, the amber `--warn-*` (disaster mode badge, may be outdated, warnings), the held grey, and the pink masking boxes in chat screenshots (`lib/image/mask.ts`). There is no red in the interface today (danger cards carry the ⚠️ icon and disaster mode is amber), so there was nothing to move to the orange-red the brief named; a future danger colour should be about #c2410c (4.96:1 on the page, white on it 5.18:1), well apart from the rose.
+
+**Looked at, 390 px:** home (band, mark, map badge), board (band, share and text size on it, ask chips, the disabled Ask button which is dimmed as before, "Confirmed official" in rose, the floating drop-in button), the card sheet (sources, reactions with the pressed tint applied in the page only, nothing written, share, trace), the about page and the admin page (pilot board, opened read only in headless Chrome through the entry link, no click). A sweep of every visible text node against its background found nothing under 4.5:1 and nothing under 16 px on the about and admin pages; the home measurements above still hold. The rebuilt icons, the favicon and both preview images were checked as images.
+
+Seen during the run: the dev server again missed an edit and served the old class for the text size toggle until a restart, which showed as a hydration warning; after the restart the server HTML and the client script carry the same class. A board `mode-acceptance` from another session existed on the shared database at the time and showed on the home page through the 0008 fallback; it is not this session's and was left alone.
