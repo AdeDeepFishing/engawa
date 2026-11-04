@@ -741,3 +741,54 @@ Playwright: 30 of 32 checks as run. The two misses were the test's: an exact tex
 ### 2026-11-04 evening, the inbox wired for real (human with Fable)
 
 The forwarder from `docs/INBOX.md` is live. `engawaboard.com` was bought on Cloudflare Registrar and is the production host (www redirects to it, the vercel.app host still answers). Email Routing on that domain sends `bousai-musashikosugi@engawaboard.com` to the Worker `engawa-inbox` (its project lives outside the repository, the secret set from a local file, never typed in chat). The chain was checked in order: a Gmail test reached the worker and the board answered 403 `sender_not_allowed`, with the stored secret accepted (a wrong one gives `forbidden`). The city's list registers by empty mail, which a receive-only address cannot send, so a Gmail sits in front: forwarding address confirmed through the worker log, a filter on `sg-p.jp`, the empty mail, then the registration form filled in the browser with 緊急情報 and 防災行政無線 only. The city's reply came through that path (`From: kawasaki@sg-p.jp` preserved), so the sender list now holds that address. Human steps: the domain purchase, Vercel domain and env, the DNS records (the wrangler OAuth token cannot write DNS), the Gmail clicks. Everything else ran from the session through the Cloudflare API and the board's admin API.
+
+## 2026-11-04 (Wed), open in maps, place view, one ask panel
+
+**Model:** `claude-opus-5-5` in Claude Code, implementation role, in its own worktree (branch `day5-places`) beside the `day5-home` session, whose files (home page, brand assets, `app/layout.tsx`, `components/TopBar.tsx`, `lib/db/boards.ts`, the inbox admin, the react route) were left alone.
+
+**Done**
+- **N17 Open in maps.** `lib/cards/maps.ts` builds a Google Maps search URL (`https://www.google.com/maps/search/?api=1&query=`, the query through `encodeURIComponent`): for a known place its Japanese name, then its address with the board's city and ward in front ("川崎市立小杉小学校 川崎市中原区小杉町2-295-1"), or the name and the city when the place has no address (stations); for a card with only `place_text_ja`, that text and the board's area. The city comes from the board: `boardMunicipality` in `lib/geo` reads the first five digits of the board's area codes, the JIS code of the city and ward (14133 is 川崎市中原区). `components/board/MapsLink.tsx` renders it under the place in `CardDetail` (sheet and laptop panel) and on the card page, which has its own place row and does not use `CardDetail`. A plain link with `target="_blank"` and `rel="noopener noreferrer"`, 44 px tall, the global focus outline, a screen reader note that it opens a new tab. Nothing is fetched before the tap, no key, no coordinate. Not in the list rows.
+- **N10 Place view.** A List / Places toggle beside the Notices heading (two `aria-pressed` buttons in a labelled group). Places (`components/board/PlacesView.tsx`, grouping in `lib/cards/places.ts`) groups the cards already loaded, so the 5 second poll keeps it current and it costs no request: one group per known place with cards, newest content first, each with the name in the reader's language and the Japanese name beside it (`lang="ja"`), the kind (shelter, water point, station, park, else "Place"), the address (`lang="ja"`), the count and the newest time; shelters add one line, the newest card of category shelter (status, title, age, outdated mark) or "No information yet". Cards whose place is not a known place go in a last group "Other places", sorted by place text so one spot sits together, cards without a place at the end. A group is a disclosure (`h3` with a button, `aria-expanded`); open, it lists the usual `CardItem` rows (their titles as `h4` there), so a card opens in the sheet on a phone and in the panel with `#card-<id>` on a laptop. Arrow keys, Home and End move through group headings and the cards of open groups; Right opens a group, Left closes it. A card opened from the hash or from a citation opens its group and scrolls to it. Pending drop-ins show above the groups.
+- **The view in the URL.** `?view=places` (the list is the plain URL). The board page reads it on the server, so a shared link renders Places with no flash of the list. After hydration the URL wins, else the reader's last choice from localStorage (`engawa.view`, as the language), and the address bar is updated to match. The offline worker answers a board navigation that misses the cache with the stored copy under any query (`ignoreSearch`), so an offline reload of `?view=places` works from the plain URL's copy; the client then reads the view from the URL. `VERSION` was not bumped: what is stored did not change, and a bump would delete readers' saved copies.
+- **One ask panel.** The board mounted `AskPanel` in three places and hid two with CSS. Now only the placement for the current width is mounted (`useMediaQuery`): above the list on a phone, under the open card from 768 px, its own column from 1024 px. The thread already lived in `useAsk` above the panel, so a resize across a breakpoint keeps it.
+- `pnpm check:places` (`scripts/check-places.ts`): 24 checks on the seed board without a database (the city from the area codes, the query and its encoding for a known place, a place without an address, a place text, a stale place id, no place, characters such as `&`, `#` and `?`; the groups, their order, the shelter line, the other group's sort; the view parameter).
+- 16 keys inserted at the TOP of the five message files (`maps.*`, `view.*`, `places.*`).
+
+**Acceptance** on the throwaway board `places-acceptance` (copy of `musashikosugi`, dev server on 3490, Playwright 1.62 Chromium through the real drop-in panel at 390 px; deleted afterwards: 2 storage objects, 3 card_sources, 3 cards, 3 submissions, 3 devices; live board untouched):
+
+| # | input | reconcile | first card / all languages | card |
+|---|---|---|---|---|
+| 1 | `public/samples/notice.jpg` (taken for the 小杉小学校 notice; it is the building water outage notice) | create, no candidates | 13.8 s / 23.3 s (translate 8.6 s) | daily notice, `place_text_ja` 当マンション（全住戸）, no place id |
+| 2 | `fixtures/inputs/p02-water-distribution-notice.jpg` (water at 小杉小学校) | create, no candidates | 14.4 s / 24.5 s (translate 8.5 s) | water, `kosugi-es`, official, open |
+| 3 | text 武蔵小杉駅前のコンビニ、営業中、水あり | create, no candidates | 7.4 s / 11.8 s (translate 4.6 s) | shops, `musashikosugi-sta`, firsthand, open |
+
+| check | result |
+|---|---|
+| maps link of the 小杉小学校 card | `https://www.google.com/maps/search/?api=1&query=%E5%B7%9D...2-295-1`, decodes to 川崎市立小杉小学校 川崎市中原区小杉町2-295-1; `target=_blank`, `rel="noopener noreferrer"`, 44 px, solid 3 px outline on keyboard focus; in the sheet (390), the panel (1280) and on the card page (ja: 地図で開く) |
+| station card | 武蔵小杉駅 川崎市中原区 |
+| card with only `place_text_ja` | 当マンション（全住戸） 川崎市中原区 |
+| Places at 390 | groups in order station, 小杉小学校, other places; 小杉小学校: "Kosugi Elementary School (川崎市立小杉小学校)", "Shelter · 小杉町2-295-1", "1 notice", "Latest: 4 min ago", "Shelter status: No information yet" (only a water card there); station: "Station", "1 notice", no shelter line; all closed at first; a group opens to its card, the card opens the sheet |
+| Places in Japanese | 川崎市立小杉小学校 alone, 避難所, お知らせ 1件, 避難所の状況: まだ情報がありません |
+| `?view=places` | written on toggle, stored in localStorage, survives a reload; a fresh browser opening the link gets Places; the server HTML already holds the groups; the plain board URL takes the remembered view and rewrites the URL; List removes the parameter |
+| one ask panel | 1 in the DOM at 390 (also with the sheet open), 1 at 1280 (in the third column), 1 at 800 (under the open card), 1 in the server HTML |
+| thread across a resize | one question at 1280 ("Where can I get water?", answered), then 390: the same single turn in the phone placement; then 800: still there |
+| keyboard at 1280 | ArrowDown to the next group, ArrowRight opens it, ArrowDown into its card, Enter opens the panel with `?view=places#card-<id>` and `aria-current` on the row, Escape closes it and focus returns to the row, Home to the first group |
+| shared `#card-<id>` in Places | the station group opens by itself and the panel shows the card |
+| 5 second poll | a reader page in Places at 1280 while another device dropped input 3: the new station group appeared 2.9 s after the card reached the cards API, no reload |
+
+Playwright: 47 checks, all passing in the end. Misses on the way were the test's: a programmatic focus after a mouse click does not match `:focus-visible` (redone with Tab), the raw fetch of the page had no `Accept-Language` and got the Japanese heading, and the Japanese group text starts with its icon. One real miss: the card page had no maps link, because it does not render `CardDetail`; fixed with the shared `MapsLink`. Claude calls in the run: 3 drop-ins, 1 question.
+
+**Other measurements**
+- `pnpm typecheck`, `pnpm lint` (the one existing warning, a missing `cardButton` dependency in `closePanel`, fixed), `pnpm guard --all`, `pnpm check:places` 24 of 24, `pnpm build` clean.
+
+**Decisions taken in this session, open for review**
+- The city. The board row has no city, and neither `area_names` (町丁目 names) nor `address_ja` (小杉町2-295-1) holds one, so the brief's "川崎市 comes from the board" is read as: from the board's area codes, through a one-line table in `lib/geo` (14133 川崎市中原区). The Shibuya board (N18) adds 13113 東京都渋谷区. Without a known city the board's Japanese name (武蔵小杉) narrows the search instead.
+- "No information yet": no short key existed (`ask.no_info` is a whole sentence about the board), so `places.no_info` was added.
+- Only places with cards get a group. In disaster mode, listing every shelter with "No information yet" would show at a glance which ones nobody has reported on; cheap to add, left out to keep peacetime boards short.
+- A place text that only makes sense to its author makes a vague search: 当マンション（全住戸） (this building) searches the whole ward. Kept as specified; a follow-up could leave the link out for relative place texts (当, この, 本) or let extract mark them.
+- One ask panel: the server and the hydration render take the phone placement (hidden by CSS from 768 px), so on a tablet or laptop the ask panel appears once the page is hydrated, not with the first HTML. Crossing a breakpoint remounts the panel: the thread and the typed question stay, the focus inside the question box does not.
+- Group order is by newest content, not by kind; the other group always comes last.
+- `public/samples/notice.jpg` (the N1 sample) is the building water outage notice, not the 小杉小学校 water notice the brief named; the run used `p02` for that, so it made three drop-ins instead of two.
+
+**Needed a human**
+- Nothing during the session. Native read of the Korean and Vietnamese `maps.*`, `view.*` and `places.*` strings. `docs/PLAN.md` lines N17 and N10 are for the reviewing session to tick.
