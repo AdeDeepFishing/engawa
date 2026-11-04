@@ -10,57 +10,25 @@ import {
   setReaction,
 } from "@/lib/db/reactions";
 import { isUuid } from "@/lib/ids";
+import { clientIp, HOUR_MS, rateLimited, slidingWindow } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 /** Taps one address may send in an hour, across devices and cards. */
 const REACTIONS_PER_IP_PER_HOUR = 60;
-const HOUR_MS = 3_600_000;
 
 /**
- * Sliding one hour window per key on this server instance, the same
- * best-effort pattern as the ask limit. Two windows use it: every tap, set or
- * taken back, per device, which stops one browser from toggling a card
- * hundreds of times; and every tap per client address, which stops a script
- * that mints a new device id for each tap. No address is stored or logged:
- * the window lives in memory and holds the address only while it has taps in
- * the last hour. The durable limit is the row count in the table
- * (recentReactionCount), which holds across instances.
+ * Two in-memory windows (lib/rate-limit.ts): every tap, set or taken back,
+ * per device, which stops one browser from toggling a card hundreds of
+ * times; and every tap per client address, which stops a script that mints
+ * a new device id for each tap. The durable limit is the row count in the
+ * table (recentReactionCount), which holds across instances.
  */
-function windowLimiter(limit: number) {
-  const recent = new Map<string, number[]>();
-  return function over(key: string, now = Date.now()): boolean {
-    const windowStart = now - HOUR_MS;
-    const times = (recent.get(key) ?? []).filter((at) => at > windowStart);
-    const limited = times.length >= limit;
-    if (!limited) times.push(now);
-    recent.set(key, times);
-    if (recent.size > 5_000) {
-      for (const [k, v] of recent) if (v.every((at) => at <= windowStart)) recent.delete(k);
-    }
-    return limited;
-  };
-}
-
-const overTapLimit = windowLimiter(REACTIONS_PER_DEVICE_PER_HOUR);
-const overIpLimit = windowLimiter(REACTIONS_PER_IP_PER_HOUR);
-
-/** The client address as the platform reports it (Vercel sets x-forwarded-for), or null when there is none. */
-function clientIp(req: NextRequest): string | null {
-  const forwarded = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
-  return forwarded || req.headers.get("x-real-ip")?.trim() || null;
-}
+const tapsPerDevice = slidingWindow(REACTIONS_PER_DEVICE_PER_HOUR, HOUR_MS);
+const tapsPerIp = slidingWindow(REACTIONS_PER_IP_PER_HOUR, HOUR_MS);
 
 const noStore = { "Cache-Control": "no-store" };
-
-function rateLimited(scope: "device" | "ip") {
-  const limit = scope === "ip" ? REACTIONS_PER_IP_PER_HOUR : REACTIONS_PER_DEVICE_PER_HOUR;
-  return Response.json(
-    { error: "rate_limited", scope, limit_per_hour: limit },
-    { status: 429, headers: { ...noStore, "Retry-After": "3600" } },
-  );
-}
 
 type Parsed = { cardId: string; deviceId: string; body: Record<string, unknown> } | Response;
 
@@ -71,7 +39,7 @@ type Parsed = { cardId: string; deviceId: string; body: Record<string, unknown> 
 async function parse(req: NextRequest, params: Promise<{ id: string }>): Promise<Parsed> {
   if (!hasDb()) return Response.json({ error: "no_database" }, { status: 503 });
   const ip = clientIp(req);
-  if (ip && overIpLimit(ip)) return rateLimited("ip");
+  if (ip && tapsPerIp.over(ip)) return rateLimited("ip", tapsPerIp);
   const { id } = await params;
   if (!isUuid(id)) return Response.json({ error: "not_found" }, { status: 404 });
   let body: Record<string, unknown>;
@@ -105,8 +73,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
   const card = await getReactableCard(cardId);
   if (!card) return Response.json({ error: "not_found" }, { status: 404 });
-  if (overTapLimit(deviceId)) return rateLimited("device");
-  if ((await recentReactionCount(deviceId)) >= REACTIONS_PER_DEVICE_PER_HOUR) return rateLimited("device");
+  if (tapsPerDevice.over(deviceId)) return rateLimited("device", tapsPerDevice);
+  if ((await recentReactionCount(deviceId)) >= REACTIONS_PER_DEVICE_PER_HOUR) return rateLimited("device", tapsPerDevice);
 
   await setReaction(card, deviceId, body.kind);
   return Response.json(await countsFor(card.id), { headers: noStore });
@@ -120,7 +88,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
 
   const card = await getReactableCard(cardId);
   if (!card) return Response.json({ error: "not_found" }, { status: 404 });
-  if (overTapLimit(deviceId)) return rateLimited("device");
+  if (tapsPerDevice.over(deviceId)) return rateLimited("device", tapsPerDevice);
 
   await removeReaction(card.id, deviceId);
   return Response.json(await countsFor(card.id), { headers: noStore });

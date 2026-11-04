@@ -11,29 +11,24 @@ import {
 import { BusyError, withUsage } from "@/lib/claude/usage";
 import { getBoardBySlug, listPublicCards } from "@/lib/db/boards";
 import { DEFAULT_LANG, isLang } from "@/lib/i18n";
+import { isUuid } from "@/lib/ids";
+import { clientIp, HOUR_MS, MINUTE_MS, overAny, rateLimited, slidingWindow } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
-const DEVICE_RE = /^[0-9a-f-]{36}$/;
+/**
+ * Questions are never stored, so there is no table to count them in: two
+ * in-memory windows (lib/rate-limit.ts) per device, or per client address
+ * for a request without a device id. Six a minute stops a burst; twenty an
+ * hour stops a client that keeps asking all day. The daily Claude call cap
+ * is the real budget guard.
+ */
 const ASKS_PER_MINUTE = 6;
-
-// Best-effort limit per server instance. Questions are never stored, so there
-// is no table to count them in; the daily Claude cap is the real budget guard.
-const recent = new Map<string, number[]>();
-
-function overAskLimit(key: string, now = Date.now()): boolean {
-  const windowStart = now - 60_000;
-  const times = (recent.get(key) ?? []).filter((at) => at > windowStart);
-  const limited = times.length >= ASKS_PER_MINUTE;
-  if (!limited) times.push(now);
-  recent.set(key, times);
-  if (recent.size > 5_000) {
-    for (const [k, v] of recent) if (v.every((at) => at <= windowStart)) recent.delete(k);
-  }
-  return limited;
-}
+const ASKS_PER_HOUR = 20;
+const asksPerMinute = slidingWindow(ASKS_PER_MINUTE, MINUTE_MS);
+const asksPerHour = slidingWindow(ASKS_PER_HOUR, HOUR_MS);
 
 /**
  * Earlier question and answer pairs from the client, kept only when well
@@ -59,8 +54,10 @@ function parseHistory(value: unknown): AskTurn[] {
  * Answers a question from the board's public cards.
  * Body: JSON {question, lang, device_id?, history?: [{question, answer}]}.
  * Response 200: {answer: {segments: [{text, cardIds}], cardIds, noInfo}}.
- * Errors: 400 bad_request, 404 board_not_found, 429 rate_limited,
- * 503 busy (daily Claude cap), 502 failed. The question is never stored or logged.
+ * Errors: 400 bad_request, 404 board_not_found, 429 rate_limited with
+ * scope "device" (or "ip" without a device id) and limit_per_minute 6 or
+ * limit_per_hour 20, Retry-After 60 or 3600, 503 busy (daily Claude cap),
+ * 502 failed. The question is never stored or logged.
  */
 export async function POST(req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   let body: { question?: unknown; lang?: unknown; device_id?: unknown; history?: unknown };
@@ -80,11 +77,13 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
   const board = await getBoardBySlug(slug);
   if (!board) return NextResponse.json({ error: "board_not_found" }, { status: 404 });
 
-  const deviceId = typeof body.device_id === "string" && DEVICE_RE.test(body.device_id) ? body.device_id : null;
-  const key = deviceId ?? `ip:${req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown"}`;
-  if (overAskLimit(key)) {
-    return NextResponse.json({ error: "rate_limited" }, { status: 429, headers: { "Retry-After": "60" } });
-  }
+  const deviceId = isUuid(body.device_id) ? body.device_id.toLowerCase() : null;
+  const key = deviceId ?? `ip:${clientIp(req) ?? "unknown"}`;
+  const full = overAny([
+    [asksPerMinute, key],
+    [asksPerHour, key],
+  ]);
+  if (full) return rateLimited(deviceId ? "device" : "ip", full);
 
   const cards = await listPublicCards(board);
   if (cards.length === 0) {

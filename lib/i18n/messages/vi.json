@@ -405,5 +405,6 @@
   "about.credits_map": "Đường viền các tỉnh trên bản đồ ở trang chủ lấy từ svg-maps của Victor Cazanave, dựa trên bản đồ Nhật Bản của MapSVG, và đã được giản lược cho Engawa (bỏ các đảo nhỏ, làm tròn tọa độ). Được sử dụng theo giấy phép Creative Commons Ghi công 4.0 Quốc tế (CC BY 4.0).",
   "home.source": "Mã nguồn trên GitHub",
   "home.tagline_easy_ja": "きんじょの じょうほうを、みんなの ことばで。",
-  "places.kind.office": "Văn phòng quận hoặc thành phố"
+  "places.kind.office": "Văn phòng quận hoặc thành phố",
+  "limit.ask_hour": "Bạn đã hỏi quá nhiều câu trong một giờ qua. Hãy thử lại sau. Bạn vẫn có thể đọc mọi thẻ."
 }

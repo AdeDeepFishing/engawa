@@ -405,5 +405,6 @@
   "about.credits_map": "首页地图上的都道府县轮廓来自 Victor Cazanave 的 svg-maps（源自 MapSVG 的日本地图），并为缘侧做了简化（省略小岛，坐标取整）。依据知识共享 署名 4.0 国际许可协议（CC BY 4.0）使用。",
   "home.source": "GitHub 源代码",
   "home.tagline_easy_ja": "きんじょの じょうほうを、みんなの ことばで。",
-  "places.kind.office": "区政府或市政府办公楼"
+  "places.kind.office": "区政府或市政府办公楼",
+  "limit.ask_hour": "过去一小时内提问太多了，请稍后再试。所有卡片仍然可以阅读。"
 }
