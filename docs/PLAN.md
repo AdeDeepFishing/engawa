@@ -61,6 +61,7 @@ Ranked by value on the judging axes (impact, demo, use of Claude, depth) against
 - N14 About page `/about` in five languages: who the board is for (named people and scenes, with numbers for 中原区), what it does with their data, who runs it after the event. Impact (the criteria ask who, in what scene, how much, and who keeps using it). About 1 hour. Done 2026-11-04.
 - N15 Loudspeaker broadcasts into the board: an "I heard the loudspeaker" input that transcribes the 防災行政無線 with the browser's speech recognition into an editable box (secondhand, platform loudspeaker), and an official inbox that turns the city's broadcast mail (メールニュースかわさき, forwarded by a mail worker the human wires) into official cards. Impact (foreign and hard-of-hearing residents miss the loudspeaker). About 4 hours. Done 2026-11-04.
 - N16 Laptop layout: three columns at 1024 px and wider (list, card in place, ask), two on tablets, keyboard navigation, the open card in the URL; plus a polish pass on empty states, spacing, hover and focus. Demo (the video is recorded on a laptop). About 4 hours. Done 2026-11-04.
+- N17 Open in maps: a card with a known place gets an "Open in maps" link built from the place's Japanese name and address (a Google Maps search URL, which opens the Maps app on a phone; no API key, nothing leaves the phone until the tap). A card with only `place_text_ja` searches that text with the board's area appended. Impact and demo. About 1 hour.
 
 ### Not this week
 
@@ -170,7 +171,7 @@ Session PRs were merged in pairs after review through the integration PRs #11, #
 ### 2026-11-05 (Thu): native reads, the inbox wired, remaining nice-to-haves
 - [ ] Korean and Vietnamese native speakers read the demo cards; fix wording
 - [ ] Human: generate the inbox secret on the admin page, deploy the Cloudflare Email Routing worker from `docs/INBOX.md`, subscribe its address to メールニュースかわさき with 防災行政無線 ticked, enter the From address on the admin list; try the heard input on a real phone next to a broadcast
-- [ ] N10 place view, N12 make a board, web push for official and danger cards: only if the day is clear
+- [ ] N17 open in maps, N10 place view, N12 make a board, web push for official and danger cards: only if the day is clear
 
 ### 2026-11-06 (Fri): review, freeze, demo prep
 - [ ] Full run of the 7-step demo scenario on the deployed URL; fix what breaks
