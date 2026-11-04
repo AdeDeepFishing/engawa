@@ -182,7 +182,7 @@ Session PRs were merged in pairs after review through the integration PRs #11, #
 - [x] Mark 04 (Tatami edges) applied to the favicon, the icons, the manifest and both OG images, solid and outlined variants behind one switch (PR #32)
 - [x] Shibuya broadcasts: a Cloudflare cron Worker polls the ward portal's feed and posts new broadcasts to the board inbox (PR #31); the human generated the board's inbox secret, the portal sender is on the allowlist
 
-### 2026-11-05 (Thu): native reads, the inbox wired, remaining nice-to-haves
+### 2026-11-05 (Thu): demo walk-through, README, remaining nice-to-haves
 - [ ] A read-only pass over the five message files and the about page for natural Korean and Vietnamese and consistent terms (at the 11/06 review; the human decided against outside native readers)
 - [ ] Human: try the heard input on a real phone next to a broadcast; watch the first real city mail become a card and confirm it on the admin page
 - [ ] Flip `MARK_VARIANT` to the variant the human picks (solid or edges)
