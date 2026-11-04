@@ -1,0 +1,27 @@
+# Shibuya portal poller: posts each new 防災行政無線 broadcast from the
+# 渋谷区防災ポータル feed into the shibuya board's official inbox.
+# README.md has the deploy steps. No secret and no account id live here.
+
+name = "engawa-shibuya-portal"
+main = "src/index.ts"
+compatibility_date = "2026-10-15"
+# Cron only: no workers.dev address and no route, so nothing can call it over HTTP.
+workers_dev = false
+
+[triggers]
+crons = ["*/5 * * * *"]
+
+# The poller's state (last posted update_at, the last 20 posted keys, a lease).
+# Fill in the id that `wrangler kv namespace create STATE` prints.
+[[kv_namespaces]]
+binding = "STATE"
+id = "REPLACE_WITH_STATE_NAMESPACE_ID"
+
+[vars]
+ENGAWA_INBOX_URL = "https://engawaboard.com/api/b/shibuya/inbox"
+PORTAL_SENDER = "portal@bosai.city.shibuya.tokyo.jp"
+# ENGAWA_INBOX_SECRET is a secret: `wrangler secret put ENGAWA_INBOX_SECRET`.
+
+# Workers Logs, so the counts and statuses of past runs can be read without a live tail.
+[observability]
+enabled = true

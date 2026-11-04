@@ -1,0 +1,8 @@
+# Makes this folder its own pnpm root, apart from the Next app at the
+# repository root: `pnpm install` here installs only the worker's tools, and
+# the app's install on Vercel never pulls wrangler.
+onlyBuiltDependencies:
+  - esbuild
+  - workerd
+ignoredBuiltDependencies:
+  - sharp

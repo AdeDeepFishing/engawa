@@ -1,0 +1,43 @@
+{
+  "Update_At" : "2026/11/05 10:31",
+  "BosaiRadio" : {
+    "month" : "202611",
+    "information" : [ {
+      "update_at" : "2026/11/05 10:30",
+      "title" : "総合防災訓練の終了",
+      "message" : "こちらは、ぼうさいしぶやです。\r\n本日の総合防災訓練は終了しました。ご協力ありがとうございました。\r\n",
+      "url" : "",
+      "important" : 0,
+      "multi_lang" : {
+        "ja" : {
+          "title" : "総合防災訓練の終了",
+          "message" : "こちらは、ぼうさいしぶやです。\r\n本日の総合防災訓練は終了しました。ご協力ありがとうございました。\r\n",
+          "attachments" : [ ]
+        },
+        "en" : {
+          "title" : "End of the disaster drill",
+          "message" : "This is Bosai Shibuya.\r\nToday's disaster drill ended at 10:30. Thank you for your cooperation.\r\n",
+          "attachments" : [ ]
+        }
+      }
+    }, {
+      "update_at" : "2026/11/05 10:00",
+      "title" : "総合防災訓練",
+      "message" : "こちらは、ぼうさいしぶやです。\r\n本日10時から総合防災訓練を行います。これは訓練放送です。\r\n",
+      "url" : "",
+      "important" : 0,
+      "multi_lang" : {
+        "ja" : {
+          "title" : "総合防災訓練",
+          "message" : "こちらは、ぼうさいしぶやです。\r\n本日10時から総合防災訓練を行います。これは訓練放送です。\r\n",
+          "attachments" : [ ]
+        },
+        "en" : {
+          "title" : "Disaster drill",
+          "message" : "This is Bosai Shibuya.\r\nA disaster drill starts today at 10:00. This is a drill broadcast.\r\n",
+          "attachments" : [ ]
+        }
+      }
+    } ]
+  }
+}
