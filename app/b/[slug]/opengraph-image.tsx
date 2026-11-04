@@ -43,7 +43,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
-          <MarkTile size={96} margin={0.22} radius={24} />
+          <MarkTile size={96} margin={0.22} /* a visual choice for the preview tile, not the maskable safe zone */ radius={24} />
           <div style={{ display: "flex", flexDirection: "column" }}>
             <div style={{ fontSize: 48, fontWeight: 700 }}>Engawa</div>
             <div style={{ fontSize: 28, color: MUTED }}>縁側</div>
