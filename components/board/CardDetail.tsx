@@ -13,7 +13,6 @@ import {
   timeAgo,
   timeRange,
 } from "@/lib/cards/display";
-import { mapsUrl } from "@/lib/cards/maps";
 import { CardShare } from "@/components/share/CardShare";
 import { areaName } from "@/lib/geo";
 import { CARD_LANGS, tCount, type Lang } from "@/lib/i18n";
@@ -21,6 +20,7 @@ import { useLang } from "@/lib/i18n/LangProvider";
 import type { Board, Card, CardTrace, ConflictStatement } from "@/lib/types";
 import { CardReactions } from "./CardReactions";
 import { CardTraceView } from "./CardTrace";
+import { MapsLink } from "./MapsLink";
 import { MaskedImage } from "./MaskedImage";
 import { ReadAloud } from "./ReadAloud";
 import { fallbackLangAttr } from "@/lib/cards/langs";
@@ -71,8 +71,6 @@ export function CardDetail({
   }, [card.id, card.source_count, card.updated_at, card.official_confirmed]);
 
   const place = placeLabel(card, board, lang);
-  // A plain search link: nothing is fetched until the reader taps it (N17).
-  const maps = mapsUrl(card, board);
   const area = areaName(board, card.area_code);
   const expired = isExpired(card.valid_until, now);
   const conditions = card.facts.conditions ?? [];
@@ -129,19 +127,7 @@ export function CardDetail({
             <dt className="text-muted">{t("sheet.place")}</dt>
             <dd>
               {place}
-              {maps ? (
-                <a
-                  href={maps}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-1 flex min-h-11 w-fit items-center gap-2 rounded-lg border border-line bg-surface px-3 font-semibold hover:border-accent active:bg-held-bg"
-                  data-maps-link
-                >
-                  <span aria-hidden="true">🗺️</span>
-                  {t("maps.open")}
-                  <span className="sr-only"> {t("maps.new_tab")}</span>
-                </a>
-              ) : null}
+              <MapsLink card={card} board={board} />
             </dd>
           </>
         ) : null}
