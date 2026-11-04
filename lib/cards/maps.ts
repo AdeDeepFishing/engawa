@@ -10,6 +10,9 @@ import { knownPlaceOf } from "./display";
  */
 const MAPS_SEARCH = "https://www.google.com/maps/search/?api=1&query=";
 
+/** Place texts that only make sense from where the writer stood. */
+const RELATIVE_PLACE = /^(当|この|その|本|弊|同|うち|私の)/;
+
 type MapsBoard = Pick<Board, "known_places" | "area_names" | "name">;
 
 /**
@@ -28,10 +31,14 @@ export function mapsQuery(card: Pick<Card, "place_id" | "place_text_ja">, board:
     const address = place.address_ja?.trim();
     if (!address) return `${place.name_ja} ${area}`;
     if (!city) return `${place.name_ja} ${address} ${area}`;
-    return `${place.name_ja} ${address.startsWith(city) ? address : `${city}${address}`}`;
+    // An address that already names a city, ward or prefecture is searched as it is.
+    return `${place.name_ja} ${/[都道府県市区]/.test(address) ? address : `${city}${address}`}`;
   }
   const text = card.place_text_ja?.trim();
   if (!text) return null;
+  // A spot named only relative to the writer (当マンション, この建物, 本施設)
+  // would send the reader to an arbitrary point in the ward: no link.
+  if (RELATIVE_PLACE.test(text)) return null;
   return text.includes(area) ? text : `${text} ${area}`;
 }
 

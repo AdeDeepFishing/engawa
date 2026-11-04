@@ -1,6 +1,6 @@
 import type { MessageKey } from "@/lib/i18n";
 import type { Board, Card, KnownPlace } from "@/lib/types";
-import { CATEGORY_ICON } from "./categories";
+import { CATEGORY_ICON, isExpired } from "./categories";
 import { contentTime, knownPlaceOf } from "./display";
 
 /**
@@ -72,7 +72,7 @@ function newest(cards: Card[]): Card | null {
  * the board's order inside a known place; the last group sorts them by their
  * place text so the same spot sits together.
  */
-export function groupByPlace(cards: Card[], board: Pick<Board, "known_places">): PlaceGroup[] {
+export function groupByPlace(cards: Card[], board: Pick<Board, "known_places">, now = new Date()): PlaceGroup[] {
   const byPlace = new Map<string, { place: KnownPlace; cards: Card[] }>();
   const other: Card[] = [];
   for (const card of cards) {
@@ -90,7 +90,7 @@ export function groupByPlace(cards: Card[], board: Pick<Board, "known_places">):
     key: `place:${place.id}`,
     place,
     cards: list,
-    newestAt: contentTime(newest(list)!),
+    newestAt: contentTime(newestLive(list, now)),
     ...(place.kind === "shelter" ? { shelterCard: newest(list.filter((c) => c.category === "shelter")) } : {}),
   }));
   groups.sort((a, b) => new Date(b.newestAt).getTime() - new Date(a.newestAt).getTime());
@@ -104,7 +104,17 @@ export function groupByPlace(cards: Card[], board: Pick<Board, "known_places">):
       if (y === null) return -1;
       return x.localeCompare(y, "ja");
     });
-    groups.push({ key: OTHER_PLACES_KEY, place: null, cards: sorted, newestAt: contentTime(newest(sorted)!) });
+    groups.push({ key: OTHER_PLACES_KEY, place: null, cards: sorted, newestAt: contentTime(newestLive(sorted, now)) });
   }
   return groups;
+}
+
+/**
+ * The card that orders a group: the newest card still in force, so an
+ * expired notice cannot lift a stale place to the top; the newest card of
+ * all when every card in the group has expired.
+ */
+function newestLive(list: Card[], now: Date): Card {
+  const live = list.filter((c) => !isExpired(c.valid_until, now));
+  return newest(live.length ? live : list)!;
 }

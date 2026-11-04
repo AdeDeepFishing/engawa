@@ -814,3 +814,5 @@ Playwright 10 of 10 after one fix to the test (the QR check first read the page 
 
 **Needed a human**
 - Nothing during the session. Native read of the Korean and Vietnamese `maps.*`, `view.*` and `places.*` strings. `docs/PLAN.md` lines N17 and N10 are for the reviewing session to tick.
+
+**Review fixes for PR #23 (Fable, reviewing session):** the maps query leaves an address alone when it already names a city, ward or prefecture (no doubled 川崎市); a place text that only makes sense from where the writer stood (当マンション, この建物, 本施設) gets no maps link; a Places group is ordered by its newest card still in force, so an expired notice cannot lift a stale shelter to the top; Vietnamese view label is "Chế độ xem". The read-only review found no privacy or correctness blockers; left as follow-ups: mirroring the view preference in a cookie to avoid the post-hydration flash, and running the proxy on every page request instead of only when `?lang=` is present.
