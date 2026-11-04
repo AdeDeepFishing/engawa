@@ -61,6 +61,10 @@ export interface NewSubmission {
   text?: string;
   image?: { bytes: Uint8Array; mime: "image/jpeg" | "image/png" };
   uploaderAreaCode?: string | null;
+  /** The heard input: what the uploader heard from the loudspeaker (migration 0007). */
+  heard?: boolean;
+  /** Set by the official inbox route only (migration 0007). */
+  sourceHint?: "official";
 }
 
 /** Uploads the already-stripped image (if any) and inserts the submission row. */
@@ -87,6 +91,9 @@ export async function createSubmission(input: NewSubmission): Promise<Submission
     uploader_area_code: input.uploaderAreaCode ?? null,
     status: "received",
     purge_after: addHours(now, PENDING_RETENTION_HOURS),
+    // Only set when true, so a database without migration 0007 still takes every other submission.
+    ...(input.heard ? { heard: true } : {}),
+    ...(input.sourceHint ? { source_hint: input.sourceHint } : {}),
   };
   const { data, error } = await client.from("submissions").insert(row).select("*").single();
   if (error) {

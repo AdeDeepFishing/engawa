@@ -15,7 +15,7 @@ export function cardAsText(card: Card, board: Board, now: Date, lang: Lang, url:
     place ? `${t("sheet.place", lang)}: ${place}` : null,
     timeRange(card.valid_from, card.valid_until, lang),
     isExpired(card.valid_until, now) ? t("card.outdated", lang) : null,
-    `${sourceLabel(card.source_type, card.official_confirmed, lang)}, ${tCount("card.source_count", lang, card.source_count)}`,
+    `${sourceLabel(card.source_type, card.official_confirmed, lang, card.facts.platform)}, ${tCount("card.source_count", lang, card.source_count)}`,
   ].filter(Boolean);
   return [`${card.title[lang]}\n${card.body[lang]}`, details.join("\n"), url].filter(Boolean).join("\n\n");
 }

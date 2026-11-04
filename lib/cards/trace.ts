@@ -10,6 +10,8 @@ import { formatDateTime, formatTime, jstDay } from "./display";
 /** What kind of input a row came from, as far as the stored platform says. */
 export function traceInputKey(platform: Platform | null): MessageKey {
   if (platform === "paper") return "trace.input.paper";
+  if (platform === "loudspeaker") return "trace.input.loudspeaker";
+  if (platform === "city_mail") return "trace.input.city_mail";
   if (platform === "line" || platform === "wechat") return "trace.input.chat";
   if (platform === "x" || platform === "xiaohongshu" || platform === "facebook") return "trace.input.post";
   return "trace.input.other";

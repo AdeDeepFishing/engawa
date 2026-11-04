@@ -229,15 +229,41 @@ async function mergeIntoCard(
   if (rpcErr) throw rpcErr;
 
   const patch: Record<string, unknown> = {};
+  const facts: CardFacts = { ...card.facts };
+  let factsChanged = false;
   // A stronger source backing the same statement raises the card's label.
   // official_confirmed is never touched here: only the admin route sets it.
-  if (trustRank(fact.source_type) > trustRank(card.source_type)) patch.source_type = fact.source_type;
+  // The card's platform names where its label comes from, so it moves with
+  // the label: a loudspeaker card that the city's mail confirms reads
+  // "from the city's broadcast mail", not "official, heard from the radio".
+  if (trustRank(fact.source_type) > trustRank(card.source_type)) {
+    patch.source_type = fact.source_type;
+    if (facts.platform !== ctx.platform) {
+      facts.platform = ctx.platform;
+      factsChanged = true;
+    }
+    // A loudspeaker transcript gives way to the stronger source's own words:
+    // a recognition error (a misheard place, a garbled time) must not stay on
+    // the card once the city's text says the same thing properly. The other
+    // languages go with the old wording; the translate step that follows
+    // writes them again from the new text.
+    if (card.facts?.platform === "loudspeaker") {
+      patch.title = fact.title;
+      patch.body = fact.body;
+      patch.original_text = fact.original_excerpt || null;
+      patch.original_lang = ctx.inputLanguage;
+      if (fact.place_id) {
+        patch.place_id = fact.place_id;
+        patch.place_text_ja = fact.place_text_ja;
+      } else if (fact.place_text_ja) {
+        patch.place_text_ja = fact.place_text_ja;
+      }
+    }
+  }
   if (decision.fill_missing) {
     if (!card.place_id && fact.place_id) patch.place_id = fact.place_id;
     if (!card.place_text_ja && fact.place_text_ja) patch.place_text_ja = fact.place_text_ja;
     if (!card.valid_from && fact.valid_from) patch.valid_from = fact.valid_from;
-    const facts: CardFacts = { ...card.facts };
-    let factsChanged = false;
     if (!facts.conditions?.length && fact.conditions.length) {
       facts.conditions = fact.conditions;
       factsChanged = true;
@@ -253,8 +279,8 @@ async function mergeIntoCard(
       facts.valid_until_stated = true;
       factsChanged = true;
     }
-    if (factsChanged) patch.facts = facts;
   }
+  if (factsChanged) patch.facts = facts;
   let purgeAfter = (patch.purge_after as string | undefined) ?? cardPurgeAfter(card, now);
   if (Object.keys(patch).length) {
     const { data, error } = await db()
