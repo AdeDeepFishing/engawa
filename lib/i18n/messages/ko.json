@@ -1,4 +1,5 @@
 {
+  "places.kind.commuter_shelter": "귀가 곤란자 수용 시설",
   "mode.strip_since": "재난 모드: {time}부터 ({ago})",
   "mode.reason_inbox": "시의 방송 메일을 받아 전환되었습니다.",
   "mode.reason_admin": "게시판 관리자가 전환했습니다.",
@@ -398,6 +399,11 @@
   "home.map_hint": "색으로 표시된 도도부현을 누르면 그 지역의 게시판으로 이동합니다.",
   "home.map_pref_one": "{pref}: 게시판 {n}개",
   "home.map_pref_other": "{pref}: 게시판 {n}개",
-  "home.map_credit": "지도: svg-maps(Victor Cazanave, MapSVG 기반)를 단순화.",
-  "home.map_licence": "CC BY 4.0"
+  "home.made_by": "만든 사람: Yanwen",
+  "home.map_credits_link": "지도 출처",
+  "about.credits_heading": "출처",
+  "about.credits_map": "첫 페이지 지도의 도도부현 윤곽은 Victor Cazanave의 svg-maps(MapSVG의 일본 지도 기반)를 엔가와에 맞게 단순화한 것입니다(작은 섬 생략, 좌표 반올림). 크리에이티브 커먼즈 저작자표시 4.0 국제 라이선스(CC BY 4.0)에 따라 사용합니다.",
+  "home.source": "GitHub 소스 코드",
+  "home.tagline_easy_ja": "きんじょの じょうほうを、みんなの ことばで。",
+  "places.kind.office": "구청·시청"
 }

@@ -1,6 +1,7 @@
 import { CARD_WITH_SOURCES, withSortedSources } from "./cards";
 import { fillLangs, withLangFallback } from "@/lib/cards/langs";
 import { db, hasDb } from "./client";
+import { withAreaCodes } from "@/lib/geo/polygons";
 import { localBoardBySlug, localBoards, localCardsForBoard } from "./local";
 import { withReactions } from "./reactions";
 import type { Board, Card, Multilingual } from "@/lib/types";
@@ -15,21 +16,21 @@ export async function getBoardBySlug(slug: string): Promise<Board | null> {
     .eq("slug", slug)
     .maybeSingle();
   if (error) throw error;
-  return (data as Board | null) ?? null;
+  return data ? withAreaCodes(data as Board) : null;
 }
 
 export async function getBoardById(id: string): Promise<Board | null> {
   if (!hasDb()) return localBoards().find((b) => b.id === id) ?? null;
   const { data, error } = await db().from("boards").select(BOARD_COLUMNS).eq("id", id).maybeSingle();
   if (error) throw error;
-  return (data as Board | null) ?? null;
+  return data ? withAreaCodes(data as Board) : null;
 }
 
 export async function listBoards(): Promise<Board[]> {
   if (!hasDb()) return localBoards();
   const { data, error } = await db().from("boards").select(BOARD_COLUMNS).order("slug");
   if (error) throw error;
-  return (data ?? []) as Board[];
+  return ((data ?? []) as Board[]).map(withAreaCodes);
 }
 
 /** What the home page says about a board: its public cards and when the newest one was made. */
@@ -67,7 +68,7 @@ export async function listBoardsWithStats(): Promise<BoardWithStats[]> {
   }
   if (result.error) throw result.error;
   return ((result.data ?? []) as unknown as BoardStatsRow[]).map(({ public_cards, newest, ...board }) => ({
-    ...board,
+    ...withAreaCodes(board),
     public_cards: public_cards[0]?.count ?? 0,
     newest_card_at: newest[0]?.created_at ?? null,
   }));

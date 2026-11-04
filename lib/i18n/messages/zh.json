@@ -1,4 +1,5 @@
 {
+  "places.kind.commuter_shelter": "无法回家人员临时安置设施",
   "mode.strip_since": "灾害模式：自{time}起（{ago}）",
   "mode.reason_inbox": "因市政府的广播邮件而切换。",
   "mode.reason_admin": "由本公告板的管理员切换。",
@@ -398,6 +399,11 @@
   "home.map_hint": "点高亮的都道府县，即可跳到那里的公告板。",
   "home.map_pref_one": "{pref}：{n} 个公告板",
   "home.map_pref_other": "{pref}：{n} 个公告板",
-  "home.map_credit": "地图：svg-maps（Victor Cazanave，源自 MapSVG），已简化。",
-  "home.map_licence": "CC BY 4.0"
+  "home.made_by": "作者：Yanwen",
+  "home.map_credits_link": "地图来源",
+  "about.credits_heading": "来源与致谢",
+  "about.credits_map": "首页地图上的都道府县轮廓来自 Victor Cazanave 的 svg-maps（源自 MapSVG 的日本地图），并为缘侧做了简化（省略小岛，坐标取整）。依据知识共享 署名 4.0 国际许可协议（CC BY 4.0）使用。",
+  "home.source": "GitHub 源代码",
+  "home.tagline_easy_ja": "きんじょの じょうほうを、みんなの ことばで。",
+  "places.kind.office": "区政府或市政府办公楼"
 }

@@ -21,8 +21,15 @@
   --warn-bg: #fff4d6;
   --warn-ink: #5a3d00;
   --held-bg: #f3efe6;
-  /* Prefectures without a board on the home page map: quiet, under the accent. */
-  --map-land: #e2ded5;
+  /* Card shadows from the ink colour, so a palette change moves them too. */
+  --shadow-rest: 0 1px 2px color-mix(in srgb, var(--foreground) 4%, transparent);
+  --shadow-lift: 0 8px 24px color-mix(in srgb, var(--foreground) 8%, transparent);
+  --shadow-press: 0 1px 2px color-mix(in srgb, var(--foreground) 6%, transparent);
+  /* Home page map: land a step darker than the paper, warm like it; the
+     prefectures with a board in a rose tint, a step deeper on hover and focus. */
+  --map-land: #ebe7de;
+  --map-active: #f6dce7;
+  --map-active-hover: #efc5d6;
 }
 
 @theme inline {
@@ -134,4 +141,34 @@ summary {
 @theme inline {
   --color-danger: var(--danger);
   --color-danger-ink: var(--danger-ink);
+}
+
+/* Home page motion (components/home/**): a quiet entrance, opacity and an
+   8 px rise, staggered through --rise-delay; the map badges scale in once.
+   Transforms only, so nothing moves the layout. The reduced motion block
+   above turns every animation off, which leaves the end state. */
+@keyframes home-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@keyframes home-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+
+.home-rise {
+  animation: home-rise 360ms cubic-bezier(0.2, 0, 0, 1) both;
+  animation-delay: var(--rise-delay, 0ms);
+}
+
+.home-pop {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: home-pop 400ms cubic-bezier(0.2, 0, 0, 1) both;
+  animation-delay: var(--rise-delay, 0ms);
 }

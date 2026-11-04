@@ -6,6 +6,7 @@ import { modeForReaders } from "@/lib/db/mode";
 import { INTL_LOCALE, LANGS, t, withLangParam } from "@/lib/i18n";
 import { getLinkLang, getRequestLang } from "@/lib/i18n/server";
 import { BoardView } from "@/components/board/BoardView";
+import { boardPolygons } from "@/lib/geo/polygons";
 import { parseBoardView } from "@/lib/cards/places";
 import { appBase } from "@/lib/app-url";
 import { AboutLink } from "@/components/about/AboutLink";
@@ -68,6 +69,7 @@ export default async function BoardPage({ params, searchParams }: Props) {
       canSubmit={hasDb()}
       footer={<AboutLink boardSlug={board.slug} />}
       initialView={parseBoardView(query.view) ?? "list"}
+      areaPolygons={boardPolygons(board)}
     />
   );
 }

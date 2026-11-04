@@ -1,4 +1,5 @@
 {
+  "places.kind.commuter_shelter": "帰宅困難者受入施設",
   "mode.strip_since": "災害時モード：{time}から（{ago}）",
   "mode.reason_inbox": "市の防災無線メールを受けて切り替わりました。",
   "mode.reason_admin": "掲示板の管理者が切り替えました。",
@@ -398,6 +399,11 @@
   "home.map_hint": "色のついた都道府県を押すと、その地域の掲示板に移動します。",
   "home.map_pref_one": "{pref}: 掲示板 {n} 件",
   "home.map_pref_other": "{pref}: 掲示板 {n} 件",
-  "home.map_credit": "地図: svg-maps（Victor Cazanave、MapSVG がもと）を簡略化。",
-  "home.map_licence": "CC BY 4.0"
+  "home.made_by": "制作: Yanwen",
+  "home.map_credits_link": "地図のクレジット",
+  "about.credits_heading": "クレジット",
+  "about.credits_map": "トップページの地図にある都道府県の形は、Victor Cazanave による svg-maps（MapSVG の日本地図がもと）を縁側用に簡略化したものです（小さな島を省き、座標を丸めています）。クリエイティブ・コモンズ 表示 4.0 国際 ライセンス（CC BY 4.0）のもとで使っています。",
+  "home.source": "GitHub のソースコード",
+  "home.tagline_easy_ja": "きんじょの じょうほうを、みんなの ことばで。",
+  "places.kind.office": "区役所・市役所"
 }

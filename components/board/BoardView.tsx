@@ -20,6 +20,7 @@ import { useBoardView } from "./layout/useBoardView";
 import { useCardHash } from "./layout/useCardHash";
 import { LAPTOP_QUERY, TABLET_QUERY, useMediaQuery } from "./layout/useMediaQuery";
 import type { HiddenDuplicate } from "@/lib/db/boards";
+import type { AreaFeature } from "@/lib/geo";
 import { disasterOrder, type ModeView } from "@/lib/cards/mode";
 import type { BoardViewMode } from "@/lib/cards/places";
 import { useLang } from "@/lib/i18n/LangProvider";
@@ -38,6 +39,7 @@ export function BoardView({
   footer,
   initialView = "list",
   initialMode,
+  areaPolygons = [],
 }: {
   board: Board;
   initialCards: Card[];
@@ -52,6 +54,8 @@ export function BoardView({
   initialView?: BoardViewMode;
   /** The mode with when and why it last changed (N21); the poll keeps it current. Defaults to the board row's mode. */
   initialMode?: ModeView;
+  /** This board's 町丁目 polygons for the drop-in area control; none hides the control. */
+  areaPolygons?: AreaFeature[];
 }) {
   const { lang, t } = useLang();
   const [cards, setCards] = useState<Card[]>(initialCards);
@@ -433,6 +437,7 @@ export function BoardView({
           <DropIn
             boardSlug={board.slug}
             areaNames={board.area_names}
+            areaPolygons={areaPolygons}
             offline={offline}
             onPending={upsertPending}
             retryRequest={retryRequest}

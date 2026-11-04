@@ -1,10 +1,10 @@
 # Board polygons
 
-`lib/geo/<board slug>.json` holds the simplified 町丁目 polygons of one board. The browser uses them to turn a position into an area code when the uploader opts in; the server uses the same file to check that a submitted code belongs to the board. Nothing else reads them.
+`lib/geo/<board slug>.json` holds the simplified 町丁目 polygons of one board. `lib/geo/polygons.ts` imports every file on the server; the board page passes the browser the polygons of its own board only, which turn a position into an area code when the uploader opts in. Board reads on the server fill a missing area code from the same files. A new board adds one line to `lib/geo/polygons.ts` and one to the municipality table in `lib/geo/index.ts` (checklist in `docs/BOARDS.md`).
 
 ## Source
 
-e-Stat 小地域 boundary data, 2020 census (令和2年国勢調査, survey id `A002005212020`), 川崎市中原区 (city code `14133`), world geodetic system, longitude and latitude, Shapefile. The download is one request:
+e-Stat 小地域 boundary data, 2020 census (令和2年国勢調査, survey id `A002005212020`), one city or ward per download (`code=`: 川崎市中原区 `14133`, 渋谷区 `13113`), world geodetic system, longitude and latitude, Shapefile. The download is one request:
 
 ```bash
 curl -L -o /tmp/nakahara.zip "https://www.e-stat.go.jp/gis/statmap-search/data?dlserveyId=A002005212020&code=14133&coordSys=1&format=shape&downloadType=5&datum=2011"
@@ -33,6 +33,8 @@ The script:
 Options: `--board <slug>` (default `musashikosugi`), `--simplify <pct>` (default `30%`; 20% gives about 13 KB, 30% about 16 KB, the unsimplified subset is 42 KB).
 
 Last built 2026-11-03 for `musashikosugi`: 23 areas, all 23 names matched one record each.
+
+Built 2026-11-04 for `shibuya` from `code=13113` (zip 58 KB, `r2ka13113.shp`, 80 small areas): 11 areas, all 11 names matched one record each, 30% simplification, 8,038 bytes. Same command with `--board shibuya`; the download was deleted afterwards. `pnpm check:boards` checks every board against its file.
 
 ## Fallback
 

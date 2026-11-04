@@ -110,6 +110,9 @@ export function boardContext(board: Board): string {
     address_ja: p.address_ja ?? null,
     aliases: p.aliases,
     names: p.names,
+    // Official notes such as a closure and its substitute, so a closed
+    // shelter is never offered as open.
+    ...(p.notes_ja ? { notes_ja: p.notes_ja } : {}),
   }));
   return [
     "## Board context",

@@ -1011,3 +1011,201 @@ Claude calls for the re-run: 1 inbox mail (extract and translate; no reconcile c
 - `docs/PLAN.md` still lists the peace/disaster mode switch under "Not this week"; the reviewing session decides how to record N21 there.
 
 **Review fixes for PR #25 (Fable, reviewing session):** the auto return never ends a disaster mode the admin set by hand (reason `admin`), only the automatic switch from the city's mail; the quiet-week count includes cards created or updated in the window, since a city mail that merges onto the first evacuation card writes no new row; the intro on the admin page says so in five languages; 想定 (a scenario) joins 解除 and 訓練 as words that never switch the board on; the confirm button takes focus when it appears and its note is a status, not an alert; the migration comment names `lib/db/mode.ts`; Korean uses 대피 지시 and 알림 띠. Left for later: testing the body for 訓練 as well as the title.
+
+## 2026-11-04 (Wed) night, N18 second board: Shibuya (data, polygons, seed)
+
+**Model:** `claude-opus-5-5` in Claude Code, implementation role, in its own worktree (branch `day6-shibuya`, cut from `main` at `075f2a9`) while another session worked on the home page footer, the about page and brand candidates. No Claude API call was added or changed. The database was neither read nor written: the integrator seeds after review.
+
+**The board.** Slug `shibuya`; name 渋谷, Shibuya, 涩谷, 시부야, Shibuya; mode `peace`. The 11 町丁目 of the brief (渋谷1丁目 to 4丁目, 道玄坂1丁目 and 2丁目, 宇田川町, 桜丘町, 神南1丁目 and 2丁目, 神宮前6丁目) are one e-Stat small area each, none split, so the list stands as briefed. Codes and the source list per place are in `docs/BOARDS.md`.
+
+**Sources, all read 2026-11-04**
+
+| source | as of | used for |
+|---|---|---|
+| 渋谷区地域防災計画（令和5年度修正）資料編, 資料5 避難所一覧 (PDF from https://www.city.shibuya.tokyo.jp/bosai/bosai/bosai-plan/bosai_plan.html, page updated 2026-06-05) | 令和5年度修正 | the areas each shelter serves (収容地区) |
+| 避難所・自主避難施設一覧, https://www.city.shibuya.tokyo.jp/bosai/bosai/hinan/itiran.html | updated 2026-07-03 | names, addresses, closures and substitutes |
+| 一時集合場所・避難場所・地区内残留地区一覧, https://www.city.shibuya.tokyo.jp/bosai/bosai/hinan/basyo.html | updated 2026-07-17 | 神宮通公園, 金王八幡神社; the 地区内残留地区 note |
+| 渋谷区防災ポータル 帰宅困難者受入施設一覧 (the page's JSON) | data updated 2026-07-21 | seven shelters for stranded commuters |
+| 東京都水道局渋谷営業所, 渋谷水道ミニ情報 (https://www.waterworks.metro.tokyo.lg.jp/documents/d/waterworks/105017-shibuya-r709) | 令和7年9月号 | 都立代々木公園 災害時給水ステーション |
+| JR East and Tokyo Metro station pages (read in the browser pane; curl gets 403) | read 2026-11-04 | 渋谷駅, its address and lines |
+| しぶや安全・安心メール, 防災行政無線, 渋谷区防災アプリ pages and the portal's 防災行政無線放送内容 feed | 2024-04-23, 2026-07-09, 2023-11-01, feed 2026-10-16 | `docs/BOARDS.md` only |
+
+No PDF text tool (poppler) is installed on this machine, so a ten-line Swift script with PDFKit, kept outside the repository, extracted the plan's text. The downloads went into their own scratch folders and were deleted.
+
+**Known places, 19, all verified on the pages above.** Eight shelters: 商工会館・消費者センター, 文化総合センター大和田, 神南小学校, 松濤中学校, 渋谷区立小中学校 青山キャンパス, 日本アムウェイ本社ビル, 常磐松小学校, 神宮前小学校; the 代々木公園 water station; 渋谷駅; 渋谷区役所; seven 帰宅困難者受入施設 at the station; 神宮通公園. Decisions, open for review:
+- 神南小学校 (closed since 2026-08-06) and 松濤中学校 (since 2025-08-14) stay as known places with the closure in `notes_ja`: neighbours will still name them, and the card should land on the place. 青山キャンパス, the substitute for both, carries the union of their two 収容地区 lists; that union is derived, not printed by the ward.
+- Seven of the 21 帰宅困難者受入施設 inside the board's 町丁目: the ones at or over the station, plus 金王八幡宮 (also a 一時集合場所). The other 14 are listed in `docs/BOARDS.md` to add the same way if wanted. A new place kind `commuter_shelter` (label in five languages, 🏢) keeps them apart from 避難所: the ward tells commuters to wait at these, not at the shelters.
+- 渋谷駅 has no bare "渋谷" alias, which is also the ward and the 町丁目 name. Its area is 道玄坂1丁目, JR East's address; the ハチ公口 point falls in 道玄坂2丁目, as the ハチ公前広場 does.
+- 渋谷区役所 has kind `office`, which reads "Place" in the Places view.
+
+**Code**
+- **Polygons per board.** `lib/geo/index.ts` imported the pilot polygons and is imported by client components (`CardItem`, `CardDetail`, `CardPage`, `DropIn`), so every board page shipped them; a second file would have shipped both. Now `lib/geo/polygons.ts` imports every board file on the server only. The board page passes `boardPolygons(board)` through `BoardView` to `DropIn` as `areaPolygons`; `resolveArea` takes the polygons as an argument. Lookup is by area code across all files, so a throwaway copy of a board under another slug keeps its area control. The fill for rows seeded before the polygons (`code: null`, still the live pilot row) moved from `boardAreas` to `withAreaCodes`, applied in `lib/db/boards.ts` to every board read, the board's own file first since 町丁目 names repeat across cities. After `pnpm build`, neither board's area codes appear in any file under `.next/static`; they appear only in server chunks.
+- `MUNICIPALITY_JA` gets `13113` 東京都渋谷区, so a map search for a Shibuya place reads "商工会館・消費者センター 東京都渋谷区渋谷1-12-5".
+- **Seed.** `scripts/seed.ts` seeds every board or `--board <slug>`, and `--dry-run` prints both outcomes per board without connecting. Fixed on the way: an existing board got its `mode` overwritten with the seed's `peace`, which would have taken a board out of disaster mode; `--reset-cards` deleted the cards of every board in the loop (it now needs `--board`); sample cards were inserted into any existing board with no cards (now only into a board created in that run). An existing board gets `name`, `area_names` and `known_places` and nothing else. A created board is inserted with `listed: true`.
+- `scripts/geo/build.ts` writes the city code instead of 川崎市中原区 into every file's note. `scripts/geo/README.md` covers any ward.
+- `pnpm check:boards` (`scripts/check-boards.ts`): per board, every area has a code and a polygon with the seed's name, one city and ward, the municipality, the home page prefecture, one landmark, far away resolves to nothing, null codes come back on read, a throwaway copy finds the same polygons, unique place ids; and no polygon is shared between boards.
+
+**Acceptance**
+
+| check | result |
+|---|---|
+| `pnpm typecheck` | clean |
+| `pnpm lint` | clean |
+| `pnpm guard --all` | clean |
+| `pnpm build` | compiled in 4.8 s, 12 static pages; no area code in `.next/static` |
+| `pnpm check:boards` | 25 of 25 |
+| `pnpm check:places`, `check:mode`, `check:inbox`, `check:placeholders` | pass |
+| `lib/geo/shibuya.json` | 11 features, 8,038 bytes |
+| ハチ公口 (35.6590, 139.7005) through `resolveArea` | `13113013002` 道玄坂2丁目 |
+| home page prefecture: `prefectureOfBoard` in `components/home/prefectures.ts` counts the first two digits of the area codes | `13` (東京都) for shibuya, `14` for musashikosugi |
+| `pnpm db:seed --reset-cards` without `--board` | refused before any connection, exit 1 |
+| `pnpm db:seed --dry-run --board nowhere` | refused, exit 1 |
+| local `pnpm dev` | not run: the board is not seeded and the production database must not be written |
+
+`pnpm db:seed --dry-run --board shibuya`:
+
+```
+dry run: nothing is written and the database is not read, so each board shows both outcomes.
+
+board shibuya
+  if absent:  insert slug, name, mode peace, listed true, area_names, known_places, a new admin token; 0 sample cards
+  if present: update name, area_names, known_places; mode, listing, token and cards unchanged
+  name: 渋谷 / Shibuya / 涩谷 / 시부야 / Shibuya
+  area_names: 11, 11 with an e-Stat code
+    13113010001  渋谷1丁目
+    13113010002  渋谷2丁目
+    13113010003  渋谷3丁目
+    13113010004  渋谷4丁目
+    13113013001  道玄坂1丁目
+    13113013002  道玄坂2丁目
+    131130180  宇田川町
+    131130110  桜丘町
+    13113019001  神南1丁目
+    13113019002  神南2丁目
+    13113032006  神宮前6丁目
+  known_places: 19 (shelter 8, water_point 1, station 1, office 1, commuter_shelter 7, park 1), verified 19
+    shoko-kaikan  shelter  商工会館・消費者センター  渋谷1-12-5
+    owada  shelter  文化総合センター大和田  桜丘町23-21
+    jinnan-es  shelter  神南小学校  宇田川町5-1
+    shoto-jhs  shelter  松濤中学校  松濤1-20-4
+    aoyama-campus  shelter  渋谷区立小中学校 青山キャンパス  神宮前5-53-18
+    amway-hq  shelter  日本アムウェイ本社ビル  宇田川町7-1
+    tokiwamatsu-es  shelter  常磐松小学校  東1-7-10
+    jingumae-es  shelter  神宮前小学校  神宮前4-20-12
+    yoyogi-park  water_point  都立代々木公園  代々木神園町2-1
+    shibuya-sta  station  渋谷駅
+    shibuya-city-office  office  渋谷区役所  宇田川町1-1
+    hikarie  commuter_shelter  渋谷ヒカリエ  渋谷2-21-1
+    scramble-square  commuter_shelter  渋谷スクランブルスクエア  渋谷2-24-12
+    shibuya-stream  commuter_shelter  渋谷ストリーム  渋谷3-21-3
+    fukuras  commuter_shelter  渋谷フクラス  道玄坂1-2-3
+    sakura-stage  commuter_shelter  渋谷サクラステージ
+    miyashita-park  commuter_shelter  MIYASHITA PARK  神宮前6-20-10
+    konno-hachimangu  commuter_shelter  金王八幡宮  渋谷3-5-12
+    jingudori-park  park  神宮通公園  神宮前6-22-8
+```
+
+**City mail.** `docs/BOARDS.md` (new): Shibuya publishes every broadcast as text and audio in six languages (no Vietnamese, no やさしい日本語) on its 防災ポータル, read from a JSON feed; しぶや安全・安心メール (empty mail to `login@shibuya.mailio.jp`, sent from `info@shibuya.tokyo`) has a 防災行政情報 category whose content the page does not describe. Whether it carries the broadcast text is the first thing to check after subscribing.
+
+**For the integrator.** After the merge has deployed: `pnpm db:seed --board shibuya --token-file .env.admin-token.local` (creates the board listed, writes its admin token to that file). Optional: `pnpm db:seed --board musashikosugi` puts the e-Stat codes into the live pilot row (name, areas and known places only; mode, token and cards untouched; it replaces any known place edited by hand in the database). Seeding before the deploy also works, but until then the Shibuya page would have no area control and map searches without 東京都渋谷区.
+
+**Files of the other session.** None edited (`components/home/prefectures.ts` is only imported by the check script).
+
+**Needed a human**
+- Native read of the Korean and Vietnamese place names and the `places.kind.commuter_shelter` label.
+- The inbox for Shibuya: the two Gmail steps in `docs/BOARDS.md`, and whether the Worker becomes one per board or a map of address to board.
+- Whether to ask 渋谷区防災課 about reading the portal's broadcast feed.
+
+## 2026-11-04 (Wed) late, home footer credit, map credit moved, mark candidates
+
+**Model:** `claude-opus-5-5` in Claude Code, implementation role, in its own worktree (branch `day6-home-polish`, cut from `main` after PR #27), brief from the reviewing session (Fable). The day6-shibuya session worked on the second board at the same time; none of its files (`supabase/seed/boards.json`, `lib/geo/**`, `scripts/geo/**`, `scripts/seed.ts`) were touched. No pipeline, prompt or database change.
+
+**Done**
+- Footer credit (`components/home/HomeView.tsx`): a fourth footer link, after "Built with Claude Code", to https://www.yanwensworld.com/ in a new tab with `rel="me noopener noreferrer"`, the same 44 px link style as the other three, and the shared screen reader hint `maps.new_tab` ("(opens in a new tab)"). Words through `home.made_by`: Made by Yanwen, 制作: Yanwen, 作者：Yanwen, 만든 사람: Yanwen, Thực hiện: Yanwen. The about page has no footer of its own (it ends with the back link), so it got none.
+- Map credit: the full CC BY 4.0 attribution moved from under the home page map to a Credits section at the end of the about page (`#credits`, `components/about/AboutView.tsx`): one paragraph in five languages (svg-maps by Victor Cazanave, based on the MapSVG map of Japan, simplified for Engawa, small islands dropped, coordinates rounded, used under CC BY 4.0) and three 44 px links: svg-maps (the GitHub repository), MapSVG (its Japan map page) and CC BY 4.0 (the licence). Under the map only "Map credits" remains (`home.map_credits_link`, 16 px, muted, 44 px target) linking to `/about#credits`, so the attribution stays one tap from the map. The section has `scroll-mt-32` so the sticky top bar never covers its heading. `home.map_credit` and `home.map_licence` were used nowhere else and are removed; the comment in `components/home/japan-map-paths.ts` and the generator that writes it (`scripts/japan-map.ts`) say where the credit lives now.
+- Four keys appended at the end of the five message files (`home.made_by`, `home.map_credits_link`, `about.credits_heading`, `about.credits_map`), two removed.
+- Mark candidates: `docs/brand/candidates/01.svg` to `08.svg` and `docs/brand/candidates.html`. Each candidate is one even-odd path on a 64 unit grid in `currentColor`, no text, no gradient, so the chosen one drops into `MARK_PATH` (with `MARK_VIEWBOX` changed from 32 to 64 units). The page is self-contained (inline SVG and CSS, no request of any kind) and shows each candidate as a numbered row with a two line rationale: at 16, 32, 64 and 180 px in the rose `#ad235d` on the paper `#fbfaf7` and on white; in a mock of the top bar; as the home heading lockup; in a browser tab; and as the app icon (white on a rounded rose tile at 180 px and at the 32 px favicon size). Today's mark is the last row, only for comparison. The live mark, icons and preview images are unchanged.
+
+**The eight candidates**
+
+| # | name | idea | note |
+|---|---|---|---|
+| 01 | Sitting on the edge (縁に腰掛ける) | A neighbour sits on the veranda's edge, legs over the side; the two lines are the floor and the ground. | The most literal engawa and the warmest; at 16 px it can pass for a person at a desk or a priority seat. |
+| 02 | Bubble on the plank (縁側の話) | A speech bubble at the end of the veranda plank, its tail hanging over the edge like a neighbour's legs. | Talk and place in two shapes, solid at 16 px; today's idea without the roof and the lines. |
+| 03 | Folded notice (貼り紙) | A paper notice with a folded corner and two lines of text: the thing people actually drop in. | Clear at every size, but it is the generic document icon, so it says board more than engawa. |
+| 04 | Tatami edges (四畳半の畳縁) | A four-and-a-half mat room drawn by its tatami edges (畳縁, the same 縁): four mats around a half mat. | A room where people sit together; every edge lands on the pixel grid, the crispest at 16 px. |
+| 05 | Petal on the plank (縁側に花びら) | One sakura petal falling onto the veranda plank: the season and the street coming in. | Soft and plainly Japanese, but at 16 px the notch is gone, and sakura is a crowded motif. |
+| 06 | Lantern (提灯) | A paper lantern, the light at a festival gate or a shop door: where neighbours gather after dark. | Reads at once at any size, but in rose it can suggest a red-lantern izakaya. |
+| 07 | Knot (結び) | Two square links passing over and under each other: 縁 as the bond between people, like the 組み角 crest. | Ownable and on the pixel grid; at 16 px it can be taken for the copy icon. |
+| 08 | Sun on the plank (日向) | A round community split by the veranda plank, or the sun low over the engawa (日向ぼっこ). | The boldest silhouette, but close to a sunset weather icon, and a bar across a disc recalls a no-entry sign. |
+
+The brief's ninth idea, a roof over an open floor, was not drawn again: three roof sketches were rejected on 11/04 (table or torii, bank or temple front, the kanji 亠, see the home page entry above), and today's mark already carries a roof.
+
+How they were made: one list in a scratch script outside the repository writes both the SVG files and the page, so the two cannot drift apart. Each candidate was judged at 1x in headless Chrome and as a 16 px raster blown up pixelated. Three were redrawn on the way: the knot was first two square U hooks, which read as a barcode at 16 px, and became two interlocked square links; the petal's notch was too wide and read as a bite out of a heart, so it got a narrow V, straighter sides and a 40 degree tilt; the notice's first text line sat on a half pixel and moved onto the grid.
+
+**Ranking (my top three, the user decides)**
+1. **04 Tatami edges.** The only candidate with no curve, every edge on a 4 unit (one pixel at 16 px) line, so it is the sharpest in the tab and on the 32 px tile. It reads as no letter and no stock icon. It carries 縁 a second time (畳縁 is the cloth edge of a mat, the same character as 縁側), and a four-and-a-half mat room is the smallest room where people sit down together. Calm enough to stay on the page in disaster mode.
+2. **02 Bubble on the plank.** It says the product (neighbours talking) and the place (the plank) in two shapes and stays one silhouette at 16 px. It keeps the idea behind today's mark in half the parts, so the change is easiest to explain.
+3. **07 Knot.** 縁 in its main sense, the bond between people, drawn like the 組み角 family crest: Japanese without sakura or lanterns, and on the pixel grid. The risk is the copy icon at 16 px; at 32 px and up the over and under is clear.
+
+**Acceptance** (dev server on port 3533 against the shared Supabase project, read only, nothing created; headless Chrome over the DevTools protocol from a helper outside the repository)
+
+| check | result |
+|---|---|
+| footer, 390 px, en and ja | four links in two lines of two: About Engawa, Privacy and retention / Built with Claude Code, Made by Yanwen (ja: Engawa について, プライバシーと保存期間 / Claude Code で開発, 制作: Yanwen); every link 44 px tall, 16 px text; the new link has href https://www.yanwensworld.com/, target _blank, rel `me noopener noreferrer` and the hidden "(opens in a new tab)" / （新しいタブで開きます）; no sideways scroll |
+| footer, 1280 px, en and ja | the four links on one line in the 1024 px column, same measurements |
+| under the map, 390 and 1280 px, en and ja | only "Map credits" / 地図のクレジット under the hint, 16 px, #5c5c5c, 44 px tall; "Victor Cazanave" no longer appears on the home page |
+| anchor from the map link | tapped on the home page (client navigation), 390 and 1280 px, en and ja: URL `/about#credits`, the page scrolled to its end (Credits is the last section), the heading Credits / クレジット visible below the sticky top bar (its top at 492 px under a bar ending at 113 px at 390; 600 under 61 at 1280); a direct load of `/about#credits` lands the same; the three credit links are 44 px |
+| `docs/brand/candidates.html` from the file system | opened as a `file://` URL in headless Chrome at 1280 px and at 390 px: nine rows (eight candidates and today's mark), 13 SVGs each, every path painted, at 16, 32, 64 and 180 px (and 20, 40, 16 in the bar, the heading and the tab, 126 and 22 inside the tiles); no link, script, img or iframe element; no sideways scroll at 390 px (the size swatches wrap) |
+
+**Measurements**: `pnpm typecheck`, `pnpm lint`, `pnpm guard --all` clean; `pnpm build` at the end (PR description).
+
+**Decisions taken in this session, open for review**
+- The brief called the top bar wordmark "縁 Engawa". The live bar reads the mark and "Engawa", and the home heading "縁側 Engawa", so the mock shows the bar as it is live and the heading lockup under it.
+- The about page has no list of data sources: the residents' figures name their sources inside the text (`about.numbers_body`). Credits therefore holds the map attribution only.
+- The link labels svg-maps, MapSVG and CC BY 4.0 are names, the same in every language, so they live in a constant beside their URLs in `AboutView.tsx` rather than in the message files.
+- Not checked here: whether the footer's privacy link (`/about#about-data`) also lands under the sticky top bar; the same `scroll-mt-32` would fix it if so.
+
+**Needed a human**
+- Pick a mark from `docs/brand/candidates.html`. The follow-up replaces `MARK_PATH` and `MARK_VIEWBOX` in `components/brand/Mark.tsx`, `app/icon.svg` and `app/favicon.ico`, and checks the icons and preview images built from them.
+- Native read of the Korean and Vietnamese credit and footer strings.
+
+### Same PR, later: the home page raised to an awards-site bar
+
+Scope added by the reviewing session on the user's behalf, about two hours, same model and worktree. Board page and other sessions' files untouched; `components/TopBar.tsx` changed only in its `home` branch (width), which only the home page uses.
+
+**What changed**
+- Layout (`components/home/HomeView.tsx`): from 1024 px two columns, 7 to 5, in a 1152 px column (the top bar's `home` width follows, so the bar and the page share their left edge): the hero, then the boards resting on the plank, on the left; the map on the right, sticky under the top bar while the boards scroll past. On a phone: hero, boards, map. Steps in three columns only from 1024 px (they were cramped at 768), one per row below.
+- Hero: 縁側 Engawa is now the dominant element, fluid from 40 to 56 px (`clamp(2.5rem, 1.75rem + 3vw, 3.5rem)`), the kanji tracked at 0.08em and set in Japanese (`lang="ja"`, so Chinese readers see the Japanese glyphs), the Latin word at -0.01em, 16 px apart on one baseline. The 64 px mark above it is gone: it was larger than the name, and the top bar already carries the mark. The description at 20 px with a 60ch measure (about 60 Latin or 34 Japanese characters per line), the tagline at 18 px semibold, for whom at 17 px muted.
+- Plank: two hairlines in the line colour with the paper between (8 px), under the Boards heading with the cards resting under it, and again as the footer's top rule.
+- Tagline (`components/home/Tagline.tsx`): `app.tagline` in ja, en, zh, ko, vi and the new `home.tagline_easy_ja` (きんじょの じょうほうを、みんなの ことばで。, the same in all five files for key parity). All six sit in one grid cell with their own `lang`, so the line is as tall as the tallest and never moves the layout; it starts in the reader's language, steps through the other five every 4 s and stops back on the reader's language. The outgoing line fades out (300 ms) before the next fades in, so two scripts never overlap. Screen readers get the reader's language only. Static under reduced motion.
+- Map (`components/home/JapanMap.tsx`): land `--map-land` #ebe7de (a step darker than the paper, warm like it; was #e2ded5), 1 px borders in the line colour (non-scaling), no box. Okinawa stays in its inset, now a dotted 1 px frame in `--line-strong` with the prefecture's name in the reader's language (16 px at phone width) and its islands outlined so they show. Prefectures with a board: rose tint `--map-active` with a 1 px accent outline (5.4:1 on the land), a step deeper (`--map-active-hover`) on hover and keyboard focus, eased 150 ms, and the prefecture's name in a small label above the badge (HTML, kept inside the map near its edges, hidden from screen readers, which already hear "Kanagawa: 1 board"). Badge in the accent with a soft halo; badges are spaced so halos never overlap (Tokyo next to Kanagawa once the Shibuya board lands).
+- Motion (`app/globals.css`, appended): `home-rise`, opacity and an 8 px rise in 360 ms, staggered 60 ms through the hero lines, the Boards heading and plank, each card and the map; `home-pop`, the badge scaling in once from 0.6 in 400 ms. Transforms only. Board cards lift 2 px with a deeper shadow on hover and settle on press (the link's target now covers the whole card); footer links draw their underline from the left on hover and keyboard focus (200 ms). Nothing loops, nothing bounces; the existing reduced motion block turns all of it off and leaves the end state.
+- Type and rhythm: hero 40 to 56 px, section titles 20 px, body 17 px (`1.0625rem`, so the text size toggle still scales it), muted 16 px minimum; spacing on the 8 px grid, sections 56 px apart on phones and 96 px on desktop.
+- Colour: the accent only on the badge, the board's link, focus, links on hover and the prefectures with a board; the step numbers are ink now. The top bar's rose band is shared with the board page and was left as it is.
+- Footer: Made by Yanwen, Source on GitHub (`home.source`, https://github.com/AdeDeepFishing/engawa, new tab, `rel="noopener noreferrer"`), Built with Claude Code, About, Privacy.
+
+**Self-review rounds** (dev server on port 3533, headless Chrome over the DevTools protocol; full-page captures at 390, 768 and 1280 px in ja and en, plus zh at 1787 px, the width the user saw)
+
+| round | seen | changed |
+|---|---|---|
+| before | an empty-looking rounded box at the map's top left (Okinawa's islands are specks in it); grey land in a cold tone against the paper; the 64 px mark larger than the name; two short text lines over a long map column; credit text under the map | everything above |
+| 1 | 1280 en: the name leads, plank and warm map read well, but the description wrapped at 47 characters (a 456 px column), the Boards heading floated between the plank and the card, the land was a touch pale. 768 en: the map ran 720 px wide and dominated; the three step cards were cramped; Privacy wrapped alone onto a second footer line. 390 ja: order hero, boards, map, all clean | 1152 px column with 7:5 columns (the description now 2 lines of about 60 characters), Boards heading sitting on the plank with the card under it, land #ebe7de, map capped at 30rem below 1024 px, steps in three columns only from 1024 px, footer gaps 24 px, the plank as the footer rule |
+| 2 | 1280 en: balanced, the top bar aligned with the column; 768 ja: map capped, steps one per row, the Japanese measure about 35 characters; 390 en: the English and Vietnamese taglines wrap to two lines on a phone, which the stack holds at a fixed height | nothing; behaviour checked next |
+| 3 | hover on Kanagawa: tint deepens, label 神奈川県 above the badge; hover on the card: lifted, deeper shadow, the button darkens. Tagline pass en, zh, ko, vi, やさしい日本語, ja, back to en; height fixed at 56 px; layout shift 0; footer never moved. Reduced motion: no animation, tagline static in the reader's language, shift 0. At 1787 px zh a capture caught the tagline mid crossfade with zh and ko overlapping | the tagline fades out, then in (never two lines visible at once, measured over a switch) |
+
+**Measurements** (all on the final state)
+- Every text pair: ink on paper 16.5:1, on white 17.2, on the beige 15.0; muted on paper 6.4, on white 6.7; white on the accent 6.6, on its hover shade 9.4; the accent on paper 6.3; ink on the top bar 14.8. Non-text: the inset's dotted frame 3.6:1 on the paper, the active prefecture's outline 5.4:1 on the land.
+- At 390 (ja, en), 768 (ja), 1280 (en) and 1787 px (zh): no text under 16 px (SVG labels measured at their drawn size), no link or button under 44 by 44 px, no sideways scroll, and keyboard focus on a prefecture shows the ring and its name inside the map.
+- `pnpm typecheck`, `pnpm lint`, `pnpm guard --all` clean; `pnpm build` at the end.
+
+**Decisions open for review**
+- The tagline makes one pass and stops instead of cycling for ever: the brief also says nothing loops, and WCAG 2.2.2 asks for a pause control on content that updates by itself for more than 5 seconds. The pass still takes 24 seconds, so a pause button or a shorter pass may be wanted.
+- "The board cards resting on the plank": the Boards heading stands on the plank and the cards sit right under it; the plank is the divider between the hero and the boards.
+- The hero mark was removed rather than shrunk; the chosen mark from `docs/brand/candidates.html` can come back there at the size of the name's cap height.
+- The map is sticky within the two-column row only, so with one board it travels about 150 px before it scrolls away with the cards.
+
+**Review fixes for PR #29 (Fable, reviewing session, on the integration branch):** the six-language tagline now pauses while the pointer rests on it and stops for good, back on the reader's language, at the first tap, key, wheel, touch move or scroll (WCAG 2.2.2 asks for a way to pause or stop content that updates by itself); the Okinawa inset name is 16.5 map units so it stays at or above 16 px down to 375 px; card shadows come from three tokens derived from the ink colour instead of hardcoded rgb values; the Built with Claude Code link opens in a new tab with the same hint as the other external links. Left as follow-ups: a deeper hover tint on prefectures with boards, a change listener on the reduced-motion query, the badge label offset in percent of the map height.
+
+**Review fixes for PR #28 (Fable, reviewing session, on the integration branch):** a known place's official note (`notes_ja`: a shelter closed for rebuilding and its substitute, a substitute reserved for 要配慮者) now reaches Claude in the board context and is shown under the place in the Places view, so a closed school is never offered as an open shelter; the `office` kind has a label in five languages and an icon; Chinese reads 无法回家人员临时安置设施 for the commuter shelters and the Chinese and Korean place names use a middle dot instead of the katakana dot; the vendor intrusion note in `docs/BOARDS.md` moved under Not confirmed since its URL was not kept; the seed header says what `--rotate-token` does without `--board`. The pilot board has three places with notes, so its extract context grew by those lines; the eval was re-run on the integration branch (result below). Left for later: `server-only` on the polygon loader once that package is a dependency.
+Eval on the integration branch with the pilot's place notes in the context (`pnpm eval --no-write`, 16 inputs): 105/105 fields, 0 PII leaks, 0 invented facts, risk flags 16/16, six languages 16/16, extract median 9.3 s (p90 10.8 s), translate median 10.1 s.

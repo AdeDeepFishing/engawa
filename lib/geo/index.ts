@@ -1,10 +1,10 @@
 /**
- * Board areas (町丁目) and their polygons. The polygon files are built by
- * scripts/geo/build.ts from e-Stat boundaries and bundled here; one board is
- * a few KB. The same module serves the browser (resolve a position to an
- * area, show an area name) and the server (check a submitted code).
+ * Board areas (町丁目) by code and name. The same module serves the browser
+ * (resolve a position to an area, show an area name) and the server (check
+ * a submitted code). It holds no polygons: those live in lib/geo/polygons.ts
+ * on the server, and the board page passes the browser only its own
+ * board's polygons.
  */
-import musashikosugi from "./musashikosugi.json";
 import { pointInArea, type AreaFeature } from "./pointInArea";
 import type { Board } from "@/lib/types";
 
@@ -17,20 +17,15 @@ export interface BoardArea {
 
 type AreaSource = Pick<Board, "area_names">;
 
-const BUNDLED: AreaFeature[] = [...(musashikosugi.features as unknown as AreaFeature[])];
-const polygonByCode = new Map(BUNDLED.map((f) => [f.properties.area_code, f]));
-const codeByName = new Map(BUNDLED.map((f) => [f.properties.name_ja, f.properties.area_code]));
-
 /**
- * The board's areas with a code. A seed row written before the polygons
- * existed has `code: null`; then the bundled polygon with the same name
- * supplies it, so the board works before and after `pnpm db:seed` refreshes
- * the row. Names with neither are left out.
+ * The board's areas with a code. Board reads fill a missing code from the
+ * bundled polygons on the server (`withAreaCodes` in lib/geo/polygons.ts),
+ * so a name without a code here is one no polygon knows; it is left out.
  */
 export function boardAreas(board: AreaSource): BoardArea[] {
   const out: BoardArea[] = [];
   for (const entry of board.area_names ?? []) {
-    const code = entry.code ?? codeByName.get(entry.name_ja) ?? null;
+    const code = entry.code;
     if (code && !out.some((a) => a.code === code)) out.push({ code, name_ja: entry.name_ja });
   }
   return out;
@@ -47,16 +42,9 @@ export function areaName(board: AreaSource, code: string | null | undefined): st
   return boardAreas(board).find((a) => a.code === code)?.name_ja ?? null;
 }
 
-/** Polygons for the board's areas, only those the bundle has geometry for. */
-export function boardPolygons(board: AreaSource): AreaFeature[] {
-  return boardAreas(board)
-    .map((a) => polygonByCode.get(a.code))
-    .filter((f): f is AreaFeature => Boolean(f));
-}
-
 /** Browser side: the board area containing a position, or null when it is outside every polygon. The coordinates are used here and nowhere else. */
-export function resolveArea(board: AreaSource, lon: number, lat: number): BoardArea | null {
-  const hit = pointInArea(lon, lat, boardPolygons(board));
+export function resolveArea(board: AreaSource, polygons: AreaFeature[], lon: number, lat: number): BoardArea | null {
+  const hit = pointInArea(lon, lat, polygons);
   if (!hit) return null;
   return { code: hit.properties.area_code, name_ja: areaName(board, hit.properties.area_code) ?? hit.properties.name_ja };
 }
@@ -64,10 +52,11 @@ export function resolveArea(board: AreaSource, lon: number, lat: number): BoardA
 /**
  * Japanese municipality names by the first five digits of an e-Stat area
  * code, which are the JIS code of the city and ward (14 Kanagawa, 133
- * 川崎市中原区). One line per ward that has a board.
+ * 川崎市中原区; 13 Tokyo, 113 渋谷区). One line per ward that has a board.
  */
 const MUNICIPALITY_JA: Record<string, string> = {
   "14133": "川崎市中原区",
+  "13113": "東京都渋谷区",
 };
 
 /**
