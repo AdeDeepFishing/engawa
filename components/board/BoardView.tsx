@@ -11,12 +11,15 @@ import { CardSheet } from "./CardSheet";
 import { DropIn, type PendingItem } from "./DropIn";
 import { HiddenDrawer } from "./HiddenDrawer";
 import { PendingCard } from "./PendingCard";
+import { PlacesView, ViewToggle } from "./PlacesView";
 import { CardPanel, CardPanelEmpty } from "./layout/CardPanel";
 import { dropInPanel, openDropIn, useDropInOpen } from "./layout/dropInBridge";
 import { DropInTopButton, ModeBadge } from "./layout/TopBarParts";
+import { useBoardView } from "./layout/useBoardView";
 import { useCardHash } from "./layout/useCardHash";
 import { LAPTOP_QUERY, TABLET_QUERY, useMediaQuery } from "./layout/useMediaQuery";
 import type { HiddenDuplicate } from "@/lib/db/boards";
+import type { BoardViewMode } from "@/lib/cards/places";
 import { useLang } from "@/lib/i18n/LangProvider";
 import { askServedFromCache, FROM_CACHE_HEADER, formatSnapshotTime, useOnline } from "@/lib/offline";
 import type { Board, Card } from "@/lib/types";
@@ -31,6 +34,7 @@ export function BoardView({
   serverNow,
   canSubmit,
   footer,
+  initialView = "list",
 }: {
   board: Board;
   initialCards: Card[];
@@ -41,6 +45,8 @@ export function BoardView({
   canSubmit: boolean;
   /** Rendered at the end of the card list (the about link). */
   footer?: ReactNode;
+  /** The view named by `?view=` on the request, so the server renders the one a shared link asks for. */
+  initialView?: BoardViewMode;
 }) {
   const { lang, t } = useLang();
   const [cards, setCards] = useState<Card[]>(initialCards);
@@ -68,6 +74,8 @@ export function BoardView({
   const dropInHost = useRef<HTMLDivElement>(null);
   const dropInTop = useRef<HTMLButtonElement>(null);
   const dropInOpen = useDropInOpen(dropInHost);
+  /** List (newest first) or Places (grouped by known place), in the URL as ?view=places. */
+  const [view, setView] = useBoardView(initialView);
 
   const refresh = useCallback(async () => {
     if (inFlight.current || document.visibilityState === "hidden") return;
@@ -199,7 +207,7 @@ export function BoardView({
     const id = selected?.id ?? null;
     close();
     if (id) cardButton(id)?.focus();
-  }, [selected, close]);
+  }, [selected, close, cardButton]);
 
   // When the drop-in closes with focus inside it, focus goes back to the
   // button that opens it instead of being lost on the page.
@@ -294,7 +302,10 @@ export function BoardView({
         <div className="md:hidden">{askPanel}</div>
 
         <div className={column} data-board-column="list">
-          <h2 className="mt-6 text-base font-semibold text-muted md:mt-0">{t("board.cards_heading")}</h2>
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-x-3 gap-y-2 md:mt-0">
+            <h2 className="text-base font-semibold text-muted">{t("board.cards_heading")}</h2>
+            {cards.length ? <ViewToggle view={view} onChange={setView} /> : null}
+          </div>
           {cards.length === 0 && pending.length === 0 ? (
             <div className="mt-4 rounded-xl border border-dashed border-line p-6 text-center" data-board-empty>
               <p className="text-lg font-semibold">{t("board.empty")}</p>
@@ -309,6 +320,30 @@ export function BoardView({
                 </button>
               ) : null}
             </div>
+          ) : view === "places" ? (
+            <>
+              {pending.length ? (
+                <ul className="mt-3 flex flex-col gap-3">
+                  {pending.map((item) => (
+                    <PendingCard
+                      key={item.id}
+                      item={item}
+                      onRetry={(it) => setRetryRequest({ ...it })}
+                      onDismiss={removePending}
+                    />
+                  ))}
+                </ul>
+              ) : null}
+              <PlacesView
+                ref={listRef}
+                cards={cards}
+                board={board}
+                now={now}
+                onOpen={open}
+                selectedId={selected?.id ?? null}
+                markSelected={tablet}
+              />
+            </>
           ) : (
             <ul ref={listRef} onKeyDown={onListKeyDown} className="mt-3 flex flex-col gap-3">
               {pending.map((item) => (

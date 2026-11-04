@@ -5,10 +5,14 @@ import { hasDb } from "@/lib/db/client";
 import { INTL_LOCALE, LANGS, t } from "@/lib/i18n";
 import { getRequestLang } from "@/lib/i18n/server";
 import { BoardView } from "@/components/board/BoardView";
+import { parseBoardView } from "@/lib/cards/places";
 import { appBase } from "@/lib/app-url";
 import { AboutLink } from "@/components/about/AboutLink";
 
-type Props = { params: Promise<{ slug: string }> };
+type Props = {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
 
 const ogLocale = (tag: string) => tag.replace("-", "_");
 
@@ -40,8 +44,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function BoardPage({ params }: Props) {
-  const { slug } = await params;
+export default async function BoardPage({ params, searchParams }: Props) {
+  const [{ slug }, query] = await Promise.all([params, searchParams]);
   const board = await getBoardBySlug(slug);
   if (!board) notFound();
   const [cards, hiddenDuplicates] = await Promise.all([listPublicCards(board), listHiddenDuplicates(board.id)]);
@@ -53,6 +57,7 @@ export default async function BoardPage({ params }: Props) {
       serverNow={new Date().toISOString()}
       canSubmit={hasDb()}
       footer={<AboutLink boardSlug={board.slug} />}
+      initialView={parseBoardView(query.view) ?? "list"}
     />
   );
 }
