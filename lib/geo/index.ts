@@ -57,6 +57,8 @@ export function resolveArea(board: AreaSource, polygons: AreaFeature[], lon: num
 const MUNICIPALITY_JA: Record<string, string> = {
   "14133": "川崎市中原区",
   "13113": "東京都渋谷区",
+  "01101": "札幌市中央区",
+  "40132": "福岡市博多区",
 };
 
 /**

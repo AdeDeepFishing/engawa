@@ -37,6 +37,16 @@ const EXPECT: Record<string, { prefecture: string; municipality: string; point: 
     municipality: "東京都渋谷区",
     point: { label: "渋谷駅 ハチ公口, ハチ公前広場 is 道玄坂2丁目", lat: 35.659, lon: 139.7005, area: "道玄坂2丁目" },
   },
+  sapporo: {
+    prefecture: "01",
+    municipality: "札幌市中央区",
+    point: { label: "大通駅, under 大通公園 西2丁目", lat: 43.0607, lon: 141.3538, area: "大通西2丁目" },
+  },
+  hakata: {
+    prefecture: "40",
+    municipality: "福岡市博多区",
+    point: { label: "博多駅, the station building is 博多駅中央街", lat: 33.5897, lon: 130.4207, area: "博多駅中央街" },
+  },
 };
 
 for (const raw of seed.boards) {
@@ -63,6 +73,10 @@ for (const raw of seed.boards) {
   const hit = resolveArea(board, polygons, lon, lat);
   check(`${board.slug}: ${label} (${lat}, ${lon}) resolves to ${area}`, hit?.name_ja === area, hit ? `${hit.code} ${hit.name_ja}` : "outside");
   check(`${board.slug}: a point far away resolves to nothing`, resolveArea(board, polygons, 135.5, 34.7) === null);
+  // The landmark belongs to this board only: every other board resolves it to nothing.
+  const others = seed.boards.filter((b) => b.slug !== board.slug).map((b) => ({ ...b, id: `local-${b.slug}` }) as unknown as Board);
+  const elsewhere = others.filter((o) => resolveArea(o, boardPolygons(o), lon, lat) !== null).map((o) => o.slug);
+  check(`${board.slug}: ${label} falls in no other board`, elsewhere.length === 0, elsewhere.join(", "));
 
   // The live pilot row was seeded before the polygons: codes are null there.
   const legacy = { ...board, area_names: board.area_names.map((a) => ({ ...a, code: null })) };

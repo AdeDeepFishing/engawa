@@ -7,12 +7,16 @@
  */
 import musashikosugi from "./musashikosugi.json";
 import shibuya from "./shibuya.json";
+import sapporo from "./sapporo.json";
+import hakata from "./hakata.json";
 import type { AreaFeature } from "./pointInArea";
 import type { Board } from "@/lib/types";
 
 const BY_SLUG: Record<string, AreaFeature[]> = {
   musashikosugi: musashikosugi.features as unknown as AreaFeature[],
   shibuya: shibuya.features as unknown as AreaFeature[],
+  sapporo: sapporo.features as unknown as AreaFeature[],
+  hakata: hakata.features as unknown as AreaFeature[],
 };
 
 /** By code across every board, so a throwaway copy of a board (another slug, same codes) finds its polygons too. */
