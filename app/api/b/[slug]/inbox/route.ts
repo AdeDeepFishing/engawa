@@ -38,7 +38,8 @@ const MAX_CLOCK_SKEW_MS = 5 * 60_000;
  *   503 busy               daily Claude call cap reached, Retry-After 3600
  *   422 empty              nothing left after the signature and footer were removed
  *   500 <code>             the pipeline failed (extract error codes, generic)
- *   201                    {submission_id, status, card_ids, public_count, held_count, actions}
+ *   201                    {submission_id, status, card_ids, public_count, held_count, actions,
+ *                           switched_to_disaster}
  * A mail is stored as a text submission with source_hint 'official' and the
  * device id "inbox"; its raw text is cleared when processing finishes, as
  * for every submission.
@@ -122,6 +123,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
       public_count: d.public_count,
       held_count: d.held_count,
       actions: d.actions,
+      switched_to_disaster: d.switched_to_disaster,
     },
     { status: 201, headers: { "Cache-Control": "no-store" } },
   );
