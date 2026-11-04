@@ -3,7 +3,7 @@ import { join } from "node:path";
 import type Anthropic from "@anthropic-ai/sdk";
 import { anthropic, extractModel, type ModelId } from "./client";
 import type { UsageMeter } from "./usage";
-import { CATEGORIES, PLATFORMS, RISK_FLAGS, SOURCE_TYPES, CARD_STATUSES } from "@/lib/types";
+import { CATEGORIES, CHANNEL_PLATFORMS, PLATFORMS, RISK_FLAGS, SOURCE_TYPES, CARD_STATUSES } from "@/lib/types";
 import type { Board, Category, PartialMultilingual, Platform, RiskFlag, SourceType, CardStatus } from "@/lib/types";
 import { CARD_LANGS } from "@/lib/i18n";
 
@@ -57,7 +57,24 @@ export interface ExtractResult {
 export interface ExtractInput {
   image?: { data: string; mediaType: "image/jpeg" | "image/png" };
   text?: string;
+  /**
+   * How the text reached the board, when code knows it: `loudspeaker` for
+   * the heard input (a speech recognition transcript of the 防災行政無線
+   * loudspeaker), `city_mail` for the official inbox. The model is told in
+   * the user turn, and `applyChannel` fixes source type and platform after.
+   */
+  channel?: ExtractChannel;
 }
+
+export type ExtractChannel = (typeof CHANNEL_PLATFORMS)[number];
+
+/** The user-turn line for each channel; it changes per call, so it never sits in a cached block. */
+const CHANNEL_LINES: Record<ExtractChannel, string> = {
+  loudspeaker:
+    "The text below is what the uploader heard from the 防災行政無線 loudspeaker, transcribed by speech recognition; it may contain recognition errors.",
+  city_mail:
+    "The text below arrived through the board's official inbox: a broadcast mail from the city, sent from an address the board admin allowed and authenticated by the board's inbox secret. Code removed signatures and unsubscribe footers; the first line is the subject.",
+};
 
 export interface ExtractOutcome {
   result: ExtractResult;
@@ -128,6 +145,7 @@ export async function extract(
     });
   }
   const textParts = [`Current date and time in Japan: ${nowJst(options.now)}`];
+  if (input.channel) textParts.push(CHANNEL_LINES[input.channel]);
   if (input.text?.trim()) {
     textParts.push("Input text:", input.text.trim());
   } else {
@@ -173,10 +191,11 @@ export async function extract(
   } catch {
     throw new ExtractError("invalid_output", "response was not JSON");
   }
-  const { result, droppedPlaceIds } = validateExtractResult(
+  const { result: validated, droppedPlaceIds } = validateExtractResult(
     parsed,
     new Set(board.known_places.map((p) => p.id)),
   );
+  const result = applyChannel(validated, input.channel);
   return {
     result,
     model,
@@ -298,6 +317,31 @@ export function validateExtractResult(
     note_for_uploader: stringOrNull(r.note_for_uploader),
   };
   return { result, droppedPlaceIds };
+}
+
+/**
+ * The channel decides what the model can only guess. A heard transcript is
+ * the uploader relaying a broadcast, so every fact is `secondhand` whatever
+ * the text claims: anyone can type into that box, and "こちらは防災かわさき
+ * です" in it must not make a card official. A mail from the official inbox
+ * passed the board's secret and sender list, so every fact is `official`
+ * (unconfirmed until the admin confirms it). Without a channel, the two
+ * channel platforms are not the model's to choose and become `other`.
+ * Risk flags are untouched: a flagged fact is held on every channel.
+ */
+export function applyChannel(result: ExtractResult, channel: ExtractChannel | undefined): ExtractResult {
+  if (!channel) {
+    const isChannel = (CHANNEL_PLATFORMS as readonly string[]).includes(result.source_platform);
+    return isChannel ? { ...result, source_platform: "other" } : result;
+  }
+  const sourceType: SourceType = channel === "loudspeaker" ? "secondhand" : "official";
+  const changed = result.facts.filter((f) => f.source_type !== sourceType).length;
+  if (changed > 0) console.warn(`extract: ${changed} facts set to ${sourceType} by the ${channel} channel`);
+  return {
+    ...result,
+    source_platform: channel,
+    facts: result.facts.map((f) => ({ ...f, source_type: sourceType })),
+  };
 }
 
 function validIso(v: string | null): string | null {

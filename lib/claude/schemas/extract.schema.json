@@ -25,9 +25,11 @@
         "facebook",
         "paper",
         "other",
-        "unknown"
+        "unknown",
+        "loudspeaker",
+        "city_mail"
       ],
-      "description": "Where the input visibly comes from. paper for photographed notices."
+      "description": "Where the input visibly comes from. paper for photographed notices. loudspeaker only when the user turn says the text was heard from the 防災行政無線 loudspeaker, city_mail only when it says the text came through the official inbox."
     },
     "facts": {
       "type": "array",
