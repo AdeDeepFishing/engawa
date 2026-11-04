@@ -32,6 +32,65 @@ export async function listBoards(): Promise<Board[]> {
   return (data ?? []) as Board[];
 }
 
+/** What the home page says about a board: its public cards and when the newest one was made. */
+export interface BoardWithStats extends Board {
+  public_cards: number;
+  newest_card_at: string | null;
+}
+
+/** Row shape of the stats query: two embeds of cards, a count and the newest row. */
+type BoardStatsRow = Board & {
+  public_cards: { count: number }[];
+  newest: { created_at: string }[];
+};
+
+/**
+ * Boards for the home page with their public card count and newest public
+ * card, in one round trip: both come from embeds of `cards` filtered to
+ * public rows, the count as an aggregate and the newest as a one-row,
+ * ordered embed. Only boards marked `listed` (migration 0008), so throwaway
+ * boards from acceptance runs stay off the index; every board stays
+ * reachable by its URL. Before 0008 is applied the column is unknown and
+ * the query is repeated without it, listing every board as before.
+ */
+export async function listBoardsWithStats(): Promise<BoardWithStats[]> {
+  if (!hasDb()) {
+    return localBoards().map((b) => {
+      const cards = sortCards(localCardsForBoard(b));
+      return { ...b, public_cards: cards.length, newest_card_at: cards[0]?.created_at ?? null };
+    });
+  }
+  let result = await boardStatsQuery(true);
+  if (result.error && isMissingListedColumn(result.error)) {
+    console.warn("listBoardsWithStats: boards.listed is missing (migration 0008 not applied), listing every board");
+    result = await boardStatsQuery(false);
+  }
+  if (result.error) throw result.error;
+  return ((result.data ?? []) as unknown as BoardStatsRow[]).map(({ public_cards, newest, ...board }) => ({
+    ...board,
+    public_cards: public_cards[0]?.count ?? 0,
+    newest_card_at: newest[0]?.created_at ?? null,
+  }));
+}
+
+function boardStatsQuery(onlyListed: boolean) {
+  let query = db()
+    .from("boards")
+    .select(`${BOARD_COLUMNS}, public_cards:cards(count), newest:cards(created_at)`)
+    .eq("public_cards.visibility", "public")
+    .eq("newest.visibility", "public")
+    .order("created_at", { referencedTable: "newest", ascending: false })
+    .limit(1, { referencedTable: "newest" })
+    .order("slug");
+  if (onlyListed) query = query.eq("listed", true);
+  return query;
+}
+
+/** Postgres "undefined column" naming boards.listed: the database predates migration 0008. */
+function isMissingListedColumn(error: { code?: string; message?: string }): boolean {
+  return error.code === "42703" && /\blisted\b/.test(error.message ?? "");
+}
+
 /**
  * Public cards for a board, pinned first, newest first, each with its
  * sources (relation, source type, platform, time; no submission ids) and

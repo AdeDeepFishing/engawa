@@ -1,30 +1,48 @@
-import Link from "next/link";
-import { listBoards } from "@/lib/db/boards";
+import type { Metadata } from "next";
+import { listBoardsWithStats } from "@/lib/db/boards";
 import { getRequestLang } from "@/lib/i18n/server";
-import { t } from "@/lib/i18n";
+import { INTL_LOCALE, t } from "@/lib/i18n";
 import { TopBar } from "@/components/TopBar";
+import { BRAND_JA } from "@/components/brand/Mark";
+import { HomeView } from "@/components/home/HomeView";
+import type { HomeBoard } from "@/components/home/BoardSummary";
 
+/**
+ * Title and description in the reader's language (cookie, else
+ * Accept-Language). The preview image is app/opengraph-image.tsx.
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const lang = await getRequestLang();
+  const title = `${BRAND_JA} Engawa`;
+  const description = t("home.lead", lang);
+  return {
+    title,
+    description,
+    openGraph: {
+      type: "website",
+      siteName: "Engawa",
+      title,
+      description,
+      url: "/",
+      locale: INTL_LOCALE[lang].replace("-", "_"),
+    },
+    twitter: { card: "summary_large_image", title, description },
+  };
+}
+
+/** The home page: one query for every listed board with its live facts, rendered by HomeView. */
 export default async function Home() {
-  const [lang, boards] = await Promise.all([getRequestLang(), listBoards()]);
+  const boards: HomeBoard[] = (await listBoardsWithStats()).map((b) => ({
+    slug: b.slug,
+    name: b.name,
+    area_names: b.area_names,
+    public_cards: b.public_cards,
+    newest_card_at: b.newest_card_at,
+  }));
   return (
     <>
-      <TopBar />
-      <main className="mx-auto w-full max-w-2xl flex-1 px-4 py-6">
-        <h1 className="text-2xl font-bold">{t("index.title", lang)}</h1>
-        <p className="mt-1 text-muted">{t("index.pick", lang)}</p>
-        <ul className="mt-6 flex flex-col gap-3">
-          {boards.map((b) => (
-            <li key={b.id}>
-              <Link
-                href={`/b/${b.slug}`}
-                className="tap flex items-center rounded-xl border border-line bg-surface px-4 py-3 text-lg font-semibold hover:border-accent"
-              >
-                {b.name[lang]} <span className="ml-2 text-base font-normal text-muted">{b.name.ja}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </main>
+      <TopBar home />
+      <HomeView boards={boards} now={new Date().toISOString()} />
     </>
   );
 }
