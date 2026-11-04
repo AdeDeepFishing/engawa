@@ -69,10 +69,10 @@ export const EMERGENCY_TERMS: readonly { term: string; pattern: RegExp }[] = [
 
 /**
  * A card whose Japanese title says the emergency is over (解除, lifted) or
- * that it is a drill (訓練) never switches the board on, whatever its body
+ * that it is a drill (訓練) or a scenario (想定) never switches the board on, whatever its body
  * mentions: "避難指示を解除しました" must not start disaster mode.
  */
-const NOT_AN_EMERGENCY = /解除|訓練/;
+const NOT_AN_EMERGENCY = /解除|訓練|想定/;
 
 function normalized(text: string): string {
   return text.normalize("NFKC").replace(/\s+/g, "");
@@ -120,8 +120,8 @@ export function switchesToDisaster(
 /**
  * A disaster board returns to peace when its mode last changed more than
  * this many days ago and no public official card of an emergency category
- * (danger, official notice, shelter) was created in that many days. A manual switch within those days is
- * covered by the first half: it moved `mode_changed_at`.
+ * (danger, official notice, shelter) was created or updated in that many
+ * days. A mode the admin set by hand never returns by itself (lib/db/mode.ts).
  */
 export const AUTO_RETURN_DAYS = 7;
 

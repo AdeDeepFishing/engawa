@@ -878,3 +878,5 @@ Claude calls for the re-run: 1 inbox mail (extract and translate; no reconcile c
 - Migration 0009 was applied by the human on the shared project after the first run; the reason rows were then run again (table above).
 - Native read of the Korean and Vietnamese `mode.*` and `admin.mode_*` strings.
 - `docs/PLAN.md` still lists the peace/disaster mode switch under "Not this week"; the reviewing session decides how to record N21 there.
+
+**Review fixes for PR #25 (Fable, reviewing session):** the auto return never ends a disaster mode the admin set by hand (reason `admin`), only the automatic switch from the city's mail; the quiet-week count includes cards created or updated in the window, since a city mail that merges onto the first evacuation card writes no new row; the intro on the admin page says so in five languages; 想定 (a scenario) joins 解除 and 訓練 as words that never switch the board on; the confirm button takes focus when it appears and its note is a status, not an alert; the migration comment names `lib/db/mode.ts`; Korean uses 대피 지시 and 알림 띠. Left for later: testing the body for 訓練 as well as the title.

@@ -86,7 +86,7 @@ export function ModeAdmin({ slug, initial, serverNow }: { slug: string; initial:
       ) : null}
       {confirming ? (
         <div className="mt-3 flex flex-col gap-2 rounded-lg border border-line-strong p-3" data-mode-confirm>
-          <p role="alert" className="text-base">
+          <p role="status" className="text-base">
             {t("admin.mode_confirm_note")}
           </p>
           <div className="flex flex-wrap gap-2">
@@ -98,6 +98,7 @@ export function ModeAdmin({ slug, initial, serverNow }: { slug: string; initial:
               className={`rounded-lg px-4 font-semibold disabled:opacity-60 ${
                 target === "disaster" ? "bg-danger text-danger-ink" : "bg-accent text-accent-ink hover:bg-accent-hover"
               }`}
+              autoFocus
               data-mode-confirm-button
             >
               {t(target === "disaster" ? "admin.mode_confirm_disaster" : "admin.mode_confirm_peace")}

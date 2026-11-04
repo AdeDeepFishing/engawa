@@ -12,7 +12,7 @@ alter table boards add column if not exists mode_changed_at timestamptz;
 -- Why the mode last changed:
 --   'admin'              the admin switched it on the admin page
 --   'inbox:<submission>' an emergency card from the city's broadcast mail
---                        switched a peace board to disaster (lib/board-mode.ts)
+--                        switched a peace board to disaster (lib/db/mode.ts)
 --   'auto_return'        a disaster board went back to peace after 7 days
 --                        without a public official danger or notice card
 -- Null on boards whose mode was never changed through the app.

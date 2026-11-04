@@ -4,7 +4,7 @@
   "mode.reason_admin": "Switched on by the board admin.",
   "mode.strip_order": "Official notices come first, then danger, water, shelter and medical.",
   "admin.mode_heading": "Board mode",
-  "admin.mode_intro": "Disaster mode puts official cards first, then danger, water, shelter and medical, shows a strip at the top of the board and offers “I heard the loudspeaker” first. An evacuation order or another emergency in the city's broadcast mail switches it on by itself. It goes back to everyday mode by itself once 7 days have passed since the switch with no official danger, notice or shelter card in that time.",
+  "admin.mode_intro": "Disaster mode puts official cards first, then danger, water, shelter and medical, shows a strip at the top of the board and offers “I heard the loudspeaker” first. An evacuation order or another emergency in the city's broadcast mail switches it on by itself, and that automatic switch goes back to everyday mode by itself once 7 days have passed with no official danger, notice or shelter card. A mode you set here stays until you switch it back.",
   "admin.mode_current": "Now: {mode}",
   "admin.mode_changed": "Last changed {time} ({ago}), {reason}.",
   "admin.mode_never": "Not changed since the board was set up.",

@@ -4,7 +4,7 @@
   "mode.reason_admin": "Do người quản lý bảng tin bật.",
   "mode.strip_order": "Thông tin chính thức hiện trước, sau đó là nguy hiểm, nước, nơi lánh nạn và y tế.",
   "admin.mode_heading": "Chế độ của bảng tin",
-  "admin.mode_intro": "Ở chế độ thiên tai, thẻ chính thức hiện trước, sau đó là nguy hiểm, nước, nơi lánh nạn và y tế; một dải thông báo hiện trên đầu bảng tin và “Tôi nghe loa phát thanh” là lựa chọn đầu tiên. Khi thư phát thanh của thành phố báo lệnh sơ tán hoặc tình huống khẩn cấp khác, chế độ tự bật. Chế độ tự trở về thường ngày khi đã qua 7 ngày kể từ lúc chuyển mà trong 7 ngày đó không có thẻ nguy hiểm, thông báo hay nơi lánh nạn chính thức nào.",
+  "admin.mode_intro": "Ở chế độ thiên tai, bảng tin xếp thẻ chính thức lên trước, rồi đến nguy hiểm, nước, nơi lánh nạn và y tế, hiện một dải thông báo ở đầu bảng và đưa “Tôi nghe thấy loa phòng chống thiên tai” lên lựa chọn đầu tiên. Khi thư phát thanh của thành phố báo lệnh sơ tán hoặc tình huống khẩn cấp khác, chế độ tự bật; lần bật tự động đó sẽ tự trở về chế độ thường sau 7 ngày không có thẻ chính thức về nguy hiểm, thông báo hoặc nơi lánh nạn. Chế độ bạn đặt ở đây giữ nguyên cho đến khi bạn tự chuyển lại.",
   "admin.mode_current": "Hiện tại: {mode}",
   "admin.mode_changed": "Lần đổi gần nhất: {time} ({ago}), {reason}.",
   "admin.mode_never": "Chưa đổi lần nào kể từ khi tạo bảng tin.",

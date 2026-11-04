@@ -137,6 +137,9 @@ export async function switchOnFromInbox(
  */
 async function returnToPeaceIfQuiet(board: Board, state: ModeState, now: Date): Promise<ModeState> {
   if (!autoReturnDue({ mode: state.mode, since: state.changedAt }, now)) return state;
+  // A disaster the admin set by hand stays until the admin ends it: under
+  // stress the board must not fail in the quiet direction without a human.
+  if (state.reason === "admin") return state;
   try {
     const since = new Date(now.getTime() - AUTO_RETURN_DAYS * 86_400_000).toISOString();
     const { count, error } = await db()
@@ -146,7 +149,9 @@ async function returnToPeaceIfQuiet(board: Board, state: ModeState, now: Date): 
       .eq("visibility", "public")
       .eq("source_type", "official")
       .in("category", [...EMERGENCY_CATEGORIES])
-      .gte("created_at", since);
+      // Created or touched in the window: a city mail that merges or updates
+      // onto the first evacuation card writes no new row but stamps updated_at.
+      .or(`created_at.gte.${since},updated_at.gte.${since}`);
     if (error) throw error;
     if ((count ?? 0) > 0) return state;
     const written = await writeMode(board, "peace", "auto_return", { from: "disaster", changedAt: state.changedAt });
