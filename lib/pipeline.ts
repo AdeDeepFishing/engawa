@@ -5,6 +5,7 @@ import { translate, type TranslateItem, type TranslateLang } from "@/lib/claude/
 import { BusyError, withUsage } from "@/lib/claude/usage";
 import { cardsStillMissing, fillCardLanguages, listCardsMissingLanguages, type FillOutcome } from "@/lib/db/translate";
 import { attachMaskedImage, cardsWithoutMaskedImage, removeMaskedImage, uploadMaskedImage } from "@/lib/db/masked";
+import { switchOnFromInbox } from "@/lib/db/mode";
 import {
   downloadSubmissionImage,
   finishSubmission,
@@ -57,6 +58,8 @@ export interface PipelineDone {
   translate_ms: number;
   translated: boolean;
   masked: boolean;
+  /** True when this submission switched the board from peace to disaster (official inbox only). */
+  switched_to_disaster: boolean;
 }
 
 export type PipelineResult = { ok: true; done: PipelineDone } | { ok: false; error: string; message: string };
@@ -127,6 +130,12 @@ export async function runPipeline(
       extractModel: outcome.model,
     });
     const reconcileMs = Math.round(performance.now() - reconcileStarted);
+
+    // An emergency from the city's broadcast mail (an evacuation order, a
+    // tsunami warning) switches a peace board to disaster as its card lands.
+    // Only the official inbox can: lib/cards/mode.ts has the rule.
+    const switchedToDisaster =
+      sub.source_hint === "official" ? await switchOnFromInbox(board, id, outcome.result, written) : false;
 
     // The masked copy is stored only for written cards that have none yet
     // (a merge into an already masked card, or no card at all, stores
@@ -208,6 +217,7 @@ export async function runPipeline(
       translate_ms: translateMs,
       translated: cardIds.every((c) => !fill || !fill.skipped.includes(c)) && (fill !== null || cardIds.length === 0 || (await allTranslated(cardIds))),
       masked: maskedPath !== null,
+      switched_to_disaster: switchedToDisaster,
     };
     emit({ event: "done", data: done });
     return { ok: true, done };

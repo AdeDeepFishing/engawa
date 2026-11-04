@@ -9,6 +9,7 @@ import {
 } from "@/lib/db/admin";
 import { getBoardBySlug } from "@/lib/db/boards";
 import { hasDb } from "@/lib/db/client";
+import { switchModeByAdmin, toModeView } from "@/lib/db/mode";
 import { isUuid } from "@/lib/ids";
 
 export const dynamic = "force-dynamic";
@@ -22,13 +23,19 @@ export const runtime = "nodejs";
  * the token itself never travels here. This route is the only place
  * official_confirmed can be set. A refused duplicate target answers 409
  * with the reason (same_card, target_not_found, target_not_public).
+ *
+ * Board mode (N21): {action: "set_mode", mode: "peace" | "disaster"} sets
+ * the mode wanted, with the reason `admin`, and answers {mode, changed}:
+ * the mode as the admin page shows it (kind of reason, never a submission
+ * id) and whether this request changed it. Asking for the mode the board is
+ * already in changes nothing, so a second tap is harmless.
  */
 export async function POST(req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   if (!hasDb()) return Response.json({ error: "no_database" }, { status: 503 });
   if (!isAdminCookie(req.cookies.get(ADMIN_API_COOKIE)?.value)) {
     return Response.json({ error: "forbidden" }, { status: 403 });
   }
-  let body: { card_id?: unknown; action?: unknown; target_card_id?: unknown };
+  let body: { card_id?: unknown; action?: unknown; target_card_id?: unknown; mode?: unknown };
   try {
     body = (await req.json()) as typeof body;
   } catch {
@@ -38,6 +45,12 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
   const { slug } = await params;
   const board = await getBoardBySlug(slug);
   if (!board) return Response.json({ error: "board_not_found" }, { status: 404 });
+  if (body.action === "set_mode") {
+    if (body.mode !== "peace" && body.mode !== "disaster") return Response.json({ error: "bad_mode" }, { status: 400 });
+    // writeMode logs the change itself, with the board slug only.
+    const { state, changed } = await switchModeByAdmin(board, body.mode);
+    return Response.json({ mode: toModeView(state), changed }, { headers: { "Cache-Control": "no-store" } });
+  }
   const action = body.action;
   const cardId = body.card_id;
   if (typeof action !== "string" || !(ADMIN_ACTIONS as readonly string[]).includes(action)) {

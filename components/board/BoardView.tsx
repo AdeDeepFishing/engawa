@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from "react";
 import { TopBar } from "@/components/TopBar";
 import { AskPanel } from "@/components/ask/AskPanel";
 import { useAsk } from "@/components/ask/useAsk";
@@ -10,6 +10,7 @@ import { CardItem } from "./CardItem";
 import { CardSheet } from "./CardSheet";
 import { DropIn, type PendingItem } from "./DropIn";
 import { HiddenDrawer } from "./HiddenDrawer";
+import { ModeStrip } from "./ModeStrip";
 import { PendingCard } from "./PendingCard";
 import { PlacesView, ViewToggle } from "./PlacesView";
 import { CardPanel, CardPanelEmpty } from "./layout/CardPanel";
@@ -19,6 +20,7 @@ import { useBoardView } from "./layout/useBoardView";
 import { useCardHash } from "./layout/useCardHash";
 import { LAPTOP_QUERY, TABLET_QUERY, useMediaQuery } from "./layout/useMediaQuery";
 import type { HiddenDuplicate } from "@/lib/db/boards";
+import { disasterOrder, type ModeView } from "@/lib/cards/mode";
 import type { BoardViewMode } from "@/lib/cards/places";
 import { useLang } from "@/lib/i18n/LangProvider";
 import { askServedFromCache, FROM_CACHE_HEADER, formatSnapshotTime, useOnline } from "@/lib/offline";
@@ -35,6 +37,7 @@ export function BoardView({
   canSubmit,
   footer,
   initialView = "list",
+  initialMode,
 }: {
   board: Board;
   initialCards: Card[];
@@ -47,11 +50,23 @@ export function BoardView({
   footer?: ReactNode;
   /** The view named by `?view=` on the request, so the server renders the one a shared link asks for. */
   initialView?: BoardViewMode;
+  /** The mode with when and why it last changed (N21); the poll keeps it current. Defaults to the board row's mode. */
+  initialMode?: ModeView;
 }) {
   const { lang, t } = useLang();
   const [cards, setCards] = useState<Card[]>(initialCards);
   const [hidden, setHidden] = useState<HiddenDuplicate[]>(initialHiddenDuplicates);
   const [now, setNow] = useState<Date>(() => new Date(serverNow));
+  /**
+   * Peace or disaster, from the server and then from every poll, so a reader
+   * with the board open sees the switch within one poll: the strip, the list
+   * order, the drop-in choices and the suggested questions all follow it.
+   */
+  const [modeView, setModeView] = useState<ModeView>(() => initialMode ?? { mode: board.mode, since: null, reason: null });
+  const mode = modeView.mode;
+  const disaster = mode === "disaster";
+  /** The list in disaster mode: official first, then danger, water, shelter, medical, food, supplies. Places keeps its own grouping. */
+  const listed = useMemo(() => (disaster ? disasterOrder(cards) : cards), [cards, disaster]);
   /** The open card, kept in the URL hash so a refresh or a copied link keeps it. */
   const [selectedId, setSelectedId] = useCardHash();
   const [pending, setPending] = useState<PendingItem[]>([]);
@@ -92,7 +107,12 @@ export function BoardView({
     try {
       const res = await fetch(`/api/b/${board.slug}/cards`, { cache: "no-store" });
       if (res.ok) {
-        const data = (await res.json()) as { cards: Card[]; hidden_duplicates?: HiddenDuplicate[]; now: string };
+        const data = (await res.json()) as {
+          cards: Card[];
+          hidden_duplicates?: HiddenDuplicate[];
+          mode?: ModeView;
+          now: string;
+        };
         const fromCache = res.headers.has(FROM_CACHE_HEADER);
         const at = new Date(data.now).getTime();
         // The offline banner shows `now`, the time of what is on screen.
@@ -100,6 +120,8 @@ export function BoardView({
           shownAt.current = at;
           setCards(data.cards);
           setHidden(data.hidden_duplicates ?? []);
+          // A copy saved before the mode was in the payload has none: keep the one on screen.
+          if (data.mode) setModeView(data.mode);
           setNow(new Date(data.now));
         }
         setStale(fromCache);
@@ -251,18 +273,22 @@ export function BoardView({
     return () => window.removeEventListener("keydown", onKey, true);
   }, [tablet, selected, close, cardButton]);
 
-  // The top bar and the offline banner set where the laptop drawer starts.
+  // The top bar and the offline banner (and in disaster mode the strip
+  // under the bar) set where the laptop drawer starts.
   useEffect(() => {
     const root = rootRef.current;
     const header = root?.querySelector("header");
     if (!root || !header) return;
-    const update = () => root.style.setProperty("--board-top", `${Math.round(header.getBoundingClientRect().bottom)}px`);
+    const strip = disaster ? root.querySelector<HTMLElement>("[data-mode-strip]") : null;
+    const update = () =>
+      root.style.setProperty("--board-top", `${Math.round((strip ?? header).getBoundingClientRect().bottom)}px`);
     update();
     const observer = new ResizeObserver(update);
     observer.observe(header);
     if (header.previousElementSibling) observer.observe(header.previousElementSibling);
+    if (strip) observer.observe(strip);
     return () => observer.disconnect();
-  }, []);
+  }, [disaster]);
 
   /** Arrow keys, Home and End move between the cards of the list; Enter or Space opens one. */
   const onListKeyDown = useCallback((e: ReactKeyboardEvent<HTMLUListElement>) => {
@@ -280,7 +306,7 @@ export function BoardView({
   const askPanel = (
     <AskPanel
       ask={ask}
-      mode={board.mode}
+      mode={mode}
       cards={cards}
       onOpenCard={openFromAnswer}
       onDropIn={canSubmit && !offline ? startDropIn : undefined}
@@ -292,12 +318,12 @@ export function BoardView({
   const column = "md:min-h-0 md:overflow-y-auto md:pb-24 md:pt-4 lg:pb-8";
 
   return (
-    <div ref={rootRef} className="flex flex-1 flex-col md:h-dvh md:flex-none md:overflow-hidden">
+    <div ref={rootRef} className="flex flex-1 flex-col md:h-dvh md:flex-none md:overflow-hidden" data-board-mode={mode}>
       <OfflineBanner message={offline ? t("offline.board_banner", { time: formatSnapshotTime(now, lang) }) : null} />
       <TopBar
         wide
         title={board.name[lang]}
-        badge={<ModeBadge mode={board.mode} />}
+        badge={<ModeBadge mode={mode} />}
         primary={
           canSubmit ? (
             <DropInTopButton ref={dropInTop} open={dropInOpen} offline={offline} onClick={startDropIn} />
@@ -305,6 +331,7 @@ export function BoardView({
         }
         actions={<ShareButton boardSlug={board.slug} boardName={board.name[lang]} />}
       />
+      <ModeStrip view={modeView} now={now} />
       <main className="mx-auto w-full max-w-2xl flex-1 px-4 pb-24 pt-4 md:grid md:min-h-0 md:max-w-[1600px] md:grid-cols-[clamp(300px,42vw,380px)_minmax(0,1fr)] md:grid-rows-[minmax(0,1fr)] md:gap-4 md:px-4 md:py-0 lg:grid-cols-[clamp(300px,30vw,460px)_minmax(0,1fr)_clamp(280px,26vw,400px)] xl:gap-6 xl:px-6">
         <h1 className="sr-only">{board.name[lang]}</h1>
         {/* Phone: the ask panel above the list, as before. */}
@@ -363,7 +390,7 @@ export function BoardView({
                   onDismiss={removePending}
                 />
               ))}
-              {cards.map((card) => (
+              {listed.map((card) => (
                 <CardItem
                   key={card.id}
                   card={card}
@@ -409,6 +436,7 @@ export function BoardView({
             offline={offline}
             onPending={upsertPending}
             retryRequest={retryRequest}
+            heardFirst={disaster}
           />
         </div>
       ) : null}

@@ -945,3 +945,69 @@ Unchanged on purpose: the paper background, the amber `--warn-*` (disaster mode 
 Seen during the run: the dev server again missed an edit and served the old class for the text size toggle until a restart, which showed as a hydration warning; after the restart the server HTML and the client script carry the same class. A board `mode-acceptance` from another session existed on the shared database at the time and showed on the home page through the 0008 fallback; it is not this session's and was left alone.
 
 **Review fixes for PR #24 (Fable, reviewing session, on the integration branch):** the map label and hint no longer name a colour in any of the five languages (they said green after the accent moved to rose); the map's badge font and hit radius are 17 and 24 map units so the 16 px and 44 px floors hold at 360 px; `docs/INBOX.md` says the 403 also covers an unknown board; `docs/PRIVACY.md` says the ask and reaction routes hold client addresses in memory for one hour only; the language select and the text size toggle use `border-line-strong` on the tint band (3.24:1). Left as follow-ups: one shared sliding-window helper for the ask and reaction routes, and the Korean quotation marks in `home.try` for the native read. Migration 0008 was applied by the human before this merge.
+
+## 2026-11-04 (Wed), N21 disaster mode as a real state: switch, trigger, layout
+
+Model: `claude-opus-5-5` in Claude Code, implementation role, in its own worktree (`day5-mode`, cut from the PR #23 branch `day5-places`), brief from the reviewing session (Fable). Pipeline models unchanged.
+
+Why: until today a board's `mode` was set only in the database. It fed one line of the extract prompt, `mode_at_creation`, the ask suggestions and the badge, and nothing switched it. A board that serves building notices in normal times has to turn into the shelter and water board by itself the moment the city orders an evacuation, and turn back when it is over.
+
+**What was done**
+- State: migration `0009_board_mode_state.sql` adds `boards.mode_reason` (`admin`, `auto_return`, `inbox:<submission id>`, checked by a constraint) beside `mode_changed_at`, which 0001 already had and nothing wrote. `lib/db/mode.ts` holds every read and write: each change is one update conditional on the mode it replaces (and for the auto return on the `mode_changed_at` it read), so two writers racing change the board once, and each logs one line with the board slug, the direction and the kind of reason. Without 0009 the reads return no reason and the writes store mode and time only (`42703` and `PGRST204` are taken as "column missing").
+- Admin switch: section "Board mode" at the top of the admin page (`components/admin/ModeAdmin.tsx`, mounted in `AdminView.tsx`): what disaster mode does, the current mode, "Last changed <time> (<ago>), <reason>", one button to the other mode and an inline second button to confirm (no browser dialog). `POST /api/b/[slug]/admin` takes `{action: "set_mode", mode}`, cookie-gated like every admin action; it names the mode wanted, so a second tap or a stale page changes nothing.
+- Trigger: `lib/cards/mode.ts` `switchesToDisaster`, called from `lib/pipeline.ts` right after an inbox submission's cards are written (`switchOnFromInbox`). A fact switches a peace board when it is `official` on platform `city_mail` (only `applyChannel` sets that, for the inbox), went onto a public card as written content (create, merge or update; not conflict, not held), is `danger`, `official_notice` or `shelter`, and its Japanese title, body or excerpt names one of 避難指示, 避難命令, 緊急安全確保, 警戒レベル4/5, 津波警報, 特別警報, 震度5弱 or stronger, after NFKC and without whitespace. A title with 解除 or 訓練 never switches. The inbox answer carries `switched_to_disaster` (docs/INBOX.md).
+- Auto return: on the board page's server load (`modeForReaders(board, {autoReturn: true})`). A peace board costs no extra query; a disaster board reads its mode row, and only when `mode_changed_at` is more than 7 days old one count of public official `danger`, `official_notice` or `shelter` cards created in the last 7 days runs; zero returns it to peace with `auto_return`. The poll does not run it.
+- Layout in disaster: a full-width orange-red strip under the top bar (`components/board/ModeStrip.tsx`; `--danger` #b8360f and `--danger-ink` white appended to `app/globals.css`, 5.9:1): "Disaster mode since <date, time> (<ago>)", who switched it in plain words when that is on record, and the list order. The list is sorted official first, then danger, water, shelter, medical, food, supplies, the rest, newest within each, pinned still first (`disasterOrder`). The drop-in panel offers "I heard the loudspeaker" first. The badge uses the danger colours. Places is unchanged. Peace is unchanged. `data-board-mode` stays on the badge and is now also on the board root, the strip and the admin section.
+- Poll: `/api/b/[slug]/cards` carries `mode: {mode, since, reason}` (the kind of reason only, never the submission id). BoardView keeps the mode in state from the page and every poll, so the strip, the order, the drop-in order and the ask suggestions follow a switch without a reload.
+- `pnpm check:mode` (`scripts/check-mode.ts`): 34 checks on the word list (full-width digits, 津波の心配はありません, 震度4, 警戒レベル3, heat and smog alerts, 解除, 訓練), who may switch, the reason projection, the auto return guard and the order.
+- 20 i18n keys at the top of the five message files (`mode.*`, `admin.mode_*`). docs/PRIVACY.md row for the mode change, docs/INBOX.md paragraph.
+
+**Acceptance** on the throwaway board `mode-acceptance` (dev server on 3521, Playwright 1.62 Chromium; deleted afterwards: 3 cards, 5 card_sources, 5 submissions, 1 device, 0 storage objects; live board untouched). Migration 0009 was not applied on the shared project (migrations are the human's step), so every row ran on the fallback path: the reason is not stored, the admin page says "reason not recorded", the strip shows no reason sentence. Mode, time, the conditional writes, the trigger, the auto return and the layout do not depend on the column.
+
+| step | what | result |
+|---|---|---|
+| 1 | admin API without the cookie, with mode `chaos`, to disaster twice, back to peace | 403 `forbidden`, 400 `bad_mode`, `changed: true` then `changed: false` (same `since`), `changed: true`; log `mode mode-acceptance: peace to disaster (admin)` after the missing column warning |
+| 2 | city mail: water at 上丸子山王町 応急給水拠点, board in peace | 201 in 31.4 s, `create`, water, official, `city_mail`, `switched_to_disaster: false`, board stays peace |
+| 3 | heard drop-in (secondhand, loudspeaker): 警戒レベル4、避難指示 ... 小杉小学校へ避難, board in peace | 18 s to done (extract 5.9 s, reconcile 0.4 s, translate 9.3 s), `create`, category `shelter`, `switched_to_disaster: false`, board stays peace |
+| 4 | city mail: 中原区に警戒レベル4、避難指示 ... 小杉町1丁目から3丁目 ... 小杉小学校へ避難, rule as briefed (danger, official notice) | 201 in 33.2 s, `merge` onto the heard card (now official, `city_mail`, 2 sources) but category `shelter`: no switch. The rule missed the case it exists for (decision below) |
+| 5 | the same mail again, `shelter` added to the rule | 201 in 13.5 s, `merge`, `switched_to_disaster: true`; log `mode mode-acceptance: peace to disaster (inbox, 避難指示)` |
+| 6 | firsthand text drop-in (food at 中原区役所) in disaster | `create`, `mode_at_creation` disaster, no switch |
+| 7 | board at 390 px and 1280 px in disaster | strip full width right under the top bar, rgb(184, 54, 15) with white, "Disaster mode since 4 Nov, 21:44 (Just now)" and the order line; list official water, official shelter, firsthand food (server order: food, shelter, water); drop-in choices loudspeaker, photo, image, text; disaster suggested questions; 20 of 20 |
+| 8 | the same in peace | no strip, server order, loudspeaker last of the four; 8 of 8. Places groups identical in both modes (ward office, 小杉小学校, 応急給水拠点) |
+| 9 | an open reader at 390 px while the admin API switches | to peace in 5.5 s, back to disaster in 3.2 s (strip, order and suggested questions with it) |
+| 10 | admin page at 390 px and 1280 px | mode, "Last changed 4 Nov, 21:43 (Just now), reason not recorded."; the first tap only shows the confirm step; the second switches and shows "Switched."; no browser dialog opened |
+| 11 | disaster, `mode_changed_at` set 8 days back, today's official shelter card public | page load: one count, stays disaster; the poll does not check |
+| 12 | the shelter card hidden, page load | peace, `mode_changed_at` now, log `disaster to peace (auto_return)`; the next load writes nothing |
+
+Playwright: 2 misses on the first run were the test's (a case-sensitive "just now" against "Just now"); all rows pass as listed. Claude calls: 5 pipeline runs (3 inbox mails, 2 drop-ins), about 12 calls.
+
+**After migration 0009** (applied by the human the same evening), the three rows that store a reason were run again on a second throwaway board, `mode-reason` (dev server on 3522; deleted afterwards: 1 card, 1 card_sources, 1 submission, 0 devices, 0 storage objects; live board untouched). Pages read as server-rendered HTML with curl; the layout itself was covered above.
+
+| step | what | result |
+|---|---|---|
+| A | admin API to disaster, then back to peace (board never changed before: admin page "Not changed since the board was set up.") | `mode_reason` `admin` both times; strip "Switched on by the board admin."; admin page "Last changed 4 Nov, 21:49 (Just now), by the admin."; poll `reason: "admin"`; no strip in peace |
+| B | the evacuation order mail (as step 4) on the peace board | 201 in 23.0 s, `create` (category `shelter` again), `switched_to_disaster: true`; `mode_reason` `inbox:<submission id>`; poll and page carry `reason: "inbox"` only, no id; strip "Switched on by the city's broadcast mail." (ja: 市の防災無線メールを受けて切り替わりました。); admin page "by an emergency in the city's broadcast mail"; log `peace to disaster (inbox, 避難指示)` |
+| C | `mode_changed_at` 8 days back: page load with the card public, then with it hidden | first load: stays disaster, reason unchanged; second: peace, `mode_reason` `auto_return`; admin page "automatically, after 7 days without an official danger, notice or shelter card."; log `disaster to peace (auto_return)` |
+
+Claude calls for the re-run: 1 inbox mail (extract and translate; no reconcile candidates).
+
+**Measurements**: `pnpm check:mode` 34 of 34, `pnpm typecheck`, `pnpm lint`, `pnpm guard --all` clean; `pnpm build` at the end (PR description).
+
+**Decisions taken in this session, open for review**
+- `shelter` joins `danger` and `official_notice`, for the trigger and for the auto return count. Extract filed an evacuation order that names where to go as `shelter`, both the neighbour's transcript and the city's mail that merged onto it (step 4). The word list is still required in every category, so a shelter opening without an order does not switch.
+- The word list is required for `danger` too, not only for `official_notice`: the loudspeakers carry heat alerts, photochemical smog advisories, scam warnings and missing person broadcasts most weeks, and the model may file those as `danger`. A layout that flips for a smog advisory teaches readers to ignore it.
+- 津波警報 (which includes 大津波警報), not bare 津波: every earthquake report ends with 津波の心配はありません. 津波注意報 is left out. 緊急安全確保 and 特別警報 were added to the briefed words; 弾道ミサイル (J-ALERT) is not in the list.
+- Conflict and held cards never switch; a merge or update counts, because the board then shows the city's statement.
+- `mode_changed_at` null with mode disaster (set in the database by hand) never returns by itself: when it was set is unknown.
+- In disaster the evacuation order filed as `shelter` sorts after an official water card (water comes before shelter in the briefed order). Pinning it, or ranking the card that switched the board first, would put the order on top; left as briefed.
+- English reads "(Just now)" with a capital inside the strip's brackets, from the shared `card.just_now` string.
+- No category filter chips exist on the board, so there was nothing to reorder. The trace line was not written: `card_sources.reason` is shown to readers as Claude's reason, and a separate mark would need a column.
+
+**Files of the other session.** None edited. `app/globals.css` only got the appended block at its end.
+
+**Needed a human**
+- Migration 0009 was applied by the human on the shared project after the first run; the reason rows were then run again (table above).
+- Native read of the Korean and Vietnamese `mode.*` and `admin.mode_*` strings.
+- `docs/PLAN.md` still lists the peace/disaster mode switch under "Not this week"; the reviewing session decides how to record N21 there.
+
+**Review fixes for PR #25 (Fable, reviewing session):** the auto return never ends a disaster mode the admin set by hand (reason `admin`), only the automatic switch from the city's mail; the quiet-week count includes cards created or updated in the window, since a city mail that merges onto the first evacuation card writes no new row; the intro on the admin page says so in five languages; 想定 (a scenario) joins 解除 and 訓練 as words that never switch the board on; the confirm button takes focus when it appears and its note is a status, not an alert; the migration comment names `lib/db/mode.ts`; Korean uses 대피 지시 and 알림 띠. Left for later: testing the body for 訓練 as well as the title.
