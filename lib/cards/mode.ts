@@ -74,6 +74,17 @@ export const EMERGENCY_TERMS: readonly { term: string; pattern: RegExp }[] = [
  */
 const NOT_AN_EMERGENCY = /解除|訓練|想定/;
 
+/**
+ * A drill or a scenario can also be named only in the text: "これは訓練放送です"
+ * or "震度6強の地震を想定し" under a plain title. So the body and the source
+ * excerpt are tested for 訓練 and 想定 as well, minus the phrases a real order
+ * uses: "これは訓練ではありません" (this is not a drill), and the hazard map
+ * terms of an evacuation order (洪水浸水想定区域, 浸水が想定される, 想定最大規模,
+ * 想定を超える). 解除 stays a title word: a real order's text can say
+ * "解除されるまで" (until it is lifted).
+ */
+const DRILL_IN_TEXT = /訓練(?!では(?:ありません|ない))|想定(?!区域|される|最大|を超え)/;
+
 function normalized(text: string): string {
   return text.normalize("NFKC").replace(/\s+/g, "");
 }
@@ -91,6 +102,7 @@ export interface EmergencyInput {
 export function emergencyTerm(fact: Pick<EmergencyInput, "category" | "title" | "body" | "original_excerpt">): string | null {
   if (!(EMERGENCY_CATEGORIES as readonly string[]).includes(fact.category)) return null;
   if (NOT_AN_EMERGENCY.test(normalized(fact.title.ja))) return null;
+  if (DRILL_IN_TEXT.test(normalized(fact.body.ja)) || DRILL_IN_TEXT.test(normalized(fact.original_excerpt ?? ""))) return null;
   const text = [fact.title.ja, fact.body.ja, fact.original_excerpt ?? ""].map(normalized).join("|");
   return EMERGENCY_TERMS.find((t) => t.pattern.test(text))?.term ?? null;
 }
