@@ -18,6 +18,7 @@ import {
   LANGS,
   type TextSize,
 } from "./index";
+import { isLang, LANG_PARAM, withoutLangParam } from "./langs";
 
 type Ctx = {
   lang: Lang;
@@ -64,14 +65,29 @@ export function LangProvider({
 
   // The HTML may come from the service worker's cache, rendered with an older
   // choice than the reader's current one; the localStorage mirrors are newer.
+  // A shared link's `?lang=` (see langs.ts) beats both: it is taken as if the
+  // reader had picked it, stored, and removed from the address bar, so a
+  // reload or a later switch is not overruled by the link.
   useEffect(() => {
     // Deferred so the first client render matches the server HTML; the change
     // applies right after hydration.
     const id = window.setTimeout(() => {
+      const { pathname, search, hash } = window.location;
+      const raw = new URLSearchParams(search).get(LANG_PARAM);
+      const fromLink = isLang(raw) ? raw : null;
+      if (raw !== null) {
+        // Next's router keeps its own entry in history.state; carry it over.
+        window.history.replaceState(window.history.state, "", `${pathname}${withoutLangParam(search)}${hash}`);
+      }
+      if (fromLink) {
+        setLangState(fromLink);
+        writeLocal(LS_LANG, fromLink);
+        writeCookie(LANG_COOKIE, fromLink);
+      }
       try {
         const l = window.localStorage.getItem(LS_LANG);
         const s = window.localStorage.getItem(LS_TEXT);
-        if (l && (LANGS as readonly string[]).includes(l) && l !== initialLang) setLangState(l as Lang);
+        if (!fromLink && l && (LANGS as readonly string[]).includes(l) && l !== initialLang) setLangState(l as Lang);
         if ((s === "normal" || s === "large") && s !== initialTextSize) setTextSizeState(s);
       } catch {
         // Blocked storage: the cookie's choice stands.

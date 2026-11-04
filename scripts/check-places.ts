@@ -1,7 +1,8 @@
 /**
  * Checks the two place helpers on the seed's pilot board, without a
  * database: the "Open in maps" search URL (N17, lib/cards/maps.ts) and the
- * grouping behind the Places view (N10, lib/cards/places.ts).
+ * grouping behind the Places view (N10, lib/cards/places.ts); plus the
+ * `?lang=` helpers for shared links (lib/i18n/langs.ts).
  *
  *   node --import=tsx scripts/check-places.ts
  *
@@ -12,6 +13,7 @@ import seed from "../supabase/seed/boards.json";
 import { boardMunicipality } from "../lib/geo";
 import { mapsQuery, mapsUrl } from "../lib/cards/maps";
 import { groupByPlace, OTHER_PLACES_KEY, parseBoardView } from "../lib/cards/places";
+import { withLangParam, withoutLangParam } from "../lib/i18n/langs";
 import type { Board, Card, Category } from "../lib/types";
 
 let passed = 0;
@@ -118,6 +120,13 @@ check("places: no cards, no groups", groupByPlace([], board).length === 0);
 
 check("view: places and list parse", parseBoardView("places") === "places" && parseBoardView("list") === "list");
 check("view: anything else is ignored", parseBoardView("map") === null && parseBoardView(["places"]) === null);
+
+// --- shared links -------------------------------------------------------------
+
+check("lang: an absolute card link gets ?lang=", withLangParam("https://engawaboard.com/b/x/c/1", "zh") === "https://engawaboard.com/b/x/c/1?lang=zh");
+check("lang: other parameters and the hash stay", withLangParam("/b/x?view=places#card-1", "ko") === "/b/x?view=places&lang=ko#card-1");
+check("lang: an existing lang is replaced", withLangParam("/b/x?lang=en", "vi") === "/b/x?lang=vi");
+check("lang: removed from the address bar, the rest kept", withoutLangParam("?lang=zh&view=places") === "?view=places" && withoutLangParam("?lang=zh") === "");
 
 console.log(`\n${passed} of ${passed + failed.length} checks pass`);
 if (failed.length) process.exit(1);

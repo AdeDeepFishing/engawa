@@ -6,8 +6,8 @@ import { cardPath } from "@/lib/cards/share";
 import { getPublicCardTrace } from "@/lib/db/cards";
 import { hasDb } from "@/lib/db/client";
 import { loadPublicCard } from "@/lib/db/public-card";
-import { INTL_LOCALE, LANGS } from "@/lib/i18n";
-import { getRequestLang } from "@/lib/i18n/server";
+import { INTL_LOCALE, LANGS, withLangParam } from "@/lib/i18n";
+import { getLinkLang, getRequestLang } from "@/lib/i18n/server";
 
 type Props = { params: Promise<{ slug: string; id: string }> };
 
@@ -24,13 +24,19 @@ function shorten(text: string): string {
 }
 
 /**
- * Title and description in the reader's language (cookie, else
- * Accept-Language; crawlers usually get Japanese), the board's OG image, and
- * absolute URLs through appBase().
+ * Title and description in the reader's language (the shared link's
+ * `?lang=`, else the cookie, else Accept-Language; a bare link previews in
+ * Japanese, since crawlers send neither), the board's OG image, and absolute
+ * URLs through appBase(). og:url keeps `?lang=`.
  */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug, id } = await params;
-  const [found, lang, base] = await Promise.all([loadPublicCard(slug, id), getRequestLang(), appBase()]);
+  const [found, lang, linkLang, base] = await Promise.all([
+    loadPublicCard(slug, id),
+    getRequestLang(),
+    getLinkLang(),
+    appBase(),
+  ]);
   if (!found) return { title: "Engawa" };
   const { board, card } = found;
   const title = `${card.title[lang]} | ${board.name[lang]} | Engawa`;
@@ -45,7 +51,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       siteName: "Engawa",
       title,
       description,
-      url: cardPath(board.slug, card.id),
+      url: linkLang ? withLangParam(cardPath(board.slug, card.id), linkLang) : cardPath(board.slug, card.id),
       images: [image],
       locale: ogLocale(INTL_LOCALE[lang]),
       alternateLocale: LANGS.filter((l) => l !== lang).map((l) => ogLocale(INTL_LOCALE[l])),

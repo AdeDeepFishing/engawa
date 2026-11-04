@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { withLangParam } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n/LangProvider";
 import { copyText } from "./copy";
 import { QrScreen } from "./QrScreen";
@@ -12,14 +13,18 @@ type CopyState = "idle" | "copied" | "failed";
  * Share button for the top bar. Opens a small non-modal panel with the
  * system share sheet (when the browser has the Web Share API), copy link and
  * a fullscreen QR code. Everything happens in the browser; nothing is sent.
+ * The shared and copied link names the reader's language (`?lang=`), so a
+ * chat app's preview comes out in it. The QR code does not: whoever scans it
+ * is standing next to the reader with a phone in their own language.
  */
 export function ShareButton({ boardSlug, boardName }: { boardSlug: string; boardName: string }) {
-  const { t } = useLang();
+  const { lang, t } = useLang();
   const [open, setOpen] = useState(false);
   const [qr, setQr] = useState(false);
   const [copy, setCopy] = useState<CopyState>("idle");
   const [canShare, setCanShare] = useState(false);
   const [url, setUrl] = useState("");
+  const sharedUrl = url ? withLangParam(url, lang) : "";
   const buttonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -56,7 +61,7 @@ export function ShareButton({ boardSlug, boardName }: { boardSlug: string; board
 
   async function onNativeShare() {
     try {
-      await navigator.share({ title: `${boardName} | Engawa`, text: t("share.text", { board: boardName }), url });
+      await navigator.share({ title: `${boardName} | Engawa`, text: t("share.text", { board: boardName }), url: sharedUrl });
       setOpen(false);
     } catch {
       // The user closed the share sheet, or the browser refused: keep the panel.
@@ -64,7 +69,7 @@ export function ShareButton({ boardSlug, boardName }: { boardSlug: string; board
   }
 
   async function onCopy() {
-    setCopy((await copyText(url)) ? "copied" : "failed");
+    setCopy((await copyText(sharedUrl)) ? "copied" : "failed");
   }
 
   const action =
@@ -114,7 +119,7 @@ export function ShareButton({ boardSlug, boardName }: { boardSlug: string; board
               {t("poster.print")}
             </Link>
           </div>
-          <p className="mt-3 break-all rounded-lg bg-held-bg px-3 py-2 text-base select-all">{url}</p>
+          <p className="mt-3 break-all rounded-lg bg-held-bg px-3 py-2 text-base select-all">{sharedUrl}</p>
           <p role="status" className="mt-2 min-h-6 px-1 text-base font-semibold text-accent">
             {copy === "copied" ? t("share.copied") : copy === "failed" ? t("share.copy_failed") : ""}
           </p>
