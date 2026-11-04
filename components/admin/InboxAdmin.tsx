@@ -5,6 +5,7 @@ import { formatFullDateTime } from "@/lib/cards/display";
 import type { MessageKey } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n/LangProvider";
 import type { InboxAdminState } from "@/lib/db/inbox";
+import { MAX_INBOX_SENDERS, senderAddress } from "@/lib/inbox/clean";
 
 type Answer = { state?: InboxAdminState; secret?: string; error?: string; invalid?: string[] };
 
@@ -25,7 +26,7 @@ export function InboxAdmin({ slug, inboxUrl, initial }: { slug: string; inboxUrl
   const [sendersText, setSendersText] = useState(initial.senders.join("\n"));
   const [busy, setBusy] = useState<"secret" | "senders" | null>(null);
   const [saved, setSaved] = useState(false);
-  const [problem, setProblem] = useState<{ key: MessageKey; invalid?: string } | null>(null);
+  const [problem, setProblem] = useState<{ key: MessageKey; vars?: Record<string, string | number> } | null>(null);
 
   async function post(body: Record<string, unknown>): Promise<Answer | null> {
     try {
@@ -37,7 +38,7 @@ export function InboxAdmin({ slug, inboxUrl, initial }: { slug: string; inboxUrl
       const answer = (await res.json().catch(() => ({}))) as Answer;
       if (res.ok) return answer;
       if (answer.error === "invalid_senders") {
-        setProblem({ key: "inbox.senders_invalid", invalid: (answer.invalid ?? []).join(", ") });
+        setProblem({ key: "inbox.senders_invalid", vars: { list: (answer.invalid ?? []).join(", ") } });
       } else {
         setProblem({ key: "admin.error" });
       }
@@ -76,10 +77,20 @@ export function InboxAdmin({ slug, inboxUrl, initial }: { slug: string; inboxUrl
   }
 
   async function saveSenders() {
-    setBusy("senders");
     setProblem(null);
     setSaved(false);
-    const answer = await post({ action: "save_senders", senders: sendersText.split(/[\n,]/) });
+    const entries = sendersText.split(/[\n,]/);
+    // The server keeps at most ten and refuses the rest; say so here, with the count, before sending.
+    const distinct = new Set(entries.map((e) => senderAddress(e.trim())).filter(Boolean)).size;
+    if (distinct > MAX_INBOX_SENDERS) {
+      setProblem({
+        key: "inbox.senders_too_many",
+        vars: { max: MAX_INBOX_SENDERS, n: distinct, extra: distinct - MAX_INBOX_SENDERS },
+      });
+      return;
+    }
+    setBusy("senders");
+    const answer = await post({ action: "save_senders", senders: entries });
     setBusy(null);
     if (answer?.state) {
       setState(answer.state);
@@ -185,8 +196,8 @@ export function InboxAdmin({ slug, inboxUrl, initial }: { slug: string; inboxUrl
           </div>
 
           {problem ? (
-            <p role="alert" className="mt-3 text-base text-warn-ink">
-              {problem.invalid !== undefined ? t(problem.key, { list: problem.invalid }) : t(problem.key)}
+            <p role="alert" className="mt-3 text-base text-warn-ink" data-inbox-problem>
+              {t(problem.key, problem.vars)}
             </p>
           ) : null}
 
