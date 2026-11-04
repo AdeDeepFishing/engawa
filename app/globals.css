@@ -9,7 +9,7 @@
   /* Borders of controls: at least 3:1 on white, on the page and on the beige (WCAG 1.4.11). */
   --line-strong: #87837a;
   --accent: #1f5c3f;
-  /* Hover and pressed shade of the accent fill: white on it is 10.6:1. */
+  /* Hover and pressed shade of the accent fill: white on it is 11.8:1. */
   --accent-hover: #163f2c;
   --accent-ink: #ffffff;
   --warn-bg: #fff4d6;
