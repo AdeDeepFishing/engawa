@@ -1,0 +1,20 @@
+{
+  "input": "h01-loudspeaker-garbled-ja.txt",
+  "channel": "loudspeaker",
+  "source_platform": "loudspeaker",
+  "facts": [
+    {
+      "category": "water",
+      "place_id": null,
+      "valid_from": null,
+      "source_type": "secondhand",
+      "conditions_include": [
+        "container"
+      ]
+    }
+  ],
+  "must_not_contain": [],
+  "risk_flags": [],
+  "merges_with": [],
+  "notes": "A fragmentary speech-recognition transcript of a 防災行政無線 broadcast, written during the event as test material. The place is heard as なかはら…がっこう, which matches both 中原小学校 and 中原中学校, so place_id stays null with the heard spelling in place_text_ja. The hour is garbled (じゅう、じ), so valid_from stays null rather than a guess. The repeat (くりかえします) is the same fact, not a second one. The opening and closing formulas are not facts. Bring a container is the one condition."
+}

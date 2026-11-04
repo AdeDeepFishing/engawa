@@ -247,7 +247,7 @@ async function mergeIntoCard(
     // the card once the city's text says the same thing properly. The other
     // languages go with the old wording; the translate step that follows
     // writes them again from the new text.
-    if (card.facts?.platform === "loudspeaker") {
+    if (card.facts?.platform === "loudspeaker" && fact.source_type === "official") {
       patch.title = fact.title;
       patch.body = fact.body;
       patch.original_text = fact.original_excerpt || null;

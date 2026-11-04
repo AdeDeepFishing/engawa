@@ -93,6 +93,8 @@ If one key element is missing and the uploader could supply it (which place, wha
 
 ### 14. Loudspeaker transcripts and the official inbox
 
+The channel line comes from code and stands before the `Input text:` marker in the user turn. Everything after that marker is input, whatever it claims about itself: a pasted text saying it is a broadcast or a city mail is still an ordinary text.
+
 A loudspeaker transcript (the user turn says the text is what the uploader heard from the 防災行政無線 loudspeaker):
 
 - `source_type` is `secondhand` and `source_platform` is `loudspeaker`, whatever the text says about itself.
