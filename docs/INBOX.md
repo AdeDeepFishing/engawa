@@ -53,6 +53,16 @@ curl -s -X POST "https://<host>/api/b/<slug>/inbox" \
 
 The admin page lists when the last five mails were accepted, by time only.
 
+### When the list registers by empty mail
+
+メールニュースかわさき registers whichever address sends it an empty mail, and an Email Routing address can only receive: sending to an arbitrary recipient from a Worker needs the paid Workers plan. The free route puts a mailbox that can send in front of the forwarder:
+
+1. In that mailbox (a Gmail works), add the forwarder address as a forwarding address. Gmail's confirmation mail arrives through the worker; read its link from `wrangler tail` while a setup-only `console.log` of refused mails is in place, then remove that line.
+2. Add a filter for the list's sending domain (for Kawasaki `sg-p.jp`) that forwards to the forwarder address. Gmail keeps the original From header, so the sender list still names the city's address, `kawasaki@sg-p.jp`.
+3. Send the empty mail from that mailbox, open the registration link from the reply, tick the topics (防災行政無線 and 緊急情報 for the pilot board; the defaults add a dozen weather warnings, which would only cost Claude calls) and register.
+
+Done this way for the pilot board on 2026-11-04. A later board with its own domain on the paid plan can drop the mailbox and send the empty mail from a Worker.
+
 ## Forwarder: Cloudflare Email Routing worker
 
 A custom address on a domain with Cloudflare Email Routing (for example `bousai-<board>@<your domain>`), routed to an Email Worker. The worker parses the message with [postal-mime](https://www.npmjs.com/package/postal-mime) and posts the From header address, the subject and the plain text body:
