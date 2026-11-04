@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { MessageKey } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n/LangProvider";
 import { getDeviceId, hasConsented, setConsented } from "@/lib/device";
-import { boardPolygons, resolveArea } from "@/lib/geo";
+import { resolveArea, type AreaFeature } from "@/lib/geo";
 import { ImageTooLargeError, prepareImage } from "@/lib/image/browser";
 import { readSse } from "@/lib/sse";
 import type { Board } from "@/lib/types";
@@ -103,14 +103,17 @@ function writeAreaOptIn(on: boolean): void {
 export function DropIn({
   boardSlug,
   areaNames,
+  areaPolygons,
   offline = false,
   onPending,
   retryRequest,
   heardFirst = false,
 }: {
   boardSlug: string;
-  /** The board's 町丁目 list; the area control appears only when polygons exist for it. */
+  /** The board's 町丁目 list, for the names of resolved areas. */
   areaNames: Board["area_names"];
+  /** This board's polygons from the server (lib/geo/polygons.ts); the area control appears only when there are some. */
+  areaPolygons: AreaFeature[];
   /** True while the board cannot reach the server: the button is disabled with a one-line reason. */
   offline?: boolean;
   /** Receives every status change; the parent refreshes the list when a status is done. */
@@ -143,7 +146,7 @@ export function DropIn({
   const cameraRef = useRef<HTMLInputElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const areaBoard = useMemo(() => ({ area_names: areaNames }), [areaNames]);
-  const hasAreas = useMemo(() => boardPolygons(areaBoard).length > 0, [areaBoard]);
+  const hasAreas = areaPolygons.length > 0;
 
   const openPanel = () => {
     const consented = hasConsented();
@@ -204,7 +207,7 @@ export function DropIn({
         (pos) => {
           // The coordinates exist only inside this callback: matched against the
           // board's polygons here, never stored, logged or sent.
-          const hit = resolveArea(areaBoard, pos.coords.longitude, pos.coords.latitude);
+          const hit = resolveArea(areaBoard, areaPolygons, pos.coords.longitude, pos.coords.latitude);
           resolve(hit ? { status: "resolved", code: hit.code, name: hit.name_ja } : { status: "outside" });
         },
         (err) => resolve({ status: err.code === err.PERMISSION_DENIED ? "denied" : "failed" }),
