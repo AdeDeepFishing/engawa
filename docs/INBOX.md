@@ -25,7 +25,7 @@ The route runs the whole pipeline before it answers (extract, reconcile, transla
 
 | Status | Body | When |
 |---|---|---|
-| 201 | `{submission_id, status, card_ids, public_count, held_count, actions}` | Processed. `actions` has one reconcile action per fact: `create`, `merge`, `update`, `conflict`, `hold`. |
+| 201 | `{submission_id, status, card_ids, public_count, held_count, actions, switched_to_disaster}` | Processed. `actions` has one reconcile action per fact: `create`, `merge`, `update`, `conflict`, `hold`. `switched_to_disaster` is true when this mail switched the board from peace to disaster (below). |
 | 403 | `{error: "forbidden"}` | No such board, no secret on the board, or a wrong one. |
 | 413 | `{error: "too_large"}` | Body over 20 KB. |
 | 400 | `{error: "bad_request"}` | Not JSON, or `from`, `subject` or `text` missing. |
@@ -36,6 +36,8 @@ The route runs the whole pipeline before it answers (extract, reconcile, transla
 | 500 | `{error: <code>, submission_id}` | The pipeline failed (for example `pii_leak`, `refusal`). The submission is marked failed; posting the mail again makes a new one. |
 
 What the board does with it: the submission is a text submission with `source_hint = 'official'` and the device id `inbox`. Extract is told in the user turn that the text came through the official inbox, and code sets every fact to `official` with platform `city_mail` whatever the model answered (`applyChannel` in `lib/claude/extract.ts`). Risk flags still hold a fact for the admin. `official_confirmed` stays a human's step on the admin page. Readers see "From the city's broadcast mail" as the source line. The raw text is cleared when processing ends, as for every submission.
+
+Disaster mode: when a mail's fact goes onto a public card (create, merge or update) in category `danger`, `official_notice` or `shelter` (extract files an evacuation order that names where to go as `shelter`) and its Japanese title, body or excerpt names an emergency (避難指示, 避難命令, 緊急安全確保, 警戒レベル4 or 5, 津波警報, 特別警報, 震度5弱 or stronger; not when the title says 解除 or 訓練), a board in peace switches to disaster with the reason `inbox:<submission id>`. The list and its reasons are in `lib/cards/mode.ts` (`pnpm check:mode`). Only this route can do it: a neighbour's text or the "I heard the loudspeaker" input never switches the mode, whatever it says. The board returns to peace by itself 7 days after the switch once no public official `danger`, `official_notice` or `shelter` card has been created for 7 days, or when the admin switches it back on the admin page.
 
 ```bash
 curl -s -X POST "https://<host>/api/b/<slug>/inbox" \

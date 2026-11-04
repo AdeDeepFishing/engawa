@@ -7,6 +7,7 @@ import { ADMIN_PAGE_COOKIE, isAdminCookie, listCardsForAdmin } from "@/lib/db/ad
 import { getBoardBySlug } from "@/lib/db/boards";
 import { hasDb } from "@/lib/db/client";
 import { getInboxAdminState } from "@/lib/db/inbox";
+import { getModeState, toModeView } from "@/lib/db/mode";
 import { t } from "@/lib/i18n";
 import { getRequestLang } from "@/lib/i18n/server";
 import { AdminView, InvalidAdminLink } from "./AdminView";
@@ -26,8 +27,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 /**
- * Admin for one board: the held queue (publish or hide), confirm official,
- * hide any card. The admin arrives here through the entry link
+ * Admin for one board: the board mode (N21), the held queue (publish or
+ * hide), confirm official, hide any card. The admin arrives here through the entry link
  * (/api/b/[slug]/admin/enter), which checks the token and sets an HttpOnly
  * cookie; this page reads only that cookie, so the URL carries no secret.
  * Without a valid cookie nothing about the cards is rendered.
@@ -39,10 +40,15 @@ export default async function AdminPage({ params }: Props) {
   const board = await getBoardBySlug(slug);
   if (!board) notFound();
   if (!hasDb() || !isAdminCookie(store.get(ADMIN_PAGE_COOKIE)?.value)) return <InvalidAdminLink />;
-  const [lists, inbox, base] = await Promise.all([listCardsForAdmin(board), getInboxAdminState(board.id), appBase()]);
+  const [lists, inbox, base, mode] = await Promise.all([
+    listCardsForAdmin(board),
+    getInboxAdminState(board.id),
+    appBase(),
+    getModeState(board),
+  ]);
   return (
     <>
-      <AdminView board={board} lists={lists} serverNow={new Date().toISOString()} />
+      <AdminView board={board} lists={lists} serverNow={new Date().toISOString()} mode={toModeView(mode)} />
       <InboxAdmin slug={board.slug} inboxUrl={new URL(`/api/b/${board.slug}/inbox`, base).toString()} initial={inbox} />
     </>
   );

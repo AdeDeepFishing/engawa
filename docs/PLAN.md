@@ -65,7 +65,7 @@ Ranked by value on the judging axes (impact, demo, use of Claude, depth) against
 - N18 Second board, Shibuya: a Tokyo board next to the Kawasaki one, to show the setup is per city, not per code. Needs the ward's shelter list and 町丁目 polygons (same sources and tools as 中原区), a seed, a second routing address and inbox secret (the worker takes a map of address to board), and the ward's own broadcast mail: each city publishes its 防災行政無線 through its own service (Kawasaki through メールニュースかわさき; Shibuya's しぶや安全・安心メール still to be confirmed as carrying the broadcast text), so each board is one more subscription through the same relay mailbox with one more filter. Impact. About 3 hours plus the human's registration steps.
 - N19 Home page: what the board is in one sentence, a Japan map of prefecture polygons with the boards' prefectures highlighted, board cards with live counts, three steps in the UI's own words, footer links; only listed boards (migration 0008) so acceptance leftovers never show. Demo and impact. About 2 hours. Done 2026-11-04.
 - N20 Brand: a mark that reads at 16 px, favicon, apple icon, manifest icons, root and board OG images, the accent colour changed from green to a deep rose with a contrast table. Demo. About 1.5 hours. Done 2026-11-04.
-- N21 Disaster mode as a real state: admin switch with the reason recorded (migration 0009), automatic switch when the city's broadcast mail carries an evacuation order or a strong quake, automatic return after 7 quiet days, and a visibly different board in disaster mode (red strip, official and danger first, water, shelter, medical and danger filters pinned, loudspeaker input first). Impact and demo. About 3 hours.
+- N21 Disaster mode as a real state: admin switch with the reason recorded (migration 0009), automatic switch when the city's broadcast mail carries an evacuation order or a strong quake, automatic return after 7 quiet days, and a visibly different board in disaster mode (red strip, official and danger first, water, shelter, medical and danger filters pinned, loudspeaker input first). Impact and demo. About 3 hours. Done 2026-11-04.
 
 ### Not this week
 
@@ -174,11 +174,12 @@ Session PRs were merged in pairs after review through the integration PRs #11, #
 - [x] engawaboard.com bought and wired (Vercel, Cloudflare DNS and Email Routing), the city list subscribed through a Gmail relay, the sender on the allowlist: the inbox is live (details in `docs/INBOX.md` and the DEVLOG)
 - [x] N17 open in maps, N10 place view, one ask panel per breakpoint, shared links carry the reader's language (PR #23)
 - [x] N19 home page with the prefecture map, N20 mark and icons, rose accent, listed boards (migration 0008), inbox 403 for unknown slugs, per-IP limit on reactions (PR #24)
+- [x] N21 disaster mode: admin switch with the reason (migration 0009), automatic switch from the city's mail, automatic return after a quiet week for automatic switches only, the disaster layout (PR #25)
 
 ### 2026-11-05 (Thu): native reads, the inbox wired, remaining nice-to-haves
 - [ ] Korean and Vietnamese native speakers read the demo cards; fix wording
 - [ ] Human: try the heard input on a real phone next to a broadcast; watch the first real city mail become a card and confirm it on the admin page
-- [ ] N21 disaster mode (PR in review), then N18 Shibuya board, N12 make a board, web push for official and danger cards: only if the day is clear
+- [ ] N18 Shibuya board, N12 make a board, web push for official and danger cards: only if the day is clear
 
 ### 2026-11-06 (Fri): review, freeze, demo prep
 - [ ] Full run of the 7-step demo scenario on the deployed URL; fix what breaks

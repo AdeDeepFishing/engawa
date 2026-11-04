@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition, type ReactNode } from "react";
 import { TopBar } from "@/components/TopBar";
+import { ModeAdmin } from "@/components/admin/ModeAdmin";
 import { CATEGORY_ICON, isExpired } from "@/lib/cards/categories";
 import {
   conflictStatements,
@@ -13,6 +14,7 @@ import {
   supersededStatements,
   timeAgo,
 } from "@/lib/cards/display";
+import type { ModeView } from "@/lib/cards/mode";
 import { tCount, type MessageKey } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n/LangProvider";
 import type { AdminAction, AdminCard, AdminCardLists } from "@/lib/db/admin";
@@ -42,10 +44,13 @@ export function AdminView({
   board,
   lists,
   serverNow,
+  mode,
 }: {
   board: Board;
   lists: AdminCardLists;
   serverNow: string;
+  /** The board's mode, when and why it last changed (N21). */
+  mode: ModeView;
 }) {
   const { lang, t } = useLang();
   const now = new Date(serverNow);
@@ -69,6 +74,8 @@ export function AdminView({
             {t("admin.open_board")}
           </Link>
         </p>
+
+        <ModeAdmin slug={board.slug} initial={mode} serverNow={serverNow} />
 
         <Section title={`${t("admin.held_heading")} (${lists.held.length})`}>
           {lists.held.length ? (
