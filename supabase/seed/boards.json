@@ -2203,6 +2203,1420 @@
           "area_name_ja": "上野2丁目"
         }
       ]
+    },
+    {
+      "slug": "sapporo",
+      "name": {
+        "ja": "札幌 大通",
+        "en": "Sapporo Odori",
+        "zh": "札幌 大通",
+        "ko": "삿포로 오도리",
+        "vi": "Sapporo Odori"
+      },
+      "mode": "peace",
+      "area_names": [
+        {
+          "code": "01101790501",
+          "name_ja": "北五条西1丁目"
+        },
+        {
+          "code": "01101790502",
+          "name_ja": "北五条西2丁目"
+        },
+        {
+          "code": "01101790503",
+          "name_ja": "北五条西3丁目"
+        },
+        {
+          "code": "01101790504",
+          "name_ja": "北五条西4丁目"
+        },
+        {
+          "code": "01101790505",
+          "name_ja": "北五条西5丁目"
+        },
+        {
+          "code": "01101790401",
+          "name_ja": "北四条西1丁目"
+        },
+        {
+          "code": "01101790402",
+          "name_ja": "北四条西2丁目"
+        },
+        {
+          "code": "01101790403",
+          "name_ja": "北四条西3丁目"
+        },
+        {
+          "code": "01101790404",
+          "name_ja": "北四条西4丁目"
+        },
+        {
+          "code": "01101790405",
+          "name_ja": "北四条西5丁目"
+        },
+        {
+          "code": "01101790301",
+          "name_ja": "北三条西1丁目"
+        },
+        {
+          "code": "01101790302",
+          "name_ja": "北三条西2丁目"
+        },
+        {
+          "code": "01101790303",
+          "name_ja": "北三条西3丁目"
+        },
+        {
+          "code": "01101790304",
+          "name_ja": "北三条西4丁目"
+        },
+        {
+          "code": "01101790305",
+          "name_ja": "北三条西5丁目"
+        },
+        {
+          "code": "01101790201",
+          "name_ja": "北二条西1丁目"
+        },
+        {
+          "code": "01101790202",
+          "name_ja": "北二条西2丁目"
+        },
+        {
+          "code": "01101790203",
+          "name_ja": "北二条西3丁目"
+        },
+        {
+          "code": "01101790204",
+          "name_ja": "北二条西4丁目"
+        },
+        {
+          "code": "01101790205",
+          "name_ja": "北二条西5丁目"
+        },
+        {
+          "code": "01101790101",
+          "name_ja": "北一条西1丁目"
+        },
+        {
+          "code": "01101790102",
+          "name_ja": "北一条西2丁目"
+        },
+        {
+          "code": "01101790103",
+          "name_ja": "北一条西3丁目"
+        },
+        {
+          "code": "01101790104",
+          "name_ja": "北一条西4丁目"
+        },
+        {
+          "code": "01101790105",
+          "name_ja": "北一条西5丁目"
+        },
+        {
+          "code": "01101210001",
+          "name_ja": "大通西1丁目"
+        },
+        {
+          "code": "01101210002",
+          "name_ja": "大通西2丁目"
+        },
+        {
+          "code": "01101210003",
+          "name_ja": "大通西3丁目"
+        },
+        {
+          "code": "01101210004",
+          "name_ja": "大通西4丁目"
+        },
+        {
+          "code": "01101210005",
+          "name_ja": "大通西5丁目"
+        },
+        {
+          "code": "01101690101",
+          "name_ja": "南一条西1丁目"
+        },
+        {
+          "code": "01101690102",
+          "name_ja": "南一条西2丁目"
+        },
+        {
+          "code": "01101690103",
+          "name_ja": "南一条西3丁目"
+        },
+        {
+          "code": "01101690104",
+          "name_ja": "南一条西4丁目"
+        },
+        {
+          "code": "01101690105",
+          "name_ja": "南一条西5丁目"
+        },
+        {
+          "code": "01101690201",
+          "name_ja": "南二条西1丁目"
+        },
+        {
+          "code": "01101690202",
+          "name_ja": "南二条西2丁目"
+        },
+        {
+          "code": "01101690203",
+          "name_ja": "南二条西3丁目"
+        },
+        {
+          "code": "01101690204",
+          "name_ja": "南二条西4丁目"
+        },
+        {
+          "code": "01101690205",
+          "name_ja": "南二条西5丁目"
+        },
+        {
+          "code": "01101690301",
+          "name_ja": "南三条西1丁目"
+        },
+        {
+          "code": "01101690302",
+          "name_ja": "南三条西2丁目"
+        },
+        {
+          "code": "01101690303",
+          "name_ja": "南三条西3丁目"
+        },
+        {
+          "code": "01101690304",
+          "name_ja": "南三条西4丁目"
+        },
+        {
+          "code": "01101690305",
+          "name_ja": "南三条西5丁目"
+        }
+      ],
+      "known_places": [
+        {
+          "id": "shiseikan-es",
+          "kind": "shelter",
+          "verified": true,
+          "name_ja": "資生館小学校",
+          "address_ja": "南3条西7丁目1-1",
+          "notes_ja": "基幹避難所、指定緊急避難場所（洪水・地震・大規模な火事）。板の範囲の南西、南3条西5丁目から西へ2ブロック。札幌市は避難所ごとの対象地区を示していない。冬の地震では、指定された小中学校などへ速やかに避難する（札幌市「避難の心得」）",
+          "aliases": [
+            "資生館小",
+            "札幌市立資生館小学校",
+            "Shiseikan Elementary School",
+            "Shiseikan Elementary",
+            "资生馆小学",
+            "시세이칸 초등학교",
+            "Trường tiểu học Shiseikan"
+          ],
+          "names": {
+            "en": "Shiseikan Elementary School",
+            "zh": "资生馆小学",
+            "ko": "시세이칸 초등학교",
+            "vi": "Trường tiểu học Shiseikan"
+          },
+          "area_name_ja": "南三条西7丁目"
+        },
+        {
+          "id": "chuo-jhs",
+          "kind": "shelter",
+          "verified": true,
+          "name_ja": "中央中学校",
+          "address_ja": "北4条東3丁目",
+          "notes_ja": "基幹避難所、指定緊急避難場所（洪水・地震・大規模な火事）。板の範囲の東、創成川の東側。札幌市は避難所ごとの対象地区を示していない。冬の地震では、指定された小中学校などへ速やかに避難する（札幌市「避難の心得」）",
+          "aliases": [
+            "中央中",
+            "札幌市立中央中学校",
+            "Chuo Junior High School",
+            "Chuo JHS",
+            "中央中学",
+            "주오 중학교",
+            "Trường THCS Chuo"
+          ],
+          "names": {
+            "en": "Chuo Junior High School",
+            "zh": "中央中学",
+            "ko": "주오 중학교",
+            "vi": "Trường THCS Chuo"
+          },
+          "area_name_ja": "北四条東3丁目"
+        },
+        {
+          "id": "akarenga-garden",
+          "kind": "park",
+          "verified": true,
+          "name_ja": "赤レンガ庁舎前庭",
+          "address_ja": "北3条西6丁目",
+          "notes_ja": "一時避難場所。板の範囲の西隣。一時避難場所は身の安全を確保する場所。冬の地震では、指定された小中学校などへ速やかに避難する（札幌市「避難の心得」）",
+          "aliases": [
+            "赤れんが庁舎前庭",
+            "赤レンガ庁舎",
+            "赤れんが庁舎",
+            "北海道庁旧本庁舎",
+            "道庁赤れんが",
+            "Red Brick Office front garden",
+            "Former Hokkaido Government Office",
+            "红砖厅舍前庭",
+            "아카렌가 청사 앞뜰",
+            "Sân trước Tòa nhà Gạch Đỏ"
+          ],
+          "names": {
+            "en": "Red Brick Office front garden",
+            "zh": "红砖厅舍前庭",
+            "ko": "아카렌가 청사 앞뜰",
+            "vi": "Sân trước Tòa nhà Gạch Đỏ"
+          },
+          "area_name_ja": "北三条西6丁目"
+        },
+        {
+          "id": "odori-park",
+          "kind": "park",
+          "verified": false,
+          "name_ja": "大通公園",
+          "address_ja": "大通西1丁目～12丁目",
+          "notes_ja": "札幌市は市内のすべての公園を一時避難場所に指定している。市の一覧に大通公園の名前はなく、個別の指定は未確認。一時避難場所は身の安全を確保する場所。冬の地震では、指定された小中学校などへ速やかに避難する（札幌市「避難の心得」）",
+          "aliases": [
+            "大通り公園",
+            "Odori Park",
+            "大通公园",
+            "오도리 공원",
+            "Công viên Odori"
+          ],
+          "names": {
+            "en": "Odori Park",
+            "zh": "大通公园",
+            "ko": "오도리 공원",
+            "vi": "Công viên Odori"
+          },
+          "area_name_ja": "大通西3丁目"
+        },
+        {
+          "id": "water-n5w6",
+          "kind": "water_point",
+          "verified": true,
+          "name_ja": "緊急時給水管路 給水口No.13",
+          "address_ja": "北5条西6丁目",
+          "notes_ja": "札幌市水道局の拠点給水施設（藻岩第1緊急時給水管路）。災害時は自分で集まって飲料水を確保する。現地に案内表示板あり。板の範囲の西隣",
+          "aliases": [
+            "給水口No.13",
+            "北5条西6丁目の給水口",
+            "Emergency water outlet No.13",
+            "应急供水口 No.13",
+            "비상 급수구 No.13",
+            "Điểm cấp nước khẩn cấp số 13"
+          ],
+          "names": {
+            "en": "Emergency water outlet No.13 (Kita 5 Nishi 6)",
+            "zh": "应急供水口 No.13（北5条西6丁目）",
+            "ko": "비상 급수구 No.13 (기타5조 니시6초메)",
+            "vi": "Điểm cấp nước khẩn cấp số 13 (Kita 5 Nishi 6)"
+          },
+          "area_name_ja": "北五条西6丁目"
+        },
+        {
+          "id": "water-n1w6",
+          "kind": "water_point",
+          "verified": true,
+          "name_ja": "緊急時給水管路 給水口No.10",
+          "address_ja": "北1条西6丁目",
+          "notes_ja": "札幌市水道局の拠点給水施設（藻岩第1緊急時給水管路）。災害時は自分で集まって飲料水を確保する。現地に案内表示板あり。板の範囲の西隣",
+          "aliases": [
+            "給水口No.10",
+            "北1条西6丁目の給水口",
+            "Emergency water outlet No.10",
+            "应急供水口 No.10",
+            "비상 급수구 No.10",
+            "Điểm cấp nước khẩn cấp số 10"
+          ],
+          "names": {
+            "en": "Emergency water outlet No.10 (Kita 1 Nishi 6)",
+            "zh": "应急供水口 No.10（北1条西6丁目）",
+            "ko": "비상 급수구 No.10 (기타1조 니시6초메)",
+            "vi": "Điểm cấp nước khẩn cấp số 10 (Kita 1 Nishi 6)"
+          },
+          "area_name_ja": "北一条西6丁目"
+        },
+        {
+          "id": "water-odori-w6",
+          "kind": "water_point",
+          "verified": true,
+          "name_ja": "緊急時給水管路 給水口No.8",
+          "address_ja": "大通西6丁目",
+          "notes_ja": "札幌市水道局の拠点給水施設（藻岩第1緊急時給水管路）。災害時は自分で集まって飲料水を確保する。現地に案内表示板あり。板の範囲の西隣",
+          "aliases": [
+            "給水口No.8",
+            "大通西6丁目の給水口",
+            "Emergency water outlet No.8",
+            "应急供水口 No.8",
+            "비상 급수구 No.8",
+            "Điểm cấp nước khẩn cấp số 8"
+          ],
+          "names": {
+            "en": "Emergency water outlet No.8 (Odori Nishi 6)",
+            "zh": "应急供水口 No.8（大通西6丁目）",
+            "ko": "비상 급수구 No.8 (오도리 니시6초메)",
+            "vi": "Điểm cấp nước khẩn cấp số 8 (Odori Nishi 6)"
+          },
+          "area_name_ja": "大通西6丁目"
+        },
+        {
+          "id": "water-s3w6",
+          "kind": "water_point",
+          "verified": true,
+          "name_ja": "緊急時給水管路 給水口No.6",
+          "address_ja": "南3条西6丁目",
+          "notes_ja": "札幌市水道局の拠点給水施設（藻岩第1緊急時給水管路）。災害時は自分で集まって飲料水を確保する。現地に案内表示板あり。板の範囲の西隣",
+          "aliases": [
+            "給水口No.6",
+            "南3条西6丁目の給水口",
+            "Emergency water outlet No.6",
+            "应急供水口 No.6",
+            "비상 급수구 No.6",
+            "Điểm cấp nước khẩn cấp số 6"
+          ],
+          "names": {
+            "en": "Emergency water outlet No.6 (Minami 3 Nishi 6)",
+            "zh": "应急供水口 No.6（南3条西6丁目）",
+            "ko": "비상 급수구 No.6 (미나미3조 니시6초메)",
+            "vi": "Điểm cấp nước khẩn cấp số 6 (Minami 3 Nishi 6)"
+          },
+          "area_name_ja": "南三条西6丁目"
+        },
+        {
+          "id": "odori-sta",
+          "kind": "station",
+          "verified": true,
+          "name_ja": "大通駅",
+          "notes_ja": "札幌市営地下鉄 南北線（N07）、東西線（T09）、東豊線（H08）",
+          "aliases": [
+            "地下鉄大通駅",
+            "南北線大通駅",
+            "東西線大通駅",
+            "東豊線大通駅",
+            "N07",
+            "T09",
+            "H08",
+            "Odori Station",
+            "Odori Sta.",
+            "大通站",
+            "오도리역",
+            "Ga Odori"
+          ],
+          "names": {
+            "en": "Odori Station",
+            "zh": "大通站",
+            "ko": "오도리역",
+            "vi": "Ga Odori"
+          },
+          "area_name_ja": "大通西4丁目"
+        },
+        {
+          "id": "sapporo-sta",
+          "kind": "station",
+          "verified": true,
+          "name_ja": "札幌駅",
+          "notes_ja": "JR札幌駅と札幌市営地下鉄さっぽろ駅（南北線 N06、東豊線 H07）。地下鉄のコンコースは北4条西4丁目",
+          "aliases": [
+            "JR札幌駅",
+            "さっぽろ駅",
+            "地下鉄さっぽろ駅",
+            "南北線さっぽろ駅",
+            "東豊線さっぽろ駅",
+            "札幌駅南口",
+            "N06",
+            "H07",
+            "Sapporo Station",
+            "Sapporo Sta.",
+            "札幌站",
+            "삿포로역",
+            "Ga Sapporo"
+          ],
+          "names": {
+            "en": "Sapporo Station",
+            "zh": "札幌站",
+            "ko": "삿포로역",
+            "vi": "Ga Sapporo"
+          },
+          "area_name_ja": "北四条西4丁目"
+        },
+        {
+          "id": "sapporo-city-hall",
+          "kind": "office",
+          "verified": true,
+          "name_ja": "札幌市役所",
+          "address_ja": "北1条西2丁目",
+          "notes_ja": "本庁舎。危機管理局は7階",
+          "aliases": [
+            "市役所",
+            "札幌市役所本庁舎",
+            "Sapporo City Hall",
+            "Sapporo City Office",
+            "札幌市政府",
+            "삿포로 시청",
+            "Tòa thị chính Sapporo"
+          ],
+          "names": {
+            "en": "Sapporo City Hall",
+            "zh": "札幌市政府",
+            "ko": "삿포로 시청",
+            "vi": "Tòa thị chính Sapporo"
+          },
+          "area_name_ja": "北一条西2丁目"
+        },
+        {
+          "id": "chuo-ward-office",
+          "kind": "office",
+          "verified": true,
+          "name_ja": "中央区役所",
+          "address_ja": "南3条西11丁目",
+          "notes_ja": "中央区複合庁舎（中央区役所・中央保健センター・中央区民センター）。板の範囲の西",
+          "aliases": [
+            "区役所",
+            "札幌市中央区役所",
+            "Chuo Ward Office",
+            "Sapporo Chuo Ward Office",
+            "中央区政府",
+            "주오구청",
+            "Văn phòng quận Chuo"
+          ],
+          "names": {
+            "en": "Chuo Ward Office",
+            "zh": "中央区政府",
+            "ko": "주오구청",
+            "vi": "Văn phòng quận Chuo"
+          },
+          "area_name_ja": "南三条西11丁目"
+        },
+        {
+          "id": "odori-concourse",
+          "kind": "commuter_shelter",
+          "verified": true,
+          "name_ja": "地下鉄大通駅コンコース",
+          "address_ja": "大通西4丁目",
+          "notes_ja": "一時滞在施設（帰宅困難者を受け入れる）",
+          "aliases": [
+            "大通駅コンコース",
+            "大通コンコース",
+            "Odori Station concourse",
+            "大通站中央大厅",
+            "오도리역 콘코스",
+            "Sảnh ga Odori"
+          ],
+          "names": {
+            "en": "Odori Station concourse",
+            "zh": "地铁大通站中央大厅",
+            "ko": "지하철 오도리역 콘코스",
+            "vi": "Sảnh ga tàu điện ngầm Odori"
+          },
+          "area_name_ja": "大通西4丁目"
+        },
+        {
+          "id": "sapporo-concourse",
+          "kind": "commuter_shelter",
+          "verified": true,
+          "name_ja": "地下鉄さっぽろ駅コンコース",
+          "address_ja": "北4条西4丁目",
+          "notes_ja": "一時滞在施設（帰宅困難者を受け入れる）",
+          "aliases": [
+            "さっぽろ駅コンコース",
+            "札幌駅コンコース",
+            "Sapporo Station subway concourse",
+            "札幌站地铁中央大厅",
+            "삿포로역 지하철 콘코스",
+            "Sảnh ga tàu điện ngầm Sapporo"
+          ],
+          "names": {
+            "en": "Sapporo Station subway concourse",
+            "zh": "地铁札幌站中央大厅",
+            "ko": "지하철 삿포로역 콘코스",
+            "vi": "Sảnh ga tàu điện ngầm Sapporo"
+          },
+          "area_name_ja": "北四条西4丁目"
+        },
+        {
+          "id": "chikaho",
+          "kind": "commuter_shelter",
+          "verified": true,
+          "name_ja": "札幌駅前通地下歩行空間",
+          "address_ja": "北3条西3丁目～大通西3丁目",
+          "notes_ja": "一時滞在施設（帰宅困難者を受け入れる）。通称チ・カ・ホ",
+          "aliases": [
+            "チ・カ・ホ",
+            "チカホ",
+            "地下歩行空間",
+            "Chi-Ka-Ho",
+            "Sapporo Underground Pedestrian Space",
+            "札幌站前大道地下步行空间",
+            "지하보행공간 치카호",
+            "Lối đi ngầm Chi-Ka-Ho"
+          ],
+          "names": {
+            "en": "Chi-Ka-Ho underground walkway",
+            "zh": "札幌站前大道地下步行空间",
+            "ko": "삿포로역앞 지하보행공간 (치카호)",
+            "vi": "Lối đi ngầm Chi-Ka-Ho"
+          },
+          "area_name_ja": "北二条西3丁目"
+        },
+        {
+          "id": "aurora-town",
+          "kind": "commuter_shelter",
+          "verified": true,
+          "name_ja": "さっぽろ地下街オーロラタウン",
+          "address_ja": "大通西1丁目～3丁目",
+          "notes_ja": "一時滞在施設（帰宅困難者を受け入れる）",
+          "aliases": [
+            "オーロラタウン",
+            "Aurora Town",
+            "极光城地下街",
+            "오로라타운",
+            "Khu phố ngầm Aurora Town"
+          ],
+          "names": {
+            "en": "Aurora Town underground mall",
+            "zh": "札幌地下街极光城",
+            "ko": "삿포로 지하상가 오로라타운",
+            "vi": "Khu phố ngầm Aurora Town"
+          },
+          "area_name_ja": "大通西2丁目"
+        },
+        {
+          "id": "pole-town",
+          "kind": "commuter_shelter",
+          "verified": true,
+          "name_ja": "さっぽろ地下街ポールタウン",
+          "address_ja": "南1条西3丁目～南4条西3丁目",
+          "notes_ja": "一時滞在施設（帰宅困難者を受け入れる）",
+          "aliases": [
+            "ポールタウン",
+            "Pole Town",
+            "宝尔城地下街",
+            "폴타운",
+            "Khu phố ngầm Pole Town"
+          ],
+          "names": {
+            "en": "Pole Town underground mall",
+            "zh": "札幌地下街宝尔城",
+            "ko": "삿포로 지하상가 폴타운",
+            "vi": "Khu phố ngầm Pole Town"
+          },
+          "area_name_ja": "南二条西3丁目"
+        },
+        {
+          "id": "apia",
+          "kind": "commuter_shelter",
+          "verified": true,
+          "name_ja": "アピア",
+          "address_ja": "北5条西3丁目～4丁目",
+          "notes_ja": "一時滞在施設（帰宅困難者を受け入れる）。札幌駅の地下街",
+          "aliases": [
+            "札幌アピア",
+            "APIA",
+            "Sapporo APIA",
+            "札幌阿皮亚",
+            "아피아",
+            "Khu mua sắm APIA"
+          ],
+          "names": {
+            "en": "APIA",
+            "zh": "APIA地下街",
+            "ko": "아피아",
+            "vi": "Khu mua sắm APIA"
+          },
+          "area_name_ja": "北五条西4丁目"
+        },
+        {
+          "id": "stellar-place",
+          "kind": "commuter_shelter",
+          "verified": true,
+          "name_ja": "札幌ステラプレイス",
+          "address_ja": "北5条西2丁目",
+          "notes_ja": "一時滞在施設（帰宅困難者を受け入れる）",
+          "aliases": [
+            "ステラプレイス",
+            "Sapporo Stellar Place",
+            "Stellar Place",
+            "札幌Stellar Place",
+            "삿포로 스텔라 플레이스",
+            "Trung tâm Stellar Place"
+          ],
+          "names": {
+            "en": "Sapporo Stellar Place",
+            "zh": "札幌Stellar Place",
+            "ko": "삿포로 스텔라 플레이스",
+            "vi": "Trung tâm Sapporo Stellar Place"
+          },
+          "area_name_ja": "北五条西2丁目"
+        },
+        {
+          "id": "tv-tower",
+          "kind": "commuter_shelter",
+          "verified": true,
+          "name_ja": "さっぽろテレビ塔",
+          "address_ja": "大通西1丁目",
+          "notes_ja": "一時滞在施設（帰宅困難者を受け入れる）",
+          "aliases": [
+            "テレビ塔",
+            "札幌テレビ塔",
+            "Sapporo TV Tower",
+            "TV Tower",
+            "札幌电视塔",
+            "삿포로 TV 타워",
+            "Tháp truyền hình Sapporo"
+          ],
+          "names": {
+            "en": "Sapporo TV Tower",
+            "zh": "札幌电视塔",
+            "ko": "삿포로 TV 타워",
+            "vi": "Tháp truyền hình Sapporo"
+          },
+          "area_name_ja": "大通西1丁目"
+        },
+        {
+          "id": "sapporo-community-plaza",
+          "kind": "commuter_shelter",
+          "verified": true,
+          "name_ja": "札幌市民交流プラザ",
+          "address_ja": "北1条西1丁目",
+          "notes_ja": "一時滞在施設（帰宅困難者を受け入れる）",
+          "aliases": [
+            "市民交流プラザ",
+            "Sapporo Community Plaza",
+            "札幌市民交流广场",
+            "삿포로 시민교류플라자",
+            "Quảng trường Giao lưu Thị dân Sapporo"
+          ],
+          "names": {
+            "en": "Sapporo Community Plaza",
+            "zh": "札幌市民交流广场",
+            "ko": "삿포로 시민교류플라자",
+            "vi": "Quảng trường Giao lưu Thị dân Sapporo"
+          },
+          "area_name_ja": "北一条西1丁目"
+        }
+      ]
+    },
+    {
+      "slug": "hakata",
+      "name": {
+        "ja": "博多",
+        "en": "Hakata",
+        "zh": "博多",
+        "ko": "하카타",
+        "vi": "Hakata"
+      },
+      "mode": "peace",
+      "area_names": [
+        {
+          "code": "40132001001",
+          "name_ja": "博多駅前1丁目"
+        },
+        {
+          "code": "40132001002",
+          "name_ja": "博多駅前2丁目"
+        },
+        {
+          "code": "40132001003",
+          "name_ja": "博多駅前3丁目"
+        },
+        {
+          "code": "40132001004",
+          "name_ja": "博多駅前4丁目"
+        },
+        {
+          "code": "401320020",
+          "name_ja": "博多駅中央街"
+        },
+        {
+          "code": "40132003001",
+          "name_ja": "博多駅東1丁目"
+        },
+        {
+          "code": "40132003002",
+          "name_ja": "博多駅東2丁目"
+        },
+        {
+          "code": "40132003003",
+          "name_ja": "博多駅東3丁目"
+        },
+        {
+          "code": "40132004001",
+          "name_ja": "博多駅南1丁目"
+        },
+        {
+          "code": "40132004002",
+          "name_ja": "博多駅南2丁目"
+        },
+        {
+          "code": "40132008001",
+          "name_ja": "住吉1丁目"
+        },
+        {
+          "code": "40132008002",
+          "name_ja": "住吉2丁目"
+        },
+        {
+          "code": "40132008003",
+          "name_ja": "住吉3丁目"
+        }
+      ],
+      "known_places": [
+        {
+          "id": "katakasu-es",
+          "kind": "shelter",
+          "verified": true,
+          "name_ja": "堅粕小学校",
+          "address_ja": "博多駅東1丁目8-1",
+          "notes_ja": "地区避難場所（屋内・屋外）、収容避難所。浸水時は使用不可、高潮時は校舎2階以上を使用。対象町丁目は堅粕小学校の通学区域（令和8年4月1日現在）で、市は避難所ごとの対象地区を定めていない",
+          "target_areas_ja": [
+            "博多駅前1丁目の一部",
+            "博多駅前2丁目",
+            "博多駅中央街",
+            "博多駅東1丁目",
+            "博多駅東2丁目",
+            "博多駅東3丁目"
+          ],
+          "aliases": [
+            "堅粕小",
+            "福岡市立堅粕小学校",
+            "Katakasu Elementary School",
+            "Katakasu Elementary",
+            "坚粕小学",
+            "가타카스 초등학교",
+            "Trường tiểu học Katakasu"
+          ],
+          "names": {
+            "en": "Katakasu Elementary School",
+            "zh": "坚粕小学",
+            "ko": "가타카스 초등학교",
+            "vi": "Trường tiểu học Katakasu"
+          },
+          "area_name_ja": "博多駅東1丁目"
+        },
+        {
+          "id": "katakasu-kominkan",
+          "kind": "shelter",
+          "verified": true,
+          "name_ja": "堅粕公民館・老人いこいの家",
+          "address_ja": "博多駅東1丁目8-2",
+          "notes_ja": "地区避難場所（屋内）、一時避難所。浸水・高潮時は使用不可。対象町丁目は堅粕小学校の通学区域による",
+          "target_areas_ja": [
+            "博多駅前1丁目の一部",
+            "博多駅前2丁目",
+            "博多駅中央街",
+            "博多駅東1丁目",
+            "博多駅東2丁目",
+            "博多駅東3丁目"
+          ],
+          "aliases": [
+            "堅粕公民館",
+            "Katakasu Community Center",
+            "Katakasu Kominkan",
+            "坚粕公民馆",
+            "가타카스 공민관",
+            "Nhà văn hóa Katakasu"
+          ],
+          "names": {
+            "en": "Katakasu Community Center",
+            "zh": "坚粕公民馆",
+            "ko": "가타카스 공민관",
+            "vi": "Nhà văn hóa Katakasu"
+          },
+          "area_name_ja": "博多駅東1丁目"
+        },
+        {
+          "id": "toko-jhs",
+          "kind": "shelter",
+          "verified": true,
+          "name_ja": "東光中学校",
+          "address_ja": "東光2丁目15-1",
+          "notes_ja": "地区避難場所（屋内・屋外）、収容避難所。高潮時は使用不可（屋外は浸水時も使用不可）。堅粕小学校の区域の中学校で、浸水時に堅粕小学校が使えないときの近い屋内避難先。板の範囲の外",
+          "target_areas_ja": [
+            "博多駅前1丁目の一部",
+            "博多駅前2丁目",
+            "博多駅中央街",
+            "博多駅東1丁目",
+            "博多駅東2丁目",
+            "博多駅東3丁目"
+          ],
+          "aliases": [
+            "東光中",
+            "福岡市立東光中学校",
+            "Toko Junior High School",
+            "Toko JHS",
+            "东光中学",
+            "도코 중학교",
+            "Trường THCS Toko"
+          ],
+          "names": {
+            "en": "Toko Junior High School",
+            "zh": "东光中学",
+            "ko": "도코 중학교",
+            "vi": "Trường THCS Toko"
+          },
+          "area_name_ja": "東光2丁目"
+        },
+        {
+          "id": "higashisumiyoshi-es",
+          "kind": "shelter",
+          "verified": true,
+          "name_ja": "東住吉小学校",
+          "address_ja": "博多駅南2丁目6-1",
+          "notes_ja": "地区避難場所（屋内・屋外）、収容避難所。高潮時は使用不可（屋外は浸水時も使用不可）。対象町丁目は東住吉小学校の通学区域による",
+          "target_areas_ja": [
+            "博多駅前3丁目",
+            "博多駅前4丁目",
+            "博多駅南1丁目",
+            "博多駅南2丁目"
+          ],
+          "aliases": [
+            "東住吉小",
+            "福岡市立東住吉小学校",
+            "Higashi-Sumiyoshi Elementary School",
+            "Higashi-Sumiyoshi Elementary",
+            "东住吉小学",
+            "히가시스미요시 초등학교",
+            "Trường tiểu học Higashi-Sumiyoshi"
+          ],
+          "names": {
+            "en": "Higashi-Sumiyoshi Elementary School",
+            "zh": "东住吉小学",
+            "ko": "히가시스미요시 초등학교",
+            "vi": "Trường tiểu học Higashi-Sumiyoshi"
+          },
+          "area_name_ja": "博多駅南2丁目"
+        },
+        {
+          "id": "higashisumiyoshi-jhs",
+          "kind": "shelter",
+          "verified": true,
+          "name_ja": "東住吉中学校",
+          "address_ja": "博多駅南2丁目5-1",
+          "notes_ja": "地区避難場所（屋内・屋外）、収容避難所。浸水・高潮時は校舎2階以上を使用（屋外は使用不可）。対象町丁目は東住吉中学校の通学区域による",
+          "target_areas_ja": [
+            "博多駅前3丁目",
+            "博多駅前4丁目",
+            "博多駅南1丁目",
+            "博多駅南2丁目"
+          ],
+          "aliases": [
+            "東住吉中",
+            "福岡市立東住吉中学校",
+            "Higashi-Sumiyoshi Junior High School",
+            "Higashi-Sumiyoshi JHS",
+            "东住吉中学",
+            "히가시스미요시 중학교",
+            "Trường THCS Higashi-Sumiyoshi"
+          ],
+          "names": {
+            "en": "Higashi-Sumiyoshi Junior High School",
+            "zh": "东住吉中学",
+            "ko": "히가시스미요시 중학교",
+            "vi": "Trường THCS Higashi-Sumiyoshi"
+          },
+          "area_name_ja": "博多駅南2丁目"
+        },
+        {
+          "id": "higashisumiyoshi-kominkan",
+          "kind": "shelter",
+          "verified": true,
+          "name_ja": "東住吉公民館・老人いこいの家",
+          "address_ja": "博多駅前4丁目11-12",
+          "notes_ja": "地区避難場所（屋内）、一時避難所。浸水・高潮時は2階以上を使用。対象町丁目は東住吉小学校の通学区域による",
+          "target_areas_ja": [
+            "博多駅前3丁目",
+            "博多駅前4丁目",
+            "博多駅南1丁目",
+            "博多駅南2丁目"
+          ],
+          "aliases": [
+            "東住吉公民館",
+            "Higashi-Sumiyoshi Community Center",
+            "Higashi-Sumiyoshi Kominkan",
+            "东住吉公民馆",
+            "히가시스미요시 공민관",
+            "Nhà văn hóa Higashi-Sumiyoshi"
+          ],
+          "names": {
+            "en": "Higashi-Sumiyoshi Community Center",
+            "zh": "东住吉公民馆",
+            "ko": "히가시스미요시 공민관",
+            "vi": "Nhà văn hóa Higashi-Sumiyoshi"
+          },
+          "area_name_ja": "博多駅前4丁目"
+        },
+        {
+          "id": "sumiyoshi-school",
+          "kind": "shelter",
+          "verified": true,
+          "name_ja": "住吉小学校・中学校",
+          "address_ja": "美野島3丁目22-7",
+          "notes_ja": "地区避難場所（屋内・屋外）、収容避難所。浸水・高潮時は使用不可。対象町丁目は住吉小学校・住吉中学校の通学区域による。板の範囲の外",
+          "target_areas_ja": [
+            "住吉1丁目",
+            "住吉2丁目",
+            "住吉3丁目"
+          ],
+          "aliases": [
+            "住吉小",
+            "住吉中",
+            "住吉小学校",
+            "住吉中学校",
+            "福岡市立住吉小学校",
+            "福岡市立住吉中学校",
+            "Sumiyoshi Elementary School",
+            "Sumiyoshi Junior High School",
+            "住吉小学",
+            "住吉中学",
+            "스미요시 초등학교",
+            "스미요시 중학교",
+            "Trường tiểu học Sumiyoshi"
+          ],
+          "names": {
+            "en": "Sumiyoshi Elementary and Junior High School",
+            "zh": "住吉小学·中学",
+            "ko": "스미요시 초·중학교",
+            "vi": "Trường tiểu học và THCS Sumiyoshi"
+          },
+          "area_name_ja": "美野島3丁目"
+        },
+        {
+          "id": "sumiyoshi-kominkan",
+          "kind": "shelter",
+          "verified": true,
+          "name_ja": "住吉公民館",
+          "address_ja": "住吉5丁目6-1",
+          "notes_ja": "地区避難場所（屋内）、一時避難所。浸水・高潮時は2階以上を使用。板の範囲の外",
+          "target_areas_ja": [
+            "住吉1丁目",
+            "住吉2丁目",
+            "住吉3丁目"
+          ],
+          "aliases": [
+            "Sumiyoshi Community Center",
+            "Sumiyoshi Kominkan",
+            "住吉公民馆",
+            "스미요시 공민관",
+            "Nhà văn hóa Sumiyoshi"
+          ],
+          "names": {
+            "en": "Sumiyoshi Community Center",
+            "zh": "住吉公民馆",
+            "ko": "스미요시 공민관",
+            "vi": "Nhà văn hóa Sumiyoshi"
+          },
+          "area_name_ja": "住吉5丁目"
+        },
+        {
+          "id": "hakata-es",
+          "kind": "shelter",
+          "verified": true,
+          "name_ja": "博多小学校",
+          "address_ja": "奈良屋町1-38",
+          "notes_ja": "収容避難所、地区避難場所（屋外）。高潮時は校舎2階以上を使用（屋外は高潮時に使用不可）。博多駅前1丁目の北西の一部が博多小学校の通学区域。板の範囲の外",
+          "target_areas_ja": [
+            "博多駅前1丁目の一部"
+          ],
+          "aliases": [
+            "博多小",
+            "福岡市立博多小学校",
+            "Hakata Elementary School",
+            "Hakata Elementary",
+            "博多小学",
+            "하카타 초등학교",
+            "Trường tiểu học Hakata"
+          ],
+          "names": {
+            "en": "Hakata Elementary School",
+            "zh": "博多小学",
+            "ko": "하카타 초등학교",
+            "vi": "Trường tiểu học Hakata"
+          },
+          "area_name_ja": "奈良屋町"
+        },
+        {
+          "id": "dekimachi-park",
+          "kind": "park",
+          "verified": true,
+          "name_ja": "出来町公園",
+          "address_ja": "博多駅前1丁目",
+          "notes_ja": "地区避難場所（屋外）。浸水・高潮時は使用不可",
+          "aliases": [
+            "Dekimachi Park",
+            "出来町公园",
+            "데키마치 공원",
+            "Công viên Dekimachi"
+          ],
+          "names": {
+            "en": "Dekimachi Park",
+            "zh": "出来町公园",
+            "ko": "데키마치 공원",
+            "vi": "Công viên Dekimachi"
+          },
+          "area_name_ja": "博多駅前1丁目"
+        },
+        {
+          "id": "fujita-park",
+          "kind": "park",
+          "verified": true,
+          "name_ja": "藤田公園",
+          "address_ja": "博多駅前2丁目",
+          "notes_ja": "地区避難場所（屋外）。浸水・高潮時は使用不可",
+          "aliases": [
+            "Fujita Park",
+            "藤田公园",
+            "후지타 공원",
+            "Công viên Fujita"
+          ],
+          "names": {
+            "en": "Fujita Park",
+            "zh": "藤田公园",
+            "ko": "후지타 공원",
+            "vi": "Công viên Fujita"
+          },
+          "area_name_ja": "博多駅前2丁目"
+        },
+        {
+          "id": "meiji-park",
+          "kind": "park",
+          "verified": true,
+          "name_ja": "明治公園",
+          "address_ja": "博多駅前3丁目",
+          "notes_ja": "地区避難場所（屋外）。浸水・高潮時は使用不可",
+          "aliases": [
+            "Meiji Park",
+            "明治公园",
+            "메이지 공원",
+            "Công viên Meiji"
+          ],
+          "names": {
+            "en": "Meiji Park",
+            "zh": "明治公园",
+            "ko": "메이지 공원",
+            "vi": "Công viên Meiji"
+          },
+          "area_name_ja": "博多駅前3丁目"
+        },
+        {
+          "id": "toryo-park",
+          "kind": "park",
+          "verified": true,
+          "name_ja": "東領公園",
+          "address_ja": "博多駅前4丁目",
+          "notes_ja": "地区避難場所（屋外）。浸水・高潮時は使用不可",
+          "aliases": [
+            "Toryo Park",
+            "东领公园",
+            "도료 공원",
+            "Công viên Toryo"
+          ],
+          "names": {
+            "en": "Toryo Park",
+            "zh": "东领公园",
+            "ko": "도료 공원",
+            "vi": "Công viên Toryo"
+          },
+          "area_name_ja": "博多駅前4丁目"
+        },
+        {
+          "id": "ninjin-park",
+          "kind": "park",
+          "verified": true,
+          "name_ja": "人参公園",
+          "address_ja": "博多駅前4丁目",
+          "notes_ja": "地区避難場所（屋外）。浸水・高潮時は使用不可",
+          "aliases": [
+            "Ninjin Park",
+            "人参公园",
+            "닌진 공원",
+            "Công viên Ninjin"
+          ],
+          "names": {
+            "en": "Ninjin Park",
+            "zh": "人参公园",
+            "ko": "닌진 공원",
+            "vi": "Công viên Ninjin"
+          },
+          "area_name_ja": "博多駅前4丁目"
+        },
+        {
+          "id": "nakahie-park",
+          "kind": "park",
+          "verified": true,
+          "name_ja": "中比恵公園",
+          "address_ja": "博多駅東2丁目",
+          "notes_ja": "地区避難場所（屋外）。浸水・高潮時は使用不可",
+          "aliases": [
+            "Nakahie Park",
+            "中比惠公园",
+            "나카히에 공원",
+            "Công viên Nakahie"
+          ],
+          "names": {
+            "en": "Nakahie Park",
+            "zh": "中比惠公园",
+            "ko": "나카히에 공원",
+            "vi": "Công viên Nakahie"
+          },
+          "area_name_ja": "博多駅東2丁目"
+        },
+        {
+          "id": "otowa-park",
+          "kind": "park",
+          "verified": true,
+          "name_ja": "音羽公園",
+          "address_ja": "博多駅南1丁目",
+          "notes_ja": "地区避難場所（屋外）。浸水・高潮時は使用不可",
+          "aliases": [
+            "Otowa Park",
+            "音羽公园",
+            "오토와 공원",
+            "Công viên Otowa"
+          ],
+          "names": {
+            "en": "Otowa Park",
+            "zh": "音羽公园",
+            "ko": "오토와 공원",
+            "vi": "Công viên Otowa"
+          },
+          "area_name_ja": "博多駅南1丁目"
+        },
+        {
+          "id": "waterworks-hq",
+          "kind": "water_point",
+          "verified": true,
+          "name_ja": "福岡市水道局本庁舎（給水基地）",
+          "address_ja": "博多駅前1丁目28-15",
+          "notes_ja": "給水車に水を積む給水基地（給水車2台配備）。住民がここで水を受け取れるとは書かれていない。災害時の給水は開設された避難所などでの拠点給水（仮設水槽、応急給水栓）と給水車による運搬給水",
+          "aliases": [
+            "水道局本庁舎",
+            "福岡市水道局",
+            "水道局",
+            "Fukuoka City Waterworks Bureau",
+            "Waterworks Bureau head office",
+            "福冈市水道局",
+            "후쿠오카시 수도국",
+            "Cục Cấp nước thành phố Fukuoka"
+          ],
+          "names": {
+            "en": "Fukuoka City Waterworks Bureau head office (water truck base)",
+            "zh": "福冈市水道局本厅舍（供水基地）",
+            "ko": "후쿠오카시 수도국 본청사 (급수 기지)",
+            "vi": "Trụ sở Cục Cấp nước thành phố Fukuoka (trạm xe chở nước)"
+          },
+          "area_name_ja": "博多駅前1丁目"
+        },
+        {
+          "id": "hakata-sta",
+          "kind": "station",
+          "verified": true,
+          "name_ja": "博多駅",
+          "address_ja": "博多駅中央街",
+          "notes_ja": "JR九州（鹿児島本線、九州新幹線）、JR西日本（山陽新幹線）、福岡市地下鉄（空港線、七隈線）。地下鉄博多駅は一時滞在施設（福岡市交通局の覚書、最大24時間、水道水・トイレ・照明）",
+          "aliases": [
+            "JR博多駅",
+            "地下鉄博多駅",
+            "空港線博多駅",
+            "七隈線博多駅",
+            "鹿児島本線",
+            "山陽新幹線",
+            "九州新幹線",
+            "地下鉄空港線",
+            "地下鉄七隈線",
+            "博多口",
+            "筑紫口",
+            "Hakata Station",
+            "Hakata Sta.",
+            "博多站",
+            "하카타역",
+            "Ga Hakata"
+          ],
+          "names": {
+            "en": "Hakata Station",
+            "zh": "博多站",
+            "ko": "하카타역",
+            "vi": "Ga Hakata"
+          },
+          "area_name_ja": "博多駅中央街"
+        },
+        {
+          "id": "hakata-ward-office",
+          "kind": "office",
+          "verified": true,
+          "name_ja": "博多区役所",
+          "address_ja": "博多駅前2丁目8-1",
+          "notes_ja": "博多区保健福祉センターと同じ庁舎。JR博多駅から徒歩約7分",
+          "aliases": [
+            "区役所",
+            "福岡市博多区役所",
+            "Hakata Ward Office",
+            "博多区政府",
+            "하카타구청",
+            "Văn phòng quận Hakata"
+          ],
+          "names": {
+            "en": "Hakata Ward Office",
+            "zh": "博多区政府",
+            "ko": "하카타구청",
+            "vi": "Văn phòng quận Hakata"
+          },
+          "area_name_ja": "博多駅前2丁目"
+        },
+        {
+          "id": "fukuoka-city-hall",
+          "kind": "office",
+          "verified": true,
+          "name_ja": "福岡市役所",
+          "address_ja": "福岡市中央区天神1丁目8番1号",
+          "notes_ja": "中央区天神。地下鉄空港線 天神駅13A出口から徒歩5分。板の範囲の外",
+          "aliases": [
+            "市役所",
+            "Fukuoka City Hall",
+            "Fukuoka City Office",
+            "福冈市政府",
+            "후쿠오카 시청",
+            "Tòa thị chính Fukuoka"
+          ],
+          "names": {
+            "en": "Fukuoka City Hall",
+            "zh": "福冈市政府",
+            "ko": "후쿠오카 시청",
+            "vi": "Tòa thị chính Fukuoka"
+          },
+          "area_name_ja": "天神1丁目"
+        },
+        {
+          "id": "hakata-underground",
+          "kind": "commuter_shelter",
+          "verified": true,
+          "name_ja": "博多駅地下街",
+          "address_ja": "博多駅中央街1-1",
+          "notes_ja": "一時滞在施設（帰宅困難者を受け入れる）。福岡市の依頼に基づいて開設",
+          "aliases": [
+            "Hakata Station underground mall",
+            "Hakata Chikagai",
+            "博多站地下街",
+            "하카타역 지하상가",
+            "Khu phố ngầm ga Hakata"
+          ],
+          "names": {
+            "en": "Hakata Station underground mall",
+            "zh": "博多站地下街",
+            "ko": "하카타역 지하상가",
+            "vi": "Khu phố ngầm ga Hakata"
+          },
+          "area_name_ja": "博多駅中央街"
+        },
+        {
+          "id": "jrjp-hakata",
+          "kind": "commuter_shelter",
+          "verified": true,
+          "name_ja": "JRJP博多ビル",
+          "address_ja": "博多駅中央街8-1",
+          "notes_ja": "一時滞在施設（帰宅困難者を受け入れる）。地下2階広場、最大50人。福岡市の依頼に基づいて開設",
+          "aliases": [
+            "ＪＲＪＰ博多ビル",
+            "JRJP Hakata Building",
+            "JRJP博多大楼",
+            "JRJP 하카타 빌딩",
+            "Tòa nhà JRJP Hakata"
+          ],
+          "names": {
+            "en": "JRJP Hakata Building",
+            "zh": "JRJP博多大楼",
+            "ko": "JRJP 하카타 빌딩",
+            "vi": "Tòa nhà JRJP Hakata"
+          },
+          "area_name_ja": "博多駅中央街"
+        },
+        {
+          "id": "kitte-hakata",
+          "kind": "commuter_shelter",
+          "verified": true,
+          "name_ja": "KITTE博多",
+          "address_ja": "博多駅中央街9-1",
+          "notes_ja": "一時滞在施設（帰宅困難者を受け入れる）。地下1階広場、最大50人。福岡市の依頼に基づいて開設",
+          "aliases": [
+            "ＫＩＴＴＥ博多",
+            "キッテ博多",
+            "KITTE Hakata",
+            "킷테 하카타"
+          ],
+          "names": {
+            "en": "KITTE Hakata",
+            "zh": "KITTE博多",
+            "ko": "킷테 하카타",
+            "vi": "KITTE Hakata"
+          },
+          "area_name_ja": "博多駅中央街"
+        },
+        {
+          "id": "kamiyo-hakata-chuo",
+          "kind": "commuter_shelter",
+          "verified": true,
+          "name_ja": "紙与博多中央ビル",
+          "address_ja": "博多駅中央街7-21",
+          "notes_ja": "一時滞在施設（帰宅困難者を受け入れる）。1階エントランスホールなど、最大40人。福岡市の依頼に基づいて開設",
+          "aliases": [
+            "Kamiyo Hakata Chuo Building",
+            "纸与博多中央大楼",
+            "가미요 하카타 주오 빌딩",
+            "Tòa nhà Kamiyo Hakata Chuo"
+          ],
+          "names": {
+            "en": "Kamiyo Hakata Chuo Building",
+            "zh": "纸与博多中央大楼",
+            "ko": "가미요 하카타 주오 빌딩",
+            "vi": "Tòa nhà Kamiyo Hakata Chuo"
+          },
+          "area_name_ja": "博多駅中央街"
+        },
+        {
+          "id": "connect-square",
+          "kind": "commuter_shelter",
+          "verified": true,
+          "name_ja": "コネクトスクエア博多",
+          "address_ja": "博多駅東1丁目17-1",
+          "notes_ja": "一時滞在施設（帰宅困難者を受け入れる）。1階エントランスなど。筑紫口側。福岡市の依頼に基づいて開設",
+          "aliases": [
+            "Connect Square Hakata",
+            "博多Connect Square",
+            "커넥트 스퀘어 하카타"
+          ],
+          "names": {
+            "en": "Connect Square Hakata",
+            "zh": "Connect Square博多",
+            "ko": "커넥트 스퀘어 하카타",
+            "vi": "Connect Square Hakata"
+          },
+          "area_name_ja": "博多駅東1丁目"
+        },
+        {
+          "id": "hakata-east-terrace",
+          "kind": "commuter_shelter",
+          "verified": true,
+          "name_ja": "博多イーストテラス",
+          "address_ja": "博多駅東1丁目18-33",
+          "notes_ja": "一時滞在施設（帰宅困難者を受け入れる）。1階エントランスホール、最大50人。筑紫口側。福岡市の依頼に基づいて開設",
+          "aliases": [
+            "イーストテラス",
+            "Hakata East Terrace",
+            "博多East Terrace",
+            "하카타 이스트 테라스"
+          ],
+          "names": {
+            "en": "Hakata East Terrace",
+            "zh": "博多East Terrace",
+            "ko": "하카타 이스트 테라스",
+            "vi": "Hakata East Terrace"
+          },
+          "area_name_ja": "博多駅東1丁目"
+        }
+      ]
     }
   ]
 }
