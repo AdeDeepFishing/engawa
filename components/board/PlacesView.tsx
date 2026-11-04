@@ -34,7 +34,7 @@ export function ViewToggle({ view, onChange }: { view: BoardViewMode; onChange: 
             aria-pressed={pressed}
             onClick={() => onChange(value)}
             className={`min-h-11 rounded-lg px-4 text-base font-semibold ${
-              pressed ? "bg-accent text-accent-ink" : "hover:bg-held-bg active:bg-held-bg"
+              pressed ? "border border-accent bg-accent-soft text-accent" : "hover:bg-held-bg active:bg-held-bg"
             }`}
             data-view={value}
           >
