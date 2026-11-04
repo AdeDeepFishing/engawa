@@ -61,6 +61,8 @@ Ranked by value on the judging axes (impact, demo, use of Claude, depth) against
 - N14 About page `/about` in five languages: who the board is for (named people and scenes, with numbers for 中原区), what it does with their data, who runs it after the event. Impact (the criteria ask who, in what scene, how much, and who keeps using it). About 1 hour. Done 2026-11-04.
 - N15 Loudspeaker broadcasts into the board: an "I heard the loudspeaker" input that transcribes the 防災行政無線 with the browser's speech recognition into an editable box (secondhand, platform loudspeaker), and an official inbox that turns the city's broadcast mail (メールニュースかわさき, forwarded by a mail worker the human wires) into official cards. Impact (foreign and hard-of-hearing residents miss the loudspeaker). About 4 hours. Done 2026-11-04.
 - N16 Laptop layout: three columns at 1024 px and wider (list, card in place, ask), two on tablets, keyboard navigation, the open card in the URL; plus a polish pass on empty states, spacing, hover and focus. Demo (the video is recorded on a laptop). About 4 hours. Done 2026-11-04.
+- N17 Open in maps: a card with a known place gets an "Open in maps" link built from the place's Japanese name and address (a Google Maps search URL, which opens the Maps app on a phone; no API key, nothing leaves the phone until the tap). A card with only `place_text_ja` searches that text with the board's area appended. Impact and demo. About 1 hour.
+- N18 Second board, Shibuya: a Tokyo board next to the Kawasaki one, to show the setup is per city, not per code. Needs the ward's shelter list and 町丁目 polygons (same sources and tools as 中原区), a seed, a second routing address and inbox secret (the worker takes a map of address to board), and the ward's own broadcast mail: each city publishes its 防災行政無線 through its own service (Kawasaki through メールニュースかわさき; Shibuya's しぶや安全・安心メール still to be confirmed as carrying the broadcast text), so each board is one more subscription through the same relay mailbox with one more filter. Impact. About 3 hours plus the human's registration steps.
 
 ### Not this week
 
@@ -101,20 +103,12 @@ Categories and default validity (hours): `water` 6, `food` 6, `supplies` 12, `sh
 
 Owner for implementation: Claude Code. The plan said `claude-opus-5-5`; in practice every session up to 2026-11-04 10:00 JST ran on `claude-fable-5-1` while the weekly budget allowed, and `claude-opus-5-5` implements from then on. Planning, prompt design, reviews and merges: `claude-fable-5-1`. The human reviews, runs manual checks, handles accounts and secrets, and talks to native speakers. The dates below are when the work happened: the original schedule ran one to two days later, and the must list went green on 2026-11-03.
 
-### 2026-11-02 (Mon), kickoff evening (Fable)
+### 2026-11-02 (Mon): kickoff, board live, drop-in to card
+The implementation items ran from the kickoff evening into the early hours of 11-03.
 - [x] Private repo created after kickoff, scaffold committed
 - [x] CLAUDE.md, this plan, DEVLOG, PRIVACY
 - [x] Initial schema migration and seed drafts
 - [x] Prompts and JSON schemas for extract, translate, reconcile, ask
-
-### Human, 2026-11-02 and 11-03
-- [x] Create the Supabase project (Tokyo region), put URL, anon key and service role key in `.env.local`
-- [x] Put the hackathon Anthropic API key in `.env.local`
-- [x] Create the Vercel project from the GitHub repo (Hobby), add the environment variables, confirm the first deploy
-- [x] Shelter list verified against 川崎市地域防災計画 資料編 2-06 (as of 2025-04-01) and 2-18 water points; `supabase/seed/boards.json` updated
-- [x] Prepare fixture inputs (paper notices, chat screenshots with fake names and avatars, text) into `fixtures/inputs/` with a note on which real shelter they name
-
-### 2026-11-02 (Mon) night into 11-03 early: board live, drop-in to card
 - [x] Set `cacheComponents: false`; add `typecheck`, `db:migrate`, `db:seed`, `eval`, `purge`, `latency` scripts (deploys happen on push, so no `preview` or `deploy` script)
 - [x] Supabase: apply `0001_init.sql` over the session pooler with `pnpm db:migrate` (no CLI login needed); bucket created by the migration
 - [x] Run the seed with the secret key (admin token written to a git-ignored file)
@@ -127,30 +121,35 @@ Owner for implementation: Claude Code. The plan said `claude-opus-5-5`; in pract
 - [x] Delete chat screenshot originals after processing; `purge_after` set on every row
 - [x] Measure extract latency on five fixtures; decide one call or extract plus translate; record in DEVLOG
 
-### 2026-11-03 (Tue, holiday) morning: reconcile, trust, admin (branch `day2-reconcile-admin`, PR #1)
+Human, the same day:
+- [x] Create the Supabase project (Tokyo region), put URL, anon key and service role key in `.env.local`
+- [x] Put the hackathon Anthropic API key in `.env.local`
+- [x] Create the Vercel project from the GitHub repo (Hobby), add the environment variables, confirm the first deploy
+- [x] Shelter list verified against 川崎市地域防災計画 資料編 2-06 (as of 2025-04-01) and 2-18 water points; `supabase/seed/boards.json` updated
+- [x] Prepare fixture inputs (paper notices, chat screenshots with fake names and avatars, text) into `fixtures/inputs/` with a note on which real shelter they name
+
+### 2026-11-03 (Tue, holiday): reconcile, trust, admin, ask, share, limits, eval, G items
+Two implementation sessions ran side by side (branches `day2-reconcile-admin`, PR #1, and `day3-ask-share`, PR #2, merged with review fixes as PR #3), then the G items (PRs #4 and #5, merged with review fixes as PR #7).
 - [x] Candidate selection query; `lib/claude/reconcile.ts`; apply decisions with validation; `card_sources`; `source_count`
 - [x] Update and conflict handling (priority: official over firsthand over secondhand; newer over older; old official versus new secondhand is a conflict, not an overwrite)
 - [x] Held state from risk flags; minimal admin page and route; confirm official
 - [x] Expiry greying; "N minutes ago"; source type labels in five languages
 - [x] README skeleton (English) and `docs/PRIVACY.md` linked
 - [x] Acceptance: the same water fact dropped in Japanese, Chinese and Vietnamese yields one card with 3 sources; the rumour fixture is held and the admin page can publish or hide it
-
-### 2026-11-03 (Tue) morning: ask, share, limits, purge, eval (branch `day3-ask-share`, PR #2; both merged with review fixes as PR #3)
 - [x] `lib/claude/ask.ts` with Citations; `POST /api/b/[slug]/ask`; chips linking to cards; "no information yet"
 - [x] Web Share, copy link, fullscreen QR, static OG image and per-language title
 - [x] Rate limits, daily Claude cap, image size cap, friendly messages
 - [x] Purge route plus cron trigger; test it on a dev copy
 - [x] `scripts/eval.ts`, `fixtures/expected/*.json`, run, write `docs/EVAL.md`
 - [x] Review fixes before the merge: admin entry link sets HttpOnly cookies instead of a token in the URL, drill stamps never set the category, screenshots are `secondhand`, ask answers show both sides of a conflict
-- [x] Checkpoint: all must items green on the deployed URL on 2026-11-03, two days before the planned 11/05 21:00 gate; the cut order was not needed
-
-### 2026-11-03 (Tue) afternoon and evening: G items (PRs #4 and #5, merged with review fixes as PR #7)
+- [x] Checkpoint: all must items green on the deployed URL, two days before the planned 11/05 21:00 gate; the cut order was not needed
 - [x] G2 area badge (2h), then G3 poster (1h), on branch `g2-area-g3-poster`
 - [x] G1 masking on branch `g1-masking-eval`: 50 of 50 boxes covered on five fixtures, on by default; masked copies uploaded only when a card needs them, never for flagged screenshots
 - [x] `pnpm eval --reconcile`: 10 of 11 chains pass; t03 open (see 11/04)
-- [x] Production check after the merge: poster, masked route and board answer; `NEXT_PUBLIC_APP_URL` is used only when it is an http(s) URL (PR #8)
+- [x] Production check after the merge: poster, masked route and board answer; `NEXT_PUBLIC_APP_URL` is used only when it is an http(s) URL (merged on 11/04 as PR #8)
 
-### 2026-11-04 (Wed): polish and the first nice-to-haves
+### 2026-11-04 (Wed): polish and nice-to-haves
+Session PRs were merged in pairs after review through the integration PRs #11, #15, #18 and #21. Each item had its acceptance on a throwaway board (tables in the DEVLOG).
 - [x] t03: a spot described only by its relation to a known place takes that place's id (extract prompt rule); `pnpm eval --reconcile` 11 of 11, `pnpm eval` 100/100 (PR #9)
 - [x] Phone UI polish, accessibility pass at 390 px: contrast on expired cards and control borders, 44 px summaries, `lang` on place names; measured before and after in the DEVLOG (PR #9)
 - [x] N3 hidden duplicates drawer; admin "hide as duplicate of" and unhide; migration 0004 (PR #9)
@@ -158,25 +157,22 @@ Owner for implementation: Claude Code. The plan said `claude-opus-5-5`; in pract
 - [x] N1 try with a sample: three fictional fixtures under `public/samples/` through the real pipeline (PR #10)
 - [x] N2 share one card: `/b/[slug]/c/[id]` with its own title per language, system share, copy link, copy as text (PR #10)
 - [x] N4 how this card was made: reason and model on `card_sources` (migration 0005), `GET /api/cards/[id]/trace`, one line per step in the sheet (PR #10)
-- [x] Each item: acceptance on a throwaway board locally (tables in the DEVLOG); combined smoke of both branches on the integration branch: 2 drop-ins, hide as duplicate, drawer, trace, card page and admin all answer as specified
+- [x] Combined smoke of PRs #9 and #10 on the integration branch: 2 drop-ins, hide as duplicate, drawer, trace, card page and admin all answer as specified (PR #11)
 - [x] After the merge: on the deployed URL, the two water duplicates were hidden again "as a duplicate of" the remaining card and the drawer shows on the live board
 - [x] Faster first card: extract writes ja, en and the input's language, translate fills the rest after the card is on the board; first card at a median 8.3 s instead of 13.0 s on the 23 fixtures, eval 100/100 (PR #13)
 - [x] N5 multilingual notice back, N7 suggested questions and a thread, N8 read aloud (PR #12)
-- [x] N13 Claude Code setup visible (PostToolUse guard hook, acceptance-run skill, reviewer agent, README section), N14 about page, N11 Fable versus Opus extract eval (PR #14)
-
-### 2026-11-05 (Thu): more nice-to-haves, native reads
-- [ ] Korean and Vietnamese native speakers read the demo cards; fix wording
-- [x] N5 multilingual notice back (done 2026-11-04, PR #12)
+- [x] N13 Claude Code setup visible (PostToolUse guard hook, acceptance-run skill, reviewer agent, README section), N14 about page, N11 Fable versus Opus extract eval; Opus stays at runtime (PR #14)
 - [x] N6 reader confirmations: "still true" and "no longer true" per device, counts on public cards, a hint when two devices say a card may no longer be true (migration 0006, PR #17)
-- [x] N7 suggested questions; N8 read aloud (done 2026-11-04, PR #12)
-- [x] N11 Fable versus Opus on the eval (done 2026-11-04, PR #14; Opus stays at runtime)
-- [x] N13 Claude Code visible in the repo; N14 about page (done 2026-11-04, PR #14)
 - [x] N9 offline snapshot: service worker keeps the board, card pages, the cards poll and the about page; banner with the saved time, drop-in disabled while offline (PR #16)
 - [x] Peace-mode suggested questions; eval refreshed for the split pipeline (100/100, 0 PII leaks, six languages 15/15) (PR #16)
 - [x] Leftovers from the day 4 reviews: `lib/ids.ts`, usage recorded for rejected responses, placeholder check on translate output (PR #17)
-- [x] N15 loudspeaker broadcasts: heard input and official inbox (migration 0007, PR #20); the mail forwarding and the city list subscription are the human's
 - [x] N16 laptop layout and polish pass (PR #19)
-- [ ] N10 place view, N12 make a board, web push for official and danger cards: only if the day is clear
+- [x] N15 loudspeaker broadcasts: heard input and official inbox (migration 0007, PR #20); the mail forwarding and the city list subscription are the human's (see 11/05)
+
+### 2026-11-05 (Thu): native reads, the inbox wired, remaining nice-to-haves
+- [ ] Korean and Vietnamese native speakers read the demo cards; fix wording
+- [ ] Human: generate the inbox secret on the admin page, deploy the Cloudflare Email Routing worker from `docs/INBOX.md`, subscribe its address to メールニュースかわさき with 防災行政無線 ticked, enter the From address on the admin list; try the heard input on a real phone next to a broadcast
+- [ ] N17 open in maps, N18 Shibuya board, N10 place view, N12 make a board, web push for official and danger cards: only if the day is clear
 
 ### 2026-11-06 (Fri): review, freeze, demo prep
 - [ ] Full run of the 7-step demo scenario on the deployed URL; fix what breaks
