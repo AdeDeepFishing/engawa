@@ -34,6 +34,22 @@ export function parseBoardView(value: unknown): BoardViewMode | null {
   return value === "list" || value === "places" ? value : null;
 }
 
+/**
+ * Cookie that mirrors the reader's last view choice (localStorage
+ * `engawa.view`), so the board page renders that view on the server for a
+ * plain URL instead of the list first and the remembered view after
+ * hydration. Written by useBoardView next to localStorage.
+ */
+export const VIEW_COOKIE = "engawa_view";
+
+/**
+ * The view the server renders: `?view=` on the request (a shared link names
+ * its view), else the remembered choice from the cookie, else the list.
+ */
+export function boardViewFor(query: unknown, cookie: unknown): BoardViewMode {
+  return parseBoardView(query) ?? parseBoardView(cookie) ?? "list";
+}
+
 const KIND_KEYS: Record<string, MessageKey> = {
   shelter: "places.kind.shelter",
   water_point: "places.kind.water_point",

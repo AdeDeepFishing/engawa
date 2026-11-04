@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getBoardBySlug, listHiddenDuplicates, listPublicCards } from "@/lib/db/boards";
@@ -7,7 +8,7 @@ import { INTL_LOCALE, LANGS, t, withLangParam } from "@/lib/i18n";
 import { getLinkLang, getRequestLang } from "@/lib/i18n/server";
 import { BoardView } from "@/components/board/BoardView";
 import { boardPolygons } from "@/lib/geo/polygons";
-import { parseBoardView } from "@/lib/cards/places";
+import { boardViewFor, VIEW_COOKIE } from "@/lib/cards/places";
 import { appBase } from "@/lib/app-url";
 import { AboutLink } from "@/components/about/AboutLink";
 
@@ -49,7 +50,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function BoardPage({ params, searchParams }: Props) {
-  const [{ slug }, query] = await Promise.all([params, searchParams]);
+  const [{ slug }, query, jar] = await Promise.all([params, searchParams, cookies()]);
   const board = await getBoardBySlug(slug);
   if (!board) notFound();
   // The mode read also returns a disaster board to peace after seven quiet
@@ -68,7 +69,7 @@ export default async function BoardPage({ params, searchParams }: Props) {
       serverNow={new Date().toISOString()}
       canSubmit={hasDb()}
       footer={<AboutLink boardSlug={board.slug} />}
-      initialView={parseBoardView(query.view) ?? "list"}
+      initialView={boardViewFor(query.view, jar.get(VIEW_COOKIE)?.value)}
       areaPolygons={boardPolygons(board)}
     />
   );

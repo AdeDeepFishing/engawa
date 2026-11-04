@@ -12,7 +12,7 @@
 import seed from "../supabase/seed/boards.json";
 import { boardMunicipality } from "../lib/geo";
 import { mapsQuery, mapsUrl } from "../lib/cards/maps";
-import { groupByPlace, OTHER_PLACES_KEY, parseBoardView } from "../lib/cards/places";
+import { boardViewFor, groupByPlace, OTHER_PLACES_KEY, parseBoardView } from "../lib/cards/places";
 import { withLangParam, withoutLangParam } from "../lib/i18n/langs";
 import type { Board, Card, Category } from "../lib/types";
 
@@ -120,6 +120,9 @@ check("places: no cards, no groups", groupByPlace([], board).length === 0);
 
 check("view: places and list parse", parseBoardView("places") === "places" && parseBoardView("list") === "list");
 check("view: anything else is ignored", parseBoardView("map") === null && parseBoardView(["places"]) === null);
+check("view: the URL wins over the remembered cookie", boardViewFor("list", "places") === "list" && boardViewFor("places", "list") === "places");
+check("view: a plain URL renders the remembered cookie", boardViewFor(undefined, "places") === "places");
+check("view: no URL and no valid cookie is the list", boardViewFor(undefined, undefined) === "list" && boardViewFor(undefined, "map") === "list");
 
 // --- shared links -------------------------------------------------------------
 
