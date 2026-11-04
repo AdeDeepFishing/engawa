@@ -60,3 +60,25 @@ export function resolveArea(board: AreaSource, lon: number, lat: number): BoardA
   if (!hit) return null;
   return { code: hit.properties.area_code, name_ja: areaName(board, hit.properties.area_code) ?? hit.properties.name_ja };
 }
+
+/**
+ * Japanese municipality names by the first five digits of an e-Stat area
+ * code, which are the JIS code of the city and ward (14 Kanagawa, 133
+ * 川崎市中原区). One line per ward that has a board.
+ */
+const MUNICIPALITY_JA: Record<string, string> = {
+  "14133": "川崎市中原区",
+};
+
+/**
+ * The city and ward of the board, read from its area codes: "川崎市中原区".
+ * Null when the board lists no code the table knows. Used to make a place
+ * name unambiguous outside the board, for example in a map search.
+ */
+export function boardMunicipality(board: AreaSource): string | null {
+  for (const area of boardAreas(board)) {
+    const name = MUNICIPALITY_JA[area.code.slice(0, 5)];
+    if (name) return name;
+  }
+  return null;
+}

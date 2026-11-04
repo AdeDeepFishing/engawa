@@ -1,5 +1,22 @@
 import { INTL_LOCALE, t, type Lang } from "@/lib/i18n";
-import type { Board, Card, CardStatus, ConflictStatement, Platform, SourceType } from "@/lib/types";
+import type { Board, Card, CardStatus, ConflictStatement, KnownPlace, Platform, SourceType } from "@/lib/types";
+
+/** The board's known place a card points at, or null when it has none or the board no longer lists it. */
+export function knownPlaceOf(card: Pick<Card, "place_id">, board: Pick<Board, "known_places">): KnownPlace | null {
+  if (!card.place_id) return null;
+  return board.known_places.find((p) => p.id === card.place_id) ?? null;
+}
+
+/**
+ * A known place's name in parts: the name in the reader's language and,
+ * when that differs, the Japanese name to mark with lang="ja". `ja` is null
+ * when `text` is already the Japanese name.
+ */
+export function knownPlaceName(place: KnownPlace, lang: Lang): { text: string; ja: string | null } {
+  if (lang === "ja") return { text: place.name_ja, ja: null };
+  const localized = place.names[lang];
+  return localized ? { text: localized, ja: place.name_ja } : { text: place.name_ja, ja: null };
+}
 
 /**
  * Place as shown to a reader, in parts: the name in the reader's language
@@ -12,14 +29,8 @@ export function placeParts(
   board: Board,
   lang: Lang,
 ): { text: string; ja: string | null } | null {
-  if (card.place_id) {
-    const place = board.known_places.find((p) => p.id === card.place_id);
-    if (place) {
-      if (lang === "ja") return { text: place.name_ja, ja: null };
-      const localized = place.names[lang];
-      return localized ? { text: localized, ja: place.name_ja } : { text: place.name_ja, ja: null };
-    }
-  }
+  const place = knownPlaceOf(card, board);
+  if (place) return knownPlaceName(place, lang);
   return card.place_text_ja ? { text: card.place_text_ja, ja: null } : null;
 }
 
