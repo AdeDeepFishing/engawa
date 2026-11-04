@@ -4,7 +4,7 @@
  * boundaries (2020 census, survey A002005212020). The raw shapefile stays
  * out of git; scripts/geo/README.md says where to download it.
  *
- *   node --import=tsx scripts/geo/build.ts <path to r2ka14133.shp> [options]
+ *   node --import=tsx scripts/geo/build.ts <path to r2ka<city code>.shp> [options]
  *
  *   --board <slug>     board in supabase/seed/boards.json (default musashikosugi)
  *   --simplify <pct>   mapshaper simplification, default 30%
@@ -33,7 +33,7 @@ const simplify = option("--simplify", "30%");
 const writeSeed = argv.includes("--write-seed");
 
 if (!shpPath) {
-  console.error("usage: node --import=tsx scripts/geo/build.ts <path to r2ka14133.shp> [--board slug] [--simplify 30%] [--write-seed]");
+  console.error("usage: node --import=tsx scripts/geo/build.ts <path to r2ka<city code>.shp> [--board slug] [--simplify 30%] [--write-seed]");
   process.exit(1);
 }
 
@@ -113,8 +113,10 @@ function main() {
         if (!f) throw new Error(`geometry for ${code} (${name_ja}) missing after simplification`);
         return JSON.stringify({ type: "Feature", properties: { area_code: code, name_ja }, geometry: f.geometry });
       });
+    // The first five digits of an area code are the city and ward (14133 川崎市中原区, 13113 渋谷区).
+    const city = matched[0].code.slice(0, 5);
     const note =
-      `e-Stat 2020 census small-area boundaries (survey A002005212020, 川崎市中原区 14133, ` +
+      `e-Stat 2020 census small-area boundaries (survey A002005212020, city code ${city}, ` +
       `world geodetic lon/lat), ${board.area_names.length} areas of board ${slug}, ` +
       `simplified ${simplify} with mapshaper (keep-shapes, precision ${PRECISION}) by scripts/geo/build.ts`;
     const out = `{"type":"FeatureCollection","note":${JSON.stringify(note)},"features":[\n${lines.join(",\n")}\n]}\n`;
