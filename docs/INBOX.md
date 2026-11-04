@@ -2,6 +2,8 @@
 
 The 防災行政無線 loudspeakers broadcast in Japanese only, and outdoors they are often hard to make out. Kawasaki publishes the text of each broadcast by email (メールニュースかわさき, with 防災行政無線 ticked as a topic), in the かわさき防災アプリ and on a phone line; there is no feed or API. The official inbox takes the email: a mail forwarder posts each message to the board, and the board turns it into an `official` card in six languages. A card a neighbour already made from what they heard ("I heard the loudspeaker" in the drop-in panel) is merged or updated by reconcile, not repeated.
 
+A feed poller is the third way in, beside mail forwarding and a direct POST: where a city publishes its broadcasts as a feed, a Worker reads it and posts each new broadcast here (Shibuya: `workers/shibuya-portal/`, `docs/BOARDS.md`).
+
 ## Request
 
 ```
