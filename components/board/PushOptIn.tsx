@@ -114,16 +114,16 @@ async function notConfigured(res: Response): Promise<boolean> {
  * A tap off removes this board's row, and the subscription itself only when
  * no other board in this browser still uses it.
  */
-export function PushOptIn({ boardSlug, offline }: { boardSlug: string; offline: boolean }) {
+export function PushOptIn({ boardSlug, offline, configured }: { boardSlug: string; offline: boolean; configured: boolean }) {
   const { lang, t } = useLang();
   const [state, setState] = useState<State>("hidden");
   const [busy, setBusy] = useState(false);
   const [note, setNote] = useState<Note>(null);
   const key = useRef<string | null>(null);
 
-  // On load: is push possible here, configured on the server, and already on for this board?
+  // On load: is push possible here, configured on the server (the page says so, so no request goes out where it cannot succeed), and already on for this board?
   useEffect(() => {
-    if (!supported()) return;
+    if (!supported() || !configured) return;
     let cancelled = false;
     (async () => {
       try {
@@ -144,7 +144,7 @@ export function PushOptIn({ boardSlug, offline }: { boardSlug: string; offline: 
     return () => {
       cancelled = true;
     };
-  }, [boardSlug]);
+  }, [boardSlug, configured]);
 
   // While on: tell the server the reader's language when it changes, and
   // confirm the alert once a day so its row does not expire.

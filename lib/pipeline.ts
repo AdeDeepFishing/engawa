@@ -15,7 +15,7 @@ import {
   type DecideFn,
 } from "@/lib/db/submissions";
 import { cardChanges } from "@/lib/push/rules";
-import { notifyCards } from "@/lib/push/send";
+import { notifyCards, inBackground } from "@/lib/push/send";
 import { isChatPlatform, type Board, type ReconcileAction, type Submission } from "@/lib/types";
 import { maskingEnabled, maskScreenshot, type MaskedScreenshot } from "@/lib/image/mask-pipeline";
 import { sniffImage, type StrippableMime } from "@/lib/image/strip";
@@ -238,8 +238,10 @@ export async function runPipeline(
     emit({ event: "failed", data: { error: code, message } });
     return { ok: false, error: code, message };
   } finally {
-    // Cards written before a later step failed are on the board: their alerts go out all the same.
-    if (pushing) await pushing;
+    // Cards written before a later step failed are on the board: their alerts
+    // go out all the same, but never hold the stream or the inbox answer open:
+    // the send runs on after the response, within its own budget.
+    if (pushing) inBackground(pushing);
   }
 }
 

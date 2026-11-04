@@ -132,9 +132,9 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   const parsed = await parse(req, params);
   if (parsed instanceof Response) return parsed;
-  const { board, body } = parsed;
+  const { board, body, deviceId } = parsed;
   if (!isPushEndpoint(body.endpoint)) return fail("bad_request", 400);
-  const removed = await deleteSubscription(board.id, body.endpoint);
+  const removed = await deleteSubscription(board.id, body.endpoint, deviceId);
   if (removed === "missing") return notConfigured();
   return Response.json({ subscribed: false }, { headers: noStore });
 }

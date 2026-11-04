@@ -37,6 +37,7 @@ export function BoardView({
   initialHiddenDuplicates = [],
   serverNow,
   canSubmit,
+  pushConfigured = false,
   footer,
   initialView = "list",
   initialMode,
@@ -49,6 +50,8 @@ export function BoardView({
   serverNow: string;
   /** False when the server has no database (seed fallback), so drop-in is hidden. */
   canSubmit: boolean;
+  /** True when the server holds VAPID keys: only then does the alerts control ask for the public key. */
+  pushConfigured?: boolean;
   /** Rendered at the end of the card list (the about link). */
   footer?: ReactNode;
   /** The view named by `?view=` on the request, so the server renders the one a shared link asks for. */
@@ -348,7 +351,7 @@ export function BoardView({
             {cards.length ? <ViewToggle view={view} onChange={setView} /> : null}
           </div>
           {/* "Get alerts": renders nothing unless this browser can do push and the server has push on. */}
-          <PushOptIn boardSlug={board.slug} offline={offline} />
+          <PushOptIn boardSlug={board.slug} offline={offline} configured={pushConfigured} />
           {cards.length === 0 && pending.length === 0 ? (
             <div className="mt-4 rounded-xl border border-dashed border-line p-6 text-center" data-board-empty>
               <p className="text-lg font-semibold">{t("board.empty")}</p>

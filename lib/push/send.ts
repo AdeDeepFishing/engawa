@@ -28,6 +28,8 @@ import {
 const CONCURRENCY = 10;
 /** A push service that has not answered by then counts as failed. */
 const TIMEOUT_MS = 10_000;
+/** A send stops taking jobs after this long; what is left is logged, not sent (a slow push service must not hold a function open). */
+const BUDGET_MS = 60_000;
 
 interface Message {
   payloadFor: (lang: Lang) => PushPayload;
@@ -56,8 +58,14 @@ async function deliver(board: BoardRef, messages: Message[], label: string): Pro
   const failures = new Map<string, number>();
   let next = 0;
 
+  let unsent = 0;
   const worker = async (): Promise<void> => {
     while (next < jobs.length) {
+      if (performance.now() - started > BUDGET_MS) {
+        unsent = jobs.length - next;
+        next = jobs.length;
+        break;
+      }
       const { m, sub } = jobs[next++];
       if (gone.has(sub.id)) continue;
       let body = bodies[m].get(sub.lang);
@@ -88,6 +96,7 @@ async function deliver(board: BoardRef, messages: Message[], label: string): Pro
   console.log(
     `push ${board.slug}: ${label} to ${subs.length} subscriptions, ${delivered.size} delivered, ${gone.size} gone` +
       (failed ? `, failed ${failed}` : "") +
+      (unsent ? `, ${unsent} not sent within ${BUDGET_MS / 1000} s` : "") +
       ` in ${Math.round(performance.now() - started)} ms`,
   );
 }

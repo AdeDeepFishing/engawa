@@ -10,6 +10,7 @@ import { BoardView } from "@/components/board/BoardView";
 import { boardPolygons } from "@/lib/geo/polygons";
 import { boardViewFor, VIEW_COOKIE } from "@/lib/cards/places";
 import { appBase } from "@/lib/app-url";
+import { vapid } from "@/lib/push/config";
 import { AboutLink } from "@/components/about/AboutLink";
 
 type Props = {
@@ -68,6 +69,7 @@ export default async function BoardPage({ params, searchParams }: Props) {
       initialHiddenDuplicates={hiddenDuplicates}
       serverNow={new Date().toISOString()}
       canSubmit={hasDb()}
+      pushConfigured={vapid() !== null}
       footer={<AboutLink boardSlug={board.slug} />}
       initialView={boardViewFor(query.view, jar.get(VIEW_COOKIE)?.value)}
       areaPolygons={boardPolygons(board)}

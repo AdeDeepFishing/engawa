@@ -104,8 +104,13 @@ export async function saveSubscription(
 }
 
 /** Removes a browser's subscription for a board. The number of rows removed, or "missing". */
-export async function deleteSubscription(boardId: string, endpoint: string): Promise<number | "missing"> {
-  const { count, error } = await db().from(TABLE).delete({ count: "exact" }).eq("board_id", boardId).eq("endpoint", endpoint);
+export async function deleteSubscription(boardId: string, endpoint: string, deviceId: string): Promise<number | "missing"> {
+  const { count, error } = await db()
+    .from(TABLE)
+    .delete({ count: "exact" })
+    .eq("board_id", boardId)
+    .eq("endpoint", endpoint)
+    .eq("device_id", deviceId);
   if (isMissingTable(error)) return "missing";
   if (error) throw error;
   return count ?? 0;
