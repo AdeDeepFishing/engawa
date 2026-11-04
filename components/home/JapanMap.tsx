@@ -12,8 +12,8 @@ import { PREFECTURES, type Prefecture } from "./prefectures";
  * maps only make them larger.
  */
 const BADGE_R = 13;
-const BADGE_FONT = 16;
-const HIT_R = 22;
+const BADGE_FONT = 17;
+const HIT_R = 24;
 
 /**
  * The home page map: every prefecture as a quiet outline, the ones with a

@@ -26,7 +26,7 @@ The route runs the whole pipeline before it answers (extract, reconcile, transla
 | Status | Body | When |
 |---|---|---|
 | 201 | `{submission_id, status, card_ids, public_count, held_count, actions}` | Processed. `actions` has one reconcile action per fact: `create`, `merge`, `update`, `conflict`, `hold`. |
-| 403 | `{error: "forbidden"}` | No secret on the board, or a wrong one. |
+| 403 | `{error: "forbidden"}` | No such board, no secret on the board, or a wrong one. |
 | 413 | `{error: "too_large"}` | Body over 20 KB. |
 | 400 | `{error: "bad_request"}` | Not JSON, or `from`, `subject` or `text` missing. |
 | 403 | `{error: "sender_not_allowed"}` | The From address is not on the list. Logged with the sender's domain only. |
