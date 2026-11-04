@@ -15,7 +15,7 @@ crons = ["*/5 * * * *"]
 # Fill in the id that `wrangler kv namespace create STATE` prints.
 [[kv_namespaces]]
 binding = "STATE"
-id = "REPLACE_WITH_STATE_NAMESPACE_ID"
+id = "8bcf15c15ada46ddac4634008aefffe1"
 
 [vars]
 ENGAWA_INBOX_URL = "https://engawaboard.com/api/b/shibuya/inbox"
