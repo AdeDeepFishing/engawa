@@ -10,6 +10,7 @@ import {
   type ModeView,
 } from "@/lib/cards/mode";
 import type { ExtractResult } from "@/lib/claude/extract";
+import { inBackground, notifyDisasterMode } from "@/lib/push/send";
 import type { Board, BoardMode } from "@/lib/types";
 
 /**
@@ -23,6 +24,11 @@ import type { Board, BoardMode } from "@/lib/types";
  *
  * Until migration 0009 is applied the reason column is missing: reads then
  * return no reason and writes store the mode and the time without one.
+ *
+ * A switch to disaster, by the admin or by the inbox, sends "Disaster mode
+ * on <board>" to the devices that opted in on the board (lib/push/send.ts),
+ * once, from the request that won the switch. The return to peace sends
+ * nothing.
  */
 
 /** The stored state. `reason` is the raw column (it carries a submission id) and stays on the server. */
@@ -94,6 +100,7 @@ async function writeMode(
 export async function switchModeByAdmin(board: Board, to: BoardMode): Promise<{ state: ModeState; changed: boolean }> {
   const from: BoardMode = to === "disaster" ? "peace" : "disaster";
   const written = await writeMode(board, to, "admin", { from });
+  if (written && to === "disaster") inBackground(notifyDisasterMode(board));
   if (written) return { state: written, changed: true };
   return { state: await getModeState(board), changed: false };
 }
@@ -120,7 +127,9 @@ export async function switchOnFromInbox(
       term = switchesToDisaster(result.facts[i], result.source_platform, { action: decision.action, visibility });
     }
     if (!term) return false;
-    return (await writeMode(board, "disaster", `inbox:${submissionId}`, { from: "peace" }, term)) !== null;
+    const switched = (await writeMode(board, "disaster", `inbox:${submissionId}`, { from: "peace" }, term)) !== null;
+    if (switched) inBackground(notifyDisasterMode(board));
+    return switched;
   } catch (err) {
     console.error(`mode ${board.slug}: switching on from the inbox failed:`, err instanceof Error ? err.message : String(err));
     return false;

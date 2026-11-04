@@ -17,6 +17,7 @@ export interface PurgeReport {
   submissionsDeleted: number;
   cardsDeleted: number;
   reactionsDeleted: number;
+  pushSubscriptionsDeleted: number;
   devicesDeleted: number;
   errors: string[];
 }
@@ -25,7 +26,8 @@ export interface PurgeReport {
  * Deletes everything whose purge_after has passed: storage objects first
  * (submission images, then masked copies that belong to cards), then rows. Runs once a day from the Vercel cron and on demand via
  * `pnpm purge`. card_sources and card_reactions go with their card or
- * submission (cascade); reactions past their own purge_after go too.
+ * submission (cascade); reactions past their own purge_after go too, and
+ * push subscriptions past theirs (90 days after their last use).
  */
 export async function runPurge(now = new Date()): Promise<PurgeReport> {
   const client = db();
@@ -36,6 +38,7 @@ export async function runPurge(now = new Date()): Promise<PurgeReport> {
     submissionsDeleted: 0,
     cardsDeleted: 0,
     reactionsDeleted: 0,
+    pushSubscriptionsDeleted: 0,
     devicesDeleted: 0,
     errors: [],
   };
@@ -105,6 +108,16 @@ export async function runPurge(now = new Date()): Promise<PurgeReport> {
     .lt("purge_after", nowIso);
   if (reactErr) report.errors.push(`delete reactions: ${reactErr.message}`);
   else report.reactionsDeleted = reactions ?? 0;
+
+  // 2d. Push subscriptions not used for 90 days (migration 0010). A database
+  // without the table yet has nothing to purge, which is no error.
+  const { count: subscriptions, error: pushErr } = await client
+    .from("push_subscriptions")
+    .delete({ count: "exact" })
+    .lt("purge_after", nowIso);
+  if (pushErr && pushErr.code !== "PGRST205" && pushErr.code !== "42P01") {
+    report.errors.push(`delete push subscriptions: ${pushErr.message}`);
+  } else report.pushSubscriptionsDeleted = subscriptions ?? 0;
 
   // 3. Devices not seen for 90 days.
   const { data: devices, error: devErr } = await client
