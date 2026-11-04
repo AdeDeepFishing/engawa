@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- 03 Folded notice (貼り紙). Engawa mark candidate: one path, even-odd, in the current text colour. -->
+  <path fill="currentColor" fill-rule="evenodd" d="M12 4h20v20h20v36H12ZM36 4v16h16ZM20 36h24v4H20ZM20 44h16v4H20Z"/>
+</svg>

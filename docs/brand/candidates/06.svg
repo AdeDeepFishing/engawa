@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- 06 Lantern (提灯). Engawa mark candidate: one path, even-odd, in the current text colour. -->
+  <path fill="currentColor" fill-rule="evenodd" d="M22 6H42V14.68A20 20 0 0 1 50.33 24H13.67A20 20 0 0 1 22 14.68ZM12.4 28H51.6A20 20 0 0 1 51.6 36H12.4A20 20 0 0 1 12.4 28ZM13.67 40H50.33A20 20 0 0 1 42 49.32V58H22V49.32A20 20 0 0 1 13.67 40Z"/>
+</svg>

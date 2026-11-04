@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- 05 Petal on the plank (縁側に花びら). Engawa mark candidate: one path, even-odd, in the current text colour. -->
+  <path fill="currentColor" fill-rule="evenodd" d="M41.27 39.72C32.82 38.98 21.79 35.17 16.13 26.87C12.66 21.95 13.54 16 17.37 12.78L24.29 14.81L23.49 7.64C27.32 4.43 33.34 4.6 37.58 8.87C44.78 15.89 46.61 27.41 45.87 35.86C45.68 37.97 43.39 39.9 41.27 39.72ZM4 48h56v8H4Z"/>
+</svg>

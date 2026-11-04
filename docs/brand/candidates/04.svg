@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- 04 Tatami edges (四畳半の畳縁). Engawa mark candidate: one path, even-odd, in the current text colour. -->
+  <path fill="currentColor" fill-rule="evenodd" d="M4 4h36v16H4ZM44 4h16v36H44ZM24 44h36v16H24ZM4 24h16v36H4ZM24 24h16v16H24Z"/>
+</svg>
