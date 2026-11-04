@@ -50,10 +50,10 @@ Ranked by value on the judging axes (impact, demo, use of Claude, depth) against
 - N3 Hidden and merged drawer: a collapsed list at the bottom of the board holds cards the admin hid as duplicates; a card's sources expand to their original text; the admin page gets "hide as duplicate of". Depth. About 2 hours. Done 2026-11-04.
 - N4 How this card was made: the reconcile decision and its reason are stored; the card sheet shows the chain (source, extract, merge or update with the reason, admin confirmation). Use of Claude. About 2 hours. Done 2026-11-04.
 - N5 Multilingual notice back: from a card, a printable A4 notice in six languages with the board QR, so a building manager can replace the Japanese-only paper. Impact and demo. About 2 hours. Done 2026-11-04.
-- N6 Reader confirmations: "still true" and "no longer true", one tap per device; bumps `last_confirmed_at` or opens a conflict. Depth. About 2 hours.
+- N6 Reader confirmations: "still true" and "no longer true", one tap per device; bumps `last_confirmed_at` or opens a conflict. Depth. About 2 hours. Done 2026-11-04.
 - N7 Suggested questions per language above the ask box, and follow-up questions in the same thread. Demo. About 1.5 hours. Done 2026-11-04.
 - N8 Read aloud with the Web Speech API for the card text in the reader's language and やさしい日本語. Impact. About 1 hour. Done 2026-11-04.
-- N9 Offline snapshot: a service worker keeps the last board page for when the network drops, with a "last updated" banner. Impact. About 2 hours.
+- N9 Offline snapshot: a service worker keeps the last board page for when the network drops, with a "last updated" banner. Impact. About 2 hours. Done 2026-11-04.
 - N10 Place view: cards grouped by known place with its address; shelter status at a glance. Depth. About 2 hours.
 - N11 Extract on `claude-fable-5-1` versus `claude-opus-5-5` on the eval, recorded in `docs/EVAL.md`. Use of Claude. About 1 hour of API time. Done 2026-11-04.
 - N12 Board index and a "make a board" form (name, area, places from the city list) that shows the admin link once. Impact. About 3 hours.
@@ -165,11 +165,14 @@ Owner for implementation: Claude Code. The plan said `claude-opus-5-5`; in pract
 ### 2026-11-05 (Thu): more nice-to-haves, native reads
 - [ ] Korean and Vietnamese native speakers read the demo cards; fix wording
 - [x] N5 multilingual notice back (done 2026-11-04, PR #12)
-- [ ] N6 reader confirmations
+- [x] N6 reader confirmations: "still true" and "no longer true" per device, counts on public cards, a hint when two devices say a card may no longer be true (migration 0006, PR #17)
 - [x] N7 suggested questions; N8 read aloud (done 2026-11-04, PR #12)
 - [x] N11 Fable versus Opus on the eval (done 2026-11-04, PR #14; Opus stays at runtime)
 - [x] N13 Claude Code visible in the repo; N14 about page (done 2026-11-04, PR #14)
-- [ ] N9, N10, N12 only if the day is clear
+- [x] N9 offline snapshot: service worker keeps the board, card pages, the cards poll and the about page; banner with the saved time, drop-in disabled while offline (PR #16)
+- [x] Peace-mode suggested questions; eval refreshed for the split pipeline (100/100, 0 PII leaks, six languages 15/15) (PR #16)
+- [x] Leftovers from the day 4 reviews: `lib/ids.ts`, usage recorded for rejected responses, placeholder check on translate output (PR #17)
+- [ ] N10 place view, N12 make a board: only if the day is clear
 
 ### 2026-11-06 (Fri): review, freeze, demo prep
 - [ ] Full run of the 7-step demo scenario on the deployed URL; fix what breaks
