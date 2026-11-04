@@ -607,3 +607,59 @@ Playwright: 24 of 24 checks after one test fix (a step read the list before its 
 - Migration 0006 was applied to the shared project by this session after the human allowed it (the first attempt was blocked by the permission check); nothing new in Vercel.
 - Review and merge the PR. Tick in `docs/PLAN.md`: N6 in the nice-to-have list ("Done 2026-11-04") and "N6 reader confirmations" under 2026-11-05.
 - The Korean and Vietnamese `react.*` strings are mine; add them to the native read on 11/05.
+
+## 2026-11-04 (Wed), loudspeaker broadcasts: heard input and official inbox
+
+Model: `claude-opus-5-5` in Claude Code, implementation role, in its own worktree (`day5-broadcast`), brief from the reviewing session. Pipeline models unchanged (extract, reconcile and translate on `claude-opus-5-5`).
+
+Why: the 防災行政無線 loudspeakers broadcast in Japanese only, and outdoors they are often muffled. Foreign residents and hard of hearing Japanese residents miss them. Kawasaki publishes the text of each broadcast by email (メールニュースかわさき), in the かわさき防災アプリ and on a phone line; there is no feed or API. Two ways in, from both ends: a neighbour who heard the loudspeaker sends what they heard, and the city's own mail arrives through a forwarder and settles it.
+
+**What was done**
+- "I heard the loudspeaker", a fourth choice in the drop-in panel (`components/board/HeardInput.tsx`, wired in `DropIn.tsx`). The browser's speech recognition (`SpeechRecognition` or `webkitSpeechRecognition`, `continuous` and `interimResults` on, ja-JP by default, the five UI languages selectable) writes into an editable box: interim words muted under it, each final piece appended, restarted after a silence while the reader keeps listening. A 44 px start and stop button, a line that recognition can mishear names, numbers and times and that the text can be corrected before sending, a line that the browser's speech service does the transcription, and the same box without the mic button when recognition is missing. Availability is read through `useSyncExternalStore` after hydration, as ReadAloud does. Sending goes down the text path with `heard=1`, stored on the submission (`submissions.heard`, migration 0007).
+- Extract channels (`lib/claude/extract.ts`, prompt rule 14, schema enum): the user turn says when the text was heard from the loudspeaker ("may contain recognition errors") or came through the official inbox. Rule 14: the opening formula (こちらは防災かわさきです) is not a fact, a misheard place resolves to a known place only when exactly one matches, otherwise `place_id` null with the heard spelling kept, nothing a typical broadcast would have said is filled in, a missing person broadcast is `sensitive_personal`. After validation `applyChannel` fixes in code what the model can only guess: a heard transcript is always `secondhand` on platform `loudspeaker`, an inbox mail always `official` on `city_mail`, and no other input can carry either platform.
+- The pipeline moved from the process route into `lib/pipeline.ts` unchanged (same events, same order), so the inbox can run it synchronously. The process route refuses inbox submissions.
+- `POST /api/b/[slug]/inbox` (docs/INBOX.md): JSON `{from, subject, text, received_at?}` with the board's bearer secret. 403 for a bad or missing secret, 413 over 20 KB, 400 for a malformed body, 403 `sender_not_allowed` (logged with the domain only), 429 over 60 accepted mails an hour, 503 over the daily cap. Code strips the signature and footer (`lib/inbox/clean.ts`), stores a text submission with `source_hint = 'official'` and device id `inbox`, runs extract, reconcile and translate, and answers with the card ids. `received_at` within the last 24 hours is extract's reference time.
+- Admin section "Official inbox" (`components/admin/InboxAdmin.tsx`, `POST /api/b/[slug]/admin/inbox`): the address to post to, a secret generated and shown once (sha256 digest stored in `boards.inbox_secret_hash`, replacing takes a second tap), the allowed senders (`boards.inbox_senders`, lower case, at most ten), the last five accepted mails by time only.
+- Merge, `lib/db/cards.ts`: when a stronger source raises a card's label, the card's platform moves with it, and a loudspeaker card takes the stronger source's title, body and place, so a recognition error does not outlive the city's text; translate then writes the other languages again.
+- Source line: `sourceLabel` takes an optional platform. "Heard from the disaster radio" for a secondhand loudspeaker card, "From the city's broadcast mail" for an official inbox card, each with one line of explanation on the card page (`sourceExplanation`); share text, trace lines ("the disaster radio loudspeaker, as a neighbour heard it") and the printable notice use them too. 42 keys appended at the end of the five message files.
+- `pnpm check:inbox` (`scripts/check-inbox.ts`): footer and signature stripping on the city's mail layout, sender parsing and normalization, the secret comparison, the channel rule. 23 of 23.
+- docs/INBOX.md (request format, curl with placeholders, the Cloudflare Email Routing worker outline), docs/PRIVACY.md rows, lib/claude/README.md.
+
+**Acceptance** on the throwaway board `broadcast-acceptance` (dev server on 3470, Playwright 1.62 Chromium at 390 px, deleted afterwards: 1 card, 2 card_sources, 61 submissions of which 59 were seeded rows for the rate limit, 1 device, 0 storage objects; live board untouched):
+
+| step | what | result |
+|---|---|---|
+| 1 | open the panel | fourth choice "📢 I heard the loudspeaker"; headless Chromium has `webkitSpeechRecognition`, so the mic button shows (56 px); the misheard warning shows |
+| 2 | a context without `SpeechRecognition` | typed fallback line, no mic button, same box |
+| 3 | typed transcript こちらは防災かわさきです。小杉小学校で本日15時から給水を行います。容器をお持ちください。 | multipart with `kind=text` and `heard=1`, 201; `create` in 13.7 s to `done` (extract 4.6 s, reconcile 0.1 s with no candidates, translate 6.1 s); one card: water, `kosugi-es`, 15:00, `secondhand`, platform `loudspeaker`; the opening formula made no card |
+| 4 | the card page | "Heard from the disaster radio · 1 source" with the explanation; body ends "Heard from the disaster radio loudspeaker (防災行政無線) and transcribed by speech recognition."; trace "Created from the disaster radio loudspeaker, as a neighbour heard it (heard from others)" |
+| 5 | admin, Official inbox | no secret, generate: 43 character secret shown once; senders saved lower case; after a reload the secret is set and not shown; replacing asks for a second tap |
+| 6 | refusals | wrong secret 403, no secret 403, sender off the list 403 `sender_not_allowed` (log: domain only), 24 KB body 413, not JSON 400 |
+| 7 | the same fact as the city's mail (メールニュースかわさき layout with heading rule and footer) | 201 in 15.6 s, `merge` onto the heard card (reconcile 2.7 s, translate 5.9 s), still 1 card: `official`, platform `city_mail`, 2 sources, not confirmed; title and body now the city's wording ("From the city's broadcast mail (防災行政無線の放送内容)"), six languages present; card page "From the city's broadcast mail · 2 sources"; trace: created by the loudspeaker (heard from others), confirmed by the city's broadcast mail (official) with Claude's reason |
+| 8 | 59 accepted mails seeded in the hour, then one more | 429 `rate_limited`; the admin lists the last five by time |
+
+Playwright: 30 of 32 checks as run. The two misses were the test's: an exact text match on the card page's source label, which shares its line with the source count; the screenshots show both labels as in steps 4 and 7.
+
+**Other measurements**
+- `pnpm eval --no-write` after the prompt and schema change: 100/100 fields, 0 PII leaks, 0 invented facts, risk flags 15/15, six languages 15/15, extract median 8942 ms, translate median 9094 ms.
+- `pnpm typecheck`, `pnpm lint`, `pnpm build` clean; `pnpm guard --all` clean.
+
+**Decisions taken in this session, open for review**
+- Code, not the model, decides source type and platform for the two channels. Anyone can type into the heard box, so its facts are capped at `secondhand`; the inbox passed the secret and the sender list, so its facts are `official` (still unconfirmed). A text pasted the usual way that the model labels `loudspeaker` or `city_mail` becomes `other`.
+- Reconcile chose `merge`, not `update`, for the same fact from the city: same place, same time. The merge path now carries the stronger source's platform and, for a loudspeaker card only, its wording. Other merges keep their wording as before.
+- The admin section is mounted from `app/b/[slug]/admin/page.tsx`, after `AdminView`, so `AdminView.tsx` is unchanged (zero lines instead of the one line the brief allowed).
+- `sourceLabel` gained an optional platform argument. The call sites in `CardItem.tsx`, `CardSheet.tsx`, `HiddenDrawer.tsx` and `AdminView.tsx` belong to the other session and were left as they are, so the board list and the sheet still say "Heard from others" or "Official notice (unconfirmed)" for these cards until each passes `card.facts.platform` as a fourth argument (one token per call). The card page, share text, notice and trace already use it.
+- The printable notice names the card's own platform first (`card.facts.platform`), then the first source's: after an update or a raising merge it is where the current wording comes from.
+- The rate limit counts accepted mails (submissions with `source_hint`), not refused requests. A mail that fails processing is not retried by the board; posting it again makes a new submission.
+- Footer rule: cut at a `-- ` line, at the first 配信停止, 登録解除, 送信専用 or unsubscribe line after the broadcast, or at the last rule line when only links, addresses and the publisher follow it; other rule lines are dropped as decoration. Written against a layout modelled on the city's mail, not a real one: check it against the first real mail.
+- Chrome sends the audio to Google's speech service, Safari to Apple's (or on the device). The panel says so in one line; docs/PRIVACY.md has the rows.
+
+**Files of the other session.** None edited. The `sourceLabel` call sites above are the one place where this feature needs a token in their files. `PendingCard` needs nothing: the heard input goes through the same stages.
+
+**Needed a human**
+- Migration 0007 was applied to the shared project by this session after the human allowed it (the first attempt was blocked by the permission check). The deployed code does not read the new columns, so applying it before the merge is harmless.
+- The Cloudflare wiring (docs/INBOX.md): an Email Routing address, the Email Worker with `postal-mime`, the secret from the board's admin page as a Worker secret, the inbox URL, a verified `COPY_TO` address while the subscription is confirmed.
+- The メールニュースかわさき subscription with 防災行政無線 ticked, sent to that address; then read the real From address off the first mail and enter it in the admin list.
+- A real phone test of the recognition (iPhone Safari, Android Chrome) next to a broadcast or a recording of one; headless Chromium cannot run it.
+- Native read of the Korean and Vietnamese `heard.*`, `inbox.*` and `source.*` strings.
+- `docs/PLAN.md` has no line for this work; the reviewing session decides where to record it.
