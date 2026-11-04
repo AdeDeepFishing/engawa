@@ -62,11 +62,14 @@ export function HomeView({ boards, now }: { boards: HomeBoard[]; now: string }) 
               <JapanMap counts={counts} onSelect={goToPrefecture} />
             </div>
             <p className="mt-3 text-base">{t("home.map_hint")}</p>
-            <p className="text-base text-muted">
-              {t("home.map_credit")}{" "}
-              <a href="https://creativecommons.org/licenses/by/4.0/" className="tap inline-flex items-center underline underline-offset-4 hover:text-accent">
-                {t("home.map_licence")}
-              </a>
+            {/* The CC BY 4.0 credit for the outlines is on the about page, one tap away. */}
+            <p>
+              <Link
+                href="/about#credits"
+                className="tap inline-flex items-center text-base text-muted underline underline-offset-4 hover:text-accent"
+              >
+                {t("home.map_credits_link")}
+              </Link>
             </p>
           </section>
         </div>
@@ -130,6 +133,12 @@ export function HomeView({ boards, now }: { boards: HomeBoard[]; now: string }) 
             <li>
               <a href="https://claude.com/claude-code" className={linkClass}>
                 {t("home.built_with")}
+              </a>
+            </li>
+            <li>
+              <a href="https://www.yanwensworld.com/" target="_blank" rel="me noopener noreferrer" className={linkClass}>
+                {t("home.made_by")}
+                <span className="sr-only"> {t("maps.new_tab")}</span>
               </a>
             </li>
           </ul>

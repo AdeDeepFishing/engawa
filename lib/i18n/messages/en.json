@@ -398,6 +398,8 @@
   "home.map_hint": "Tap a highlighted prefecture to go to its boards.",
   "home.map_pref_one": "{pref}: {n} board",
   "home.map_pref_other": "{pref}: {n} boards",
-  "home.map_credit": "Map: svg-maps by Victor Cazanave, after MapSVG, simplified.",
-  "home.map_licence": "CC BY 4.0"
+  "home.made_by": "Made by Yanwen",
+  "home.map_credits_link": "Map credits",
+  "about.credits_heading": "Credits",
+  "about.credits_map": "The prefecture outlines on the home page map are from svg-maps by Victor Cazanave, based on the MapSVG map of Japan, simplified for Engawa (small islands dropped, coordinates rounded). They are used under the Creative Commons Attribution 4.0 International licence (CC BY 4.0)."
 }

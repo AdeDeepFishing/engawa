@@ -398,6 +398,8 @@
   "home.map_hint": "Nhấn vào tỉnh được tô màu để đến bảng tin ở đó.",
   "home.map_pref_one": "{pref}: {n} bảng tin",
   "home.map_pref_other": "{pref}: {n} bảng tin",
-  "home.map_credit": "Bản đồ: svg-maps (Victor Cazanave, dựa trên MapSVG), đã giản lược.",
-  "home.map_licence": "CC BY 4.0"
+  "home.made_by": "Thực hiện: Yanwen",
+  "home.map_credits_link": "Nguồn bản đồ",
+  "about.credits_heading": "Ghi công",
+  "about.credits_map": "Đường viền các tỉnh trên bản đồ ở trang chủ lấy từ svg-maps của Victor Cazanave, dựa trên bản đồ Nhật Bản của MapSVG, và đã được giản lược cho Engawa (bỏ các đảo nhỏ, làm tròn tọa độ). Được sử dụng theo giấy phép Creative Commons Ghi công 4.0 Quốc tế (CC BY 4.0)."
 }

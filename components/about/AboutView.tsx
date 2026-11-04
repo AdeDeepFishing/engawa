@@ -28,9 +28,21 @@ const WHO: MessageKey[] = ["about.who_maria", "about.who_sato", "about.who_chen"
 const DATA: MessageKey[] = ["about.data_1", "about.data_2", "about.data_3", "about.data_4"];
 
 /**
+ * Sources of the home page map's prefecture outlines (CC BY 4.0, see
+ * components/home/japan-map-paths.ts), named in about.credits_map. The labels
+ * are names and stay the same in every language.
+ */
+const MAP_CREDIT_LINKS = [
+  { label: "svg-maps", href: "https://github.com/VictorCazanave/svg-maps" },
+  { label: "MapSVG", href: "https://mapsvg.com/maps/japan" },
+  { label: "CC BY 4.0", href: "https://creativecommons.org/licenses/by/4.0/" },
+] as const;
+
+/**
  * The about page body: who the board is for, the wall it removes, who lives
  * here (with the figures above), what happens to the data, who could run it
- * after the event. Client component so the language switch applies at once.
+ * after the event, and the credits (#credits, linked from under the home
+ * page map). Client component so the language switch applies at once.
  */
 export function AboutView({ backHref }: { backHref: string | null }) {
   const { lang, t } = useLang();
@@ -87,6 +99,23 @@ export function AboutView({ backHref }: { backHref: string | null }) {
           {t("about.after_heading")}
         </h2>
         <p className="mt-3 text-base leading-relaxed">{t("about.after_body")}</p>
+      </section>
+
+      {/* scroll-mt keeps the heading clear of the sticky top bar when reached by its anchor. */}
+      <section id="credits" aria-labelledby="about-credits" className="scroll-mt-32">
+        <h2 id="about-credits" className="mt-8 text-xl font-bold">
+          {t("about.credits_heading")}
+        </h2>
+        <p className="mt-3 text-base leading-relaxed">{t("about.credits_map")}</p>
+        <ul className="mt-1 flex flex-wrap gap-x-6">
+          {MAP_CREDIT_LINKS.map((link) => (
+            <li key={link.href}>
+              <a href={link.href} className="tap inline-flex items-center text-base underline underline-offset-4 hover:text-accent">
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
       </section>
 
       <p className="mt-10">
