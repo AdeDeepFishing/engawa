@@ -850,6 +850,16 @@ Why: until today a board's `mode` was set only in the database. It fed one line 
 
 Playwright: 2 misses on the first run were the test's (a case-sensitive "just now" against "Just now"); all rows pass as listed. Claude calls: 5 pipeline runs (3 inbox mails, 2 drop-ins), about 12 calls.
 
+**After migration 0009** (applied by the human the same evening), the three rows that store a reason were run again on a second throwaway board, `mode-reason` (dev server on 3522; deleted afterwards: 1 card, 1 card_sources, 1 submission, 0 devices, 0 storage objects; live board untouched). Pages read as server-rendered HTML with curl; the layout itself was covered above.
+
+| step | what | result |
+|---|---|---|
+| A | admin API to disaster, then back to peace (board never changed before: admin page "Not changed since the board was set up.") | `mode_reason` `admin` both times; strip "Switched on by the board admin."; admin page "Last changed 4 Nov, 21:49 (Just now), by the admin."; poll `reason: "admin"`; no strip in peace |
+| B | the evacuation order mail (as step 4) on the peace board | 201 in 23.0 s, `create` (category `shelter` again), `switched_to_disaster: true`; `mode_reason` `inbox:<submission id>`; poll and page carry `reason: "inbox"` only, no id; strip "Switched on by the city's broadcast mail." (ja: 市の防災無線メールを受けて切り替わりました。); admin page "by an emergency in the city's broadcast mail"; log `peace to disaster (inbox, 避難指示)` |
+| C | `mode_changed_at` 8 days back: page load with the card public, then with it hidden | first load: stays disaster, reason unchanged; second: peace, `mode_reason` `auto_return`; admin page "automatically, after 7 days without an official danger, notice or shelter card."; log `disaster to peace (auto_return)` |
+
+Claude calls for the re-run: 1 inbox mail (extract and translate; no reconcile candidates).
+
 **Measurements**: `pnpm check:mode` 34 of 34, `pnpm typecheck`, `pnpm lint`, `pnpm guard --all` clean; `pnpm build` at the end (PR description).
 
 **Decisions taken in this session, open for review**
@@ -865,6 +875,6 @@ Playwright: 2 misses on the first run were the test's (a case-sensitive "just no
 **Files of the other session.** None edited. `app/globals.css` only got the appended block at its end.
 
 **Needed a human**
-- Apply migration 0009 before the merge. Until then every reason shows as "not recorded"; the rest works.
+- Migration 0009 was applied by the human on the shared project after the first run; the reason rows were then run again (table above).
 - Native read of the Korean and Vietnamese `mode.*` and `admin.mode_*` strings.
 - `docs/PLAN.md` still lists the peace/disaster mode switch under "Not this week"; the reviewing session decides how to record N21 there.
