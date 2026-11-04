@@ -1209,3 +1209,65 @@ Scope added by the reviewing session on the user's behalf, about two hours, same
 
 **Review fixes for PR #28 (Fable, reviewing session, on the integration branch):** a known place's official note (`notes_ja`: a shelter closed for rebuilding and its substitute, a substitute reserved for 要配慮者) now reaches Claude in the board context and is shown under the place in the Places view, so a closed school is never offered as an open shelter; the `office` kind has a label in five languages and an icon; Chinese reads 无法回家人员临时安置设施 for the commuter shelters and the Chinese and Korean place names use a middle dot instead of the katakana dot; the vendor intrusion note in `docs/BOARDS.md` moved under Not confirmed since its URL was not kept; the seed header says what `--rotate-token` does without `--board`. The pilot board has three places with notes, so its extract context grew by those lines; the eval was re-run on the integration branch (result below). Left for later: `server-only` on the polygon loader once that package is a dependency.
 Eval on the integration branch with the pilot's place notes in the context (`pnpm eval --no-write`, 16 inputs): 105/105 fields, 0 PII leaks, 0 invented facts, risk flags 16/16, six languages 16/16, extract median 9.3 s (p90 10.8 s), translate median 10.1 s.
+
+## 2026-11-04 (Wed) night, Shibuya portal poller: ward broadcasts into the board inbox
+
+**Model:** `claude-opus-5-5` in Claude Code, implementation role, in its own worktree (branch `day6-poller`, cut from `main` at `1b0db05`) while another session worked on the brand files. Fable (the reviewing session) wrote the brief and integrates. No Claude API call was added or changed. The database was not touched and nothing was posted to the live inbox: the tests run on fixtures, and the portal was read once by hand (the list and the October file, one request each) to check the brief's shape before writing them.
+
+**What it is.** `workers/shibuya-portal/`, the Cloudflare Worker `engawa-shibuya-portal`: a cron trigger every 5 minutes, KV binding `STATE`, `workers_dev = false`, no secret and no account id in the repository. A run reads the month list and the newest month of the 渋谷区防災ポータル 防災行政無線 feed, sorts the broadcasts oldest first and posts each one after the stored `last_update_at` to `/api/b/shibuya/inbox` as `{from: PORTAL_SENDER, subject: the Japanese title, text: the Japanese message, received_at: update_at read as +09:00}`, storing each `update_at` after its 201 and stopping at the first answer that is not 201. The first run stores the newest `update_at` and posts nothing. Pure functions in `src/feed.ts`, the run in `src/run.ts` with fetch, KV, the clock and the log passed in, `src/index.ts` wires the bindings. The README has the deploy steps, the first run, re-posting one broadcast by hand and the free plan limits. The worker has its own `package.json`, lockfile, `tsconfig.json` and pnpm root (`pnpm-workspace.yaml` in its folder), so the app's install on Vercel never pulls wrangler; `workers/` is excluded from the app's `tsconfig.json` and eslint ignores.
+
+**The feed as read** (2026-11-04): both files served as `application/json`; the list names 7 months, newest first, and only months that had a broadcast (202610, 202608, 202607, 202602, ...); 202610 holds one broadcast, `update_at` `2026/10/16 12:40`, `important` 0, messages ending in a newline, all six `multi_lang` entries with an mp3 attachment. The fixtures copy that shape; only the 緊急地震速報 entry's title and Japanese and English messages are the feed's, the rest is written for the tests (`test/fixtures/README.md`).
+
+**Decisions open for review** (where the brief was read or extended)
+- **The inbox post waits up to 310 s, not 15 s.** The inbox answers after its whole pipeline (15 to 30 s, at most the route's 300 s) and finishes the run when the caller hangs up, so a 15 s timeout would count a broadcast the board took as failed and post it again next run. The portal fetches keep the 15 s.
+- **Retries are bounded.** On 500 (and 400, 413, 422, a 504, a network error, a timeout) nothing is stored as posted, the error code is logged and the run stops; the next run tries again. After 3 failed attempts in a row on one broadcast the next run passes it over and goes on. Without a bound a broadcast the pipeline refuses (`pii_leak`, `refusal`) would be posted 288 times a day, each spending Claude calls toward the daily cap, and would hold back every broadcast after it, an evacuation order included. The README shows how to re-post it by hand. 429, 503 and 403 stop the run without counting an attempt.
+- **A broadcast older than 24 hours at its turn is passed over.** The inbox ignores a `received_at` that old and reads 本日 against the time of the request, so a stale alert would come out as today's and could switch the board to disaster mode.
+- **The key is `update_at` plus an FNV-1a hash of the Japanese title and message.** Two broadcasts in the same minute are both posted; the 20 keys in KV are checked before every post, so a run that read an old state still posts nothing twice.
+- **A lease key in KV while a run posts**, an 8 minute budget and at most 5 posts per run, so a slow run and the next cron run never post the same broadcast and a run ends inside the 15 minutes a cron run may take. A run with nothing new reads one key and writes nothing.
+- **The month before is also read** when the newest month's oldest broadcast is after the stored time (a broadcast late in a month, or a poller that was down), as well as when the newest month is empty.
+- **"English differs materially"** is read as: the English is real English (more Latin letters than Japanese characters, not a copy) and carries a number other than zero or a link the Japanese lacks. A 12 hour time beside 15時 counts as a difference and adds one harmless line.
+- Dependencies pinned to releases about two weeks old: wrangler 4.151.3 (2026-10-20), `@cloudflare/workers-types` 5.20261019.1; TypeScript 5.9.3 and tsx 4.23.15 as in the app. A `typecheck` script beside `deploy`, `tail` and `test` checks the worker against the Workers types and the tests against the Node types.
+
+**Follow-ups, not done here**
+- Cards from the poller read "From the city's broadcast mail": `applyChannel` sets platform `city_mail` for every inbox post. A `city_portal` platform with its own source line in the five message files would say where the text came from.
+- The ward's consent to polling the feed (`docs/BOARDS.md`) comes before the deploy.
+- The feed's `important` flag is not used (0 on the one broadcast read).
+
+**Tests** (`pnpm test` in `workers/shibuya-portal`, `node --import=tsx --test test/*.test.ts`, durations cut)
+
+```
+✔ JST conversion: update_at is read as +09:00
+✔ first run stores the newest update_at and posts nothing
+✔ a new entry after the stored time is posted once
+✔ two new entries post oldest first, the English line only where it adds a fact
+✔ a failure stops the sequence and the next run retries from it
+✔ 429 and 503 stop the run without counting an attempt, 403 points at the setup
+✔ a broadcast that fails three times is passed over on the fourth run
+✔ a duplicate key is skipped even when the stored time is behind
+✔ two broadcasts in the same minute are both posted
+✔ the month before is read when the newest month has no broadcast
+✔ a broadcast older than 24 hours is passed over, not posted
+✔ a run holding the lease keeps the next one from posting
+✔ without the secret nothing is posted and nothing is stored
+✔ a portal error stops the run before anything is posted
+✔ log lines carry counts, statuses and times, never broadcast text
+✔ the English line: only a real English text with a number or link the Japanese lacks
+✔ month files: newest first, anything else dropped
+✔ the inbox's answer: 201 counts cards, error codes are kept short
+ℹ tests 18
+ℹ pass 18
+ℹ fail 0
+```
+
+**Acceptance**
+
+| check | result |
+|---|---|
+| `node --test` (`pnpm test` in the worker folder) | 18 of 18 pass |
+| the tests catch a broken order and a missing key guard | sorting newest first fails 5 tests; skipping the key check fails 5 |
+| `pnpm typecheck` in the worker folder (Workers types for `src`, Node types for `test`) | clean |
+| `wrangler deploy --dry-run` in the worker folder, no login | built, 14.29 KiB (4.76 KiB gzip); bindings `STATE` (placeholder id), `ENGAWA_INBOX_URL`, `PORTAL_SENDER` |
+| `pnpm typecheck` at the root, `workers/` excluded | clean |
+| `pnpm lint` at the root, `workers/**` ignored | clean |
+| `pnpm guard --all` | clean |
+| `pnpm build` | compiled, 12 static pages; no worker code in `.next` |
