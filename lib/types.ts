@@ -162,6 +162,12 @@ export interface CardTrace {
   models: { extract: string | null; reconcile: string | null };
 }
 
+/** A reader's one tap on a card (N6): what they saw on the spot, a signal for other readers, not a vote. */
+export type ReactionKind = "still_true" | "no_longer_true";
+
+/** How many devices said each, as readers get it. Never which devices. */
+export type ReactionCounts = Record<ReactionKind, number>;
+
 export interface Card {
   id: string;
   board_id: string;
@@ -203,6 +209,12 @@ export interface Card {
    * their place so nothing renders blank. Absent on rows read raw.
    */
   missing_langs?: CardLang[];
+  /**
+   * Reader confirmations, one per device (N6). Set by the public reads
+   * (listPublicCards, getPublicCard); absent on rows read raw and on cards
+   * without a database, which readers then see as zero.
+   */
+  reactions?: ReactionCounts;
 }
 
 export type SubmissionStatus = "received" | "processing" | "done" | "held" | "failed";

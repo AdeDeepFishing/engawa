@@ -15,7 +15,8 @@
     "purge": "node --env-file-if-exists=.env.local --import=tsx scripts/purge.ts",
     "latency": "node --env-file-if-exists=.env.local --import=tsx scripts/latency.ts",
     "guard": "node --import=tsx scripts/guard.ts",
-    "board:throwaway": "node --env-file-if-exists=.env.local --import=tsx scripts/throwaway-board.ts"
+    "board:throwaway": "node --env-file-if-exists=.env.local --import=tsx scripts/throwaway-board.ts",
+    "check:placeholders": "node --import=tsx scripts/check-placeholders.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "1.3.0",

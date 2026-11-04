@@ -1,4 +1,11 @@
 {
+  "offline.board_banner": "当前离线。显示的是 {time} 时的公告板。",
+  "offline.page_banner": "当前离线。显示的是 {time} 保存的页面。",
+  "offline.dropin_reason": "离线中无法投递，联网后即可使用。",
+  "ask.suggest_peace_1": "垃圾收集日下次什么时候变？",
+  "ask.suggest_peace_2": "近期有停水计划吗？",
+  "ask.suggest_peace_3": "物业有没有发通知？",
+  "ask.placeholder_peace": "垃圾收集日下次什么时候变？",
   "share.print_notice": "打印为通知（6种语言）",
   "notice.title": "6种语言的通知",
   "notice.hint": "用A4纸打印，贴在原通知旁边。",
@@ -266,5 +273,14 @@
   "board.footer_about": "关于这个公告板，以及你的数据会怎样",
   "poster.about": "关于公告板与数据的处理：{url}",
   "dropin.step.translating": "翻译",
-  "card.translating": "翻译稍后显示。"
+  "card.translating": "翻译稍后显示。",
+  "react.question": "这条信息现在还准确吗？",
+  "react.still_true": "仍然准确",
+  "react.no_longer_true": "已经不对了",
+  "react.readers_one": "1人",
+  "react.readers_other": "{n}人",
+  "react.explain": "每部手机一次。再点一次可以撤回。人数会作为参考显示给其他读者。",
+  "react.hint": "有读者反映这条信息可能已经不对了",
+  "react.rate_limited": "过去一小时内点得太多了，请稍后再试。",
+  "react.failed": "发送失败，请再试一次。"
 }

@@ -1,4 +1,11 @@
 {
+  "offline.board_banner": "Đang ngoại tuyến. Đang hiển thị bảng tin lúc {time}.",
+  "offline.page_banner": "Đang ngoại tuyến. Đang hiển thị bản đã lưu lúc {time}.",
+  "offline.dropin_reason": "Đang ngoại tuyến: có thể gửi lại khi có kết nối.",
+  "ask.suggest_peace_1": "Khi nào lịch thu gom rác thay đổi tiếp theo?",
+  "ask.suggest_peace_2": "Có kế hoạch cắt nước không?",
+  "ask.suggest_peace_3": "Ban quản lý tòa nhà có thông báo gì không?",
+  "ask.placeholder_peace": "Khi nào lịch thu gom rác thay đổi tiếp theo?",
   "share.print_notice": "In thành thông báo (6 ngôn ngữ)",
   "notice.title": "Thông báo bằng 6 ngôn ngữ",
   "notice.hint": "In trên giấy A4 và dán cạnh thông báo gốc.",
@@ -266,5 +273,14 @@
   "board.footer_about": "Về bảng tin này và dữ liệu của bạn",
   "poster.about": "Về bảng tin và dữ liệu của bạn: {url}",
   "dropin.step.translating": "Dịch",
-  "card.translating": "Bản dịch sẽ có trong giây lát."
+  "card.translating": "Bản dịch sẽ có trong giây lát.",
+  "react.question": "Thông tin này còn đúng không?",
+  "react.still_true": "Vẫn đúng",
+  "react.no_longer_true": "Không còn đúng",
+  "react.readers_one": "1 người",
+  "react.readers_other": "{n} người",
+  "react.explain": "Mỗi điện thoại một lần. Nhấn lại để hủy. Số người được hiển thị để người khác tham khảo.",
+  "react.hint": "Có người đọc báo rằng thông tin này có thể không còn đúng",
+  "react.rate_limited": "Bạn đã nhấn quá nhiều trong một giờ qua. Hãy thử lại sau.",
+  "react.failed": "Không gửi được. Hãy thử lại."
 }

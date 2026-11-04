@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { LangProvider } from "@/lib/i18n/LangProvider";
+import { OfflineSupport } from "@/components/offline/OfflineSupport";
 import { getRequestLang, getRequestTextSize } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
@@ -15,6 +16,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang={lang} data-text-size={textSize} className="h-full">
       <body className="min-h-full flex flex-col">
         <LangProvider initialLang={lang} initialTextSize={textSize}>
+          <OfflineSupport />
           {children}
         </LangProvider>
       </body>

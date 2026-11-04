@@ -487,3 +487,123 @@ After each step the row in the database had no missing language. Deleted afterwa
 - Review and merge the branch (Fable). Nothing new in Vercel; `TRANSLATE_MODEL` is optional.
 - The Korean and Vietnamese card text now comes from the translate prompt, not from extract; the native speaker read on 11/05 reads that.
 - `CardSheet`, `CardPage`, share and ask show English for a language that is not there yet without the "Translation coming soon." line; one line each with `shownLang` from `lib/cards/langs.ts` once their owners are done.
+
+## 2026-11-04 (Wed), offline snapshot, peace-mode questions, eval refresh
+
+**Model:** `claude-opus-5-5` in Claude Code, implementation role, in its own worktree (branch `day5-offline`, cut from `main` at 1b8d659) while `day5-trust` worked on its own file list. No prompt, schema or model changed; the eval ran extract, translate and reconcile on `claude-opus-5-5`.
+
+**Done**
+- N9 offline snapshot. `public/sw.js`, plain JavaScript with no library (164 lines): network first with a cache fallback for `/b/<slug>`, `/b/<slug>/c/<id>` and its `/notice`, `/api/b/<slug>/cards` (the poll) and `/about`; cache first for `/_next/static/*` and `/samples/*`. Under `next dev` the worker is registered as `/sw.js?dev=1` and keeps static files network first, since dev chunks are not content hashed. Never touched: anything that is not GET, the React payload requests of client side navigations (`RSC` header or `_rsc`), `/api/process`, submissions, ask, admin, masked images, traces, the poster and the OG images. Only `ok`, same origin, not redirected responses are stored, each with its stored time in an `x-engawa-stored-at` header; a response answered from the cache carries `x-engawa-from-cache: 1`. Two caches, `engawa-pages-v1` (at most 60 entries) and `engawa-static-v1` (at most 200), oldest first beyond that. `VERSION` is a constant bumped by hand: activate deletes every other `engawa-*` cache, then claims the open pages; install calls `skipWaiting`.
+- The first visit. The first page a reader opens loads before the worker exists, so none of its requests pass through it, and only the poll would have been kept. Once the worker is active, that page sends it its own URL and the build files it loaded (from Resource Timing) in an `engawa:warm` message; the worker stores the ones its rules allow and ignores the rest.
+- `lib/offline.ts` and `components/offline/OfflineSupport.tsx`, mounted once in the root layout: registration in production and in development, only when `navigator.serviceWorker` exists; `useOnline` over the browser's online and offline events; `askServedFromCache`, a message over a `MessageChannel` asking the worker whether this page's HTML came from its cache and when that copy was stored.
+- Board (`BoardView.tsx`): the banner "Offline. Showing the board as of 08:12." (16 px bold, dark amber on pale yellow, a live region, hidden in print; the date is added when the copy is not from today, Japan time) shows while the browser reports offline, or the last poll failed, or the poll was answered from the cache. The time is the `now` of the cards on screen, the server's clock when that cards response was made, which is the moment the worker stored it. A page opened offline or out of the cache polls at once instead of after 5 seconds; coming back online polls at once, and the banner goes when a poll reaches the server. A saved poll older than the cards already on screen is not applied. `DropIn` takes `offline`: the button is disabled and grey, with "Offline: drop-in works again once you are connected." above it.
+- Card, notice and about pages: "Offline. Showing a saved copy from 08:12." from the layout, while the browser reports offline or when the worker says the page came out of its cache.
+- Peace-mode suggested questions: `AskPanel` takes the board's `mode` (`peace` or `disaster`). A peace board suggests "When does garbage collection change next?", "Is a water outage planned?" and "Is there a notice from the building management?"; a disaster board keeps its three. The input's placeholder follows the mode too: it said "Where can I get water?" on every board. That is one key more than the brief.
+- Seven keys at the top of the five message files: `offline.board_banner`, `offline.page_banner`, `offline.dropin_reason`, `ask.suggest_peace_1` to `_3`, `ask.placeholder_peace`. The Korean and Vietnamese lines are mine, for the native read.
+- README: one line under How it works.
+
+**Retention of the offline copy.** The worker keeps only what the public board already showed this reader in this browser: the board page, the card, notice and about pages they opened, the board's last poll, build files and the three sample inputs. No submission, original, masked image, trace, answer or admin page is ever stored, and nothing leaves the phone. The copy lives in the browser's Cache Storage until the browser evicts it, the reader clears the site's data, or `VERSION` changes; beyond 60 pages and 200 build files the oldest go first. It is not bound to `purge_after`: a card hidden or purged on the server stays in a reader's saved copy until their next load of that page reaches the network and replaces it. `docs/PRIVACY.md` belongs to `day5-trust` today, so this paragraph is the record until a line is added there.
+
+**Acceptance** (production build, `pnpm start` on port 3460 behind a small switchable proxy on 3461; throwaway board `offline-acceptance`, a copy of the 武蔵小杉 row, with one card from the `t02` text through the real routes: extract, reconcile create, translate, 19 s; Chrome for Testing at 390 px through `playwright-core`; the live board was not touched).
+
+Playwright's `context.setOffline(true)` blocks the page's own requests but not the service worker's `fetch`, and in this Chrome build neither it nor the CDP network override sets `navigator.onLine` to false. The first offline reload therefore came from the server through the worker. The run uses `setOffline` plus a proxy that closes its port, so the worker's fetch really fails, and the browser's offline signal is checked separately by firing the `offline` event with `navigator.onLine` reporting false. Under `next dev` an offline page does not hydrate at all (the dev client waits for its HMR socket), so the offline steps were run on the production build; online, the dev server registered the worker and kept the same three pages.
+
+| step | what was checked | result |
+|---|---|---|
+| 1 | first visit online: worker controls the page; what is kept | board HTML, poll and card page in `engawa-pages-v1`, 11 build files in `engawa-static-v1`, nothing else; no banner; peace questions shown |
+| 2 | network gone (proxy down, `setOffline`), reload the board | rendered from the cache with its card; banner "Offline. Showing the board as of 08:12."; drop-in disabled with its reason; poll answered `x-engawa-from-cache: 1`, stored 23:12:14 UTC |
+| 3 | ask, offline | the suggestion tap shows "Could not get an answer. Please try again." as before; ask is never cached |
+| 4 | card page offline, new tab | rendered from the cache, "Offline. Showing a saved copy from 08:12.", title and body in English |
+| 5 | poster, never kept | `net::ERR_INTERNET_DISCONNECTED`, as without the worker |
+| 6 | Wi-Fi without internet: browser online, server unreachable, fresh tabs | board and card page from the cache, both with the banner (from the worker's answer, then the poll answered from the cache); drop-in disabled |
+| 7 | network back | banner gone 2.8 s later on the next poll, drop-in enabled, poll from the network |
+| 8 | `offline` event with `navigator.onLine` false, then `online` | banner at once before any poll; gone 7 ms after `online` (the poll reached the server) |
+| 9 | Japanese UI, server unreachable | "オフラインです。08:12 時点の掲示板を表示しています。", "オフラインのため投稿できません。つながると使えます。", the three peace questions in Japanese |
+
+Deleted afterwards: 1 card, 1 source row, 2 submissions (one first sent without the JSON body `/api/process` now needs, so it stayed `received`), 0 storage objects, 2 device rows and the board. `pnpm typecheck`, `pnpm lint` and `pnpm build` clean.
+
+**Eval refresh** (`pnpm eval`, then `pnpm eval --reconcile --now 2026-11-03T10:00:00+09:00`, both written into `docs/EVAL.md`; the notes below the markers are unchanged)
+
+| | result |
+|---|---|
+| field accuracy | 100/100 (category 17/17, place 17/17, times 22/22, status 7/7, source 15/15, conditions 16/16, en 6/6) |
+| PII leaks | 0 |
+| invented facts | 0, missed 0 of 17 |
+| risk flags as expected | 15/15 inputs |
+| six languages after translate | 15/15 inputs |
+| extract latency, time to the first card | median 8407 ms, p90 11031 ms, max 11191 ms |
+| translate latency | median 9372 ms, min 5397 ms, max 15514 ms |
+| reconcile chains | 11/11 steps (create 4/4, merge 6/6, update 1/1), 0 code overrides, reconcile median 2429 ms |
+
+No score below 100/100 and no leak, so no prompt was touched.
+
+**Decisions taken in this session, open for review**
+- Network first has no timeout. On a network that hangs instead of failing, the reader waits for the browser's own timeout before the saved copy shows. A timeout of 5 to 8 seconds for page loads would show the copy sooner, at the cost of a stale page on a slow but working line.
+- The banner also shows after a single failed poll while the browser says online, for the 5 seconds until the next one: the board really did not refresh.
+- The board's banner time is the `now` of the cards on screen rather than the worker's stored time; the two differ by the length of the request. The stored time is what the card and about pages show.
+- While offline, relative times and expiry on the cards are computed against the snapshot's time, consistent with "as of". A card that expired since still looks current against that time; the banner states the time.
+- A page shown from the cache keeps its banner after the network returns, until it is reloaded, since its content is still the old copy. Only the board refreshes itself.
+- Cache sizes 60 pages and 200 build files.
+- The placeholder follows the mode as well as the suggestions.
+
+**Needed a human**
+- Review and merge. Nothing new in Vercel or the database.
+- In `docs/PLAN.md` under 2026-11-05, "N9, N10, N12 only if the day is clear" becomes N9 done (this PR) with N10 and N12 still open. No line exists for the peace-mode questions or the eval refresh; one line each if wanted.
+- After the deploy: open the live board once on a phone, switch to airplane mode, reload: the board and its banner should show. The worker takes over each open page on its next load after every deploy.
+- `docs/PRIVACY.md` (owned by `day5-trust` today): one paragraph on the offline copy, from the retention paragraph above.
+- The acceptance-run skill's curl for `/api/process/<id>` has no JSON body; the route answers 400 without `{"device_id": ...}`.
+
+## 2026-11-04 (Wed), reader confirmations, shared ids, usage and placeholder checks
+
+**Model:** `claude-opus-5-5` in Claude Code, implementation role, in its own worktree (branch `day5-trust`) beside the `day5-offline` session, whose files were left alone.
+
+**Done**
+- **N6 reader confirmations.** Migration `0006_card_reactions.sql` (idempotent): table `card_reactions` (card, device id as uuid, `still_true` or `no_longer_true`, `created_at`, `purge_after` copied from the card, primary key on card and device, cascade on card delete, RLS on with no policies), an index on `(card_id, kind)`, a count function `card_reaction_counts(uuid[])` executable by the service role only, and a new cards trigger (below). `POST /api/cards/[id]/react` with `{device_id, kind}` upserts the device's reaction on a public card and answers with the card's new counts and nothing else; `DELETE` with `{device_id}` takes it back. 404 for an unknown, held or hidden card and for a malformed id, 400 for a bad kind or device id, 429 with `Retry-After: 3600` past 30 reactions per device per hour. `still_true` moves `last_confirmed_at` to now, the line readers already see as "Last confirmed". `listPublicCards` and `getPublicCard` carry `reactions: {still_true, no_longer_true}` from one count query per read (`lib/db/reactions.ts`); a database without the function logs and shows zeros instead of failing. UI: `components/board/CardReactions.tsx` in the card sheet and on the card page, two 44 px buttons with their counts and `aria-pressed`, the device's choice kept in its own browser (`lib/cards/reactions.ts`, `useSyncExternalStore`), counts updated from the route's answer, the card page refreshing after a tap. `CardItem` shows "Readers report this may no longer be true" when two or more devices said so; it is in the button's accessible name and never hides the card. Nine `react.*` keys appended at the end of the five message files. An update from reconcile clears the card's reactions; the purge job deletes reactions past their own `purge_after` besides the cascade; `docs/PRIVACY.md` has a retention row and principle 8 names the use of the device id.
+- **One module for ids.** `lib/ids.ts` exports `UUID_RE` and `isUuid(value: unknown): value is string`, used by the trace, masked and admin routes, `lib/db/public-card.ts` and the new route. The admin copy was case-sensitive; all are case-insensitive now. `app/b/[slug]/c/[id]/page.tsx` had no copy of its own: it goes through `loadPublicCard`.
+- **Usage for rejected responses.** `withUsage` now takes `(meter) => call(..., { onUsage: meter })`. Each wrapper (`extract`, `translate`, `reconcile`, `ask`, `maskBoxes` through `maskScreenshot`) reports the token counts right after the API returns, before it reads the stop reason or parses anything, and `withUsage` records every reported response in a `finally`. A refusal, output that is not JSON or a phone number in a translation now counts toward `DAILY_CLAUDE_CALL_CAP`, and the retry after it counts again. An API error before any response records nothing; `BusyError` comes from the cap check before the call, as before. Noted in `lib/claude/README.md`.
+- **Reader taps and the confirmation line (review fix).** "Last confirmed" on the sheet and card page used to move only when a second source merged; it now also moves on a device's first "still true" on a card that has not expired. A toggle never re-bumps it, and an expired card keeps its outdated badge without a fresh confirmation beside it.
+- **Placeholders survive translation.** In `validateTranslateResult`, every bracketed token (［…］, 〔…〕, [...]) in an item's Japanese or English source must appear in each target of that item, as often as in the source that has it most often. A language that loses one is dropped from that item only, title and body together, with a warning that carries counts and no text; it stays missing on the card (readers see the fallback) and the next sweep asks again. The rest of the batch is kept. `scripts/eval.ts` has no hook for translate checks, so `scripts/check-placeholders.ts` covers the rule on fixed strings without the API (`node --import=tsx scripts/check-placeholders.ts`, 17 checks). The translate prompt now says the rule is enforced.
+
+**Why a reaction is a signal and not a vote.** A tap says what one reader saw at one moment from one anonymous browser id that costs nothing to replace. It carries no statement, no time range, no source, so it cannot be weighed the way reconcile weighs a notice against a chat message, and a few taps must never outrank an official notice. The board organizes what neighbours dropped in; only a new source through extract and reconcile changes what a card says. So a reaction changes nothing on the card: no hide, no conflict, no source count, no trust level. `still_true` moves the "Last confirmed" time, which is a fact about the reading, not the content. `no_longer_true` from two devices adds a hint line that sends the reader to check, with the counts beside the buttons for anyone who wants the numbers. That is also why the PLAN line's "or opens a conflict" was not built: a conflict is between two statements, and a tap is not one. Reactions describe the content as it was when tapped, so an update that replaces the content clears them, as it already resets the source count and the last confirmation, and a choice remembered in the browser from before the update stops showing as pressed.
+
+**Acceptance** (dev server on port 3450 against the shared Supabase project after migration 0006; throwaway board `trust-acceptance`, a copy of the 武蔵小杉 row; drop-ins through the two routes the browser calls; Playwright 1.62 Chromium at 390 px with two separate browser contexts as two devices; the live board was not touched)
+
+| step | what | result |
+|---|---|---|
+| 1 | `p02` water notice photo | `create`, 22 s to `done` (extract 7.5 s, reconcile 0.2 s), cards API shows `reactions` 0 and 0 |
+| 2 | `p06` rumour text | held, 18 s |
+| 3 | device A taps "Still true" in the sheet | count 1, `aria-pressed` true, `last_confirmed_at` null to now, `updated_at` unchanged, buttons 44 px |
+| 4 | device A taps "No longer true" | counts 0 and 1, pressed moves (upsert), `last_confirmed_at` not moved again, no hint with one report |
+| 5 | device B taps "No longer true" | counts 0 and 2; within one 5 s poll, without a reload, the card item shows the hint and its accessible name includes it; the card stays on the board; device B saw A's tap only as a count |
+| 6 | device B on the card page | its choice shown as pressed with 2; a tap takes it back (DELETE): 1, unpressed, 1 after a reload; the hint is gone |
+| 7 | device A reopens the sheet, a third context in Japanese | A's choice still pressed from its browser; この情報はまだ正しいですか？ with まだ正しい and もう違う |
+| 8 | privacy | neither device id in the cards API or the card page HTML; the anon key is refused on the count function (42501) and sees 0 rows in the table |
+| 9 | route errors | held card POST and DELETE 404, unknown uuid 404, malformed id 404, bad kind 400, bad device 400, no body 400, GET 405 |
+| 10 | 429 | one device: 30 taps (POST and DELETE in turn) 200, the 31st 429 with `Retry-After: 3600`; a device with 30 reactions set this hour (seeded on 30 hidden cards of the throwaway board): its first tap 429; a fresh device 200 |
+| 11 | rows | each reaction's `purge_after` equals the card's; `updated_at` unchanged through every confirmation of steps 3 to 10 |
+| 12 | `p07` time change photo | `update` onto the same card, 24 s (extract 8.9 s, reconcile 3.6 s, translate 8.6 s); its 2 reactions cleared, `last_confirmed_at` reset; a choice stored before the update renders unpressed, one stored after renders pressed |
+| 13 | delete the board | 32 cards, 3 sources, 3 submissions, 2 storage objects, 1 device removed; `card_reactions` 30 rows to 0 through the cascade |
+
+Playwright: 24 of 24 checks after one test fix (a step read the list before its next poll). The Next dev overlay then showed two issues: `CardReactions` and `ReadAloud` were siblings with the same `key={card.id}`. Fixed with a key of its own; no console errors on the board or the card page afterwards.
+
+**Other measurements**
+- `scripts/check-placeholders.ts`: 17 of 17 (tokens, kept, bracket kind changed, brackets dropped, inside altered, one of two occurrences dropped, per-item and per-language drop, a phone number still fails the whole call).
+- Usage: a one-off script against `usage_daily` (outside the repo, deleted): a response whose check threw added 1 call; an error before any response added nothing. That test call (0 tokens) is in today's counter.
+- `pnpm eval --no-write` after the placeholder and prompt change: 100/100 fields, 0 PII leaks, 0 invented facts, risk flags 15/15, six languages on every fact 15/15 (no language dropped by the placeholder check), extract median 8383 ms, translate median 9410 ms.
+- `pnpm typecheck`, `pnpm lint`, `pnpm build` clean.
+
+**Decisions taken in this session, open for review**
+- Migration 0006 replaces the cards `updated_at` trigger: an update that changes nothing but `last_confirmed_at` keeps the row's `updated_at`. Reconcile and translate write under the `updated_at` they read; without this a reader's tap during a translate would make that write lose its guard. Every other update stamps `updated_at` as before.
+- Two limits at 30 an hour: the durable one counts the device's rows set or changed in the last hour (across instances); a per-instance counter of every tap, take-backs included, stops toggling on one card (best effort, like the ask limit). A device repeating `still_true` without changing it does not move `last_confirmed_at` again.
+- The hint needs two `no_longer_true` and ignores how many said `still_true`: it asks the reader to check, it does not decide.
+- Reactions inherit the card's `purge_after` when set; the purge job deletes them on that date even if a later merge extended the card. A reaction made before the extension was about the card as it stood then.
+- The device id must be a full uuid (`isUuid`), stricter than the submissions route's `/^[0-9a-f-]{36}$/`, because the column is `uuid`; ids from `crypto.randomUUID()` pass. The looser pattern in the submissions and ask routes and in `lib/device.ts` was left as it is.
+- Placeholders match by what is inside the brackets with any of the three bracket kinds, width folded. Two edge cases stay open: a Japanese ［名前］ beside an English [name] would require both in every target, and an English title with an editorial bracket such as [Update] would count as a placeholder. Either keeps that language on its fallback; none of the fixtures or seed cards has one.
+- Before hydration the buttons render unpressed (the server cannot read the browser's choice); the pressed state appears once the page hydrates.
+
+**Files of the other session.** None edited. `BoardView` already passes polled cards to `CardItem` and the sheet, so counts and the hint arrive with its 5 second poll unchanged. The acceptance-run skill's curl line for `/api/process/<id>` lacks the `{"device_id"}` JSON body the route requires (the `day5-offline` note says the same).
+
+**Needed a human**
+- Migration 0006 was applied to the shared project by this session after the human allowed it (the first attempt was blocked by the permission check); nothing new in Vercel.
+- Review and merge the PR. Tick in `docs/PLAN.md`: N6 in the nice-to-have list ("Done 2026-11-04") and "N6 reader confirmations" under 2026-11-05.
+- The Korean and Vietnamese `react.*` strings are mine; add them to the native read on 11/05.

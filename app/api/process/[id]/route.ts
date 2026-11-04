@@ -99,10 +99,9 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
         await setStage(id, "extracting");
         send({ event: "stage", data: { stage: "extracting" } });
-        const outcome = await withUsage(async () => {
-          const o = await extract(board, { image, text: sub.text_raw ?? undefined });
-          return { value: o, inputTokens: o.usage.inputTokens, outputTokens: o.usage.outputTokens };
-        });
+        const outcome = await withUsage((onUsage) =>
+          extract(board, { image, text: sub.text_raw ?? undefined }, { onUsage }),
+        );
 
         const flagged = outcome.result.facts.flatMap((f) => f.risk_flags);
         const heldReason = flagged.length ? Array.from(new Set(flagged)).join(",") : null;
@@ -242,10 +241,7 @@ function decideWithClaude(board: Board, submissionId: string): DecideFn {
       const outcome =
         candidates.length === 0
           ? await reconcile(board, fact, candidates)
-          : await withUsage(async () => {
-              const o = await reconcile(board, fact, candidates);
-              return { value: o, inputTokens: o.usage.inputTokens, outputTokens: o.usage.outputTokens };
-            });
+          : await withUsage((onUsage) => reconcile(board, fact, candidates, { onUsage }));
       const d = outcome.decision;
       console.log(
         `reconcile ${submissionId}: ${d.action} ${d.target_card_id ?? "-"} over ${candidates.length} candidates` +
@@ -277,10 +273,7 @@ async function maskWithoutBlocking(
   mime: StrippableMime,
 ): Promise<MaskedScreenshot | null> {
   try {
-    const masked = await withUsage(async () => {
-      const m = await maskScreenshot(bytes, mime);
-      return { value: m, inputTokens: m.outcome.usage.inputTokens, outputTokens: m.outcome.usage.outputTokens };
-    });
+    const masked = await withUsage((onUsage) => maskScreenshot(bytes, mime, { onUsage }));
     const o = masked.outcome;
     console.log(
       `masking ${submissionId}: ${masked.boxes.length} boxes (${masked.drawn.length} drawn) in ${o.latencyMs} ms on ${o.model}` +
@@ -311,10 +304,7 @@ const SWEEP_LIMIT = 3;
  */
 async function translateWithRetry(board: Board, submissionId: string, cardIds: string[], attempts = 2): Promise<FillOutcome | null> {
   const translator = (items: TranslateItem[], langs: readonly TranslateLang[]) =>
-    withUsage(async () => {
-      const o = await translate(board, items, langs);
-      return { value: o, inputTokens: o.usage.inputTokens, outputTokens: o.usage.outputTokens };
-    });
+    withUsage((onUsage) => translate(board, items, langs, { onUsage }));
   for (let attempt = 1; attempt <= attempts; attempt++) {
     try {
       return await fillCardLanguages(board, cardIds, { translator });

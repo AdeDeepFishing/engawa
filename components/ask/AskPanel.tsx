@@ -6,12 +6,16 @@ import type { AskAnswer, AskTurn } from "@/lib/claude/ask";
 import { getDeviceId } from "@/lib/device";
 import type { MessageKey } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n/LangProvider";
-import type { Card } from "@/lib/types";
+import type { BoardMode, Card } from "@/lib/types";
 
 const MAX_QUESTION_CHARS = 500;
 /** Question and answer pairs kept on screen; the oldest drops off. Client state only, never stored. */
 const MAX_TURNS = 5;
-const SUGGESTIONS: MessageKey[] = ["ask.suggest_1", "ask.suggest_2", "ask.suggest_3"];
+/** Questions a reader of this kind of board is likely to have, so a tap does not land on "no information yet". */
+const SUGGESTIONS: Record<BoardMode, MessageKey[]> = {
+  disaster: ["ask.suggest_1", "ask.suggest_2", "ask.suggest_3"],
+  peace: ["ask.suggest_peace_1", "ask.suggest_peace_2", "ask.suggest_peace_3"],
+};
 
 type Turn =
   | { id: number; question: string; kind: "loading" }
@@ -38,10 +42,13 @@ function answerText(answer: AskAnswer): string {
  */
 export function AskPanel({
   boardSlug,
+  mode,
   cards,
   onOpenCard,
 }: {
   boardSlug: string;
+  /** The board's mode picks the suggested questions. */
+  mode: BoardMode;
   /** Cards currently on the board, to label the chips. */
   cards: Card[];
   onOpenCard: (cardId: string) => void;
@@ -153,7 +160,7 @@ export function AskPanel({
         {t("ask.suggest_heading")}
       </p>
       <ul className="mt-2 flex flex-wrap gap-2" aria-labelledby="ask-suggest-heading" data-ask-suggestions>
-        {SUGGESTIONS.map((key) => {
+        {SUGGESTIONS[mode].map((key) => {
           const text = t(key);
           return (
             <li key={key}>
@@ -176,7 +183,7 @@ export function AskPanel({
           value={question}
           maxLength={MAX_QUESTION_CHARS}
           onChange={(e) => setQuestion(e.target.value)}
-          placeholder={t("ask.placeholder")}
+          placeholder={t(mode === "peace" ? "ask.placeholder_peace" : "ask.placeholder")}
           className="min-h-12 min-w-0 flex-1 rounded-xl border border-line bg-surface px-3 text-base"
         />
         <button

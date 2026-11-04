@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { anthropic, MODELS, type ModelId } from "./client";
+import type { UsageMeter } from "./usage";
 import { boardContext, nowJst, type ExtractFact } from "./extract";
 import { trustRank } from "@/lib/cards/trust";
 import { RECONCILE_ACTIONS } from "@/lib/types";
@@ -128,7 +129,7 @@ export async function reconcile(
   board: Board,
   fact: ExtractFact,
   candidates: ReconcileCandidate[],
-  options: { model?: ModelId; now?: Date } = {},
+  options: { model?: ModelId; now?: Date; onUsage?: UsageMeter } = {},
 ): Promise<ReconcileOutcome> {
   if (candidates.length === 0) {
     return {
@@ -170,6 +171,7 @@ export async function reconcile(
     cacheReadTokens: message.usage.cache_read_input_tokens ?? 0,
     cacheWriteTokens: message.usage.cache_creation_input_tokens ?? 0,
   };
+  options.onUsage?.(usage);
 
   let proposed: ReconcileDecision | null = null;
   if (message.stop_reason === "end_turn") {

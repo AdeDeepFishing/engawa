@@ -7,6 +7,7 @@
  */
 import { maskBoxes, type MaskBox, type MaskEffort, type MaskOutcome } from "@/lib/claude/mask";
 import type { ModelId } from "@/lib/claude/client";
+import type { UsageMeter } from "@/lib/claude/usage";
 import { drawMasks, type MaskStyle, type PixelBox } from "./mask";
 import { decodeRaster, encodeRaster, JPEG_QUALITY, MODEL_LONG_EDGE, resizeToFit } from "./raster";
 import type { StrippableMime } from "./strip";
@@ -48,7 +49,7 @@ export interface MaskedScreenshot {
 export async function maskScreenshot(
   bytes: Uint8Array,
   mime: StrippableMime,
-  options: { model?: ModelId; effort?: MaskEffort; style?: MaskStyle } = {},
+  options: { model?: ModelId; effort?: MaskEffort; style?: MaskStyle; onUsage?: UsageMeter } = {},
 ): Promise<MaskedScreenshot> {
   const original = decodeRaster(bytes, mime);
   const { raster: small, scaleX, scaleY } = resizeToFit(original, MODEL_LONG_EDGE);
@@ -57,7 +58,7 @@ export async function maskScreenshot(
   const outcome = await maskBoxes(
     { data: Buffer.from(modelBytes).toString("base64"), mediaType: "image/jpeg" },
     { width: small.width, height: small.height },
-    { model: options.model, effort: options.effort },
+    { model: options.model, effort: options.effort, onUsage: options.onUsage },
   );
   const boxes: MaskBox[] = outcome.result.boxes.map((b) => {
     const x0 = Math.max(0, Math.floor(b.x / scaleX));

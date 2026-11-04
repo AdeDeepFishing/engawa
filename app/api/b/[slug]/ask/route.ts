@@ -92,10 +92,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
     return NextResponse.json({ answer: noInformationAnswer(lang) }, { headers: { "Cache-Control": "no-store" } });
   }
   try {
-    const outcome = await withUsage(async () => {
-      const o = await ask(board, cards, question, lang, { history });
-      return { value: o, inputTokens: o.usage.inputTokens, outputTokens: o.usage.outputTokens };
-    });
+    const outcome = await withUsage((onUsage) => ask(board, cards, question, lang, { history, onUsage }));
     return NextResponse.json(
       { answer: outcome.answer },
       { headers: { "Cache-Control": "no-store" } },
