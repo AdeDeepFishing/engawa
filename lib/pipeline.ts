@@ -14,6 +14,8 @@ import {
   writeCardsForSubmission,
   type DecideFn,
 } from "@/lib/db/submissions";
+import { cardChanges } from "@/lib/push/rules";
+import { notifyCards } from "@/lib/push/send";
 import { isChatPlatform, type Board, type ReconcileAction, type Submission } from "@/lib/types";
 import { maskingEnabled, maskScreenshot, type MaskedScreenshot } from "@/lib/image/mask-pipeline";
 import { sniffImage, type StrippableMime } from "@/lib/image/strip";
@@ -35,6 +37,12 @@ import type { SseEvent } from "@/lib/sse";
  *   done   {status, card_ids, public_count, held_count, note_for_uploader,
  *           actions, latency_ms, reconcile_ms, translate_ms, translated, masked}
  *   failed {error, message}
+ *
+ * Web push starts as soon as the cards are written (lib/push/send.ts): the
+ * devices that opted in on the board get official and danger cards before
+ * translate even begins. The send runs beside the rest of the pipeline, and
+ * the pipeline only waits for it at the very end, after its last event, so
+ * the function stays alive until the push services answered.
  *
  * Extract writes three languages so the card shows sooner; the other three
  * come from one translate call after the submission is finished (status
@@ -84,6 +92,7 @@ export async function runPipeline(
 ): Promise<PipelineResult> {
   const id = sub.id;
   const isImage = sub.input_kind === "image";
+  let pushing: Promise<void> | null = null;
   try {
     let image: { data: string; mediaType: StrippableMime } | undefined;
     let stored: { bytes: Uint8Array; mime: StrippableMime } | undefined;
@@ -130,6 +139,7 @@ export async function runPipeline(
       extractModel: outcome.model,
     });
     const reconcileMs = Math.round(performance.now() - reconcileStarted);
+    pushing = notifyCards(board, cardChanges(written));
 
     // An emergency from the city's broadcast mail (an evacuation order, a
     // tsunami warning) switches a peace board to disaster as its card lands.
@@ -227,6 +237,9 @@ export async function runPipeline(
     await markFailed(id, `${code}: ${message}`).catch(() => undefined);
     emit({ event: "failed", data: { error: code, message } });
     return { ok: false, error: code, message };
+  } finally {
+    // Cards written before a later step failed are on the board: their alerts go out all the same.
+    if (pushing) await pushing;
   }
 }
 

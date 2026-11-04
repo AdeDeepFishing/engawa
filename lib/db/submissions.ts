@@ -172,8 +172,8 @@ export interface WrittenCards {
   publicIds: string[];
   heldIds: string[];
   latestPurgeAfter: string | null;
-  /** One entry per fact, in order: what reconcile did and to which card. */
-  decisions: { action: ReconcileAction; card_id: string; reason: string }[];
+  /** One entry per fact, in order: what reconcile did and to which card; `raised` when a merge raised the card's source. */
+  decisions: { action: ReconcileAction; card_id: string; reason: string; raised?: boolean }[];
 }
 
 /** Proposes a checked decision for one fact against its candidates (the route wires in Claude). */
@@ -225,7 +225,7 @@ export async function writeCardsForSubmission(
     if (!out.latestPurgeAfter || new Date(applied.purge_after) > new Date(out.latestPurgeAfter)) {
       out.latestPurgeAfter = applied.purge_after;
     }
-    out.decisions.push({ action: applied.action, card_id: applied.id, reason: applied.reason });
+    out.decisions.push({ action: applied.action, card_id: applied.id, reason: applied.reason, raised: applied.raised === true });
   }
   return out;
 }
