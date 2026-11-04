@@ -263,7 +263,7 @@ export function BoardView({
   const column = "md:min-h-0 md:overflow-y-auto md:pb-24 md:pt-4 lg:pb-8";
 
   return (
-    <div ref={rootRef} className="flex flex-1 flex-col md:h-dvh md:min-h-0 md:overflow-hidden">
+    <div ref={rootRef} className="flex flex-1 flex-col md:h-dvh md:flex-none md:overflow-hidden">
       <OfflineBanner message={offline ? t("offline.board_banner", { time: formatSnapshotTime(now, lang) }) : null} />
       <TopBar
         wide
