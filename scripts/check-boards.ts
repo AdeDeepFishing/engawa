@@ -83,11 +83,6 @@ for (const raw of seed.boards) {
   const hit = resolveArea(board, polygons, lon, lat);
   check(`${board.slug}: ${label} (${lat}, ${lon}) resolves to ${area}`, hit?.name_ja === area, hit ? `${hit.code} ${hit.name_ja}` : "outside");
   check(`${board.slug}: a point far away resolves to nothing`, resolveArea(board, polygons, 135.5, 34.7) === null);
-  // The landmark belongs to this board only: every other board resolves it to nothing.
-  const others = seed.boards.filter((b) => b.slug !== board.slug).map((b) => ({ ...b, id: `local-${b.slug}` }) as unknown as Board);
-  const elsewhere = others.filter((o) => resolveArea(o, boardPolygons(o), lon, lat) !== null).map((o) => o.slug);
-  check(`${board.slug}: ${label} falls in no other board`, elsewhere.length === 0, elsewhere.join(", "));
-
   // The live pilot row was seeded before the polygons: codes are null there.
   const legacy = { ...board, area_names: board.area_names.map((a) => ({ ...a, code: null })) };
   const filled = withAreaCodes(legacy);

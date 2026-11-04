@@ -2476,7 +2476,7 @@
           "kind": "park",
           "verified": false,
           "name_ja": "大通公園",
-          "address_ja": "大通西1丁目～12丁目",
+          "address_ja": "大通西1丁目",
           "notes_ja": "札幌市は市内のすべての公園を一時避難場所に指定している。市の一覧に大通公園の名前はなく、個別の指定は未確認。一時避難場所は身の安全を確保する場所。冬の地震では、指定された小中学校などへ速やかに避難する（札幌市「避難の心得」）",
           "aliases": [
             "大通り公園",
@@ -2741,7 +2741,7 @@
           "kind": "commuter_shelter",
           "verified": true,
           "name_ja": "札幌駅前通地下歩行空間",
-          "address_ja": "北3条西3丁目～大通西3丁目",
+          "address_ja": "北3条西3丁目",
           "notes_ja": "一時滞在施設（帰宅困難者を受け入れる）。通称チ・カ・ホ",
           "aliases": [
             "チ・カ・ホ",
@@ -2766,7 +2766,7 @@
           "kind": "commuter_shelter",
           "verified": true,
           "name_ja": "さっぽろ地下街オーロラタウン",
-          "address_ja": "大通西1丁目～3丁目",
+          "address_ja": "大通西1丁目",
           "notes_ja": "一時滞在施設（帰宅困難者を受け入れる）",
           "aliases": [
             "オーロラタウン",
@@ -2788,7 +2788,7 @@
           "kind": "commuter_shelter",
           "verified": true,
           "name_ja": "さっぽろ地下街ポールタウン",
-          "address_ja": "南1条西3丁目～南4条西3丁目",
+          "address_ja": "南1条西3丁目",
           "notes_ja": "一時滞在施設（帰宅困難者を受け入れる）",
           "aliases": [
             "ポールタウン",
@@ -2810,7 +2810,7 @@
           "kind": "commuter_shelter",
           "verified": true,
           "name_ja": "アピア",
-          "address_ja": "北5条西3丁目～4丁目",
+          "address_ja": "北5条西3丁目",
           "notes_ja": "一時滞在施設（帰宅困難者を受け入れる）。札幌駅の地下街",
           "aliases": [
             "札幌アピア",
@@ -3386,15 +3386,13 @@
         },
         {
           "id": "waterworks-hq",
-          "kind": "water_point",
+          "kind": "office",
           "verified": true,
           "name_ja": "福岡市水道局本庁舎（給水基地）",
           "address_ja": "博多駅前1丁目28-15",
           "notes_ja": "給水車に水を積む給水基地（給水車2台配備）。住民がここで水を受け取れるとは書かれていない。災害時の給水は開設された避難所などでの拠点給水（仮設水槽、応急給水栓）と給水車による運搬給水",
           "aliases": [
             "水道局本庁舎",
-            "福岡市水道局",
-            "水道局",
             "Fukuoka City Waterworks Bureau",
             "Waterworks Bureau head office",
             "福冈市水道局",
