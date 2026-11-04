@@ -159,7 +159,7 @@ export function CardDetail({
         ) : null}
         <dt className="text-muted">{t("sheet.sources")}</dt>
         <dd>
-          {sourceLabel(card.source_type, card.official_confirmed, lang)} ·{" "}
+          {sourceLabel(card.source_type, card.official_confirmed, lang, card.facts.platform)} ·{" "}
           {tCount("card.source_count", lang, card.source_count)}
           {card.last_confirmed_at ? (
             <span className="block text-muted">

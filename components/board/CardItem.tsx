@@ -97,7 +97,7 @@ export function CardItem({
             <p className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-base text-muted">
               <span>{when}</span>
               <span className={card.official_confirmed ? "font-semibold text-accent" : undefined}>
-                {sourceLabel(card.source_type, card.official_confirmed, lang)}
+                {sourceLabel(card.source_type, card.official_confirmed, lang, card.facts.platform)}
               </span>
               <span>{tCount("card.source_count", lang, card.source_count)}</span>
             </p>

@@ -50,7 +50,7 @@ export function HiddenDrawer({
                 {fallbackLangAttr(card, lang) ? <p className="mt-1 text-base text-muted">{t("card.translating")}</p> : null}
                 <p className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-base text-muted">
                   <span>{timeAgo(card.created_at, now, lang)}</span>
-                  <span>{sourceLabel(card.source_type, card.official_confirmed, lang)}</span>
+                  <span>{sourceLabel(card.source_type, card.official_confirmed, lang, card.facts.platform)}</span>
                 </p>
                 <p className="mt-1 text-base">
                   <span className="text-muted">{t("card.duplicate_of_prefix")}: </span>
