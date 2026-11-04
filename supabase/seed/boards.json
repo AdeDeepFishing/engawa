@@ -1015,6 +1015,1194 @@
           "area_name_ja": "神宮前6丁目"
         }
       ]
+    },
+    {
+      "slug": "mizonokuchi",
+      "name": {
+        "ja": "溝の口",
+        "en": "Mizonokuchi",
+        "zh": "沟之口",
+        "ko": "미조노쿠치",
+        "vi": "Mizonokuchi"
+      },
+      "mode": "peace",
+      "area_names": [
+        {
+          "code": "14134401101",
+          "name_ja": "溝口1丁目"
+        },
+        {
+          "code": "14134401102",
+          "name_ja": "溝口2丁目"
+        },
+        {
+          "code": "14134401103",
+          "name_ja": "溝口3丁目"
+        },
+        {
+          "code": "14134401104",
+          "name_ja": "溝口4丁目"
+        },
+        {
+          "code": "14134401105",
+          "name_ja": "溝口5丁目"
+        },
+        {
+          "code": "14134401106",
+          "name_ja": "溝口6丁目"
+        },
+        {
+          "code": "14134411001",
+          "name_ja": "久本1丁目"
+        },
+        {
+          "code": "14134411002",
+          "name_ja": "久本2丁目"
+        },
+        {
+          "code": "14134411003",
+          "name_ja": "久本3丁目"
+        },
+        {
+          "code": "14134410001",
+          "name_ja": "坂戸1丁目"
+        },
+        {
+          "code": "14134410002",
+          "name_ja": "坂戸2丁目"
+        },
+        {
+          "code": "14134410003",
+          "name_ja": "坂戸3丁目"
+        },
+        {
+          "code": "14134412101",
+          "name_ja": "下作延1丁目"
+        },
+        {
+          "code": "14134412102",
+          "name_ja": "下作延2丁目"
+        }
+      ],
+      "known_places": [
+        {
+          "id": "takatsu-es",
+          "kind": "shelter",
+          "verified": true,
+          "name_ja": "川崎市立高津小学校",
+          "address_ja": "溝口4-19-1",
+          "notes_ja": "応急給水拠点（貯水槽、100立方メートル）を併設",
+          "target_areas_ja": [
+            "溝口2丁目の一部",
+            "溝口3丁目の一部",
+            "溝口4丁目",
+            "溝口5丁目",
+            "溝口6丁目の一部",
+            "二子1丁目",
+            "二子2丁目"
+          ],
+          "aliases": [
+            "高津小学校",
+            "高津小",
+            "Takatsu Elementary",
+            "Takatsu Elementary School",
+            "高津小学",
+            "다카쓰 초등학교",
+            "Trường tiểu học Takatsu"
+          ],
+          "names": {
+            "en": "Takatsu Elementary School",
+            "zh": "高津小学",
+            "ko": "다카쓰 초등학교",
+            "vi": "Trường tiểu học Takatsu"
+          },
+          "area_name_ja": "溝口4丁目"
+        },
+        {
+          "id": "nishitakatsu-jhs",
+          "kind": "shelter",
+          "verified": true,
+          "name_ja": "川崎市立西高津中学校",
+          "address_ja": "久地1-10-1",
+          "notes_ja": "地域防災拠点",
+          "target_areas_ja": [
+            "久地1丁目の一部",
+            "久地2丁目",
+            "溝口6丁目の一部"
+          ],
+          "aliases": [
+            "西高津中学校",
+            "西高津中",
+            "Nishi-Takatsu Junior High School",
+            "西高津中学",
+            "니시타카쓰 중학교",
+            "Trường THCS Nishi-Takatsu"
+          ],
+          "names": {
+            "en": "Nishi-Takatsu Junior High School",
+            "zh": "西高津中学",
+            "ko": "니시타카쓰 중학교",
+            "vi": "Trường THCS Nishi-Takatsu"
+          },
+          "area_name_ja": "久地1丁目"
+        },
+        {
+          "id": "shimosakunobe-es",
+          "kind": "shelter",
+          "verified": true,
+          "name_ja": "川崎市立下作延小学校",
+          "address_ja": "下作延5-19-1",
+          "target_areas_ja": [
+            "下作延",
+            "下作延1丁目",
+            "下作延4丁目",
+            "下作延5丁目",
+            "下作延6丁目",
+            "下作延7丁目",
+            "溝口2丁目の一部",
+            "上作延の一部"
+          ],
+          "aliases": [
+            "下作延小学校",
+            "下作延小",
+            "Shimo-Sakunobe Elementary School",
+            "下作延小学",
+            "시모사쿠노베 초등학교",
+            "Trường tiểu học Shimo-Sakunobe"
+          ],
+          "names": {
+            "en": "Shimo-Sakunobe Elementary School",
+            "zh": "下作延小学",
+            "ko": "시모사쿠노베 초등학교",
+            "vi": "Trường tiểu học Shimo-Sakunobe"
+          },
+          "area_name_ja": "下作延5丁目"
+        },
+        {
+          "id": "takatsu-jhs",
+          "kind": "shelter",
+          "verified": true,
+          "name_ja": "川崎市立高津中学校",
+          "address_ja": "久本3-11-2",
+          "notes_ja": "地域防災拠点。久本小学校、市立高津高校と同じ対象町丁",
+          "target_areas_ja": [
+            "下作延2丁目の一部",
+            "久本1丁目",
+            "久本2丁目",
+            "久本3丁目",
+            "溝口1丁目の一部",
+            "溝口2丁目の一部",
+            "溝口3丁目の一部",
+            "坂戸1丁目の一部",
+            "坂戸3丁目の一部",
+            "二子3丁目",
+            "二子4丁目",
+            "二子5丁目",
+            "二子6丁目"
+          ],
+          "aliases": [
+            "高津中学校",
+            "高津中",
+            "Takatsu Junior High School",
+            "高津中学",
+            "다카쓰 중학교",
+            "Trường THCS Takatsu"
+          ],
+          "names": {
+            "en": "Takatsu Junior High School",
+            "zh": "高津中学",
+            "ko": "다카쓰 중학교",
+            "vi": "Trường THCS Takatsu"
+          },
+          "area_name_ja": "久本3丁目"
+        },
+        {
+          "id": "hisamoto-es",
+          "kind": "shelter",
+          "verified": true,
+          "name_ja": "川崎市立久本小学校",
+          "address_ja": "久本3-11-3",
+          "notes_ja": "高津中学校、市立高津高校と同じ対象町丁。応急給水拠点（貯水槽、100立方メートル）を併設",
+          "target_areas_ja": [
+            "下作延2丁目の一部",
+            "久本1丁目",
+            "久本2丁目",
+            "久本3丁目",
+            "溝口1丁目の一部",
+            "溝口2丁目の一部",
+            "溝口3丁目の一部",
+            "坂戸1丁目の一部",
+            "坂戸3丁目の一部",
+            "二子3丁目",
+            "二子4丁目",
+            "二子5丁目",
+            "二子6丁目"
+          ],
+          "aliases": [
+            "久本小学校",
+            "久本小",
+            "Hisamoto Elementary School",
+            "久本小学",
+            "히사모토 초등학교",
+            "Trường tiểu học Hisamoto"
+          ],
+          "names": {
+            "en": "Hisamoto Elementary School",
+            "zh": "久本小学",
+            "ko": "히사모토 초등학교",
+            "vi": "Trường tiểu học Hisamoto"
+          },
+          "area_name_ja": "久本3丁目"
+        },
+        {
+          "id": "takatsu-hs",
+          "kind": "shelter",
+          "verified": true,
+          "name_ja": "川崎市立高津高等学校",
+          "address_ja": "久本3-11-1",
+          "notes_ja": "高津中学校、久本小学校と同じ対象町丁",
+          "target_areas_ja": [
+            "下作延2丁目の一部",
+            "久本1丁目",
+            "久本2丁目",
+            "久本3丁目",
+            "溝口1丁目の一部",
+            "溝口2丁目の一部",
+            "溝口3丁目の一部",
+            "坂戸1丁目の一部",
+            "坂戸3丁目の一部",
+            "二子3丁目",
+            "二子4丁目",
+            "二子5丁目",
+            "二子6丁目"
+          ],
+          "aliases": [
+            "市立高津高校",
+            "高津高校",
+            "Takatsu High School",
+            "Kawasaki Municipal Takatsu High School",
+            "川崎市立高津高中",
+            "가와사키 시립 다카쓰 고등학교",
+            "Trường THPT Takatsu"
+          ],
+          "names": {
+            "en": "Kawasaki Municipal Takatsu High School",
+            "zh": "川崎市立高津高中",
+            "ko": "가와사키 시립 다카쓰 고등학교",
+            "vi": "Trường THPT Takatsu"
+          },
+          "area_name_ja": "久本3丁目"
+        },
+        {
+          "id": "higashitakatsu-jhs",
+          "kind": "shelter",
+          "verified": true,
+          "name_ja": "川崎市立東高津中学校",
+          "address_ja": "末長4-1-1",
+          "notes_ja": "地域防災拠点",
+          "target_areas_ja": [
+            "坂戸3丁目の一部",
+            "末長4丁目"
+          ],
+          "aliases": [
+            "東高津中学校",
+            "東高津中",
+            "Higashi-Takatsu Junior High School",
+            "东高津中学",
+            "히가시타카쓰 중학교",
+            "Trường THCS Higashi-Takatsu"
+          ],
+          "names": {
+            "en": "Higashi-Takatsu Junior High School",
+            "zh": "东高津中学",
+            "ko": "히가시타카쓰 중학교",
+            "vi": "Trường THCS Higashi-Takatsu"
+          },
+          "area_name_ja": "末長4丁目"
+        },
+        {
+          "id": "sakado-es",
+          "kind": "shelter",
+          "verified": true,
+          "name_ja": "川崎市立坂戸小学校",
+          "address_ja": "坂戸1-18-1",
+          "target_areas_ja": [
+            "溝口1丁目の一部",
+            "坂戸1丁目の一部",
+            "坂戸2丁目",
+            "北見方1丁目",
+            "北見方3丁目の一部"
+          ],
+          "aliases": [
+            "坂戸小学校",
+            "坂戸小",
+            "Sakado Elementary School",
+            "坂户小学",
+            "사카도 초등학교",
+            "Trường tiểu học Sakado"
+          ],
+          "names": {
+            "en": "Sakado Elementary School",
+            "zh": "坂户小学",
+            "ko": "사카도 초등학교",
+            "vi": "Trường tiểu học Sakado"
+          },
+          "area_name_ja": "坂戸1丁目"
+        },
+        {
+          "id": "nishikajigaya-es",
+          "kind": "shelter",
+          "verified": true,
+          "name_ja": "川崎市立西梶ヶ谷小学校",
+          "address_ja": "梶ヶ谷2-14-1",
+          "target_areas_ja": [
+            "下作延2丁目の一部",
+            "梶ヶ谷1丁目",
+            "梶ヶ谷2丁目",
+            "梶ヶ谷4丁目の一部",
+            "末長1丁目の一部"
+          ],
+          "aliases": [
+            "西梶ヶ谷小学校",
+            "西梶ヶ谷小",
+            "Nishi-Kajigaya Elementary School",
+            "西梶谷小学",
+            "니시카지가야 초등학교",
+            "Trường tiểu học Nishi-Kajigaya"
+          ],
+          "names": {
+            "en": "Nishi-Kajigaya Elementary School",
+            "zh": "西梶谷小学",
+            "ko": "니시카지가야 초등학교",
+            "vi": "Trường tiểu học Nishi-Kajigaya"
+          },
+          "area_name_ja": "梶ヶ谷2丁目"
+        },
+        {
+          "id": "mizonokuchi1-water",
+          "kind": "water_point",
+          "verified": true,
+          "name_ja": "溝口1丁目 応急給水拠点",
+          "address_ja": "溝口1-6-7",
+          "notes_ja": "セレサ川崎前（拠点名 溝口（２））",
+          "aliases": [
+            "溝口1丁目の給水所",
+            "セレサ川崎前 給水",
+            "溝口（２）",
+            "Mizonokuchi 1-chome water point",
+            "沟口1丁目供水点",
+            "미조노쿠치 1초메 급수소",
+            "Điểm cấp nước Mizonokuchi 1-chome"
+          ],
+          "names": {
+            "en": "Mizonokuchi 1-chome emergency water point",
+            "zh": "沟口1丁目应急供水点",
+            "ko": "미조노쿠치 1초메 응급 급수소",
+            "vi": "Điểm cấp nước khẩn cấp Mizonokuchi 1-chome"
+          },
+          "area_name_ja": "溝口1丁目"
+        },
+        {
+          "id": "mizonokuchi5-water",
+          "kind": "water_point",
+          "verified": true,
+          "name_ja": "溝口5丁目 応急給水拠点",
+          "address_ja": "溝口5-24",
+          "notes_ja": "クリオ溝の口壱番館西側（拠点名 溝口（１））",
+          "aliases": [
+            "溝口5丁目の給水所",
+            "クリオ溝の口壱番館 給水",
+            "溝口（１）",
+            "Mizonokuchi 5-chome water point",
+            "沟口5丁目供水点",
+            "미조노쿠치 5초메 급수소",
+            "Điểm cấp nước Mizonokuchi 5-chome"
+          ],
+          "names": {
+            "en": "Mizonokuchi 5-chome emergency water point",
+            "zh": "沟口5丁目应急供水点",
+            "ko": "미조노쿠치 5초메 응급 급수소",
+            "vi": "Điểm cấp nước khẩn cấp Mizonokuchi 5-chome"
+          },
+          "area_name_ja": "溝口5丁目"
+        },
+        {
+          "id": "mizonokuchi-sta",
+          "kind": "station",
+          "verified": true,
+          "name_ja": "溝の口駅",
+          "notes_ja": "東急 田園都市線・大井町線 溝の口駅（溝口2-1-1）とJR南武線 武蔵溝ノ口駅（溝口）の乗り換え駅",
+          "aliases": [
+            "武蔵溝ノ口駅",
+            "武蔵溝ノ口",
+            "JR武蔵溝ノ口駅",
+            "南武線 武蔵溝ノ口駅",
+            "東急溝の口駅",
+            "田園都市線 溝の口駅",
+            "大井町線 溝の口駅",
+            "溝ノ口駅",
+            "Mizonokuchi Station",
+            "Musashi-Mizonokuchi Station",
+            "Mizonokuchi Sta.",
+            "沟之口站",
+            "武藏沟之口站",
+            "미조노쿠치역",
+            "무사시미조노쿠치역",
+            "Ga Mizonokuchi"
+          ],
+          "names": {
+            "en": "Mizonokuchi Station",
+            "zh": "沟之口站",
+            "ko": "미조노쿠치역",
+            "vi": "Ga Mizonokuchi"
+          },
+          "area_name_ja": "溝口2丁目"
+        },
+        {
+          "id": "takatsu-ward-office",
+          "kind": "office",
+          "verified": true,
+          "name_ja": "高津区役所",
+          "address_ja": "下作延2-8-1",
+          "notes_ja": "応急給水拠点（区役所正面）",
+          "aliases": [
+            "区役所",
+            "高津区役所正面",
+            "Takatsu Ward Office",
+            "高津区政府",
+            "高津区役所",
+            "다카쓰 구청",
+            "Văn phòng quận Takatsu"
+          ],
+          "names": {
+            "en": "Takatsu Ward Office",
+            "zh": "高津区役所",
+            "ko": "다카쓰 구청",
+            "vi": "Văn phòng quận Takatsu"
+          },
+          "area_name_ja": "下作延2丁目"
+        },
+        {
+          "id": "takatsu-shiminkan",
+          "kind": "commuter_shelter",
+          "verified": true,
+          "name_ja": "川崎市高津市民館",
+          "address_ja": "溝口1-4-1",
+          "notes_ja": "帰宅困難者用一時滞在施設（武蔵溝ノ口駅）。避難所補完施設でもある",
+          "aliases": [
+            "高津市民館",
+            "市民館",
+            "Takatsu Civic Hall",
+            "Takatsu Shiminkan",
+            "高津市民馆",
+            "다카쓰 시민관",
+            "Nhà văn hóa Takatsu"
+          ],
+          "names": {
+            "en": "Takatsu Civic Hall",
+            "zh": "高津市民馆",
+            "ko": "다카쓰 시민관",
+            "vi": "Nhà văn hóa Takatsu"
+          },
+          "area_name_ja": "溝口1丁目"
+        },
+        {
+          "id": "nocty1",
+          "kind": "commuter_shelter",
+          "verified": true,
+          "name_ja": "ノクティ１ビル",
+          "address_ja": "溝口1-3-1",
+          "notes_ja": "帰宅困難者用一時滞在施設（武蔵溝ノ口駅）",
+          "aliases": [
+            "ノクティ1",
+            "ノクティ１",
+            "ノクティ",
+            "Nocty 1",
+            "Nocty",
+            "Nocty 1大楼",
+            "노쿠티 1 빌딩",
+            "Tòa nhà Nocty 1"
+          ],
+          "names": {
+            "en": "Nocty 1 Building",
+            "zh": "Nocty 1大楼",
+            "ko": "노쿠티 1 빌딩",
+            "vi": "Tòa nhà Nocty 1"
+          },
+          "area_name_ja": "溝口1丁目"
+        },
+        {
+          "id": "hotel-mets-mizonokuchi",
+          "kind": "commuter_shelter",
+          "verified": true,
+          "name_ja": "ホテルメッツ溝ノ口",
+          "address_ja": "溝口1-1-5",
+          "notes_ja": "帰宅困難者用一時滞在施設（武蔵溝ノ口駅）",
+          "aliases": [
+            "ホテルメッツ",
+            "メッツ溝ノ口",
+            "Hotel Mets Mizonokuchi",
+            "Hotel Mets",
+            "Mets酒店沟之口",
+            "호텔 메츠 미조노쿠치",
+            "Khách sạn Mets Mizonokuchi"
+          ],
+          "names": {
+            "en": "Hotel Mets Mizonokuchi",
+            "zh": "Mets酒店沟之口",
+            "ko": "호텔 메츠 미조노쿠치",
+            "vi": "Khách sạn Mets Mizonokuchi"
+          },
+          "area_name_ja": "溝口1丁目"
+        },
+        {
+          "id": "tecno-kawasaki",
+          "kind": "commuter_shelter",
+          "verified": true,
+          "name_ja": "川崎市生活文化会館（てくのかわさき）",
+          "address_ja": "溝口1-6-10",
+          "notes_ja": "帰宅困難者用一時滞在施設（武蔵溝ノ口駅）",
+          "aliases": [
+            "てくのかわさき",
+            "生活文化会館",
+            "川崎市生活文化会館",
+            "Tecno Kawasaki",
+            "川崎市生活文化会馆",
+            "테크노 가와사키",
+            "Tecno Kawasaki hall"
+          ],
+          "names": {
+            "en": "Kawasaki Lifestyle and Culture Hall (Tecno Kawasaki)",
+            "zh": "川崎市生活文化会馆",
+            "ko": "가와사키시 생활문화회관 (테크노 가와사키)",
+            "vi": "Hội quán Văn hóa Đời sống Kawasaki (Tecno Kawasaki)"
+          },
+          "area_name_ja": "溝口1丁目"
+        },
+        {
+          "id": "scrum21",
+          "kind": "commuter_shelter",
+          "verified": true,
+          "name_ja": "川崎市男女共同参画センター（すくらむ２１）",
+          "address_ja": "溝口2-20-1",
+          "notes_ja": "帰宅困難者用一時滞在施設（武蔵溝ノ口駅）",
+          "aliases": [
+            "すくらむ21",
+            "すくらむ２１",
+            "男女共同参画センター",
+            "Scrum 21",
+            "Scrum21",
+            "川崎市男女共同参与中心",
+            "스크럼 21",
+            "Trung tâm Scrum 21"
+          ],
+          "names": {
+            "en": "Kawasaki Gender Equality Center (Scrum 21)",
+            "zh": "川崎市男女共同参与中心",
+            "ko": "가와사키시 남녀공동참획센터 (스크럼 21)",
+            "vi": "Trung tâm Bình đẳng giới Kawasaki (Scrum 21)"
+          },
+          "area_name_ja": "溝口2丁目"
+        },
+        {
+          "id": "kawasaki-daiichi-hotel",
+          "kind": "commuter_shelter",
+          "verified": true,
+          "name_ja": "川崎第一ホテル溝ノ口",
+          "address_ja": "溝口2-3-12",
+          "notes_ja": "帰宅困難者用一時滞在施設（武蔵溝ノ口駅）",
+          "aliases": [
+            "川崎第一ホテル",
+            "第一ホテル溝ノ口",
+            "Kawasaki Daiichi Hotel",
+            "川崎第一酒店沟之口",
+            "가와사키 다이이치 호텔",
+            "Khách sạn Kawasaki Daiichi"
+          ],
+          "names": {
+            "en": "Kawasaki Daiichi Hotel Mizonokuchi",
+            "zh": "川崎第一酒店沟之口",
+            "ko": "가와사키 다이이치 호텔 미조노쿠치",
+            "vi": "Khách sạn Kawasaki Daiichi Mizonokuchi"
+          },
+          "area_name_ja": "溝口2丁目"
+        },
+        {
+          "id": "midorigaoka-cemetery",
+          "kind": "park",
+          "verified": true,
+          "name_ja": "緑ケ丘霊園",
+          "notes_ja": "広域避難場所（大規模な火事）。上作延、下作延、久地4丁目地内。板の範囲の外側だが下作延に接する",
+          "aliases": [
+            "緑ヶ丘霊園",
+            "緑ケ丘",
+            "Midorigaoka Reien",
+            "Midorigaoka Cemetery",
+            "绿丘陵园",
+            "미도리가오카 영원",
+            "Nghĩa trang Midorigaoka"
+          ],
+          "names": {
+            "en": "Midorigaoka Cemetery",
+            "zh": "绿丘陵园",
+            "ko": "미도리가오카 영원",
+            "vi": "Nghĩa trang Midorigaoka"
+          },
+          "area_name_ja": "上作延"
+        }
+      ]
+    },
+    {
+      "slug": "ueno",
+      "name": {
+        "ja": "上野",
+        "en": "Ueno",
+        "zh": "上野",
+        "ko": "우에노",
+        "vi": "Ueno"
+      },
+      "mode": "peace",
+      "area_names": [
+        {
+          "code": "13106004001",
+          "name_ja": "上野1丁目"
+        },
+        {
+          "code": "13106004002",
+          "name_ja": "上野2丁目"
+        },
+        {
+          "code": "13106004003",
+          "name_ja": "上野3丁目"
+        },
+        {
+          "code": "13106004004",
+          "name_ja": "上野4丁目"
+        },
+        {
+          "code": "13106004005",
+          "name_ja": "上野5丁目"
+        },
+        {
+          "code": "13106004006",
+          "name_ja": "上野6丁目"
+        },
+        {
+          "code": "13106004007",
+          "name_ja": "上野7丁目"
+        },
+        {
+          "code": "13106003001",
+          "name_ja": "東上野1丁目"
+        },
+        {
+          "code": "13106003002",
+          "name_ja": "東上野2丁目"
+        },
+        {
+          "code": "13106003003",
+          "name_ja": "東上野3丁目"
+        },
+        {
+          "code": "13106003004",
+          "name_ja": "東上野4丁目"
+        },
+        {
+          "code": "13106003005",
+          "name_ja": "東上野5丁目"
+        },
+        {
+          "code": "13106003006",
+          "name_ja": "東上野6丁目"
+        },
+        {
+          "code": "131060060",
+          "name_ja": "上野公園"
+        },
+        {
+          "code": "13106013001",
+          "name_ja": "上野桜木1丁目"
+        },
+        {
+          "code": "13106013002",
+          "name_ja": "上野桜木2丁目"
+        },
+        {
+          "code": "13106005001",
+          "name_ja": "池之端1丁目"
+        }
+      ],
+      "known_places": [
+        {
+          "id": "kuromon-es",
+          "kind": "shelter",
+          "verified": true,
+          "name_ja": "黒門小学校",
+          "address_ja": "上野1-16-20",
+          "target_areas_ja": [
+            "上野1丁目",
+            "上野2丁目",
+            "上野3丁目",
+            "上野4丁目",
+            "上野5丁目の一部",
+            "上野6丁目",
+            "池之端1丁目の一部"
+          ],
+          "aliases": [
+            "黒門小",
+            "台東区立黒門小学校",
+            "Kuromon Elementary",
+            "Kuromon Elementary School",
+            "黑门小学",
+            "구로몬 초등학교",
+            "Trường tiểu học Kuromon"
+          ],
+          "names": {
+            "en": "Kuromon Elementary School",
+            "zh": "黑门小学",
+            "ko": "구로몬 초등학교",
+            "vi": "Trường tiểu học Kuromon"
+          },
+          "area_name_ja": "上野1丁目"
+        },
+        {
+          "id": "okachimachi-taito-jhs",
+          "kind": "shelter",
+          "verified": true,
+          "name_ja": "御徒町台東中学校",
+          "address_ja": "台東4-13-16",
+          "target_areas_ja": [
+            "上野5丁目の一部",
+            "台東1丁目の一部",
+            "台東2丁目の一部",
+            "台東3丁目の一部",
+            "台東4丁目の一部"
+          ],
+          "aliases": [
+            "御徒町台東中",
+            "台東区立御徒町台東中学校",
+            "Okachimachi Taito Junior High School",
+            "御徒町台东中学",
+            "오카치마치 다이토 중학교",
+            "Trường THCS Okachimachi Taito"
+          ],
+          "names": {
+            "en": "Okachimachi Taito Junior High School",
+            "zh": "御徒町台东中学",
+            "ko": "오카치마치 다이토 중학교",
+            "vi": "Trường THCS Okachimachi Taito"
+          },
+          "area_name_ja": "台東4丁目"
+        },
+        {
+          "id": "ueno-es",
+          "kind": "shelter",
+          "verified": true,
+          "name_ja": "上野小学校",
+          "address_ja": "東上野6-16-8",
+          "notes_ja": "旧下谷小学校が避難所だった4町会（東上野宮元、東上野稲神、東上野神吉、東上野四丁目本）は当面の間この避難所",
+          "target_areas_ja": [
+            "東上野3丁目の一部",
+            "東上野4丁目の一部",
+            "東上野5丁目",
+            "東上野6丁目"
+          ],
+          "aliases": [
+            "上野小",
+            "台東区立上野小学校",
+            "Ueno Elementary",
+            "Ueno Elementary School",
+            "上野小学",
+            "우에노 초등학교",
+            "Trường tiểu học Ueno"
+          ],
+          "names": {
+            "en": "Ueno Elementary School",
+            "zh": "上野小学",
+            "ko": "우에노 초등학교",
+            "vi": "Trường tiểu học Ueno"
+          },
+          "area_name_ja": "東上野6丁目"
+        },
+        {
+          "id": "taito-rojin-center",
+          "kind": "shelter",
+          "verified": true,
+          "name_ja": "老人福祉センター",
+          "address_ja": "東上野2-25-14",
+          "target_areas_ja": [
+            "東上野1丁目",
+            "東上野2丁目の一部"
+          ],
+          "aliases": [
+            "台東区老人福祉センター",
+            "Taito Senior Welfare Center",
+            "Senior Welfare Center",
+            "老人福利中心",
+            "노인복지센터",
+            "Trung tâm Phúc lợi Người cao tuổi"
+          ],
+          "names": {
+            "en": "Senior Welfare Center",
+            "zh": "老人福利中心",
+            "ko": "노인복지센터",
+            "vi": "Trung tâm Phúc lợi Người cao tuổi"
+          },
+          "area_name_ja": "東上野2丁目"
+        },
+        {
+          "id": "higashiueno-kuminkan",
+          "kind": "shelter",
+          "verified": true,
+          "name_ja": "東上野区民館",
+          "address_ja": "東上野3-24-6",
+          "target_areas_ja": [
+            "東上野2丁目の一部",
+            "東上野3丁目の一部"
+          ],
+          "aliases": [
+            "区民館",
+            "Higashi-Ueno Community Hall",
+            "东上野区民馆",
+            "히가시우에노 구민관",
+            "Nhà sinh hoạt cộng đồng Higashi-Ueno"
+          ],
+          "names": {
+            "en": "Higashi-Ueno Community Hall",
+            "zh": "东上野区民馆",
+            "ko": "히가시우에노 구민관",
+            "vi": "Nhà sinh hoạt cộng đồng Higashi-Ueno"
+          },
+          "area_name_ja": "東上野3丁目"
+        },
+        {
+          "id": "shinobugaoka-jhs",
+          "kind": "shelter",
+          "verified": true,
+          "name_ja": "忍岡中学校",
+          "address_ja": "上野公園18-20",
+          "notes_ja": "旧坂本小学校が避難所だった3町会（坂本、坂本二丁目、下谷1丁目）は当面の間この避難所",
+          "target_areas_ja": [
+            "上野公園",
+            "上野7丁目の一部",
+            "東上野4丁目の一部",
+            "上野桜木1丁目の一部",
+            "下谷1丁目の一部",
+            "下谷2丁目の一部",
+            "根岸1丁目の一部",
+            "根岸3丁目の一部"
+          ],
+          "aliases": [
+            "忍岡中",
+            "台東区立忍岡中学校",
+            "Shinobugaoka Junior High School",
+            "忍冈中学",
+            "시노부가오카 중학교",
+            "Trường THCS Shinobugaoka"
+          ],
+          "names": {
+            "en": "Shinobugaoka Junior High School",
+            "zh": "忍冈中学",
+            "ko": "시노부가오카 중학교",
+            "vi": "Trường THCS Shinobugaoka"
+          },
+          "area_name_ja": "上野公園"
+        },
+        {
+          "id": "ueno-jhs",
+          "kind": "shelter",
+          "verified": true,
+          "name_ja": "上野中学校",
+          "address_ja": "上野桜木1-14-55",
+          "target_areas_ja": [
+            "上野桜木1丁目の一部",
+            "上野桜木2丁目",
+            "谷中6丁目の一部",
+            "谷中7丁目の一部"
+          ],
+          "aliases": [
+            "上野中",
+            "台東区立上野中学校",
+            "Ueno Junior High School",
+            "上野中学",
+            "우에노 중학교",
+            "Trường THCS Ueno"
+          ],
+          "names": {
+            "en": "Ueno Junior High School",
+            "zh": "上野中学",
+            "ko": "우에노 중학교",
+            "vi": "Trường THCS Ueno"
+          },
+          "area_name_ja": "上野桜木1丁目"
+        },
+        {
+          "id": "shinobugaoka-es",
+          "kind": "shelter",
+          "verified": true,
+          "name_ja": "忍岡小学校",
+          "address_ja": "池之端2-1-22",
+          "target_areas_ja": [
+            "池之端1丁目の一部",
+            "池之端2丁目"
+          ],
+          "aliases": [
+            "忍岡小",
+            "台東区立忍岡小学校",
+            "Shinobugaoka Elementary School",
+            "忍冈小学",
+            "시노부가오카 초등학교",
+            "Trường tiểu học Shinobugaoka"
+          ],
+          "names": {
+            "en": "Shinobugaoka Elementary School",
+            "zh": "忍冈小学",
+            "ko": "시노부가오카 초등학교",
+            "vi": "Trường tiểu học Shinobugaoka"
+          },
+          "area_name_ja": "池之端2丁目"
+        },
+        {
+          "id": "ueno-park-water",
+          "kind": "water_point",
+          "verified": true,
+          "name_ja": "上野恩賜公園 災害時給水ステーション",
+          "address_ja": "上野公園8-51",
+          "notes_ja": "東京都水道局の災害時給水ステーション（震災対策用応急給水槽、1,500立方メートル）",
+          "aliases": [
+            "上野公園の給水所",
+            "上野公園 給水ステーション",
+            "上野恩賜公園の給水",
+            "Ueno Park water station",
+            "上野公园供水站",
+            "우에노 공원 급수소",
+            "Trạm cấp nước Công viên Ueno"
+          ],
+          "names": {
+            "en": "Ueno Park emergency water station",
+            "zh": "上野恩赐公园灾害时供水站",
+            "ko": "우에노 온시 공원 재해 시 급수 스테이션",
+            "vi": "Trạm cấp nước khẩn cấp Công viên Ueno"
+          },
+          "area_name_ja": "上野公園"
+        },
+        {
+          "id": "ueno-park",
+          "kind": "park",
+          "verified": true,
+          "name_ja": "上野恩賜公園",
+          "notes_ja": "避難場所（上野公園一帯）。上野7丁目、東上野、上野公園、池之端1丁目、上野桜木1丁目の一部の避難場所",
+          "aliases": [
+            "上野公園",
+            "上野公園一帯",
+            "都立上野恩賜公園",
+            "Ueno Park",
+            "Ueno Onshi Park",
+            "上野公园",
+            "우에노 공원",
+            "Công viên Ueno"
+          ],
+          "names": {
+            "en": "Ueno Park",
+            "zh": "上野恩赐公园",
+            "ko": "우에노 온시 공원",
+            "vi": "Công viên Ueno"
+          },
+          "area_name_ja": "上野公園"
+        },
+        {
+          "id": "yanaka-cemetery",
+          "kind": "park",
+          "verified": true,
+          "name_ja": "谷中墓地",
+          "notes_ja": "避難場所（谷中墓地）。上野桜木1丁目の一部と上野桜木2丁目の避難場所。板の範囲の外側",
+          "aliases": [
+            "谷中霊園",
+            "都立谷中霊園",
+            "Yanaka Cemetery",
+            "Yanaka Reien",
+            "谷中陵园",
+            "야나카 묘지",
+            "Nghĩa trang Yanaka"
+          ],
+          "names": {
+            "en": "Yanaka Cemetery",
+            "zh": "谷中墓地",
+            "ko": "야나카 묘지",
+            "vi": "Nghĩa trang Yanaka"
+          }
+        },
+        {
+          "id": "ueno-sta",
+          "kind": "station",
+          "verified": true,
+          "name_ja": "上野駅",
+          "notes_ja": "JR上野駅（上野7丁目）、東京メトロ銀座線・日比谷線 上野駅（東上野3-19-6）、京成上野駅（上野公園1-60）",
+          "aliases": [
+            "JR上野駅",
+            "東京メトロ上野駅",
+            "メトロ上野駅",
+            "銀座線上野駅",
+            "日比谷線上野駅",
+            "京成上野駅",
+            "京成上野",
+            "公園口",
+            "不忍口",
+            "Ueno Station",
+            "Ueno Sta.",
+            "Keisei Ueno",
+            "上野站",
+            "京成上野站",
+            "우에노역",
+            "Ga Ueno"
+          ],
+          "names": {
+            "en": "Ueno Station",
+            "zh": "上野站",
+            "ko": "우에노역",
+            "vi": "Ga Ueno"
+          },
+          "area_name_ja": "上野7丁目"
+        },
+        {
+          "id": "taito-city-office",
+          "kind": "office",
+          "verified": true,
+          "name_ja": "台東区役所",
+          "address_ja": "東上野4-5-6",
+          "notes_ja": "帰宅困難者の一時滞在候補施設（区役所本庁舎）",
+          "aliases": [
+            "区役所",
+            "台東区役所本庁舎",
+            "Taito City Office",
+            "Taito Ward Office",
+            "台东区政府",
+            "台东区役所",
+            "다이토 구청",
+            "Văn phòng quận Taito"
+          ],
+          "names": {
+            "en": "Taito City Office",
+            "zh": "台东区役所",
+            "ko": "다이토 구청",
+            "vi": "Văn phòng quận Taito"
+          },
+          "area_name_ja": "東上野4丁目"
+        },
+        {
+          "id": "tokyo-bunka-kaikan",
+          "kind": "commuter_shelter",
+          "verified": true,
+          "name_ja": "東京文化会館",
+          "address_ja": "上野公園5-45",
+          "notes_ja": "帰宅困難者一時滞在施設（都立）",
+          "aliases": [
+            "文化会館",
+            "Tokyo Bunka Kaikan",
+            "东京文化会馆",
+            "도쿄 문화회관",
+            "Nhà hát Tokyo Bunka Kaikan"
+          ],
+          "names": {
+            "en": "Tokyo Bunka Kaikan",
+            "zh": "东京文化会馆",
+            "ko": "도쿄 문화회관",
+            "vi": "Nhà hát Tokyo Bunka Kaikan"
+          },
+          "area_name_ja": "上野公園"
+        },
+        {
+          "id": "tobikan",
+          "kind": "commuter_shelter",
+          "verified": true,
+          "name_ja": "東京都美術館",
+          "address_ja": "上野公園8-36",
+          "notes_ja": "帰宅困難者一時滞在施設（都立）",
+          "aliases": [
+            "都美術館",
+            "都美",
+            "Tobikan",
+            "Tokyo Metropolitan Art Museum",
+            "东京都美术馆",
+            "도쿄도 미술관",
+            "Bảo tàng Mỹ thuật Thủ đô Tokyo"
+          ],
+          "names": {
+            "en": "Tokyo Metropolitan Art Museum",
+            "zh": "东京都美术馆",
+            "ko": "도쿄도 미술관",
+            "vi": "Bảo tàng Mỹ thuật Thủ đô Tokyo"
+          },
+          "area_name_ja": "上野公園"
+        },
+        {
+          "id": "ueno-green-salon",
+          "kind": "commuter_shelter",
+          "verified": true,
+          "name_ja": "上野グリーンサロン",
+          "address_ja": "上野公園7-47",
+          "notes_ja": "帰宅困難者一時滞在施設（都立）",
+          "aliases": [
+            "グリーンサロン",
+            "Ueno Green Salon",
+            "上野绿色沙龙",
+            "우에노 그린 살롱"
+          ],
+          "names": {
+            "en": "Ueno Green Salon",
+            "zh": "上野绿色沙龙",
+            "ko": "우에노 그린 살롱",
+            "vi": "Ueno Green Salon"
+          },
+          "area_name_ja": "上野公園"
+        },
+        {
+          "id": "ueno-hs",
+          "kind": "commuter_shelter",
+          "verified": true,
+          "name_ja": "都立上野高等学校",
+          "address_ja": "上野公園10-14",
+          "notes_ja": "帰宅困難者一時滞在施設（都立）。池之端三丁目町会、池之端4丁目町会、谷中坂町町会の避難所でもある",
+          "aliases": [
+            "上野高校",
+            "上野高等学校",
+            "Ueno High School",
+            "都立上野高中",
+            "우에노 고등학교",
+            "Trường THPT Ueno"
+          ],
+          "names": {
+            "en": "Tokyo Metropolitan Ueno High School",
+            "zh": "都立上野高中",
+            "ko": "도립 우에노 고등학교",
+            "vi": "Trường THPT Ueno"
+          },
+          "area_name_ja": "上野公園"
+        },
+        {
+          "id": "ueno-chuo-parking",
+          "kind": "commuter_shelter",
+          "verified": true,
+          "name_ja": "上野中央通り地下駐車場",
+          "address_ja": "上野2-13先",
+          "notes_ja": "帰宅困難者の一時滞在候補施設（区立）",
+          "aliases": [
+            "中央通り地下駐車場",
+            "上野中央通り駐車場",
+            "Ueno Chuo-dori Parking",
+            "上野中央通地下停车场",
+            "우에노 주오도리 지하 주차장",
+            "Bãi đỗ xe ngầm Ueno Chuo-dori"
+          ],
+          "names": {
+            "en": "Ueno Chuo-dori Underground Parking",
+            "zh": "上野中央通地下停车场",
+            "ko": "우에노 주오도리 지하 주차장",
+            "vi": "Bãi đỗ xe ngầm Ueno Chuo-dori"
+          },
+          "area_name_ja": "上野2丁目"
+        }
+      ]
     }
   ]
 }

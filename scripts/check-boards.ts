@@ -27,6 +27,16 @@ function check(name: string, ok: boolean, detail = ""): void {
 
 /** Per board: the prefecture, the city and ward, and one public landmark that must fall in a given 町丁目. */
 const EXPECT: Record<string, { prefecture: string; municipality: string; point: { label: string; lat: number; lon: number; area: string } }> = {
+  mizonokuchi: {
+    prefecture: "14",
+    municipality: "川崎市高津区",
+    point: { label: "溝の口駅 (JR 武蔵溝ノ口 and 東急 溝の口)", lat: 35.5996, lon: 139.6106, area: "溝口1丁目" },
+  },
+  ueno: {
+    prefecture: "13",
+    municipality: "東京都台東区",
+    point: { label: "上野駅 (JR East gives 上野7丁目)", lat: 35.7141, lon: 139.7774, area: "上野7丁目" },
+  },
   musashikosugi: {
     prefecture: "14",
     municipality: "川崎市中原区",
@@ -78,12 +88,20 @@ for (const raw of seed.boards) {
   check(`${board.slug}: known place ids are unique`, new Set(ids).size === ids.length);
 }
 
-// A board must never carry another board's polygons to the browser.
-const [first, second] = seed.boards.map((b) => ({ ...b, id: `local-${b.slug}` }) as unknown as Board);
-if (first && second) {
-  const codes = (b: Board) => new Set(boardPolygons(b).map((p) => p.properties.area_code));
-  const a = codes(first);
-  check(`${first.slug} and ${second.slug} share no polygon`, ![...codes(second)].some((c) => a.has(c)));
+// Boards never overlap: a board must never carry another board's polygons to
+// the browser, and each board's landmark falls in no other board.
+console.log("\n# across boards");
+const all = seed.boards.map((b) => ({ ...b, id: `local-${b.slug}` }) as unknown as Board);
+const codes = (b: Board) => new Set(boardPolygons(b).map((p) => p.properties.area_code));
+for (const [i, board] of all.entries()) {
+  const own = codes(board);
+  for (const other of all.slice(i + 1)) {
+    check(`${board.slug} and ${other.slug} share no polygon`, ![...codes(other)].some((c) => own.has(c)));
+  }
+  const point = EXPECT[board.slug]?.point;
+  if (!point) continue;
+  const elsewhere = all.filter((other) => other !== board && resolveArea(other, boardPolygons(other), point.lon, point.lat));
+  check(`${board.slug}: ${point.label} falls in no other board`, elsewhere.length === 0, elsewhere.map((b) => b.slug).join(", "));
 }
 
 console.log(`\n${passed} of ${passed + failed.length} checks pass`);
