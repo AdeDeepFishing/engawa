@@ -212,7 +212,9 @@ function Answer({
           </ul>
         </>
       ) : null}
-      {answer.noInfo && onDropIn ? (
+      {/* An answer that cites no card found nothing on the board (answers use only cards), so the
+          reader is offered the drop-in, as "no information yet" already suggests in words. */}
+      {(answer.noInfo || answer.cardIds.length === 0) && onDropIn ? (
         <button
           type="button"
           onClick={onDropIn}

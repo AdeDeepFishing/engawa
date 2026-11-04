@@ -291,7 +291,7 @@ export function BoardView({
                 <button
                   type="button"
                   onClick={startDropIn}
-                  className="mt-4 min-h-12 rounded-xl bg-accent px-6 text-lg font-bold text-accent-ink hover:bg-accent-hover active:bg-accent-hover"
+                  className="mt-4 hidden min-h-12 rounded-xl bg-accent px-6 text-lg font-bold text-accent-ink hover:bg-accent-hover active:bg-accent-hover md:inline-flex md:items-center"
                 >
                   {t("empty.board_cta")}
                 </button>
