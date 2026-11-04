@@ -1,4 +1,5 @@
 {
+  "places.kind.commuter_shelter": "귀가 곤란자 수용 시설",
   "mode.strip_since": "재난 모드: {time}부터 ({ago})",
   "mode.reason_inbox": "시의 방송 메일을 받아 전환되었습니다.",
   "mode.reason_admin": "게시판 관리자가 전환했습니다.",

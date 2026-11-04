@@ -1,4 +1,5 @@
 {
+  "places.kind.commuter_shelter": "Nơi tạm trú cho người không thể về nhà",
   "mode.strip_since": "Chế độ thiên tai từ {time} ({ago})",
   "mode.reason_inbox": "Được bật theo thư phát thanh của thành phố.",
   "mode.reason_admin": "Do người quản lý bảng tin bật.",

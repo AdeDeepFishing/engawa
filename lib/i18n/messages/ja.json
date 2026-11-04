@@ -1,4 +1,5 @@
 {
+  "places.kind.commuter_shelter": "帰宅困難者受入施設",
   "mode.strip_since": "災害時モード：{time}から（{ago}）",
   "mode.reason_inbox": "市の防災無線メールを受けて切り替わりました。",
   "mode.reason_admin": "掲示板の管理者が切り替えました。",

@@ -1,4 +1,5 @@
 {
+  "places.kind.commuter_shelter": "Shelter for stranded commuters",
   "mode.strip_since": "Disaster mode since {time} ({ago})",
   "mode.reason_inbox": "Switched on by the city's broadcast mail.",
   "mode.reason_admin": "Switched on by the board admin.",

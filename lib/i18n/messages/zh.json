@@ -1,4 +1,5 @@
 {
+  "places.kind.commuter_shelter": "滞留者临时接收设施",
   "mode.strip_since": "灾害模式：自{time}起（{ago}）",
   "mode.reason_inbox": "因市政府的广播邮件而切换。",
   "mode.reason_admin": "由本公告板的管理员切换。",
