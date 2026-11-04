@@ -20,6 +20,7 @@ import { useLang } from "@/lib/i18n/LangProvider";
 import type { Board, Card, CardTrace, ConflictStatement } from "@/lib/types";
 import { CardReactions } from "./CardReactions";
 import { CardTraceView } from "./CardTrace";
+import { MapsLink } from "./MapsLink";
 import { MaskedImage } from "./MaskedImage";
 import { ReadAloud } from "./ReadAloud";
 import { fallbackLangAttr } from "@/lib/cards/langs";
@@ -124,7 +125,10 @@ export function CardDetail({
         {place ? (
           <>
             <dt className="text-muted">{t("sheet.place")}</dt>
-            <dd>{place}</dd>
+            <dd>
+              {place}
+              <MapsLink card={card} board={board} />
+            </dd>
           </>
         ) : null}
         {area ? (

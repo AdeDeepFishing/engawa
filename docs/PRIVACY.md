@@ -11,7 +11,7 @@ Engawa is built for a moment when people share screenshots of other people's mes
 5. Questions typed into the ask box are not stored.
 6. Anything that could identify a person's health condition or a specific person's situation is held and not published.
 7. Boards are not indexed by search engines (`noindex`) and there is no public search.
-8. There are no accounts. A random device identifier in the browser is used for rate limiting, for showing a user their own submissions, and for keeping reader confirmations to one per card per device. Readers see only the counts of "still true" and "no longer true", never which devices; the device's own choice is remembered in its own browser.
+8. There are no accounts. A random device identifier in the browser is used for rate limiting, for showing a user their own submissions, and for keeping reader confirmations to one per card per device. The ask and reaction routes also count requests per client address for one hour; those addresses are held in the server's memory for that window only, never stored and never logged. Readers see only the counts of "still true" and "no longer true", never which devices; the device's own choice is remembered in its own browser.
 9. The admin page is opened once through a link that carries the admin token. That request sets an HttpOnly cookie holding a digest of the token (never the token itself) with a 12 hour expiry, scoped to that board's admin page and admin API, and redirects to the clean admin URL. After that one request the token appears in no page URL, Referer or browser history entry.
 
 ## Area badge

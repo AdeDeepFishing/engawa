@@ -54,15 +54,18 @@ Ranked by value on the judging axes (impact, demo, use of Claude, depth) against
 - N7 Suggested questions per language above the ask box, and follow-up questions in the same thread. Demo. About 1.5 hours. Done 2026-11-04.
 - N8 Read aloud with the Web Speech API for the card text in the reader's language and やさしい日本語. Impact. About 1 hour. Done 2026-11-04.
 - N9 Offline snapshot: a service worker keeps the last board page for when the network drops, with a "last updated" banner. Impact. About 2 hours. Done 2026-11-04.
-- N10 Place view: cards grouped by known place with its address; shelter status at a glance. Depth. About 2 hours.
+- N10 Place view: cards grouped by known place with its address; shelter status at a glance. Depth. About 2 hours. Done 2026-11-04.
 - N11 Extract on `claude-fable-5-1` versus `claude-opus-5-5` on the eval, recorded in `docs/EVAL.md`. Use of Claude. About 1 hour of API time. Done 2026-11-04.
 - N12 Board index and a "make a board" form (name, area, places from the city list) that shows the admin link once. Impact. About 3 hours.
 - N13 Claude Code visible in the repo: a pre-commit hook that runs the dash scan and the i18n parity check, a project skill for the throwaway-board acceptance run, the review subagent definition, and a README section on which model and which Claude Code feature did what and why. Use of Claude (the criteria ask for Skills, subagents, MCP and hooks chosen by purpose). About 1.5 hours. Done 2026-11-04.
 - N14 About page `/about` in five languages: who the board is for (named people and scenes, with numbers for 中原区), what it does with their data, who runs it after the event. Impact (the criteria ask who, in what scene, how much, and who keeps using it). About 1 hour. Done 2026-11-04.
 - N15 Loudspeaker broadcasts into the board: an "I heard the loudspeaker" input that transcribes the 防災行政無線 with the browser's speech recognition into an editable box (secondhand, platform loudspeaker), and an official inbox that turns the city's broadcast mail (メールニュースかわさき, forwarded by a mail worker the human wires) into official cards. Impact (foreign and hard-of-hearing residents miss the loudspeaker). About 4 hours. Done 2026-11-04.
 - N16 Laptop layout: three columns at 1024 px and wider (list, card in place, ask), two on tablets, keyboard navigation, the open card in the URL; plus a polish pass on empty states, spacing, hover and focus. Demo (the video is recorded on a laptop). About 4 hours. Done 2026-11-04.
-- N17 Open in maps: a card with a known place gets an "Open in maps" link built from the place's Japanese name and address (a Google Maps search URL, which opens the Maps app on a phone; no API key, nothing leaves the phone until the tap). A card with only `place_text_ja` searches that text with the board's area appended. Impact and demo. About 1 hour.
+- N17 Open in maps: a card with a known place gets an "Open in maps" link built from the place's Japanese name and address (a Google Maps search URL, which opens the Maps app on a phone; no API key, nothing leaves the phone until the tap). A card with only `place_text_ja` searches that text with the board's area appended. Impact and demo. About 1 hour. Done 2026-11-04.
 - N18 Second board, Shibuya: a Tokyo board next to the Kawasaki one, to show the setup is per city, not per code. Needs the ward's shelter list and 町丁目 polygons (same sources and tools as 中原区), a seed, a second routing address and inbox secret (the worker takes a map of address to board), and the ward's own broadcast mail: each city publishes its 防災行政無線 through its own service (Kawasaki through メールニュースかわさき; Shibuya's しぶや安全・安心メール still to be confirmed as carrying the broadcast text), so each board is one more subscription through the same relay mailbox with one more filter. Impact. About 3 hours plus the human's registration steps.
+- N19 Home page: what the board is in one sentence, a Japan map of prefecture polygons with the boards' prefectures highlighted, board cards with live counts, three steps in the UI's own words, footer links; only listed boards (migration 0008) so acceptance leftovers never show. Demo and impact. About 2 hours. Done 2026-11-04.
+- N20 Brand: a mark that reads at 16 px, favicon, apple icon, manifest icons, root and board OG images, the accent colour changed from green to a deep rose with a contrast table. Demo. About 1.5 hours. Done 2026-11-04.
+- N21 Disaster mode as a real state: admin switch with the reason recorded (migration 0009), automatic switch when the city's broadcast mail carries an evacuation order or a strong quake, automatic return after 7 quiet days, and a visibly different board in disaster mode (red strip, official and danger first, water, shelter, medical and danger filters pinned, loudspeaker input first). Impact and demo. About 3 hours.
 
 ### Not this week
 
@@ -168,11 +171,14 @@ Session PRs were merged in pairs after review through the integration PRs #11, #
 - [x] Leftovers from the day 4 reviews: `lib/ids.ts`, usage recorded for rejected responses, placeholder check on translate output (PR #17)
 - [x] N16 laptop layout and polish pass (PR #19)
 - [x] N15 loudspeaker broadcasts: heard input and official inbox (migration 0007, PR #20); the mail forwarding and the city list subscription are the human's (see 11/05)
+- [x] engawaboard.com bought and wired (Vercel, Cloudflare DNS and Email Routing), the city list subscribed through a Gmail relay, the sender on the allowlist: the inbox is live (details in `docs/INBOX.md` and the DEVLOG)
+- [x] N17 open in maps, N10 place view, one ask panel per breakpoint, shared links carry the reader's language (PR #23)
+- [x] N19 home page with the prefecture map, N20 mark and icons, rose accent, listed boards (migration 0008), inbox 403 for unknown slugs, per-IP limit on reactions (PR #24)
 
 ### 2026-11-05 (Thu): native reads, the inbox wired, remaining nice-to-haves
 - [ ] Korean and Vietnamese native speakers read the demo cards; fix wording
-- [ ] Human: generate the inbox secret on the admin page, deploy the Cloudflare Email Routing worker from `docs/INBOX.md`, subscribe its address to メールニュースかわさき with 防災行政無線 ticked, enter the From address on the admin list; try the heard input on a real phone next to a broadcast
-- [ ] N17 open in maps, N18 Shibuya board, N10 place view, N12 make a board, web push for official and danger cards: only if the day is clear
+- [ ] Human: try the heard input on a real phone next to a broadcast; watch the first real city mail become a card and confirm it on the admin page
+- [ ] N21 disaster mode (PR in review), then N18 Shibuya board, N12 make a board, web push for official and danger cards: only if the day is clear
 
 ### 2026-11-06 (Fri): review, freeze, demo prep
 - [ ] Full run of the 7-step demo scenario on the deployed URL; fix what breaks

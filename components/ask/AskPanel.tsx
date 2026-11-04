@@ -20,8 +20,8 @@ const SUGGESTIONS: Record<BoardMode, MessageKey[]> = {
  * of earlier question and answer pairs. Each answer comes back whole (no
  * streaming); a skeleton covers the wait. Cited cards are listed as chips
  * under each answer, and a chip opens its card on the board. The thread
- * lives in `ask` (useAsk), so the phone and laptop placements share it; ids
- * come from useId, so two placements in one page never share one.
+ * lives in `ask` (useAsk), so the board can move the one mounted panel
+ * between its phone, tablet and laptop placements without losing it.
  */
 export function AskPanel({
   ask,

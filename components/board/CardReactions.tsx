@@ -94,7 +94,7 @@ export function CardReactions({
               data-reaction={kind}
               onClick={() => tap(kind)}
               className={`inline-flex min-h-11 items-center gap-2 rounded-xl border px-4 text-base font-semibold ${
-                pressed ? "border-accent bg-accent text-accent-ink hover:bg-accent-hover" : "border-line bg-surface hover:border-accent active:bg-held-bg"
+                pressed ? "border-accent bg-accent-soft text-accent" : "border-line bg-surface hover:border-accent active:bg-held-bg"
               }`}
             >
               <span aria-hidden="true">{ICON[kind]}</span>

@@ -23,6 +23,7 @@ export function CardItem({
   now,
   onOpen,
   selected = false,
+  titleAs: Title = "h3",
 }: {
   card: Card;
   board: Board;
@@ -30,6 +31,8 @@ export function CardItem({
   onOpen: (card: Card) => void;
   /** Open in the panel beside the list (tablet and laptop): marked with aria-current and an accent edge. */
   selected?: boolean;
+  /** The title's heading level: h4 under a place group's heading in the Places view. */
+  titleAs?: "h3" | "h4";
 }) {
   const { lang, t } = useLang();
   const expired = isExpired(card.valid_until, now);
@@ -79,9 +82,9 @@ export function CardItem({
           </span>
           <div className="min-w-0 flex-1">
             <p className="text-base font-medium text-muted">{t(`category.${card.category}`)}</p>
-            <h3 lang={textIn === lang ? undefined : htmlLang(textIn)} className="mt-0.5 text-lg font-bold leading-snug">
+            <Title lang={textIn === lang ? undefined : htmlLang(textIn)} className="mt-0.5 text-lg font-bold leading-snug">
               {card.title[lang]}
-            </h3>
+            </Title>
             {textIn !== lang ? <p className="mt-1 text-base text-muted">{t("card.translating")}</p> : null}
             {place ? (
               <p className="mt-1 text-base text-foreground">

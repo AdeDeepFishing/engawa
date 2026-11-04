@@ -2,6 +2,7 @@
 
 import { useState, useSyncExternalStore } from "react";
 import { cardAsText, cardPath, noticePath } from "@/lib/cards/share";
+import { withLangParam } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n/LangProvider";
 import type { Board, Card } from "@/lib/types";
 import { copyText } from "./copy";
@@ -42,7 +43,8 @@ export function CardShare({
   const canShare = useSyncExternalStore(subscribeNever, hasShareApi, noShareOnServer);
 
   function cardUrl(): string {
-    const absolute = `${window.location.origin}${cardPath(board.slug, card.id)}`;
+    // The reader's language rides along, so a chat app's preview and the recipient's first view match it.
+    const absolute = withLangParam(`${window.location.origin}${cardPath(board.slug, card.id)}`, lang);
     setUrl(absolute);
     return absolute;
   }

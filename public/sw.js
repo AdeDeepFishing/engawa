@@ -82,7 +82,11 @@ async function networkFirst(event, name) {
   try {
     response = await fetch(request);
   } catch (error) {
-    const cached = await (await caches.open(name)).match(request, { ignoreVary: true });
+    const cache = await caches.open(name);
+    let cached = await cache.match(request, { ignoreVary: true });
+    // The board under ?view=places is the same page, and the client reads the
+    // view from the URL: an offline reload takes a stored copy under any query.
+    if (!cached && request.mode === "navigate") cached = await cache.match(request, { ignoreVary: true, ignoreSearch: true });
     if (!cached) throw error;
     if (request.mode === "navigate") servedFromCache.set(request.url, cached.headers.get(STORED_AT) ?? "");
     return withHeader(cached, FROM_CACHE, "1");

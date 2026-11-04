@@ -3,9 +3,9 @@ import en from "./messages/en.json";
 import zh from "./messages/zh.json";
 import ko from "./messages/ko.json";
 import vi from "./messages/vi.json";
+import { LANGS, isLang, type Lang } from "./langs";
 
-export const LANGS = ["ja", "en", "zh", "ko", "vi"] as const;
-export type Lang = (typeof LANGS)[number];
+export { LANGS, isLang, LANG_PARAM, withLangParam, type Lang } from "./langs";
 
 /** Languages card content is written in. UI strings exist only for LANGS. */
 export const CARD_LANGS = [...LANGS, "easy_ja"] as const;
@@ -16,10 +16,6 @@ export type MessageKey = keyof typeof en;
 const messages: Record<Lang, Record<string, string>> = { ja, en, zh, ko, vi };
 
 export const DEFAULT_LANG: Lang = "ja";
-
-export function isLang(value: unknown): value is Lang {
-  return typeof value === "string" && (LANGS as readonly string[]).includes(value);
-}
 
 export function isCardLang(value: unknown): value is CardLang {
   return typeof value === "string" && (CARD_LANGS as readonly string[]).includes(value);
