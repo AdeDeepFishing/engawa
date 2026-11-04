@@ -1321,3 +1321,154 @@ Eval on the integration branch with the pilot's place notes in the context (`pnp
 
 **Review fixes for PR #31 (Fable, reviewing session, on the integration branch):** the run reads the KV state again under its lease before posting, so a run that finished meanwhile cannot make it post the same broadcast (KV propagation lag remains the one gap, worth one merged duplicate at most); only a coded answer from the pipeline counts toward the three attempts, an outage, a timeout or an uncoded 5xx never passes an evacuation order over; an empty `ENGAWA_INBOX_URL` or `PORTAL_SENDER` stops the run with `no_config` instead of burning attempts; the README says the repository commits the KV namespace id and that a broadcast the ward edits is posted again and merged by reconcile. The STATE namespace was created on the account and its id committed; 18 of 18 tests pass with the updated log expectation.
 The human picked the solid variant of mark 04 (2026-11-05 00:45 JST), which is the default; `MARK_VARIANT` stays `solid` and the committed `app/icon.svg` and `app/favicon.ico` already match it.
+
+## 2026-11-05 (Thu), two more boards: 溝の口 (高津区) and 上野 (台東区)
+
+**Model:** `claude-opus-5-5` in Claude Code, implementation role, in its own worktree (branch `day7-boards-kanto`, cut from `main` at `d89e1b3`), brief from the reviewing session (Fable), while another session built 札幌 and 福岡 in the same files (placement agreed: my boards at the end of `boards.json`, my lines at the top of `MUNICIPALITY_JA`, `BY_SLUG` and `EXPECT`, my sections right after Shibuya's). No Claude API call was added or changed. The database was neither read nor written. The session stopped once at the usage limit during research and resumed from its notes.
+
+**The boards.** Both follow `docs/BOARDS.md`, "Checklist for a new city", and its Shibuya section as the model; the area tables, the evacuation rule per district, every known place with its source, what was left out and the broadcast channels are in `docs/BOARDS.md`.
+- `mizonokuchi`: 溝の口, Mizonokuchi, 沟之口, 미조노쿠치, Mizonokuchi; mode `peace`. 14 町丁目 of 川崎市高津区 (`14134`): 溝口1丁目 to 6丁目, 久本1丁目 to 3丁目, 坂戸1丁目 to 3丁目, 下作延1丁目 and 2丁目. 20 known places: nine shelters, two water points, the station, the ward office, six 一時滞在施設 at the station, 緑ケ丘霊園.
+- `ueno`: 上野, Ueno, 上野, 우에노, Ueno; mode `peace`. 17 町丁目 of 台東区 (`13106`): 上野1丁目 to 7丁目, 東上野1丁目 to 6丁目, 上野公園, 上野桜木1丁目 and 2丁目, 池之端1丁目. 18 known places: eight shelters, the 上野恩賜公園 water station, 上野恩賜公園 and 谷中墓地 as 避難場所, the station, the ward office, five 一時滞在施設.
+
+**Sources, all read 2026-11-05**
+
+| source | as of | used for |
+|---|---|---|
+| 川崎市地域防災計画 資料編, https://www.city.kawasaki.jp/601/page/0000140630.html (page updated 2026-08-13): 2-06, 2-04, 2-18, 2-28, 2-10, 2-05, 2-07 | 令和7年4月1日 (2-06, 2-18), 令和7年5月1日 (2-28), 令和4年8月25日 (2-10) | 溝の口: shelters with 対象町丁, water points, 一時滞在施設, 広域避難場所 |
+| 台東区地域防災計画（令和6年度修正）資料編 (PDF from https://www.city.taito.lg.jp/bosai/houshin/bosaikaigi/chikibou_r6.html, page updated 2024-08-26): 資料第126, 127, 128, 129, 110 | 令和6年4月 (126), 令和6年7月 (127), 平成30年6月 (128), 令和5年4月 (110) | 上野: shelters per 町会, 避難場所 per 町丁目, 地区内残留地区, 一時滞在施設 |
+| 台東区 町会区域一覧表, https://www.city.taito.lg.jp/kurashi/kyodo/tyoukai/choukaikuikiichiran.html | 令和8年3月修正 (page 2026-03-09) | 町会 to 町丁目, hence each shelter's target areas |
+| 東京都水道局 災害時給水ステーション一覧, https://www.waterworks.metro.tokyo.lg.jp/kurashi/shinsai/ichiran | 令和7年11月1日 | 上野恩賜公園 給水 |
+| 台東区 震災時の避難, 帰宅困難者対策, 防災行政無線, 放送内容の確認, たいとう防災気象情報メール pages and the two mail archives | 2026-07-30, 2026-09-03, 2024-01-05, 2021-07-06, 2024-10-29; archives as of 2026-11-04 | evacuation rule, candidate facilities, broadcast channels |
+| 東急, JR East (武蔵溝ノ口 and 上野), Tokyo Metro and 京成 station pages, read in the browser pane | 2026-11-05 | stations, addresses, lines |
+
+The plans' tables have merged cells that the extracted text scrambles, so every table used was read from the PDF page rendered as an image (a PDFKit script outside the repository, as for Shibuya). The downloads went into scratch folders and were deleted.
+
+**Decisions, open for review**
+- 溝の口: "下作延 near the station" is 下作延1丁目 and 2丁目 (centres about 0.4 km from the station; 3丁目 to 7丁目 are 0.7 to 1.3 km away). 二子 stays out, as briefed. The station's `area_name_ja` is 溝口2丁目 (東急's address, 溝口2-1-1); the station point of the check falls in 溝口1丁目, as JR's side of the station does.
+- 溝の口: the ward office is kind `office` (the brief names it apart), with its 応急給水拠点 in `notes_ja`; the pilot board files 中原区役所 as `water_point`. The two 100 m3 tanks at 高津小学校 and 久本小学校 are notes on those shelters, not separate places. Six of the eleven 一時滞在施設 of the 武蔵溝ノ口駅 group are in, the ones at the station; the rest are listed in `docs/BOARDS.md`.
+- 上野: 台東区 assigns shelters per 町会. Target areas come from joining 資料第127 (町会 per shelter) with the 町会区域一覧表 (町丁目 and 番地 per 町会), with "の一部" where a 町丁目 is split. Two inconsistencies between 資料第126 and 127 are written down in `docs/BOARDS.md` (仲御徒町中町会, 長者町一丁目 and 上野南大門町).
+- 上野: no 一時集合場所 in the seed: the ward re-checked them with every 町会 for the 防災地図 of 2026-05, which was not read, so the 2024 list may be stale. 上野恩賜公園 is two places, the 避難場所 (park, no address) and the water station (上野公園8-51), with aliases that do not overlap. 京成上野 is an alias of 上野駅 as briefed, its own address in `notes_ja`.
+- `supabase/seed/boards.json`'s `_note` names the sources of the first two boards only; it is one line that both board sessions would edit, so it was left as it is and `docs/BOARDS.md` carries the sources.
+
+**Code**
+- `supabase/seed/boards.json`: the two boards appended at the end; nothing else in the file changed (the diff is insertions only).
+- `lib/geo/mizonokuchi.json` (14 features, 11,588 bytes) and `lib/geo/ueno.json` (17 features, 12,080 bytes) by `scripts/geo/build.ts --board <slug>` from the e-Stat 2020 Shapefiles `code=14134` (zip 70 KB, `r2ka14134.shp`, 75 small areas) and `code=13106` (zip 46 KB, `r2ka13106.shp`, 108 small areas); every name matched one record; 30% simplification. The Shapefiles were deleted.
+- `lib/geo/polygons.ts`: one import and one `BY_SLUG` line per board (checklist step 4; the brief's file list did not name this file, but the board has no polygons without it). `lib/geo/index.ts`: `14134` 川崎市高津区 and `13106` 東京都台東区 in `MUNICIPALITY_JA`.
+- `scripts/check-boards.ts`: expectations for both boards (溝の口駅 35.5996, 139.6106 in 溝口1丁目; 上野駅 35.7141, 139.7774 in 上野7丁目). The cross-board block compared only the first two boards; it now checks every pair for shared polygons and each board's landmark against every other board.
+- Found on the way, not fixed (outside this PR's files): `scripts/geo/build.ts --write-seed` replaces the one-line form `{ "code": null, "name_ja": <name> }`, but `boards.json` is now laid out one field per line, so it reported "0 area codes filled". The codes were filled from the generated polygon files instead (same codes, by name). A follow-up can make the script parse the JSON.
+
+**Acceptance**
+
+| check | result |
+|---|---|
+| `pnpm typecheck` | clean |
+| `pnpm lint` | clean |
+| `pnpm guard --all` | clean |
+| `pnpm check:boards` | 58 of 58 (4 boards; 溝の口駅 resolves to `14134401101` 溝口1丁目 and 上野駅 to `13106004007` 上野7丁目, each in no other board; no two boards share a polygon) |
+| `pnpm check:places`, `check:mode`, `check:inbox`, `check:placeholders` | 28 of 28, 34 of 34, 23 of 23, 17 of 17 |
+| `pnpm build` | compiled in 3.5 s, 12 static pages; no area code of the new boards in `.next/static`, only in server chunks |
+| `lib/geo/mizonokuchi.json` | 14 features, 11,588 bytes |
+| `lib/geo/ueno.json` | 17 features, 12,080 bytes |
+| local `pnpm dev` | not run: the boards are not seeded and the production database must not be written |
+
+`pnpm db:seed --dry-run --board mizonokuchi`:
+
+```
+dry run: nothing is written and the database is not read, so each board shows both outcomes.
+
+board mizonokuchi
+  if absent:  insert slug, name, mode peace, listed true, area_names, known_places, a new admin token; 0 sample cards
+  if present: update name, area_names, known_places; mode, listing, token and cards unchanged
+  name: 溝の口 / Mizonokuchi / 沟之口 / 미조노쿠치 / Mizonokuchi
+  area_names: 14, 14 with an e-Stat code
+    14134401101  溝口1丁目
+    14134401102  溝口2丁目
+    14134401103  溝口3丁目
+    14134401104  溝口4丁目
+    14134401105  溝口5丁目
+    14134401106  溝口6丁目
+    14134411001  久本1丁目
+    14134411002  久本2丁目
+    14134411003  久本3丁目
+    14134410001  坂戸1丁目
+    14134410002  坂戸2丁目
+    14134410003  坂戸3丁目
+    14134412101  下作延1丁目
+    14134412102  下作延2丁目
+  known_places: 20 (shelter 9, water_point 2, station 1, office 1, commuter_shelter 6, park 1), verified 20
+    takatsu-es  shelter  川崎市立高津小学校  溝口4-19-1
+    nishitakatsu-jhs  shelter  川崎市立西高津中学校  久地1-10-1
+    shimosakunobe-es  shelter  川崎市立下作延小学校  下作延5-19-1
+    takatsu-jhs  shelter  川崎市立高津中学校  久本3-11-2
+    hisamoto-es  shelter  川崎市立久本小学校  久本3-11-3
+    takatsu-hs  shelter  川崎市立高津高等学校  久本3-11-1
+    higashitakatsu-jhs  shelter  川崎市立東高津中学校  末長4-1-1
+    sakado-es  shelter  川崎市立坂戸小学校  坂戸1-18-1
+    nishikajigaya-es  shelter  川崎市立西梶ヶ谷小学校  梶ヶ谷2-14-1
+    mizonokuchi1-water  water_point  溝口1丁目 応急給水拠点  溝口1-6-7
+    mizonokuchi5-water  water_point  溝口5丁目 応急給水拠点  溝口5-24
+    mizonokuchi-sta  station  溝の口駅
+    takatsu-ward-office  office  高津区役所  下作延2-8-1
+    takatsu-shiminkan  commuter_shelter  川崎市高津市民館  溝口1-4-1
+    nocty1  commuter_shelter  ノクティ１ビル  溝口1-3-1
+    hotel-mets-mizonokuchi  commuter_shelter  ホテルメッツ溝ノ口  溝口1-1-5
+    tecno-kawasaki  commuter_shelter  川崎市生活文化会館（てくのかわさき）  溝口1-6-10
+    scrum21  commuter_shelter  川崎市男女共同参画センター（すくらむ２１）  溝口2-20-1
+    kawasaki-daiichi-hotel  commuter_shelter  川崎第一ホテル溝ノ口  溝口2-3-12
+    midorigaoka-cemetery  park  緑ケ丘霊園
+```
+
+`pnpm db:seed --dry-run --board ueno`:
+
+```
+dry run: nothing is written and the database is not read, so each board shows both outcomes.
+
+board ueno
+  if absent:  insert slug, name, mode peace, listed true, area_names, known_places, a new admin token; 0 sample cards
+  if present: update name, area_names, known_places; mode, listing, token and cards unchanged
+  name: 上野 / Ueno / 上野 / 우에노 / Ueno
+  area_names: 17, 17 with an e-Stat code
+    13106004001  上野1丁目
+    13106004002  上野2丁目
+    13106004003  上野3丁目
+    13106004004  上野4丁目
+    13106004005  上野5丁目
+    13106004006  上野6丁目
+    13106004007  上野7丁目
+    13106003001  東上野1丁目
+    13106003002  東上野2丁目
+    13106003003  東上野3丁目
+    13106003004  東上野4丁目
+    13106003005  東上野5丁目
+    13106003006  東上野6丁目
+    131060060  上野公園
+    13106013001  上野桜木1丁目
+    13106013002  上野桜木2丁目
+    13106005001  池之端1丁目
+  known_places: 18 (shelter 8, water_point 1, park 2, station 1, office 1, commuter_shelter 5), verified 18
+    kuromon-es  shelter  黒門小学校  上野1-16-20
+    okachimachi-taito-jhs  shelter  御徒町台東中学校  台東4-13-16
+    ueno-es  shelter  上野小学校  東上野6-16-8
+    taito-rojin-center  shelter  老人福祉センター  東上野2-25-14
+    higashiueno-kuminkan  shelter  東上野区民館  東上野3-24-6
+    shinobugaoka-jhs  shelter  忍岡中学校  上野公園18-20
+    ueno-jhs  shelter  上野中学校  上野桜木1-14-55
+    shinobugaoka-es  shelter  忍岡小学校  池之端2-1-22
+    ueno-park-water  water_point  上野恩賜公園 災害時給水ステーション  上野公園8-51
+    ueno-park  park  上野恩賜公園
+    yanaka-cemetery  park  谷中墓地
+    ueno-sta  station  上野駅
+    taito-city-office  office  台東区役所  東上野4-5-6
+    tokyo-bunka-kaikan  commuter_shelter  東京文化会館  上野公園5-45
+    tobikan  commuter_shelter  東京都美術館  上野公園8-36
+    ueno-green-salon  commuter_shelter  上野グリーンサロン  上野公園7-47
+    ueno-hs  commuter_shelter  都立上野高等学校  上野公園10-14
+    ueno-chuo-parking  commuter_shelter  上野中央通り地下駐車場  上野2-13先
+```
+
+**For the integrator.** After the merge has deployed: `pnpm db:seed --board mizonokuchi --token-file .env.admin-token.local` and `pnpm db:seed --board ueno --token-file .env.admin-token.local` (each creates its board listed and writes its admin token to that file; no other board is touched). Then the inbox: the Email Worker `engawa-inbox` posts each Kawasaki mail to both 武蔵小杉 and 溝の口, and learns `bousai-ueno@engawaboard.com` for 上野 (`docs/BOARDS.md` has the steps and the human parts).
+
+**Needed a human**
+- Native read of the Chinese, Korean and Vietnamese place names of both boards.
+- 溝の口 inbox: generate the secret on `/b/mizonokuchi/admin` and set the allowed sender `kawasaki@sg-p.jp`; decide whether a mail about one ward may switch the other ward's board to disaster mode.
+- 上野 inbox: the two Gmail steps for たいとう防災気象情報メール, then the sender from the first mail.

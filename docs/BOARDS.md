@@ -75,6 +75,130 @@ The code is the same for every board. A board is a row in `boards` (seeded from 
 
 - **Not confirmed.** (a) That 防災行政情報 mails carry the text of each 防災行政無線 broadcast; the mail page does not say what the category contains, and the 防災行政無線 page names the phone line and the yearly lists, not the mail. The first mail after subscribing settles it; if they are only announcements, the portal feed (1) is the source to ask the ward about. (b) The sender address beyond what the page states. (c) A 渋谷区 LINE account carrying the broadcasts: none is mentioned on the ward pages read. (d) The 東京都防災アプリ: not checked. (e) The 東急 and 京王 station pages. (f) A report that the ward's 防災情報配信サービス vendor had an intrusion on 2026-10-13 and paused the service, with the ward saying しぶや安全・安心メール runs on another vendor and was not affected (statement of 2026-10-15): read during the research, URL not kept, so treat it as unconfirmed.
 
+## Kawasaki: 溝の口 (`mizonokuchi`)
+
+- **Area.** 14 町丁目 of 川崎市高津区 (city code `14134`) around 溝の口駅 (東急 田園都市線, 大井町線) and 武蔵溝ノ口駅 (JR 南武線), one e-Stat small area each, none split:
+
+  | code | 町丁目 | code | 町丁目 |
+  |---|---|---|---|
+  | 14134401101 | 溝口1丁目 | 14134411002 | 久本2丁目 |
+  | 14134401102 | 溝口2丁目 | 14134411003 | 久本3丁目 |
+  | 14134401103 | 溝口3丁目 | 14134410001 | 坂戸1丁目 |
+  | 14134401104 | 溝口4丁目 | 14134410002 | 坂戸2丁目 |
+  | 14134401105 | 溝口5丁目 | 14134410003 | 坂戸3丁目 |
+  | 14134401106 | 溝口6丁目 | 14134412101 | 下作延1丁目 |
+  | 14134411001 | 久本1丁目 | 14134412102 | 下作延2丁目 |
+
+  "下作延 near the station" became 下作延1丁目 and 2丁目, whose centres are about 0.4 km from the station (2丁目 holds the ward office); 3丁目 to 7丁目 are 0.7 to 1.3 km away, and the bare 下作延 (`141344122`) has no residents. 二子1丁目 to 6丁目, east of 溝口, were not in the brief and stay out, although 高津小学校 and the 久本 schools serve them. Polygons `lib/geo/mizonokuchi.json`, 11,588 bytes, built 2026-11-05. The station point (35.5996, 139.6106) falls in 溝口1丁目 (`pnpm check:boards`).
+
+- **Evacuation in this area.** Kawasaki assigns every 町丁 to a designated shelter (the 対象町丁 column of 資料編 2-06); the shelters below are the ones that serve the board. Seven 町丁目 are split between shelters and the plan does not say which blocks go where, so the seed keeps "の一部" as the city writes it: 溝口1丁目 (the 久本 schools, 坂戸小学校), 溝口2丁目 (高津小学校, 下作延小学校, the 久本 schools), 溝口3丁目 (高津小学校, the 久本 schools), 溝口6丁目 (高津小学校, 西高津中学校), 坂戸1丁目 (the 久本 schools, 坂戸小学校), 坂戸3丁目 (the 久本 schools, 東高津中学校), 下作延2丁目 (the 久本 schools, 西梶ヶ谷小学校). 高津中学校, 久本小学校 and 市立高津高校 stand side by side at 久本3-11 and share one list. For a large fire the city names 広域避難場所 without assigning 町丁 to them (2-05, 2-07); the nearest to the board is 緑ケ丘霊園.
+
+- **Known places** (20, all `verified: true`, read 2026-11-05):
+
+  | id | kind | place | source |
+  |---|---|---|---|
+  | `takatsu-es` | shelter | 川崎市立高津小学校, 溝口4-19-1; 溝口2丁目の一部, 溝口3丁目の一部, 溝口4丁目, 溝口5丁目, 溝口6丁目の一部, 二子1丁目, 二子2丁目. Also a 応急給水拠点 (100 m3 tank) | A, B |
+  | `nishitakatsu-jhs` | shelter | 川崎市立西高津中学校, 久地1-10-1; 久地1丁目の一部, 久地2丁目, 溝口6丁目の一部 | A |
+  | `shimosakunobe-es` | shelter | 川崎市立下作延小学校, 下作延5-19-1; 下作延, 下作延1丁目, 4丁目 to 7丁目, 溝口2丁目の一部, 上作延の一部 | A |
+  | `takatsu-jhs`, `hisamoto-es`, `takatsu-hs` | shelter | 川崎市立高津中学校 (久本3-11-2), 久本小学校 (久本3-11-3, also a 100 m3 tank), 市立高津高校 (久本3-11-1); 下作延2丁目の一部, 久本1丁目 to 3丁目, 溝口1丁目 to 3丁目の一部, 坂戸1丁目の一部, 坂戸3丁目の一部, 二子3丁目 to 6丁目 | A, B |
+  | `higashitakatsu-jhs` | shelter | 川崎市立東高津中学校, 末長4-1-1; 坂戸3丁目の一部, 末長4丁目 | A |
+  | `sakado-es` | shelter | 川崎市立坂戸小学校, 坂戸1-18-1; 溝口1丁目の一部, 坂戸1丁目の一部, 坂戸2丁目, 北見方1丁目, 北見方3丁目の一部 | A |
+  | `nishikajigaya-es` | shelter | 川崎市立西梶ヶ谷小学校, 梶ヶ谷2-14-1; 下作延2丁目の一部 and four areas outside the board | A |
+  | `mizonokuchi1-water` | water_point | 溝口1-6-7, セレサ川崎前 (the city's name for it: 溝口（２）) | B |
+  | `mizonokuchi5-water` | water_point | 溝口5-24, クリオ溝の口壱番館西側 (溝口（１）) | B |
+  | `mizonokuchi-sta` | station | 溝の口駅: 東急 田園都市線, 大井町線 (溝口2-1-1) and JR 南武線 武蔵溝ノ口駅 (溝口), one transfer station | E |
+  | `takatsu-ward-office` | office | 高津区役所, 下作延2-8-1; a 応急給水拠点 in front of it | B |
+  | `takatsu-shiminkan`, `nocty1`, `hotel-mets-mizonokuchi`, `tecno-kawasaki`, `scrum21`, `kawasaki-daiichi-hotel` | commuter_shelter | 帰宅困難者用一時滞在施設 of the 武蔵溝ノ口駅 group at the station: 川崎市高津市民館 (溝口1-4-1, also a 避難所補完施設), ノクティ１ビル (溝口1-3-1), ホテルメッツ溝ノ口 (溝口1-1-5), てくのかわさき (溝口1-6-10), すくらむ２１ (溝口2-20-1), 川崎第一ホテル溝ノ口 (溝口2-3-12). The city opens them one by one once the buildings are safe | C |
+  | `midorigaoka-cemetery` | park | 緑ケ丘霊園 (上作延, 下作延, 久地4丁目地内): 広域避難場所 for a large fire, just west of the board | D |
+
+  Sources, all from 川崎市地域防災計画 資料編 (page updated 2026-08-13), https://www.city.kawasaki.jp/601/page/0000140630.html, except E:
+  - A. 2-06 避難所（指定避難所）一覧表, 高津区 (令和7年4月1日現在); 2-04 地域防災拠点一覧表 (令和7年4月現在) for 高津中, 東高津中 and 西高津中.
+  - B. 2-18 応急給水拠点一覧 (令和7年4月1日現在), 高津 4, 6, 7, 12 and 16. The ward office's address is the one this list gives.
+  - C. 2-28 帰宅困難者用一時滞在施設一覧表 (令和7年5月1日現在), rows 31 to 41 (武蔵溝ノ口駅); 2-10 避難所補完施設一覧表 (令和4年8月25日時点) for 高津市民館.
+  - D. 2-05 広域避難場所一覧表 and 2-07 指定緊急避難場所一覧表.
+  - E. 東急 https://www.tokyu.co.jp/area/mizonokuchi/station/ and JR East https://www.jreast.co.jp/estation/station/info.aspx?StationCd=1535, read in the browser pane.
+
+  Left out on purpose: the other five 一時滞在施設 of the 武蔵溝ノ口駅 group (洗足学園音楽大学 久本2-3-1, 久本神社氏子会館 久本1-16-13, かながわサイエンスパーク西棟 坂戸3-2-1, ミュージション溝の口 久本3-1-5, 南武朝鮮初級学校 末長3-1-15) and the ones of other groups inside the board (川崎市立高津図書館 溝口4-16-3 and 川崎市大山街道ふるさと館 溝口3-13-3 under 高津駅, 川崎市総合教育センター 溝口6-9-3 under 二子新地駅), all addable from C the same way; the schools' 既設水栓型 taps (2-18, 高津 18 to 36, 開設不要), which are inside shelters already listed; the other 避難所補完施設 in the board's 町丁目. No page on current shelter closures in 高津区 was read; the pilot board used the 資料編 alone too.
+
+- **Where the broadcast text is published.** The same channels as the pilot board: メールニュースかわさき (topic 防災行政無線), the かわさき防災アプリ and the phone line. The pilot's subscription (防災行政無線 and 緊急情報) is not tied to a ward, so the mails that reach 武蔵小杉 today are the ones 溝の口 needs.
+
+- **Wiring the inbox: one mail, two boards.** The city mail already arrives at the Email Worker `engawa-inbox` (outside the repository), which posts it to the 武蔵小杉 board. It must now post each mail to both `/api/b/musashikosugi/inbox` and `/api/b/mizonokuchi/inbox`, each with that board's own secret (one board per secret, `docs/INBOX.md`). The integrator changes the Worker. The two human steps:
+  1. On `/b/mizonokuchi/admin`, section "Official inbox": generate the inbox secret (shown once) and give it to the integrator for the Worker's second secret.
+  2. On the same page, enter the same allowed sender as the pilot board, `kawasaki@sg-p.jp`. Nothing changes in the Gmail: the filter on `sg-p.jp` and the forwarding address stay as they are.
+
+  A consequence to decide on: the disaster switch reads categories and words, not wards, so a mail about an evacuation order for part of 中原区 would also switch 溝の口 to disaster mode (and the other way round). Either accept it (both boards are in the same city, and the admin can switch back), or let the Worker skip a board when the mail names only the other ward. Not built.
+
+## Tokyo: 上野 (`ueno`)
+
+- **Area.** 17 町丁目 of 台東区 (city code `13106`) around 上野駅, one e-Stat small area each, none split; the brief's list holds as written:
+
+  | code | 町丁目 | code | 町丁目 |
+  |---|---|---|---|
+  | 13106004001 | 上野1丁目 | 13106003003 | 東上野3丁目 |
+  | 13106004002 | 上野2丁目 | 13106003004 | 東上野4丁目 |
+  | 13106004003 | 上野3丁目 | 13106003005 | 東上野5丁目 |
+  | 13106004004 | 上野4丁目 | 13106003006 | 東上野6丁目 |
+  | 13106004005 | 上野5丁目 | 131060060 | 上野公園 |
+  | 13106004006 | 上野6丁目 | 13106013001 | 上野桜木1丁目 |
+  | 13106004007 | 上野7丁目 | 13106013002 | 上野桜木2丁目 |
+  | 13106003001 | 東上野1丁目 | 13106005001 | 池之端1丁目 |
+  | 13106003002 | 東上野2丁目 | | |
+
+  Polygons `lib/geo/ueno.json`, 12,080 bytes, built 2026-11-05. The 上野駅 point (35.7141, 139.7774) falls in 上野7丁目, JR East's address for the station (`pnpm check:boards`).
+
+- **Evacuation in this area.** The ward's rule (震災時の避難, F): stay at home when it is safe; otherwise go to the 町会's 一時集合場所, then to a shelter or a 避難場所. By 町丁目 (資料第128, 避難場所と割当区分, 平成30年6月現在):
+  - 上野1丁目 to 6丁目 are in the 地区内残留地区 301 (with all of 千代田区 and 台東区 秋葉原): no fire spread is expected, people move a block away from a fire instead of walking to a 避難場所.
+  - 上野7丁目, 東上野1丁目 to 6丁目, 上野公園, 池之端1丁目 and part of 上野桜木1丁目 go to the 避難場所 上野公園一帯.
+  - The rest of 上野桜木1丁目 and 上野桜木2丁目 go to 谷中墓地.
+
+  Shelters are assigned per 町会, not per 町丁目 (資料第126 and 127). The target areas in the seed are the 町丁目 of each 町会 as the 町会区域一覧表 lists them, with "の一部" where a 町丁目 is split between 町会 with different shelters. 池之端1丁目 was under a 警戒レベル3 高齢者等避難 for 土砂災害 on 2026-09-21 (part of it, with parts of 谷中2丁目 and 池之端2丁目; shelters 谷中小学校 and 忍岡小学校), from the ward's mail archive below.
+
+- **Known places** (18, all `verified: true`, read 2026-11-05):
+
+  | id | kind | place | source |
+  |---|---|---|---|
+  | `kuromon-es` | shelter | 黒門小学校, 上野1-16-20; 上野1丁目 to 4丁目, 上野5丁目の一部, 上野6丁目, 池之端1丁目の一部 (14 町会 of the 上野 district plus 長者町一丁目 and 上野南大門町) | A, B |
+  | `okachimachi-taito-jhs` | shelter | 御徒町台東中学校, 台東4-13-16; 上野5丁目の一部 (仲徒一丁目町会) and parts of 台東1丁目 to 4丁目 | A, B |
+  | `ueno-es` | shelter | 上野小学校, 東上野6-16-8; 東上野3丁目の一部, 東上野4丁目の一部, 東上野5丁目, 東上野6丁目. Four 町会 moved here from the former 下谷小学校 "for the time being" | A, B |
+  | `taito-rojin-center` | shelter | 老人福祉センター, 東上野2-25-14; 東上野1丁目, 東上野2丁目の一部 | A, B |
+  | `higashiueno-kuminkan` | shelter | 東上野区民館, 東上野3-24-6; 東上野2丁目の一部, 東上野3丁目の一部 | A, B |
+  | `shinobugaoka-jhs` | shelter | 忍岡中学校, 上野公園18-20; 上野公園, 上野7丁目の一部, 東上野4丁目の一部, 上野桜木1丁目の一部 and parts of 下谷 and 根岸. Three 町会 moved here from the former 坂本小学校 | A, B |
+  | `ueno-jhs` | shelter | 上野中学校, 上野桜木1-14-55; 上野桜木1丁目の一部, 上野桜木2丁目, parts of 谷中6丁目 and 7丁目 | A, B |
+  | `shinobugaoka-es` | shelter | 忍岡小学校, 池之端2-1-22; 池之端1丁目の一部, 池之端2丁目 | A, B |
+  | `ueno-park-water` | water_point | 上野恩賜公園 災害時給水ステーション, 上野公園8-51: 東京都水道局's 1,500 m3 応急給水槽 | C, A |
+  | `ueno-park` | park | 上野恩賜公園: the 避難場所 上野公園一帯 | A, F |
+  | `yanaka-cemetery` | park | 谷中墓地: the 避難場所 for 上野桜木, outside the board | A, F |
+  | `ueno-sta` | station | 上野駅: JR (上野7丁目), 東京メトロ 銀座線 G16 and 日比谷線 H18 (東上野3-19-6), 京成上野駅 (上野公園1-60) as an alias | E |
+  | `taito-city-office` | office | 台東区役所, 東上野4-5-6; also a candidate 一時滞在施設 | A, D |
+  | `tokyo-bunka-kaikan`, `tobikan`, `ueno-green-salon`, `ueno-hs` | commuter_shelter | 都立 帰宅困難者一時滞在施設 in the park: 東京文化会館 (上野公園5-45), 東京都美術館 (上野公園8-36), 上野グリーンサロン (上野公園7-47), 都立上野高等学校 (上野公園10-14, also the shelter of three 町会 outside the board) | A |
+  | `ueno-chuo-parking` | commuter_shelter | 上野中央通り地下駐車場, 上野2-13先: the ward's candidate 一時滞在施設, which "may not open" | A, D |
+
+  Sources:
+  - A. 台東区地域防災計画（令和6年度修正）資料編 (page updated 2024-08-26), https://www.city.taito.lg.jp/bosai/houshin/bosaikaigi/chikibou_r6.html: 資料第126 町会別一時集合場所・避難所・避難場所一覧 (令和6年4月現在), 資料第127 避難所施設一覧 (令和6年7月現在: names, addresses, 避難予定町会, the two moves), 資料第128 避難場所と割当区分 (平成30年6月現在), 資料第129 区内帰宅困難者一時滞在施設等一覧, 資料第110 (給水拠点, 令和5年4月現在). Read from the PDF pages rendered as images, since the extracted text scrambles merged cells.
+  - B. 町会区域一覧表 (令和8年3月修正), https://www.city.taito.lg.jp/kurashi/kyodo/tyoukai/choukaikuikiichiran.html (updated 2026-03-09): which 町丁目 and 番地 each 町会 covers.
+  - C. 東京都水道局, 災害時給水ステーション（給水拠点）一覧 (区部, 令和7年11月1日現在), https://www.waterworks.metro.tokyo.lg.jp/kurashi/shinsai/ichiran.
+  - D. 帰宅困難者対策 (updated 2026-09-03), https://www.city.taito.lg.jp/bosai/taisaku/kitakukonnan/kitaku.html: the ward's 17 candidate facilities.
+  - E. JR East https://www.jreast.co.jp/estation/station/info.aspx?StationCd=204, Tokyo Metro https://www.tokyometro.jp/station/ueno/index.html, 京成 https://www.keisei.co.jp/keisei/tetudou/accessj/keisei-ueno.php, read in the browser pane.
+  - F. 震災時の避難 (updated 2026-07-30), https://www.city.taito.lg.jp/bosai/taisaku/hinan/hinan.html: 避難場所 上野公園一帯, 谷中墓地, 隅田公園一帯.
+
+  Readings to review: 仲御徒町中町会 (part of 上野5丁目) is under both 黒門小学校 and 御徒町台東中学校 in 資料第127 and under 黒門小学校 in 資料第126, so 上野5丁目の一部 is on both. 長者町一丁目町会 and 上野南大門町町会 (part of 上野3丁目) are under 黒門小学校 in 資料第126 and on no list in 資料第127; the seed follows 126, which makes all of 上野3丁目 黒門小学校's. 上野7丁目13 is in 下谷１丁目町会 (忍岡中学校); 上野7丁目1, the JR station block, is in no 町会. 京成上野 is its own station under the park, kept as an alias of 上野駅 as briefed, with its address in `notes_ja`.
+
+  Left out on purpose: the 一時集合場所 (one per 町会, in 資料第126 as of 2024-04, re-checked with every 町会 for the 防災地図（地震編） revised 令和8年5月, https://www.city.taito.lg.jp/bosai/map/jishin/bosaimap.html, whose map PDF was not read); the 徒歩帰宅支援施設 下町風俗資料館 (上野公園2-1), 奏楽堂 (上野公園8-43) and the 旧吉田屋酒店 (上野桜木2-10-6); 本郷給水所 (文京区本郷2-7-29), the second water source the ward names for 上野公園一帯. The plan is from 2024: the ward says shelters can be out of use during renovation without listing them, and no newer shelter list was found.
+
+- **Where the broadcast text is published.** 台東区 states it plainly:
+  1. **たいとう防災気象情報メール** carries the broadcasts (防災行政無線の放送内容を確認できます, updated 2021-07-06, https://www.city.taito.lg.jp/bosai/jyouhou/gyouseimusen/bosaimusennaiyokaku.html): 警戒レベル3 高齢者等避難 and 警戒レベル4 避難指示 go to every subscriber under 防災緊急情報; the other broadcasts, except the daily ones, under 区からの防災情報; the daily ones (the 17:00 or 16:30 夕焼けタイム on weekdays, the Wednesday 13:00 特殊詐欺 warning) under 防災無線定時放送. Subscribing (page updated 2024-10-29, https://www.city.taito.lg.jp/bosai/jyouhou/mail/bosaiwasemail.html, and its 登録手順書 PDF): send an empty mail to `login@taito.mailio.jp`, open the URL in the reply within 24 hours, choose the topics; mail comes from the domain `taito.mailio.jp`. Same vendor as しぶや安全・安心メール.
+  2. **Public archives** of the same mails: https://www.city.taito.lg.jp/bosaimail/html/index.html (the latest eleven; on 2026-11-05 the newest was 防災無線定時放送 2026-11-04 16:31, the 夕焼けタイム text word for word) and https://taito.mailio.jp/public/backnumber/ per topic. 区からの防災情報 holds the September case: 2026-09-20 自主避難場所の開設, 2026-09-21 レベル３高齢者等避難発令 (sent twice, the second to fix a link), 解除 and 閉鎖, all for parts of 谷中2丁目, 池之端1丁目 and 2丁目. It also carries ward notices that are not broadcasts (a crowdfunding appeal on 2026-10-08).
+  3. Phone 03-5246-4057: the last 20 broadcasts, at any hour.
+  4. 防災アプリ「台東防災」: every broadcast except the daily ones.
+
+- **Wiring the inbox by mail**, as for the pilot (`docs/INBOX.md`, "When the list registers by empty mail"); the same Gmail can serve. Session and integrator steps first: on `/b/ueno/admin`, generate the inbox secret; route `bousai-ueno@engawaboard.com` in Cloudflare Email Routing; the Worker learns this board too (the same change as for 溝の口: a map from routing address to board URL and secret). Then the two human steps:
+  1. In the Gmail, add `bousai-ueno@engawaboard.com` as a forwarding address and a filter `from:(taito.mailio.jp)` that forwards to it.
+  2. From the Gmail, send the empty mail to `login@taito.mailio.jp`, open the URL from the reply, keep 防災緊急情報 (it cannot be turned off) and tick 区からの防災情報 only. 防災無線定時放送 would cost a Claude call every weekday for the same sentence, and the weather and seismic topics cost Claude calls for what the board does not need.
+
+  Then read the From address of the first mail that arrives and put it on the board's allowed sender list.
+
+- **Not confirmed.** (a) The sender address; only the domain is on the ward's page. (b) That the 区からの防災情報 mails repeat the loudspeaker text word for word: the September 警戒レベル3 mail came under 区からの防災情報 although the page says Level 3 goes under 防災緊急情報, whose archive is empty, and its wording reads like a notice. The daily mails do match the broadcast text. (c) A feed: neither archive page links one; reading the city's archive page like the Shibuya portal would need the ward's consent and was not built. (d) The 東京都防災アプリ: not checked. (e) Shelter changes since 資料第127 (2024-07).
+
 ## Checklist for a new city
 
 1. **Scope.** 10 to 25 町丁目 around one station in one ward; a slug; the name in ja, en, zh, ko, vi; mode `peace`. Ask before including a 町丁目 the station touches but the shelter plan assigns elsewhere.
