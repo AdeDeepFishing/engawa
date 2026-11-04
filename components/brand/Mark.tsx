@@ -22,7 +22,7 @@ export const BRAND_JA = "縁側";
 
 /** Colours of the brand files, the same values as the tokens in app/globals.css. */
 export const BRAND = {
-  accent: "#1f5c3f",
+  accent: "#ad235d",
   paper: "#fbfaf7",
   ink: "#1b1b1b",
   muted: "#5c5c5c",

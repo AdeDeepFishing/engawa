@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { markDataUrl } from "@/components/brand/Mark";
+import { BRAND, markDataUrl } from "@/components/brand/Mark";
 import { getBoardBySlug } from "@/lib/db/boards";
 import { LANGS, t } from "@/lib/i18n";
 
@@ -9,7 +9,7 @@ export const contentType = "image/png";
 
 const INK = "#1b1b1b";
 const MUTED = "#5c5c5c";
-const ACCENT = "#1f5c3f";
+const ACCENT = BRAND.accent;
 const PAPER = "#fbfaf7";
 const LINE = "#d9d6cf";
 

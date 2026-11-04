@@ -8,10 +8,16 @@
   --line: #d9d6cf;
   /* Borders of controls: at least 3:1 on white, on the page and on the beige (WCAG 1.4.11). */
   --line-strong: #87837a;
-  --accent: #1f5c3f;
-  /* Hover and pressed shade of the accent fill: white on it is 11.8:1. */
-  --accent-hover: #163f2c;
+  /* Deep rose (2026-11-04, the user's choice over the earlier green #1f5c3f).
+     White on it 6.6:1, it on the page 6.3:1, on white 6.6:1, on the soft
+     tint 5.7:1; as a focus ring on the page 6.3:1. */
+  --accent: #ad235d;
+  /* Hover and pressed shade of the accent fill: white on it is 9.4:1. */
+  --accent-hover: #861846;
   --accent-ink: #ffffff;
+  /* Light tint of the accent: the top bar band and selected or pressed
+     chips. Ink on it 14.8:1, muted 5.7:1, control borders 3.2:1. */
+  --accent-soft: #fbe9f0;
   --warn-bg: #fff4d6;
   --warn-ink: #5a3d00;
   --held-bg: #f3efe6;
@@ -29,6 +35,7 @@
   --color-accent: var(--accent);
   --color-accent-hover: var(--accent-hover);
   --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
   --color-warn-bg: var(--warn-bg);
   --color-warn-ink: var(--warn-ink);
   --color-held-bg: var(--held-bg);

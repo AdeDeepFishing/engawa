@@ -31,7 +31,7 @@ export function TopBar({
 }) {
   const { t } = useLang();
   return (
-    <header className="sticky top-0 z-10 border-b border-line bg-surface/95 backdrop-blur">
+    <header className="sticky top-0 z-10 border-b border-line bg-accent-soft">
       <div
         className={`relative mx-auto flex w-full max-w-2xl flex-wrap items-center gap-x-3 gap-y-2 px-4 py-2 ${
           wide ? "md:max-w-[1600px] lg:flex-nowrap xl:px-6" : home ? "md:max-w-5xl md:px-6" : ""
