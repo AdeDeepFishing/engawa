@@ -391,7 +391,6 @@
   "home.newest": "Newest card: {time}",
   "home.area": "Area",
   "home.area_more": "and {n} more",
-  "home.languages": "In 6 languages",
   "home.open": "Open the board",
   "home.no_boards": "No boards yet.",
   "home.steps_heading": "How it works",
@@ -406,10 +405,8 @@
   "home.built_with": "Built with Claude Code",
   "inbox.senders_too_many": "At most {max} addresses can be saved. You entered {n}: remove {extra} and save again.",
   "home.map_heading": "Where the boards are",
-  "home.map_label": "Map of Japan. Prefectures with a board are highlighted.",
-  "home.map_hint": "Tap a highlighted prefecture to go to its boards.",
-  "home.map_pref_one": "{pref}: {n} board",
-  "home.map_pref_other": "{pref}: {n} boards",
+  "home.map_label": "Map of Japan. Each board is a pin on the map.",
+  "home.map_hint": "Tap a pin or its name to go to the board.",
   "home.made_by": "Made by Yanwen",
   "home.map_credits_link": "Map credits",
   "about.credits_heading": "Credits",
@@ -421,5 +418,8 @@
   "about.after_operator": "The platform operator creates the boards, connects each city's disaster radio broadcasts to its board once (a mail forwarder, or a reader for the broadcast text the city publishes) and runs the database updates. The operator also keeps the rules every board shares: personal information removed, locations kept coarse, everything deleted when it expires.",
   "about.after_owner": "Each board has a local owner who already puts up the notices: a neighbourhood association (自治会), a building manager, or a desk at the ward office. The owner holds that board's admin link and uses it to confirm official cards, hide what should not be on the board, and switch the board to disaster mode and back.",
   "about.after_new_city": "A new city needs data, not new code: its shelters and the districts each one serves, its water points and stations, the district boundaries from the national statistics (e-Stat), and where the city publishes the text of its disaster radio. For the area around one station that is a few hours of work. The checklist is published with the source code (docs/BOARDS.md).",
-  "about.after_limits": "What is not there yet: today there is one operator, the person who built Engawa, and one admin link opens the admin page of every board. A separate admin link for each board is the next step, so that a local owner can look after their own board without the operator."
+  "about.after_limits": "What is not there yet: today there is one operator, the person who built Engawa, and one admin link opens the admin page of every board. A separate admin link for each board is the next step, so that a local owner can look after their own board without the operator.",
+  "home.map_pin_one": "{names}: {n} board",
+  "home.map_pin_other": "{names}: {n} boards",
+  "home.map_names_sep": " · "
 }

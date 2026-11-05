@@ -7,6 +7,7 @@ import type { MessageKey } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n/LangProvider";
 import { BoardSummary, boardAnchor, type HomeBoard } from "./BoardSummary";
 import { JapanMap } from "./JapanMap";
+import type { MapPin } from "./map-pins";
 import { Tagline } from "./Tagline";
 
 const STEPS: { title: MessageKey; body: MessageKey }[] = [
@@ -62,21 +63,19 @@ function FooterLink({ href, external, children }: { href: string; external?: "me
  * hero (縁側 Engawa, what it is, the tagline in six languages, for whom),
  * and the listed boards resting on the plank (two hairlines, the
  * veranda's edge) on the left; the map of Japan on the right, held in view while the boards
- * scroll. On a phone: hero, boards, map. Then the three steps in the words
+ * scroll. On a phone: hero, map, boards. Then the three steps in the words
  * the board itself uses, how to try it with a sample, and the footer. The
  * hero lines, the boards and the map rise in once, 60 ms apart (none of it
  * under reduced motion). Client component so the language switch in the
  * top bar applies at once, like the about page; the board facts and `now`
  * come from the server render, so both renders agree.
  */
-export function HomeView({ boards, now }: { boards: HomeBoard[]; now: string }) {
+export function HomeView({ boards, pins, now }: { boards: HomeBoard[]; pins: MapPin[]; now: string }) {
   const { t } = useLang();
-  const counts: Record<string, number> = {};
-  for (const b of boards) if (b.prefecture) counts[b.prefecture] = (counts[b.prefecture] ?? 0) + 1;
 
-  /** From the map: bring the prefecture's first board into view and move focus to it, so a screen reader follows. */
-  function goToPrefecture(code: string) {
-    const first = boards.find((b) => b.prefecture === code);
+  /** From the map: bring the pin's first board card into view and move focus to it, so a screen reader follows. */
+  function goToPin(pin: MapPin) {
+    const first = boards.find((b) => pin.slugs.includes(b.slug));
     const el = first ? document.getElementById(boardAnchor(first.slug)) : null;
     if (!el) return;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -88,9 +87,10 @@ export function HomeView({ boards, now }: { boards: HomeBoard[]; now: string }) 
   return (
     <>
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 pt-10 md:px-6 lg:pt-20">
-        <div className="lg:grid lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:items-start lg:gap-20">
-          <div>
-            <section aria-labelledby="home-title">
+        {/* Phones read hero, map, boards; from lg the hero and the boards share the left column and the map stays on the right. */}
+        <div className="flex flex-col lg:grid lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:items-start lg:gap-20">
+          <div className="contents lg:block">
+            <section aria-labelledby="home-title" className="order-1">
               <h1
                 id="home-title"
                 className="home-rise flex flex-wrap items-baseline gap-x-4 text-[clamp(2.5rem,1.75rem+3vw,3.5rem)] leading-[1.1] font-bold"
@@ -112,14 +112,14 @@ export function HomeView({ boards, now }: { boards: HomeBoard[]; now: string }) 
               </p>
             </section>
 
-            <section aria-labelledby="home-boards" className="mt-12 lg:mt-16">
+            <section aria-labelledby="home-boards" className="order-3 mt-12 lg:order-none lg:mt-16">
               <h2 id="home-boards" className="home-rise text-xl font-bold" style={rise(240)}>
                 {t("index.title")}
               </h2>
               {/* The plank: two hairlines with the paper between, the edge of the veranda the boards rest on. */}
               <div aria-hidden="true" className="home-rise mt-3 h-2 border-y border-line" style={rise(240)} />
               {boards.length ? (
-                <ul className="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-1">
+                <ul className="mt-4 grid gap-4 md:grid-cols-2">
                   {boards.map((b, i) => (
                     <li key={b.slug} className="home-rise" style={rise(360 + i * 60)}>
                       <BoardSummary board={b} now={now} />
@@ -132,12 +132,12 @@ export function HomeView({ boards, now }: { boards: HomeBoard[]; now: string }) 
             </section>
           </div>
 
-          <section aria-labelledby="home-map" className="home-rise mt-12 lg:sticky lg:top-24 lg:mt-0" style={rise(300)}>
+          <section aria-labelledby="home-map" className="home-rise order-2 mt-12 lg:sticky lg:top-24 lg:order-none lg:mt-0" style={rise(300)}>
             <h2 id="home-map" className="text-xl font-bold">
               {t("home.map_heading")}
             </h2>
             <div className="mt-4 md:max-w-[30rem] lg:max-w-none">
-              <JapanMap counts={counts} onSelect={goToPrefecture} />
+              <JapanMap boards={boards} pins={pins} onSelect={goToPin} />
             </div>
             <p className={`mt-4 ${BODY}`}>{t("home.map_hint")}</p>
             {/* The CC BY 4.0 credit for the outlines is on the about page, one tap away. */}

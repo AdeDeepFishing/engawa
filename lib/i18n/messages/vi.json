@@ -391,7 +391,6 @@
   "home.newest": "Thẻ mới nhất: {time}",
   "home.area": "Khu vực",
   "home.area_more": "và {n} nơi khác",
-  "home.languages": "Bằng 6 ngôn ngữ",
   "home.open": "Mở bảng tin",
   "home.no_boards": "Chưa có bảng tin nào.",
   "home.steps_heading": "Cách hoạt động",
@@ -406,10 +405,8 @@
   "home.built_with": "Phát triển bằng Claude Code",
   "inbox.senders_too_many": "Chỉ lưu được tối đa {max} địa chỉ. Bạn đã nhập {n}: hãy xóa {extra} địa chỉ rồi lưu lại.",
   "home.map_heading": "Nơi có bảng tin",
-  "home.map_label": "Bản đồ Nhật Bản. Các tỉnh có bảng tin được tô màu nổi bật.",
-  "home.map_hint": "Nhấn vào tỉnh được tô màu để đến bảng tin ở đó.",
-  "home.map_pref_one": "{pref}: {n} bảng tin",
-  "home.map_pref_other": "{pref}: {n} bảng tin",
+  "home.map_label": "Bản đồ Nhật Bản. Mỗi bảng tin là một ghim trên bản đồ.",
+  "home.map_hint": "Nhấn vào ghim hoặc tên của nó để đến bảng tin đó.",
   "home.made_by": "Thực hiện: Yanwen",
   "home.map_credits_link": "Nguồn bản đồ",
   "about.credits_heading": "Ghi công",
@@ -421,5 +418,8 @@
   "about.after_operator": "Người vận hành nền tảng tạo các bảng tin, kết nối một lần nội dung phát trên loa phòng chống thiên tai của mỗi thành phố vào bảng tin của nó (qua chuyển tiếp email, hoặc đọc nội dung phát thanh mà thành phố công bố) và chạy các bản cập nhật cơ sở dữ liệu. Người vận hành cũng giữ những quy tắc chung cho mọi bảng tin: xóa thông tin cá nhân, chỉ giữ vị trí ở mức khu vực, xóa mọi thứ khi hết hạn.",
   "about.after_owner": "Mỗi bảng tin có một người quản lý tại chỗ, là người vốn đã dán các thông báo: hội tự quản khu phố (自治会), người quản lý tòa nhà, hoặc một quầy ở văn phòng quận. Người quản lý giữ liên kết quản trị của bảng tin đó và dùng nó để xác nhận các thẻ chính thức, ẩn những gì không nên có trên bảng tin, và chuyển bảng tin sang chế độ thiên tai rồi chuyển lại.",
   "about.after_new_city": "Một thành phố mới cần dữ liệu chứ không cần mã mới: các nơi sơ tán và những khu phố (町丁目) mà mỗi nơi phụ trách, các điểm cấp nước và nhà ga, ranh giới khu phố từ thống kê quốc gia (e-Stat), và nơi thành phố công bố nội dung phát trên loa phòng chống thiên tai. Với khu vực quanh một nhà ga, việc này mất vài giờ. Danh sách các bước được công bố cùng mã nguồn (docs/BOARDS.md).",
-  "about.after_limits": "Những gì chưa có: hiện chỉ có một người vận hành, chính là người làm ra Engawa, và một liên kết quản trị mở được trang quản trị của mọi bảng tin. Bước tiếp theo là cấp liên kết quản trị riêng cho từng bảng tin, để người quản lý tại chỗ có thể tự lo bảng tin của mình mà không cần qua người vận hành."
+  "about.after_limits": "Những gì chưa có: hiện chỉ có một người vận hành, chính là người làm ra Engawa, và một liên kết quản trị mở được trang quản trị của mọi bảng tin. Bước tiếp theo là cấp liên kết quản trị riêng cho từng bảng tin, để người quản lý tại chỗ có thể tự lo bảng tin của mình mà không cần qua người vận hành.",
+  "home.map_pin_one": "{names}: {n} bảng tin",
+  "home.map_pin_other": "{names}: {n} bảng tin",
+  "home.map_names_sep": " · "
 }

@@ -60,3 +60,26 @@ export function withAreaCodes<B extends PolygonSource>(board: B): B {
     area_names: board.area_names.map((a) => (a.code ? a : { ...a, code: codeForName(board.slug, a.name_ja) })),
   };
 }
+
+/**
+ * The area-weighted centroid of the polygons (outlines only), as longitude
+ * and latitude, or null for none. Plane geometry on degrees, which is
+ * exact enough over a few 町丁目. The home page map puts the board's pin here.
+ */
+export function centroidOf(features: AreaFeature[]): [number, number] | null {
+  let area = 0;
+  let cx = 0;
+  let cy = 0;
+  for (const f of features) {
+    const polygons = f.geometry.type === "Polygon" ? [f.geometry.coordinates] : f.geometry.coordinates;
+    for (const [ring] of polygons) {
+      for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+        const cross = ring[j][0] * ring[i][1] - ring[i][0] * ring[j][1];
+        area += cross;
+        cx += (ring[j][0] + ring[i][0]) * cross;
+        cy += (ring[j][1] + ring[i][1]) * cross;
+      }
+    }
+  }
+  return area ? [cx / (3 * area), cy / (3 * area)] : null;
+}
