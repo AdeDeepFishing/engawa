@@ -16,6 +16,7 @@
     "latency": "node --env-file-if-exists=.env.local --import=tsx scripts/latency.ts",
     "guard": "node --import=tsx scripts/guard.ts",
     "board:throwaway": "node --env-file-if-exists=.env.local --import=tsx scripts/throwaway-board.ts",
+    "export:samples": "node --env-file-if-exists=.env.local --import=tsx scripts/export-samples.ts",
     "check:placeholders": "node --import=tsx scripts/check-placeholders.ts",
     "check:inbox": "node --import=tsx scripts/check-inbox.ts",
     "check:places": "node --import=tsx scripts/check-places.ts",
