@@ -5,7 +5,12 @@
  */
 
 export const MAX_LONG_EDGE = 1568;
-export const MAX_INPUT_BYTES = 8 * 1024 * 1024;
+/**
+ * The original file the browser agrees to decode. A 50 MP phone photo can be
+ * 20 MB or more and still compresses to well under 1 MB at 1568px, so this
+ * is far above the server's 8 MB limit on the prepared upload, which stays.
+ */
+export const MAX_INPUT_BYTES = 40 * 1024 * 1024;
 export const JPEG_QUALITY = 0.85;
 
 type Drawable = ImageBitmap | HTMLImageElement;

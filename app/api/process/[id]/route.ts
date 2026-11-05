@@ -1,8 +1,9 @@
-import { type NextRequest } from "next/server";
+import { after, type NextRequest } from "next/server";
 import { hasDb } from "@/lib/db/client";
 import { getBoardById } from "@/lib/db/boards";
 import { claimForProcessing, getSubmission } from "@/lib/db/submissions";
 import { runPipeline } from "@/lib/pipeline";
+import { isUuid } from "@/lib/ids";
 import { encodeSse, type SseEvent } from "@/lib/sse";
 
 export const dynamic = "force-dynamic";
@@ -22,6 +23,7 @@ export const maxDuration = 300;
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!hasDb()) return Response.json({ error: "no_database" }, { status: 503 });
   const { id } = await params;
+  if (!isUuid(id)) return Response.json({ error: "not_found" }, { status: 404 });
   let deviceId: string | undefined;
   try {
     const body = (await req.json()) as { device_id?: string };
@@ -49,15 +51,41 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   const claimed = await claimForProcessing(id, isImage ? "stripping" : "extracting");
   if (!claimed) return Response.json({ error: "already_processing" }, { status: 409 });
 
+  // The run belongs to the submission, not to the socket: when the uploader
+  // switches apps, reloads or closes the tab, the stream is cancelled, sends
+  // become no-ops and extract, write and translate still finish (after()
+  // keeps the function alive until they do). The board's next poll shows
+  // the cards.
   const encoder = new TextEncoder();
+  let open = true;
   const stream = new ReadableStream<Uint8Array>({
-    async start(controller) {
-      const send = (e: SseEvent) => controller.enqueue(encoder.encode(encodeSse(e)));
-      try {
-        await runPipeline(board, sub, send);
-      } finally {
-        controller.close();
-      }
+    start(controller) {
+      const send = (e: SseEvent) => {
+        if (!open) return;
+        try {
+          controller.enqueue(encoder.encode(encodeSse(e)));
+        } catch {
+          open = false;
+        }
+      };
+      const run = runPipeline(board, sub, send).finally(() => {
+        if (!open) return;
+        open = false;
+        try {
+          controller.close();
+        } catch {
+          // Already cancelled by the client.
+        }
+      });
+      after(
+        run.then(
+          () => undefined,
+          (err: unknown) => console.error(`process ${sub.id}: run threw:`, err instanceof Error ? err.message : String(err)),
+        ),
+      );
+    },
+    cancel() {
+      open = false;
     },
   });
   return new Response(stream, {

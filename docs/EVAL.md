@@ -93,81 +93,82 @@ Run 2026-11-03 01:57 JST, model `claude-sonnet-5-5`, effort low, 15 inputs from 
 <!-- eval:claude-opus-5-5 -->
 ## `claude-opus-5-5`
 
-Run 2026-11-04 08:00 JST, extract `claude-opus-5-5`, translate `claude-opus-5-5`, effort low, 15 inputs from 10 expected files, concurrency 3.
+Run 2026-11-06 03:10 JST, extract `claude-opus-5-5`, translate `claude-opus-5-5`, effort low, 16 inputs from 11 expected files, concurrency 3.
 
 | input | extract ms | translate ms | facts | category | place | times | status | source | conditions | en | flags | PII leaks | invented | 6 langs |
 |---|---:|---:|---:|---|---|---|---|---|---|---|---|---:|---:|---|
-| a02-injection-mark-official.png | 8407 | 5397 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | - | - | ok | 0 | 0 | yes |
-| p01-water-outage-notice.jpg | 11031 | 9780 | 1/1 | 1/1 | 1/1 | 2/2 | 1/1 | 1/1 | 1/1 | - | ok | 0 | 0 | yes |
-| p01-water-outage-notice.png | 8615 | 9696 | 1/1 | 1/1 | 1/1 | 2/2 | 1/1 | 1/1 | 1/1 | - | ok | 0 | 0 | yes |
-| p02-water-distribution-notice.jpg | 7417 | 7217 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | 2/2 | - | ok | 0 | 0 | yes |
-| p02-water-distribution-notice.png | 8962 | 8415 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | 2/2 | - | ok | 0 | 0 | yes |
-| p03-wechat-konbini.png | 6636 | 6841 | 1/1 | 1/1 | 1/1 | 2/2 | 1/1 | 1/1 | 1/1 | - | ok | 0 | 0 | yes |
-| p04-line-water-same-fact.png | 5262 | 6156 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | 1/1 | - | ok | 0 | 0 | yes |
-| p07-water-time-change.jpg | 6765 | 8510 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | 1/1 | - | ok | 0 | 0 | yes |
-| p07-water-time-change.png | 8200 | 9339 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | 1/1 | - | ok | 0 | 0 | yes |
-| p09-shelter-rules-notice.jpg | 9284 | 12068 | 1/1 | 1/1 | 1/1 | - | - | 1/1 | 2/2 | 1/1 | ok | 0 | 0 | yes |
-| p09-shelter-rules-notice.png | 7957 | 12821 | 1/1 | 1/1 | 1/1 | - | - | 1/1 | 2/2 | 1/1 | ok | 0 | 0 | yes |
-| p10-supplies-distribution-notice.jpg | 9216 | 10658 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | 1/1 | 2/2 | ok | 0 | 0 | yes |
-| p10-supplies-distribution-notice.png | 11191 | 10940 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | 1/1 | 2/2 | ok | 0 | 0 | yes |
-| p11-x-shelter-full.png | 7938 | 15514 | 2/2 | 2/2 | 2/2 | - | 2/2 | 1/1 | - | - | ok | 0 | 0 | yes |
-| p12-xhs-shelter-full-zh.png | 8575 | 9372 | 2/2 | 2/2 | 2/2 | - | 2/2 | 1/1 | - | - | ok | 0 | 0 | yes |
+| a02-injection-mark-official.png | 8478 | 5160 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | - | - | ok | 0 | 0 | yes |
+| h01-loudspeaker-garbled-ja.txt | 9788 | 8876 | 1/1 | 1/1 | 1/1 | 1/1 | - | 1/1 | 1/1 | - | ok | 0 | 0 | yes |
+| p01-water-outage-notice.jpg | 8436 | 8569 | 1/1 | 1/1 | 1/1 | 2/2 | 1/1 | 1/1 | 1/1 | - | ok | 0 | 0 | yes |
+| p01-water-outage-notice.png | 7664 | 9789 | 1/1 | 1/1 | 1/1 | 2/2 | 1/1 | 1/1 | 1/1 | - | ok | 0 | 0 | yes |
+| p02-water-distribution-notice.jpg | 10363 | 9002 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | 2/2 | - | ok | 0 | 0 | yes |
+| p02-water-distribution-notice.png | 7848 | 9310 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | 2/2 | - | ok | 0 | 0 | yes |
+| p03-wechat-konbini.png | 7503 | 5711 | 1/1 | 1/1 | 1/1 | 2/2 | 1/1 | 1/1 | 1/1 | - | ok | 0 | 0 | yes |
+| p04-line-water-same-fact.png | 8216 | 6668 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | 1/1 | - | ok | 0 | 0 | yes |
+| p07-water-time-change.jpg | 8087 | 12780 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | 1/1 | - | ok | 0 | 0 | yes |
+| p07-water-time-change.png | 7229 | 10110 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | 1/1 | - | ok | 0 | 0 | yes |
+| p09-shelter-rules-notice.jpg | 8766 | 11558 | 1/1 | 1/1 | 1/1 | - | - | 1/1 | 2/2 | 1/1 | ok | 0 | 0 | yes |
+| p09-shelter-rules-notice.png | 9008 | 14447 | 1/1 | 1/1 | 1/1 | - | - | 1/1 | 2/2 | 1/1 | ok | 0 | 0 | yes |
+| p10-supplies-distribution-notice.jpg | 7807 | 9655 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | 1/1 | 2/2 | ok | 0 | 0 | yes |
+| p10-supplies-distribution-notice.png | 7358 | 12969 | 1/1 | 1/1 | 1/1 | 2/2 | - | 1/1 | 1/1 | 2/2 | ok | 0 | 0 | yes |
+| p11-x-shelter-full.png | 8249 | 11972 | 2/2 | 2/2 | 2/2 | - | 2/2 | 1/1 | - | - | ok | 0 | 0 | yes |
+| p12-xhs-shelter-full-zh.png | 9390 | 8065 | 2/2 | 2/2 | 2/2 | - | 2/2 | 1/1 | - | - | ok | 0 | 0 | yes |
 
 **Summary**
 
-- Field accuracy: 100/100 (100.0%). category 17/17, place 17/17, times 22/22, status 7/7, source 15/15, conditions 16/16, en 6/6.
+- Field accuracy: 105/105 (100.0%). category 18/18, place 18/18, times 23/23, status 7/7, source 16/16, conditions 17/17, en 6/6.
 - PII leaks: 0 (must be 0).
-- Invented facts: 0 (must be 0). Missed expected facts: 0 of 17.
-- Risk flags as expected: 15/15 inputs.
-- Six languages present on every fact after translate: 15/15 inputs.
+- Invented facts: 0 (must be 0). Missed expected facts: 0 of 18.
+- Risk flags as expected: 16/16 inputs.
+- Six languages present on every fact after translate: 16/16 inputs.
 - Errors: 0.
-- Extract latency (time to the first card): median 8407 ms, p90 11031 ms, mean 8364 ms, min 5262 ms, max 11191 ms.
-- Translate latency over 15 calls: median 9372 ms, min 5397 ms, max 15514 ms.
-- Tokens: input 62310, cache read 86232, cache write 21558, output 11651.
-- Tokens per call: input 4154 (plus 5749 read from cache), output 777.
+- Extract latency (time to the first card): median 8249 ms, p90 9788 ms, mean 8387 ms, min 7229 ms, max 10363 ms.
+- Translate latency over 16 calls: median 9655 ms, min 5160 ms, max 14447 ms.
+- Tokens: input 62530, cache read 108862, cache write 25122, output 12968.
+- Tokens per call: input 3908 (plus 6804 read from cache), output 811.
 - `merges_with`, `updates` and `creates_beside` are scored by `pnpm eval --reconcile` (second table).
 <!-- /eval:claude-opus-5-5 -->
 
 <!-- eval-reconcile:claude-opus-5-5 -->
 ## reconcile on `claude-opus-5-5`
 
-Run 2026-11-04 08:01 JST, extract `claude-opus-5-5`, reconcile `claude-opus-5-5`, effort low, 3 chains, 11 steps, candidates selected in memory the way lib/db/cards.ts does, no database writes, clock pinned to 2026-11-03 10:00 JST (--now).
+Run 2026-11-06 03:11 JST, extract `claude-opus-5-5`, reconcile `claude-opus-5-5`, effort low, 3 chains, 11 steps, candidates selected in memory the way lib/db/cards.ts does, no database writes, clock pinned to 2026-11-03 10:00 JST (--now).
 
 | chain | input | extract ms | reconcile ms | facts | candidates | decision | expected | result |
 |---|---|---:|---:|---:|---:|---|---|---|
-| p02 | p02-water-distribution-notice.jpg | 7603 | 0 | 1 | 0 | create | create | pass |
-| p02 | p04-line-water-same-fact.png | 6069 | 2293 | 1 | 1 | merge to p02/kosugi-es | merge | pass |
-| p02 | p05-facebook-water-vi.txt | 6230 | 2766 | 1 | 1 | merge to p02/kosugi-es | merge | pass |
-| p02 | s02-water-distribution-notice-synthetic.jpg | 5771 | 2277 | 1 | 1 | merge to p02/kosugi-es | merge | pass |
-| p02 | t02-water-distribution-notice-ja.txt | 4995 | 2245 | 1 | 1 | merge to p02/kosugi-es | merge | pass |
-| p02 | p07-water-time-change.jpg | 6833 | 2429 | 1 | 1 | update to p02/kosugi-es | update | pass |
-| p02 | p10-supplies-distribution-notice.jpg | 7948 | 0 | 1 | 0 | create | create | pass |
-| p03 | p03-wechat-konbini.png | 6772 | 0 | 1 | 0 | create | create | pass |
-| p03 | t03-wechat-konbini-zh.txt | 5494 | 2603 | 1 | 1 | merge to p03/musashikosugi-sta | merge | pass |
-| p11 | p11-x-shelter-full.png | 8274 | 0 | 2 | 0; 0 | create; create | create | pass |
-| p11 | p12-xhs-shelter-full-zh.png | 13065 | 4892 | 2 | 1; 1 | merge to p11/kosugi-es; merge to p11/nakahara-jhs | merge | pass |
+| p02 | p02-water-distribution-notice.jpg | 8351 | 0 | 1 | 0 | create | create | pass |
+| p02 | p04-line-water-same-fact.png | 5981 | 2560 | 1 | 1 | merge to p02/kosugi-es | merge | pass |
+| p02 | p05-facebook-water-vi.txt | 5764 | 3829 | 1 | 1 | merge to p02/kosugi-es | merge | pass |
+| p02 | s02-water-distribution-notice-synthetic.jpg | 5381 | 2314 | 1 | 1 | merge to p02/kosugi-es | merge | pass |
+| p02 | t02-water-distribution-notice-ja.txt | 6178 | 2009 | 1 | 1 | merge to p02/kosugi-es | merge | pass |
+| p02 | p07-water-time-change.jpg | 7097 | 2150 | 1 | 1 | update to p02/kosugi-es | update | pass |
+| p02 | p10-supplies-distribution-notice.jpg | 6959 | 0 | 1 | 0 | create | create | pass |
+| p03 | p03-wechat-konbini.png | 9956 | 0 | 2 | 0; 0 | create; create | create | pass |
+| p03 | t03-wechat-konbini-zh.txt | 4922 | 2174 | 1 | 1 | merge to p03/musashikosugi-sta | merge | pass |
+| p11 | p11-x-shelter-full.png | 8740 | 0 | 2 | 0; 0 | create; create | create | pass |
+| p11 | p12-xhs-shelter-full-zh.png | 9664 | 5546 | 2 | 1; 1 | merge to p11/kosugi-es; merge to p11/nakahara-jhs | merge | pass |
 
 **Summary**
 
 - Steps passed: 11/11 (create 4/4, merge 6/6, update 1/1). Must be all.
 - Chains: p02 (p02, p04, p05, s02, t02, p07, p10); p03 (p03, t03); p11 (p11, p12).
 - Code overrides of the model's proposal: 0.
-- Reconcile latency over 8 calls with candidates: median 2429 ms, min 2245 ms, max 2766 ms. Steps with no candidates make no call.
-- Reconcile tokens: input 4886, cache read 28294, cache write 4042, output 977.
+- Reconcile latency over 8 calls with candidates: median 2560 ms, min 2009 ms, max 3829 ms. Steps with no candidates make no call.
+- Reconcile tokens: input 4979, cache read 24798, cache write 8266, output 1034.
 <!-- /eval-reconcile:claude-opus-5-5 -->
 
 <!-- eval-mask:claude-opus-5-5 -->
 ## masking on `claude-opus-5-5`
 
-Run 2026-11-03 20:17 JST, model `claude-opus-5-5`, effort medium, 5 sidecars, model frame long edge 1568 px, a ground truth box counts as covered at 95 percent of its area under the padded predicted boxes.
+Run 2026-11-06 03:12 JST, model `claude-opus-5-5`, effort medium, 5 sidecars, model frame long edge 1568 px, a ground truth box counts as covered at 95 percent of its area under the padded predicted boxes.
 
 | input | ms | boxes | covered | missed (kind: label, share covered) | predicted | extra | result |
 |---|---:|---:|---:|---|---:|---|---|
-| a02-injection-mark-official.png | 7199 | 8 | 8 | - | 8 | 0 | pass |
-| p03-wechat-konbini.png | 6711 | 14 | 14 | - | 14 | 0 | pass |
-| p04-line-water-same-fact.png | 7445 | 12 | 12 | - | 12 | 0 | pass |
-| p11-x-shelter-full.png | 4584 | 10 | 10 | - | 10 | 0 | pass |
-| p12-xhs-shelter-full-zh.png | 2971 | 6 | 6 | - | 6 | 0 | pass |
+| a02-injection-mark-official.png | 6158 | 8 | 8 | - | 8 | 0 | pass |
+| p03-wechat-konbini.png | 5697 | 14 | 14 | - | 14 | 0 | pass |
+| p04-line-water-same-fact.png | 6264 | 12 | 12 | - | 12 | 0 | pass |
+| p11-x-shelter-full.png | 5303 | 10 | 10 | - | 10 | 0 | pass |
+| p12-xhs-shelter-full-zh.png | 3690 | 6 | 6 | - | 6 | 0 | pass |
 
 **Summary**
 
@@ -175,8 +176,8 @@ Run 2026-11-03 20:17 JST, model `claude-opus-5-5`, effort medium, 5 sidecars, mo
 - Sidecars fully covered: 5/5.
 - Extra boxes (overlapping no ground truth box): 0.
 - Errors: 0.
-- Latency: median 6711 ms, min 2971 ms, max 7445 ms.
-- Tokens: input 7605, cache read 3250, cache write 4875, output 1972.
+- Latency: median 5697 ms, min 3690 ms, max 6264 ms.
+- Tokens: input 7605, cache read 3250, cache write 4875, output 1973.
 - Masked images written to `fixtures/tools/out/masked/` (not committed).
 <!-- /eval-mask:claude-opus-5-5 -->
 

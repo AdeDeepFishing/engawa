@@ -2045,3 +2045,62 @@ There is no `pnpm test` script in `package.json`; the key parity check is `pnpm 
 | `pnpm db:seed --board musashikosugi --reset-cards --dry-run` | three samples with their times |
 
 **For the reviewing session.** Merges together with #44 and #45, which also append to this file. After the merge, `pnpm db:seed --board musashikosugi --reset-cards` puts the two cards on the live pilot board; it deletes the cards there now, including any made during rehearsals.
+
+## 2026-11-06 (Fri), freeze review fixes
+
+**Model:** `claude-opus-5-5` in Claude Code, implementation role, in its own worktree (branch `day9-freeze-fixes`, cut from `origin/day9-freeze-fixes` at `7000ebc`, which already carries the 03:10 eval refresh in `docs/EVAL.md`), from a brief by the reviewing session (Fable). The source is three read-only review reports kept outside the repository: `code-review.md`, `i18n-ko-zh-vi.md` and `easy-ja-vs-booklet.md`. This is the one batch of fixes before the demo video is recorded against the live site. The full eval was not re-run.
+
+**Code (from `code-review.md`)**
+
+| # | finding | fix |
+|---|---|---|
+| 1 | A client disconnect killed the drop-in mid-run: the next `enqueue` threw inside `runPipeline`, the catch marked the submission `failed`, and its own `emit("failed")` threw again. A finished card could flip back to failed, and a retry of a text drop-in failed for good | `app/api/process/[id]/route.ts`: `send` is a no-op once the stream is closed or cancelled and never throws; the run is detached from the socket with `after()` (the same pattern as `inBackground` in `lib/push/send.ts`), so extract, write and translate finish without a reader; `cancel()` closes the gate; the stream is closed only if it is still open |
+| 2 | Phone numbers could pass the code-side check: `fact.conditions` was never checked, and `PHONE_RE` only knew ASCII digits and hyphens | `lib/claude/extract.ts`: `containsContact` matches against `normalize("NFKC")` with the hyphen look-alikes (U+2010 to U+2015, U+2212, the katakana long vowel mark) mapped to `-`; separators may be hyphens, spaces or parentheses, with an optional `+81`; a mobile number with one separator missing is caught too. Conditions that contain a contact are filtered out rather than failing the drop-in; title, body, `original_excerpt` and `place_text_ja` use the same `containsContact` and still fail closed. Translate and reconcile reasons already called it and get the wider check for free |
+| 3 | One script with a fresh `device_id` per request could spend the site-wide daily Claude cap through ask | `app/api/b/[slug]/ask/route.ts`: a third window, 60 asks an hour per client address, always applied next to the two device windows; a 429 from it says scope `ip` |
+| 4 | Masking failed open when the model returned a box code could not draw | `maskWithoutBlocking` in `lib/pipeline.ts` returns null when any box was dropped, so the card is published without the image |
+| 5 | The stuck watchdog counted from creation, so a retry of an older submission could be failed and claimed twice while still running | `STUCK_AFTER_MS` 330000, above the 300 second `maxDuration`. The proper fix (a claim timestamp) waits until after the freeze |
+| 6 | Readers got columns they do not need | `toPublicCard` removes `held_reason`, `risk_flags`, `purge_after` and the `submission_id` of every conflict statement. A grep of the client code found two readers, both on the admin page (`AdminView.tsx`), which reads its own query (`listCardsForAdmin`) and keeps them; `risk_flags` and `submission_id` became optional in `lib/types.ts` |
+| 7 | Purge can remove a masked image a sibling card still uses | skipped, as briefed: it cannot happen inside the judging window |
+| 8 | A non-UUID id on the process route reached Postgres and returned 500; photos over 8 MB were refused before downscaling | 404 before any database read; the browser pre-check in `lib/image/browser.ts` goes from 8 MB to 40 MB, the server's 8 MB limit on the prepared upload stays |
+| a11y | `TextSizeToggle` put its state in the name and also in `aria-pressed` | a fixed `aria-label` (`nav.text_size`), `aria-pressed` means large |
+| i18n | Six keys present but unused | removed from all five files: `area.self_reported` (unused, checked with grep, so the language report's change to its text was moot), `board.updated`, `dropin.done_cards_one`, `dropin.done_cards_other`, `index.pick`, `sheet.category`. The toggle fix left `text_size.normal` and `text_size.large` unused, so those two went as well: 418 keys per file |
+
+`scripts/check-contact.ts` (`pnpm check:contact`) pins the phone check, since the repository has no test runner: 21 formats that must be caught (full-width digits and hyphens, U+2010, U+2011, U+2212, the long vowel mark, spaces, ideographic spaces, three placements of parentheses, full-width parentheses, `+81` with hyphens, spaces, `(0)` and in full width, a mobile number with one hyphen, two emails), 10 strings from real notices that must not be (a date and time range, an ISO date, a time range with hyphens, a Sapporo and a Kawasaki postal code, a price, 1日3L, a block address, katakana with long vowels, a weekday in parentheses), and two validator cases (a condition with a phone number dropped, the others kept; a spaced number in the body still fails the call). Before writing it, every string in the 19 sample cards and in `fixtures/expected/*.json` went through the new check: the only hits were the two phone numbers in the `must_not_contain` lists of p03 and p04, which is what they are there for.
+
+**Prompt (from `easy-ja-vs-booklet.md`).** The easy_ja rule in `lib/claude/prompts/translate.system.md` gains the one recommended sentence and its two examples: a disaster or official term the reader has to act on keeps its reading and is explained in easy words in the next short sentence (避難所（ひなんじょ）に 行って ください。避難所は 逃げる ところです。), and a 避難情報 level keeps its name in 「」 followed by what to do (「避難指示（ひなんしじ）」です。危ないです。逃げて ください。). Nothing else in the prompt changed. On a made-up 避難指示 notice in the smoke test below, the easy_ja body came back with 「避難指示（ひなんしじ）」が 出ました。…危ないです。逃げて ください。 and 避難所は 逃げる ところです。
+
+**Translations (from `i18n-ko-zh-vi.md`).** Every listed fix in `ko.json`, `zh.json`, `vi.json` and the zh, ko and vi fields of `supabase/seed/sample_cards.json`, with the report's replacement text; keys and placeholders unchanged (checked against `ja.json`). The four that change meaning:
+- vi card 16: 前日までに is now "chậm nhất trong ngày hôm trước" (it read "before the day before"); vi card 15: "chậm nhất đến hết ngày 19/11 (Thứ Năm)" (it read "first of all"), and 管理組合 is ban quản trị as in card 16.
+- zh card 1 body: 发帖人是否亲眼所见不明 (未经本人确认 read as "not confirmed by me").
+- ko `limit.busy`: the limit is on Engawa reading new notices in, not on the reader.
+- ko trace lines: particle-free (같은 내용 확인: {input}({source}), 읽기: {model}), so a vowel-final input or model name no longer produces 이 or 으로 after it.
+
+None of the fixes contradicted the Japanese or English master. A few small choices beyond the list, for consistency with it: ko `heard.listening` now names the renamed stop button ('듣기 멈추기'를 누르세요), ko `home.step1_body` uses 올리다 like the other drop-in strings, ko card 17 puts the kanji in parentheses (주민회(町内会)) like the others, zh `offline.dropin_reason` and `poster.community` use 发布 like the other drop-in strings, and the zh quotes around [姓名] are the file's own “ ”.
+
+**Checks**
+
+| check | result |
+|---|---|
+| `pnpm lint` | clean |
+| `pnpm typecheck` | clean |
+| `pnpm guard --all` (no dashes, key parity across the five files) | clean |
+| `pnpm check:boards`, `check:places`, `check:placeholders`, `check:mode`, `check:inbox`, `check:push`, `check:contact` | 143, 31, 17, 49, 23, 52 and 33 checks, all pass |
+| `pnpm db:seed --board musashikosugi --reset-cards --dry-run` | parses; three samples on the pilot board |
+| `pnpm eval --only p02,p03,p05 --no-write` (03:30 JST) | 3 inputs (p05 has no expected file, so the eval skips it): field accuracy 21/21, PII leaks 0, invented facts 0, six languages 3/3, errors 0 |
+| `pnpm eval --only p04 --no-write` (03:31 JST, in place of p05: the LINE screenshot with a phone number in `must_not_contain`) | field accuracy 6/6, PII leaks 0, invented facts 0, six languages 1/1, errors 0 |
+
+**The disconnect, on a throwaway board.** `pnpm board:throwaway create freeze-smoke` (the repository's tool for this: an unlisted copy of the pilot board that refuses the six real slugs), dev server on port 3127, then a node script that drops in `t02-water-distribution-notice-ja.txt` as text, opens the process stream and aborts the fetch right after the first event.
+
+| step | time | result |
+|---|---:|---|
+| submission | 2.4 s | 201, received |
+| process stream | 3.6 s | 200, first event `stage: extracting`, then the client aborted |
+| cards poll | 20.4 s | one `water` card, `missing_langs` empty, no `held_reason`, `risk_flags` or `purge_after` in the JSON |
+| process again on the same id | 20.5 s | 200, `done` with the card id |
+| process with a non-UUID id | | 404 |
+
+The server log shows reconcile (create) and translate (zh, ko, vi, easy_ja in 6535 ms) finishing after the client left, and no TypeError or unhandled error. A second drop-in read to the end (the made-up 避難指示 notice above) streamed stage, cards, stage and done and closed normally. `pnpm board:throwaway delete freeze-smoke` removed 2 cards, 2 card_sources, 2 submissions and 2 devices, which is what the two runs created; the six real boards were not touched. The dev server was stopped.
+
+**Docs.** `docs/PLAN.md` (architecture, client-driven processing) and `CLAUDE.md` (architecture rules) said a disconnect leaves the submission in `processing` and the watchdog fires at 120 seconds; both now say the run finishes with `after()` and the watchdog fires at 330 seconds.
+
+**For the reviewing session.** The IP window counts every ask from one address, so a venue where many judges share one network could reach 60 an hour together; each sees the usual rate-limited message. After the merge, `pnpm db:seed --board <slug> --reset-cards` puts the corrected sample cards on the live boards; it deletes the cards there now, including any made during rehearsals.

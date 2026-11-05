@@ -211,12 +211,35 @@ export async function extract(
 
 // --- validation -----------------------------------------------------------
 
-const PHONE_RE = /(?<!\d)0\d{1,4}-\d{1,4}-\d{3,4}(?!\d)|(?<!\d)0\d{9,10}(?!\d)/;
+// Matched against `normalizeContact(text)`, so only ASCII digits, "-", "(", ")" and "+" are left to handle.
+// Separators between groups: hyphens, spaces and parentheses, as in 090 1234 5678 or (044)744-3113.
+const SEP = "[-\\s()]{1,3}";
+const OPT_SEP = `(?:${SEP})?`;
+const PHONE_RE = new RegExp(
+  [
+    `(?<!\\d)0\\d{1,4}${SEP}\\d{1,4}${SEP}\\d{3,4}(?!\\d)`, // 044-744-3113, 090 1234 5678, (044)744-3113
+    `(?<!\\d)0[789]0${OPT_SEP}\\d{4}${OPT_SEP}\\d{4}(?!\\d)`, // mobile with one separator missing: 090-12345678
+    `(?<!\\d)0\\d{9,10}(?!\\d)`, // 0447443113, 09012345678
+    `\\+81${OPT_SEP}\\(?\\d{1,4}\\)?${OPT_SEP}\\d{1,4}${OPT_SEP}\\d{3,4}(?!\\d)`, // +81-90-1234-5678, +81 44 744 3113
+  ].join("|"),
+);
 const EMAIL_RE = /[\w.+-]+@[\w-]+\.[\w.-]+/;
+// Hyphen look-alikes that NFKC leaves alone: U+2010 to U+2015, minus sign, katakana long vowel marks.
+const HYPHENS_RE = /[\u2010-\u2015\u2212\u30fc\uff70]/g;
 
-/** The same phone and email check the extract result must pass, for other model text that reaches readers. */
+/** Full-width digits and symbols become ASCII (NFKC), and every hyphen look-alike becomes "-". */
+export function normalizeContact(text: string): string {
+  return text.normalize("NFKC").replace(HYPHENS_RE, "-");
+}
+
+/**
+ * The phone and email check every piece of model text that reaches readers
+ * must pass: extract output, translations and reconcile reasons. It is
+ * deliberately wide, so a false positive fails closed.
+ */
 export function containsContact(text: string): boolean {
-  return PHONE_RE.test(text) || EMAIL_RE.test(text);
+  const s = normalizeContact(text);
+  return PHONE_RE.test(s) || EMAIL_RE.test(s);
 }
 
 /**
@@ -281,8 +304,10 @@ export function validateExtractResult(
     const riskFlags = Array.isArray(x.risk_flags)
       ? x.risk_flags.filter((v): v is RiskFlag => oneOf(RISK_FLAGS, v))
       : [];
+    // Conditions are shown to readers verbatim. One that carries a phone
+    // number or email is dropped rather than failing the whole drop-in.
     const conditions = Array.isArray(x.conditions)
-      ? x.conditions.filter((v): v is string => typeof v === "string")
+      ? x.conditions.filter((v): v is string => typeof v === "string" && !containsContact(v))
       : [];
     const confidence = oneOf(["high", "medium", "low"] as const, x.confidence) ? x.confidence : "low";
     const fact: ExtractFact = {
@@ -306,7 +331,7 @@ export function validateExtractResult(
       fact.original_excerpt,
       fact.place_text_ja ?? "",
     ]) {
-      if (PHONE_RE.test(s) || EMAIL_RE.test(s)) {
+      if (containsContact(s)) {
         throw new ExtractError("pii_leak", `fact ${i} contains a phone number or email`);
       }
     }

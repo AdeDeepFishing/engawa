@@ -23,6 +23,7 @@
     "check:mode": "node --import=tsx scripts/check-mode.ts",
     "check:boards": "node --import=tsx scripts/check-boards.ts",
     "check:push": "node --import=tsx scripts/check-push.ts",
+    "check:contact": "node --import=tsx scripts/check-contact.ts",
     "brand:icons": "node --import=tsx scripts/brand/icons.ts",
     "brand:preview": "node --import=tsx scripts/brand/variants-page.tsx"
   },

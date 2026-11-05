@@ -46,15 +46,15 @@
       "title": {
         "ja": "武蔵小杉駅前のコンビニ 営業中、水あり",
         "en": "Convenience store in front of Musashi-Kosugi Station (武蔵小杉駅) is open, has water",
-        "zh": "武藏小杉站前的便利店营业中，有水",
-        "ko": "무사시코스기역 앞 편의점 영업 중, 물 있음",
+        "zh": "武藏小杉站（武蔵小杉駅）前的便利店营业中，有水",
+        "ko": "무사시코스기역(武蔵小杉駅) 앞 편의점 영업 중, 물 있음",
         "vi": "Cửa hàng tiện lợi trước ga Musashi-Kosugi (武蔵小杉駅) đang mở, có nước",
         "easy_ja": "武蔵小杉駅（むさしこすぎえき）の 前の コンビニが 開いています。水が あります"
       },
       "body": {
         "ja": "WeChat のグループからの情報です。本人が見たかどうかは不明です。",
         "en": "From a WeChat group. Not confirmed firsthand.",
-        "zh": "来自微信群的信息，未经本人确认。",
+        "zh": "来自微信群的信息，发帖人是否亲眼所见不明。",
         "ko": "WeChat 그룹에서 전해 들은 정보입니다. 직접 확인되지 않았습니다.",
         "vi": "Thông tin từ một nhóm WeChat. Chưa được xác nhận trực tiếp.",
         "easy_ja": "WeChat の グループで 聞いた 話です。見た人は わかりません。"
@@ -125,8 +125,8 @@
       "body": {
         "ja": "みずき町会防災部が秋の火災予防運動にあわせて夜回りを行います。どなたでも参加でき、懐中電灯を持参、拍子木と腕章は町会が用意します。雨の日は中止で、小学生以下は保護者と一緒に参加。町会の掲示物の写真です。",
         "en": "The Mizuki neighbourhood association disaster prevention team holds a night fire watch patrol for the autumn fire prevention campaign. Anyone can join, bring a flashlight, clappers and armbands are provided, cancelled on rainy days, and children of elementary age or younger must come with a guardian. Photo of the association's paper notice.",
-        "zh": "みずき町会防灾部配合秋季火灾预防运动进行夜间巡逻。任何人都可以参加，请自带手电筒，梆子和臂章由町会准备。雨天取消，小学生及以下儿童须由监护人陪同参加。这是町会张贴的告示照片。",
-        "ko": "미즈키 町会 방재부가 가을 화재 예방 운동에 맞춰 야간 순찰을 합니다. 누구나 참가할 수 있으며, 손전등을 지참해 주십시오. 딱따기와 완장은 町会가 준비합니다. 비 오는 날은 중지하며, 초등학생 이하는 보호자와 함께 참가해 주십시오. 町会 게시물 사진입니다.",
+        "zh": "瑞木町会（みずき町会）防灾部配合秋季火灾预防运动进行夜间巡逻。任何人都可以参加，请自带手电筒，梆子和臂章由町会准备。雨天取消，小学生及以下儿童须由监护人陪同参加。这是町会张贴的告示照片。",
+        "ko": "미즈키 주민회 방재부가 가을 화재 예방 운동에 맞춰 야간 순찰을 합니다. 누구나 참가할 수 있으며, 손전등을 지참해 주세요. 딱따기와 완장은 주민회가 준비합니다. 비 오는 날은 중지하며, 초등학생 이하는 보호자와 함께 참가해 주세요. 주민회 게시물 사진입니다.",
         "vi": "Ban phòng chống thiên tai của hội khu phố Mizuki tổ chức tuần tra đêm nhân đợt vận động phòng cháy mùa thu. Ai cũng có thể tham gia, hãy mang theo đèn pin, hội khu phố sẽ chuẩn bị mõ gỗ và băng đeo tay. Hủy vào ngày mưa, trẻ em từ tuổi tiểu học trở xuống phải tham gia cùng người giám hộ. Đây là ảnh tờ thông báo của hội khu phố.",
         "easy_ja": "みずき町会（ちょうかい）の 防災部（ぼうさいぶ）が 夜回り（よまわり）を します。秋の 火事を 防ぐ 運動（うんどう）です。だれでも 参加（さんか）できます。懐中電灯（かいちゅうでんとう）を 持って きてください。拍子木（ひょうしぎ）と 腕章（わんしょう）は 町会が 用意（ようい）します。雨の 日は 中止（ちゅうし）です。小学生と 小さい 子どもは 親と 一緒に 来てください。町会の 紙の お知らせの 写真です。"
       },
@@ -163,7 +163,7 @@
       "title": {
         "ja": "防災まち歩き、11月14日（土）13:30 渋谷区役所正面入口前集合",
         "en": "Disaster prevention walk, Sat 14 Nov 13:30, meet at Shibuya City Office (渋谷区役所) main entrance",
-        "zh": "防灾街道巡走，11月14日（周六）13:30在涩谷区役所（渋谷区役所）正门前集合",
+        "zh": "防灾街区徒步巡查，11月14日（周六）13:30在涩谷区役所（渋谷区役所）正门前集合",
         "ko": "방재 마을 걷기, 11월 14일(토) 13:30 시부야 구청(渋谷区役所) 정문 앞 집합",
         "vi": "Đi bộ phòng chống thiên tai, thứ Bảy ngày 14/11 lúc 13:30, tập trung trước cổng chính Văn phòng quận Shibuya (渋谷区役所)",
         "easy_ja": "防災（ぼうさい）の 町歩き。11月14日（土） 13時30分に 渋谷区役所（しぶやくやくしょ）の 正面（しょうめん）入口の 前に 集まります"
@@ -172,7 +172,7 @@
         "ja": "みずき町会の防災部の案内で道玄坂から桜丘町まで歩き、一時滞在施設と街頭消火器の場所を確かめます。所要約1時間半、申し込み不要、参加無料、雨天中止。町会からのお知らせです。",
         "en": "The Mizuki neighbourhood association's disaster team leads a walk from Dogenzaka (道玄坂) to Sakuragaokacho (桜丘町) to check temporary stay facilities and street fire extinguishers. About 1.5 hours, no registration, free, cancelled if it rains. Notice from the neighbourhood association.",
         "zh": "在瑞木町会（みずき町会）防灾部的带领下，从道玄坂步行至樱丘町（桜丘町），确认临时滞留设施和街头灭火器的位置。约需1个半小时，无需报名，免费参加，雨天取消。这是町会发布的通知。",
-        "ko": "미즈키 정내회(みずき町会) 방재부의 안내로 도겐자카(道玄坂)에서 사쿠라가오카초(桜丘町)까지 걸으며 일시 체류 시설과 거리 소화기의 위치를 확인합니다. 소요 시간 약 1시간 30분, 신청 불필요, 참가 무료, 우천 시 취소. 정내회에서 알려 드립니다.",
+        "ko": "미즈키 주민회(みずき町会) 방재부의 안내로 도겐자카(道玄坂)에서 사쿠라가오카초(桜丘町)까지 걸으며 일시 체류 시설과 거리 소화기의 위치를 확인합니다. 소요 시간 약 1시간 30분, 신청 불필요, 참가 무료, 우천 시 취소. 주민회에서 알려 드립니다.",
         "vi": "Dưới sự hướng dẫn của ban phòng chống thiên tai thuộc hội khu phố Mizuki (みずき町会), mọi người sẽ đi bộ từ Dogenzaka (道玄坂) đến Sakuragaokacho (桜丘町) để xác nhận vị trí các cơ sở lưu trú tạm thời và bình chữa cháy trên đường phố. Mất khoảng 1 tiếng rưỡi, không cần đăng ký, miễn phí, hủy nếu trời mưa. Thông báo từ hội khu phố.",
         "easy_ja": "みずき町会（ちょうかい）の 防災部（ぼうさいぶ）が 案内（あんない）します。道玄坂（どうげんざか）から 桜丘町（さくらがおかちょう）まで 歩きます。一時滞在施設（いちじたいざいしせつ）の 場所を 確（たし）かめます。道（みち）に ある 消火器（しょうかき）の 場所も 確かめます。時間は だいたい 1時間30分です。申し込みは いりません。お金は いりません。雨の ときは 中止（ちゅうし）です。町会からの お知らせです。"
       },
@@ -217,7 +217,7 @@
         "en": "Sidewalk cleanup of Dogenzaka (道玄坂) by the shopping street association. Work gloves and garbage bags are provided, and children are reportedly welcome. Relayed from a LINE group chat.",
         "zh": "这是商店会组织的道玄坂人行道清扫活动。商店会将准备劳动手套和垃圾袋，据说带孩子也可以参加。信息来自LINE群组的帖子。",
         "ko": "상점회가 실시하는 도겐자카(道玄坂) 보도 청소입니다. 목장갑과 쓰레기봉투는 상점회가 준비하며, 아이를 동반해도 참가할 수 있다고 합니다. LINE 그룹 게시물에서 전해진 정보입니다.",
-        "vi": "Hoạt động dọn dẹp vỉa hè Dogenzaka (道玄坂) do hội thương gia khu phố tổ chức. Hội sẽ chuẩn bị găng tay lao động và túi rác, nghe nói có thể tham gia cùng trẻ em. Thông tin từ bài đăng trong nhóm LINE.",
+        "vi": "Hoạt động dọn dẹp vỉa hè Dogenzaka (道玄坂) do hội buôn bán khu phố tổ chức. Hội sẽ chuẩn bị găng tay lao động và túi rác, nghe nói có thể tham gia cùng trẻ em. Thông tin từ bài đăng trong nhóm LINE.",
         "easy_ja": "商店会（しょうてんかい）が 道玄坂（どうげんざか）の 歩道（ほどう）を そうじします。手袋（てぶくろ）と ごみ袋（ぶくろ）は 商店会が 用意（ようい）します。子どもと いっしょに 参加（さんか）できる そうです。LINEグループの 投稿（とうこう）の 情報（じょうほう）です。"
       },
       "facts": {
@@ -257,7 +257,7 @@
         "ja": "こもれび町会防災部による、災害時に水を受け取る手順の訓練です。給水袋（6リットル）は町会が用意しますが数に限りがあります。小雨決行、荒天中止、申し込み不要でどなたでも参加できます。町会の掲示の写真です。",
         "en": "A drill by the Komorebi neighbourhood association disaster team (こもれび町会 防災部) to practise receiving water in a disaster. Water bags (6 liters) are provided in limited numbers. Held in light rain, cancelled in stormy weather, no registration needed and anyone can join. From a photo of a posted notice.",
         "zh": "这是由木漏日町会防灾部（こもれび町会 防災部）举办的训练，练习灾害时领取饮用水的步骤。町会提供供水袋（6升），但数量有限。小雨照常举行，恶劣天气取消，无需报名，任何人都可以参加。内容来自町会公告的照片。",
-        "ko": "고모레비 町会 방재부(こもれび町会 防災部)가 실시하는, 재해 시 물을 받는 절차를 연습하는 훈련입니다. 급수 봉투(6리터)는 町会가 준비하지만 수량에 한정이 있습니다. 비가 조금 오면 진행하고, 악천후 시 취소합니다. 신청은 필요 없으며 누구나 참가할 수 있습니다. 町会 게시물 사진에서 옮긴 내용입니다.",
+        "ko": "고모레비 주민회 방재부(こもれび町会 防災部)가 실시하는, 재해 시 물을 받는 절차를 연습하는 훈련입니다. 급수 봉투(6리터)는 주민회가 준비하지만 수량이 한정되어 있습니다. 비가 조금 와도 진행하고, 악천후 시 취소합니다. 신청은 필요 없으며 누구나 참가할 수 있습니다. 주민회 게시물 사진에서 옮긴 내용입니다.",
         "vi": "Đây là buổi diễn tập do Ban phòng chống thiên tai của Hội khu phố Komorebi (こもれび町会 防災部) tổ chức, để luyện tập các bước nhận nước khi có thiên tai. Hội khu phố chuẩn bị túi đựng nước (6 lít) nhưng số lượng có hạn. Vẫn tổ chức khi mưa nhỏ, hủy khi thời tiết xấu. Không cần đăng ký, ai cũng có thể tham gia. Nội dung từ ảnh chụp thông báo của hội khu phố.",
         "easy_ja": "こもれび町会（ちょうかい）の 防災部（ぼうさいぶ）が します。災害（さいがい）の とき 水を もらう 方法を 練習（れんしゅう）します。水を 入れる 袋（ふくろ）（6リットル）は 町会が 用意（ようい）します。でも 数が 少ないです。雨が 少し 降っても します。天気が とても 悪い ときは 中止（ちゅうし）です。申し込みは いりません。だれでも 参加（さんか）できます。町会の お知らせの 写真から 書きました。"
       },
@@ -331,15 +331,15 @@
         "en": "Recyclables collection now by 8:30 from November, next on Nov 18 (Wed)",
         "zh": "资源集体回收自11月起改为早上8:30前，下次为11月18日（周三）",
         "ko": "자원 집단 회수, 11월부터 아침 8시 30분까지. 다음은 11월 18일(수)",
-        "vi": "Thu gom tài nguyên tái chế từ tháng 11 trước 8:30 sáng. Lần tới là ngày 18/11 (thứ Tư)",
+        "vi": "Từ tháng 11, rác tái chế phải mang ra trước 8:30 sáng. Lần tới: ngày 18/11 (thứ Tư)",
         "easy_ja": "11月から 資源（しげん）の ごみは 朝 8時30分までに 出して ください。つぎは 11月18日（水）です"
       },
       "body": {
         "ja": "新聞・雑誌・段ボール・アルミ缶は、回収日の朝8時30分までに各集積所へ出してください（これまでは9時まで）。こもれび町会の回覧のお知らせです。",
         "en": "Put out newspapers, magazines, cardboard and aluminum cans at each collection point by 8:30 on collection day (previously by 9:00). Circular notice from the Komorebi neighbourhood association (こもれび町会).",
-        "zh": "请在回收日早上8:30前将报纸、杂志、纸箱、铝罐放到各收集点（以前为9:00前）。这是Komorebi町会（こもれび町会）的传阅通知。",
-        "ko": "신문, 잡지, 골판지, 알루미늄 캔은 회수일 아침 8시 30분까지 각 집적소에 내놓아 주세요(지금까지는 9시까지). 고모레비 주민회(こもれび町会)의 회람 안내입니다.",
-        "vi": "Vui lòng mang báo, tạp chí, bìa các tông và lon nhôm ra từng điểm thu gom trước 8:30 sáng ngày thu gom (trước đây là trước 9:00). Đây là thông báo lưu hành của hội khu phố Komorebi (こもれび町会).",
+        "zh": "请在回收日早上8:30前将报纸、杂志、纸箱、铝罐放到各收集点（以前为9:00前）。这是木漏日町会（こもれび町会）的传阅通知。",
+        "ko": "신문, 잡지, 골판지, 알루미늄 캔은 회수일 아침 8시 30분까지 각 수거 장소에 내놓아 주세요(지금까지는 9시까지). 고모레비 주민회(こもれび町会)의 회람 안내입니다.",
+        "vi": "Vui lòng mang báo, tạp chí, bìa các tông và lon nhôm ra từng điểm thu gom trước 8:30 sáng ngày thu gom (trước đây là trước 9:00). Đây là thông báo chuyền tay của hội khu phố Komorebi (こもれび町会).",
         "easy_ja": "新聞（しんぶん）、雑誌（ざっし）、段ボール（だんぼーる）、アルミ缶（かん）を 集める 日が あります。その日の 朝 8時30分までに 集める 場所に 出して ください。前は 9時まででした。こもれび町会（ちょうかい）からの お知らせです。"
       },
       "facts": {
@@ -418,7 +418,7 @@
         "ja": "ひばり町内会防災部による訓練で、受付の設営、間仕切りと段ボールベッドの組み立て、備蓄品の確認を行います。動きやすい服装と上履きで参加、雨天も体育館で実施、小さな子ども連れも可、受付は8:45から体育館入口です。町内会の掲示物の写真です。",
         "en": "A drill by the Hibari neighbourhood association disaster committee: setting up reception, assembling partitions and cardboard beds, and checking stockpiled supplies. Wear clothes easy to move in and bring indoor shoes, held in the gym even if it rains, small children welcome, reception from 8:45 at the gym entrance. Photo of a neighbourhood association notice.",
         "zh": "由云雀町内会防灾部举办的演练，内容包括设置接待处、组装隔板和纸板床、检查储备物资。请穿便于活动的服装并携带室内鞋参加。雨天也在体育馆举行，可带小孩参加。接待处8:45起在体育馆入口。这是町内会公告的照片。",
-        "ko": "히바리 주민회 방재부가 실시하는 훈련으로, 접수처 설치, 칸막이와 골판지 침대 조립, 비축품 확인을 합니다. 움직이기 편한 복장과 실내화를 지참하여 참가해 주십시오. 비가 와도 체육관에서 실시하며, 어린 자녀 동반도 가능합니다. 접수는 8:45부터 체육관 입구에서 합니다. 주민회 게시물 사진입니다.",
+        "ko": "히바리 주민회 방재부가 실시하는 훈련으로, 접수처 설치, 칸막이와 골판지 침대 조립, 비축품 확인을 합니다. 움직이기 편한 복장과 실내화를 지참하여 참가해 주세요. 비가 와도 체육관에서 실시하며, 어린 자녀 동반도 가능합니다. 접수는 8:45부터 체육관 입구에서 합니다. 주민회 게시물 사진입니다.",
         "vi": "Buổi diễn tập do Ban phòng chống thiên tai của Hội khu phố Hibari tổ chức, gồm dựng quầy tiếp nhận, lắp vách ngăn và giường bìa các tông, kiểm tra vật tư dự trữ. Hãy mặc quần áo dễ vận động và mang giày đi trong nhà. Trời mưa vẫn tổ chức trong nhà thể chất, có thể đưa trẻ nhỏ theo. Tiếp nhận từ 8:45 tại lối vào nhà thể chất. Đây là ảnh thông báo của hội khu phố.",
         "easy_ja": "ひばり町内会（ちょうないかい）の 防災部（ぼうさいぶ）が する 練習です。受付（うけつけ）を 作（つく）ります。しきりと 段（だん）ボールの ベッドを 組（く）み立（た）てます。備蓄品（びちくひん）（そなえて ある もの）を 確（たし）かめます。動（うご）きやすい 服（ふく）を 着（き）て ください。上履（うわば）き（中で はく くつ）を 持（も）って きて ください。雨（あめ）の 日も 体育館で します。小さい 子どもと 一緒（いっしょ）に 来ても いいです。受付は 8時45分からです。場所は 体育館の 入口（いりぐち）です。町内会の 貼（は）り紙（がみ）の 写真（しゃしん）です。"
       },
@@ -461,7 +461,7 @@
       "body": {
         "ja": "配管修理のため、建物で断水します。管理会社が入口に掲示を貼ったとの投稿です。事前に水をためておくよう呼びかけています。",
         "en": "The building's water will be cut for pipe repairs. A post relays that the management posted a notice at the entrance. It asks residents to store water beforehand.",
-        "zh": "由于维修管道，该建筑将停水。据帖子称，管理公司已在入口处张贴了通知。通知呼吁住户提前储水。",
+        "zh": "由于维修管道，该建筑将停水。据帖子称，管理公司已在入口处张贴了通知。发帖人提醒大家提前储水。",
         "ko": "배관 수리로 인해 건물이 단수됩니다. 관리회사가 입구에 안내문을 붙였다는 게시글입니다. 미리 물을 받아 두도록 당부하고 있습니다.",
         "vi": "Tòa nhà sẽ cắt nước để sửa đường ống. Bài đăng cho biết ban quản lý đã dán thông báo ở cửa ra vào. Mọi người nên trữ nước trước.",
         "easy_ja": "水の 管（くだ）を 直（なお）します。それで 建物の 水が 止まります。管理会社（かんりがいしゃ）が 入口に お知らせを 貼（は）りました。そういう 投稿（とうこう）です。前もって 水を ためて おいてください。"
@@ -501,7 +501,7 @@
         "en": "A joint cleanup by the Hibari neighbourhood association and the shopping association. Brooms, garbage bags and work gloves are provided. Joining for a short time is welcome. Posted by the uploader.",
         "zh": "这是云雀町内会与商店会联合举办的清扫活动。现场备有扫帚、垃圾袋和劳保手套。据说短时间参加也欢迎。由发帖人发布的通知。",
         "ko": "히바리 주민회와 상점회의 합동 청소입니다. 빗자루, 쓰레기봉투, 목장갑은 준비되어 있습니다. 짧은 시간 참여도 환영한다고 합니다. 게시자의 안내입니다.",
-        "vi": "Đây là buổi dọn dẹp chung của hội khu phố Hibari và hội thương mại. Chổi, túi rác và găng tay lao động đã được chuẩn bị sẵn. Tham gia trong thời gian ngắn cũng được hoan nghênh. Thông báo do người đăng bài đưa ra.",
+        "vi": "Đây là buổi dọn dẹp chung của hội khu phố Hibari và hội buôn bán khu phố. Chổi, túi rác và găng tay lao động đã được chuẩn bị sẵn. Tham gia trong thời gian ngắn cũng được hoan nghênh. Thông báo do người đăng bài đưa ra.",
         "easy_ja": "ひばり町内会（ちょうないかい）と 商店会（しょうてんかい）が いっしょに そうじを します。ほうき、ごみ袋（ぶくろ）、軍手（ぐんて）は あります。少しの 時間だけ 来ても いいです。これは 投稿（とうこう）した 人からの お知らせです。"
       },
       "facts": {
@@ -531,15 +531,15 @@
         "en": "Winter shelter experience event at Shiseikan Elementary School (資生館小学校) gym, Sat 21 Nov 10:00 to 12:00",
         "zh": "资生馆小学（資生館小学校）体育馆冬季避难所体验会，11月21日（周六）10:00至12:00",
         "ko": "시세이칸 초등학교(資生館小学校) 체육관 겨울 대피소 체험회, 11월 21일(토) 10:00부터 12:00까지",
-        "vi": "Buổi trải nghiệm nơi sơ tán mùa đông tại nhà thể chất Trường tiểu học Shiseikan (資生館小学校), thứ Bảy ngày 21/11, 10:00 đến 12:00",
+        "vi": "Buổi trải nghiệm nơi lánh nạn mùa đông tại nhà thể chất Trường tiểu học Shiseikan (資生館小学校), thứ Bảy ngày 21/11, 10:00 đến 12:00",
         "easy_ja": "資生館小学校（しせいかんしょうがっこう）の 体育館（たいいくかん）で 冬の 避難所（ひなんじょ）を 体験（たいけん）します。11月21日（土）10時から 12時まで"
       },
       "body": {
         "ja": "寒い季節に避難所で過ごす体験をし、段ボールベッドと毛布の使い方を確かめます。雪道で転ばない歩き方と冬靴の選び方の話もあります。申し込み不要でどなたでも参加でき、暖かい服装で来るよう案内されています。すずらん町内会 防災部の貼り紙です。",
         "en": "Participants experience spending time in a shelter in the cold season and try cardboard beds and blankets. There is also a talk on walking on snowy roads without falling and choosing winter boots. No registration needed, anyone can join, wear warm clothes. Posted notice from the Suzuran neighbourhood association disaster prevention section (すずらん町内会 防災部).",
         "zh": "体验在寒冷季节于避难所度过时光，并确认纸板床和毛毯的使用方法。还有关于在雪路上如何行走不摔倒以及如何选择冬靴的讲解。无需报名，任何人都可参加，请穿着保暖的衣服前来。这是铃兰町内会防灾部（すずらん町内会 防災部）的告示。",
-        "ko": "추운 계절에 대피소에서 지내는 체험을 하고, 골판지 침대와 담요 사용법을 확인합니다. 눈길에서 넘어지지 않고 걷는 방법과 겨울 신발 고르는 방법에 대한 이야기도 있습니다. 신청은 필요 없으며 누구나 참가할 수 있고, 따뜻한 옷차림으로 오도록 안내하고 있습니다. 스즈란 町内会 방재부(すずらん町内会 防災部)의 게시물입니다.",
-        "vi": "Người tham gia sẽ trải nghiệm việc ở tại nơi sơ tán trong mùa lạnh và thử cách dùng giường bìa các tông và chăn. Cũng có buổi nói chuyện về cách đi trên đường tuyết mà không bị ngã và cách chọn giày mùa đông. Không cần đăng ký, ai cũng có thể tham gia, hãy mặc quần áo ấm khi đến. Đây là thông báo dán của Ban phòng chống thiên tai, Hội khu phố Suzuran (すずらん町内会 防災部).",
+        "ko": "추운 계절에 대피소에서 지내는 체험을 하고, 골판지 침대와 담요 사용법을 확인합니다. 눈길에서 넘어지지 않고 걷는 방법과 겨울 신발 고르는 방법에 대한 이야기도 있습니다. 신청은 필요 없으며 누구나 참가할 수 있고, 따뜻한 옷차림으로 오도록 안내하고 있습니다. 스즈란 주민회 방재부(すずらん町内会 防災部)의 게시물입니다.",
+        "vi": "Người tham gia sẽ trải nghiệm việc ở tại nơi lánh nạn trong mùa lạnh và thử cách dùng giường bìa các tông và chăn. Cũng có buổi nói chuyện về cách đi trên đường tuyết mà không bị ngã và cách chọn giày mùa đông. Không cần đăng ký, ai cũng có thể tham gia, hãy mặc quần áo ấm khi đến. Đây là thông báo dán của Ban phòng chống thiên tai, Hội khu phố Suzuran (すずらん町内会 防災部).",
         "easy_ja": "寒い 季節に 避難所（ひなんじょ）で 過（す）ごす 体験（たいけん）を します。段（だん）ボールの ベッドと 毛布（もうふ）の 使い方を 確（たし）かめます。雪の 道で 転（ころ）ばない 歩き方の 話が あります。冬の 靴の 選び方の 話も あります。申し込みは いりません。だれでも 参加（さんか）できます。暖（あたた）かい 服で 来てください。すずらん町内会（ちょうないかい） 防災部（ぼうさいぶ）の お知らせです。"
       },
       "facts": {
@@ -567,16 +567,16 @@
       "title": {
         "ja": "大通公園（大通西6丁目側）で除雪ボランティア説明会とスコップ配布、11月14日10時から11時",
         "en": "Snow shovel volunteer kick-off at Odori Park (大通公園), West 6-chome (大通西6丁目) side, Nov 14, 10:00 to 11:00",
-        "zh": "大通公园（大通公園）（大通西6丁目一侧）举办除雪志愿者说明会并发放铁锹，11月14日10:00至11:00",
-        "ko": "오도리 공원(大通公園)(오도리 니시6초메(大通西6丁目) 쪽)에서 제설 자원봉사 설명회 및 삽 배부, 11월 14일 10:00~11:00",
+        "zh": "大通公园（大通公園）靠大通西6丁目一侧举办除雪志愿者说明会并发放雪铲，11月14日10:00至11:00",
+        "ko": "오도리 공원(大通公園) 오도리 니시6초메(大通西6丁目) 쪽에서 제설 자원봉사 설명회 및 눈삽 배부, 11월 14일 10:00~11:00",
         "vi": "Buổi giới thiệu tình nguyện viên dọn tuyết và phát xẻng tại Công viên Odori (大通公園), phía Odori Nishi 6-chome (大通西6丁目), ngày 14/11, từ 10:00 đến 11:00",
         "easy_ja": "大通公園（おおどおりこうえん）の 大通西6丁目（おおどおりにし6ちょうめ）の ほうで 雪かき ボランティアの 説明会（せつめいかい）が あります。スコップも もらえます。11月14日 10時から 11時まで です。"
       },
       "body": {
         "ja": "すずらん町内会が12月から大雪の後に大通公園沿いの歩道を除雪するボランティアを募集しています。スコップと手袋は用意され、防寒靴を着用してください。申し込み不要です。",
         "en": "The neighbourhood association すずらん町内会 is looking for volunteers to clear sidewalks along Odori Park (大通公園) after heavy snow from December. Shovels and gloves are provided, please wear winter boots. No sign-up needed.",
-        "zh": "铃兰町内会（すずらん町内会）正在招募志愿者，从12月起在大雪过后清扫大通公园（大通公園）沿线的人行道。会提供铁锹和手套，请穿防寒靴。无需报名。",
-        "ko": "스즈란 자치회(すずらん町内会)가 12월부터 폭설 후 오도리 공원(大通公園) 주변 보도를 제설할 자원봉사자를 모집하고 있습니다. 삽과 장갑은 준비되어 있으며, 방한화를 착용해 주십시오. 신청은 필요 없습니다.",
+        "zh": "铃兰町内会（すずらん町内会）正在招募志愿者，从12月起在大雪过后清扫大通公园（大通公園）沿线的人行道。会提供雪铲和手套，请穿防寒靴。无需报名。",
+        "ko": "스즈란 주민회(すずらん町内会)가 12월부터 폭설 후 오도리 공원(大通公園) 주변 보도를 제설할 자원봉사자를 모집하고 있습니다. 삽과 장갑은 준비되어 있으며, 방한화를 신어 주세요. 신청은 필요 없습니다.",
         "vi": "Hội khu phố Suzuran (すずらん町内会) đang tìm tình nguyện viên dọn tuyết trên vỉa hè dọc Công viên Odori (大通公園) sau các trận tuyết lớn, bắt đầu từ tháng 12. Có sẵn xẻng và găng tay, vui lòng mang giày đi tuyết. Không cần đăng ký.",
         "easy_ja": "すずらん町内会（ちょうないかい）が ボランティアを さがして います。12月から 雪が たくさん ふった あとに 大通公園（おおどおりこうえん）の 近くの 歩道（ほどう）の 雪かきを します。スコップと 手袋（てぶくろ）は あります。冬の 雪用の くつを はいて きて ください。申し込み（もうしこみ）は いりません。"
       },
@@ -613,9 +613,9 @@
       "body": {
         "ja": "積雪に備えて、11月20日（金）から駐輪場を閉鎖します。自転車は11月19日（木）までに持ち帰るか、地下の冬期保管スペースへ移してください。管理組合からのお知らせです。",
         "en": "The bicycle parking (駐輪場) will close from November 20 (Fri) to prepare for snow. Take your bicycle home or move it to the basement winter storage space by November 19 (Thu). Notice from the management association (管理組合).",
-        "zh": "为应对积雪，自行车停车场（駐輪場）将自11月20日（周五）起关闭。请在11月19日（周四）之前将自行车带回家，或移至地下的冬季存放空间。此为管理组合（管理組合）的通知。",
-        "ko": "적설에 대비하여 11월 20일(금)부터 자전거 주차장(駐輪場)을 폐쇄합니다. 자전거는 11월 19일(목)까지 집으로 가져가시거나 지하의 동절기 보관 공간으로 옮겨 주십시오. 관리조합(管理組合)의 안내입니다.",
-        "vi": "Để chuẩn bị cho tuyết, bãi đỗ xe đạp (駐輪場) sẽ đóng cửa từ ngày 20/11 (Thứ Sáu). Vui lòng mang xe đạp về nhà hoặc chuyển xuống khu vực cất giữ mùa đông ở tầng hầm trước hết ngày 19/11 (Thứ Năm). Đây là thông báo từ ban quản lý (管理組合).",
+        "zh": "为应对积雪，自行车停车场（駐輪場）将自11月20日（周五）起关闭。请在11月19日（周四）之前将自行车带回家，或移至地下的冬季存放空间。此为业主委员会（管理組合）的通知。",
+        "ko": "적설에 대비하여 11월 20일(금)부터 자전거 주차장(駐輪場)을 폐쇄합니다. 자전거는 11월 19일(목)까지 집으로 가져가거나 지하의 동절기 보관 공간으로 옮겨 주세요. 관리조합(管理組合)의 안내입니다.",
+        "vi": "Để chuẩn bị cho tuyết, bãi đỗ xe đạp (駐輪場) sẽ đóng cửa từ ngày 20/11 (Thứ Sáu). Vui lòng mang xe đạp về nhà hoặc chuyển xuống khu vực cất giữ mùa đông ở tầng hầm chậm nhất đến hết ngày 19/11 (Thứ Năm). Đây là thông báo từ ban quản trị (管理組合).",
         "easy_ja": "雪（ゆき）が 積（つ）もります。だから 11月20日（金）から 自転車（じてんしゃ）を 置（お）く 場所（ばしょ）を 閉（し）めます。11月19日（木）までに 自転車を 家（いえ）に 持（も）って 帰（かえ）って ください。または 地下（ちか）の 冬（ふゆ）の 置き場（おきば）に 動（うご）かして ください。これは 管理組合（かんりくみあい）からの お知（し）らせです。"
       },
       "facts": {
@@ -647,15 +647,15 @@
         "en": "Building-wide water outage, Tue 17 Nov, 10:00 to 14:00",
         "zh": "整栋大楼停水，11月17日（周二）10:00至14:00",
         "ko": "건물 전체 단수, 11월 17일(화) 10:00부터 14:00까지",
-        "vi": "Cúp nước toàn bộ tòa nhà, thứ Ba ngày 17/11, từ 10:00 đến 14:00",
+        "vi": "Cắt nước toàn bộ tòa nhà, thứ Ba ngày 17/11, từ 10:00 đến 14:00",
         "easy_ja": "建物（たてもの）全部で 水が 止まります。11月17日（火）10時から 14時まで"
       },
       "body": {
         "ja": "給水管の更新工事のため、全住戸と1階店舗で断水します。作業中は水道もトイレも使えないため、前日までに飲み水と生活用水をくみ置きするよう書かれています。断水直後はにごった水が出ることがあるので、しばらく流してから使うようにとのことです。管理組合理事会の掲示の写真です。どの建物かは掲示に書かれていません。",
         "en": "Water will be cut off for all units and ground floor shops for water pipe replacement work. Water and toilets cannot be used during the work, and residents are asked to store drinking and household water by the day before. Water may be cloudy right after, so let it run for a while before use. Photo of a notice from the building management association, the building name is not stated.",
-        "zh": "因更换供水管道工程，所有住户和1楼店铺将停水。施工期间自来水和厕所都无法使用，告示要求在前一天之前储存好饮用水和生活用水。停水刚结束时可能会流出浑浊的水，请先放水一段时间后再使用。这是业主委员会理事会告示的照片。告示上没有写明是哪栋大楼。",
+        "zh": "因更换供水管道工程，所有住户和1楼店铺将停水。施工期间自来水和厕所都无法使用，告示要求在前一天之前储存好饮用水和生活用水。停水刚结束时可能会流出浑浊的水，请先放水一段时间后再使用。这是业主委员会告示的照片。告示上没有写明是哪栋大楼。",
         "ko": "급수관 교체 공사로 인해 모든 세대와 1층 점포가 단수됩니다. 작업 중에는 수돗물과 화장실을 사용할 수 없으므로, 전날까지 마실 물과 생활용수를 받아 두라고 적혀 있습니다. 단수 직후에는 탁한 물이 나올 수 있으니 한동안 흘려보낸 후 사용하라고 합니다. 관리조합 이사회 게시물 사진입니다. 어느 건물인지는 게시물에 적혀 있지 않습니다.",
-        "vi": "Do công trình thay mới ống cấp nước, tất cả các căn hộ và cửa hàng ở tầng 1 sẽ bị cúp nước. Trong thời gian thi công không thể dùng nước máy và nhà vệ sinh, thông báo yêu cầu cư dân trữ sẵn nước uống và nước sinh hoạt trước ngày hôm trước. Ngay sau khi cúp nước, nước có thể bị đục, vì vậy hãy xả nước một lúc rồi mới sử dụng. Đây là ảnh thông báo của ban quản trị tòa nhà. Thông báo không ghi là tòa nhà nào.",
+        "vi": "Do công trình thay mới ống cấp nước, tất cả các căn hộ và cửa hàng ở tầng 1 sẽ bị cắt nước. Trong thời gian thi công không thể dùng nước máy và nhà vệ sinh, thông báo yêu cầu cư dân trữ sẵn nước uống và nước sinh hoạt chậm nhất trong ngày hôm trước. Ngay sau khi cắt nước, nước có thể bị đục, vì vậy hãy xả nước một lúc rồi mới sử dụng. Đây là ảnh thông báo của ban quản trị tòa nhà. Thông báo không ghi là tòa nhà nào.",
         "easy_ja": "水道管（すいどうかん）を 新しくする 工事（こうじ）が あります。全部の 家と 1階の 店で 水が 止まります。工事の 間は 水道も トイレも 使えません。前の 日までに 飲む 水と 使う 水を ためて おいてください。水が 出るように なった すぐ あとは、にごった 水が 出ることが あります。しばらく 水を 流してから 使ってください。これは 管理組合（かんりくみあい）の 理事会（りじかい）の お知らせの 写真です。どの 建物（たてもの）か は 書いて ありません。"
       },
       "facts": {
@@ -696,8 +696,8 @@
       "body": {
         "ja": "町内会主催の外国人住民向け防災教室です。韓国語の通訳があり、申し込み不要で無料とのことです。伝え聞いた情報です。",
         "en": "A disaster preparedness class for foreign residents, organized by the neighbourhood association (町内会). Korean interpretation is available, no registration is needed and it is free. Relayed information.",
-        "zh": "这是由町内会（町内会）主办、面向外国居民的防灾讲座。提供韩语翻译，无需报名，免费参加。此为转述的信息。",
-        "ko": "町内会(주민회) 주최 외국인 주민 대상 방재 교실입니다. 한국어 통역이 있고, 신청 불필요, 무료라고 합니다. 전해 들은 정보입니다.",
+        "zh": "这是由居民自治会（町内会）主办、面向外国居民的防灾讲座。提供韩语翻译，无需报名，免费参加。此为转述的信息。",
+        "ko": "주민회(町内会) 주최 외국인 주민 대상 방재 교실입니다. 한국어 통역이 있고, 신청 불필요, 무료라고 합니다. 전해 들은 정보입니다.",
         "vi": "Đây là lớp học phòng chống thiên tai dành cho cư dân nước ngoài do hội khu phố (町内会) tổ chức. Có phiên dịch tiếng Hàn, không cần đăng ký và miễn phí. Đây là thông tin được truyền lại.",
         "easy_ja": "町内会（ちょうないかい）が する 教室（きょうしつ）です。外国人（がいこくじん）の ための 防災（ぼうさい）の 教室です。韓国語（かんこくご）の 通訳（つうやく）が います。申し込み（もうしこみ）は いりません。お金は いりません。これは ほかの 人から 聞いた 情報（じょうほう）です。"
       },
@@ -731,7 +731,7 @@
       "title": {
         "ja": "藤田公園、防災倉庫の点検と消火器体験、11月14日（土）10時から10時30分",
         "en": "Fujita Park (藤田公園), disaster storehouse check and fire extinguisher practice, Sat 14 Nov 10:00 to 10:30",
-        "zh": "藤田公园（藤田公園），防灾仓库检查和灭火器体验，11月14日（星期六）10:00至10:30",
+        "zh": "藤田公园（藤田公園），防灾仓库检查和灭火器体验，11月14日（周六）10:00至10:30",
         "ko": "후지타 공원(藤田公園), 방재 창고 점검 및 소화기 체험, 11월 14일(토) 10:00부터 10:30까지",
         "vi": "Công viên Fujita (藤田公園), kiểm tra kho phòng chống thiên tai và trải nghiệm bình chữa cháy, thứ Bảy 14/11, 10:00 đến 10:30",
         "easy_ja": "藤田公園（ふじたこうえん）で 防災（ぼうさい）の 倉庫（そうこ）の チェックと 消火器（しょうかき）の 体験（たいけん）、11月14日（土） 10時から 10時30分まで"

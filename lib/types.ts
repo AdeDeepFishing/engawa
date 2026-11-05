@@ -139,7 +139,8 @@ export interface ConflictStatement {
   source_type: SourceType;
   official_confirmed?: boolean;
   source_count?: number;
-  submission_id: string | null;
+  /** Stored on the row; the public projection (toPublicCard) removes it. */
+  submission_id?: string | null;
   /** When this statement reached the board. */
   at: string;
   /** Superseded only: when the update replaced it. */
@@ -206,9 +207,10 @@ export interface Card {
   source_type: SourceType;
   official_confirmed: boolean;
   source_count: number;
-  risk_flags: RiskFlag[];
+  /** Admin and raw rows only: the public projection (toPublicCard) removes it. */
+  risk_flags?: RiskFlag[];
   visibility: Visibility;
-  /** Why the card is held: risk flags joined by commas, or "reconcile: <reason>". */
+  /** Why the card is held: risk flags joined by commas, or "reconcile: <reason>". Admin and raw rows only. */
   held_reason?: string | null;
   last_confirmed_at?: string | null;
   conflict: CardConflict | null;
