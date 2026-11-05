@@ -14,95 +14,187 @@
       "area_names": [
         {
           "code": "14133301001",
-          "name_ja": "小杉町1丁目"
+          "name_ja": "小杉町1丁目",
+          "name_en": "Kosugi-machi 1-chome",
+          "name_zh": "小杉町1丁目",
+          "name_ko": "고스기마치 1초메",
+          "name_vi": "Kosugi-machi 1-chome"
         },
         {
           "code": "14133301002",
-          "name_ja": "小杉町2丁目"
+          "name_ja": "小杉町2丁目",
+          "name_en": "Kosugi-machi 2-chome",
+          "name_zh": "小杉町2丁目",
+          "name_ko": "고스기마치 2초메",
+          "name_vi": "Kosugi-machi 2-chome"
         },
         {
           "code": "14133301003",
-          "name_ja": "小杉町3丁目"
+          "name_ja": "小杉町3丁目",
+          "name_en": "Kosugi-machi 3-chome",
+          "name_zh": "小杉町3丁目",
+          "name_ko": "고스기마치 3초메",
+          "name_vi": "Kosugi-machi 3-chome"
         },
         {
           "code": "14133304001",
-          "name_ja": "小杉陣屋町1丁目"
+          "name_ja": "小杉陣屋町1丁目",
+          "name_en": "Kosugijinya-cho 1-chome",
+          "name_zh": "小杉阵屋町1丁目",
+          "name_ko": "고스기진야초 1초메",
+          "name_vi": "Kosugijinya-cho 1-chome"
         },
         {
           "code": "14133304002",
-          "name_ja": "小杉陣屋町2丁目"
+          "name_ja": "小杉陣屋町2丁目",
+          "name_en": "Kosugijinya-cho 2-chome",
+          "name_zh": "小杉阵屋町2丁目",
+          "name_ko": "고스기진야초 2초메",
+          "name_vi": "Kosugijinya-cho 2-chome"
         },
         {
           "code": "14133303001",
-          "name_ja": "小杉御殿町1丁目"
+          "name_ja": "小杉御殿町1丁目",
+          "name_en": "Kosugigoten-cho 1-chome",
+          "name_zh": "小杉御殿町1丁目",
+          "name_ko": "고스기고텐초 1초메",
+          "name_vi": "Kosugigoten-cho 1-chome"
         },
         {
           "code": "14133303002",
-          "name_ja": "小杉御殿町2丁目"
+          "name_ja": "小杉御殿町2丁目",
+          "name_en": "Kosugigoten-cho 2-chome",
+          "name_zh": "小杉御殿町2丁目",
+          "name_ko": "고스기고텐초 2초메",
+          "name_vi": "Kosugigoten-cho 2-chome"
         },
         {
           "code": "141333120",
-          "name_ja": "新丸子町"
+          "name_ja": "新丸子町",
+          "name_en": "Shinmaruko-machi",
+          "name_zh": "新丸子町",
+          "name_ko": "신마루코마치",
+          "name_vi": "Shinmaruko-machi"
         },
         {
           "code": "14133302001",
-          "name_ja": "新丸子東1丁目"
+          "name_ja": "新丸子東1丁目",
+          "name_en": "Shinmaruko-higashi 1-chome",
+          "name_zh": "新丸子东1丁目",
+          "name_ko": "신마루코히가시 1초메",
+          "name_vi": "Shinmaruko-higashi 1-chome"
         },
         {
           "code": "14133302002",
-          "name_ja": "新丸子東2丁目"
+          "name_ja": "新丸子東2丁目",
+          "name_en": "Shinmaruko-higashi 2-chome",
+          "name_zh": "新丸子东2丁目",
+          "name_ko": "신마루코히가시 2초메",
+          "name_vi": "Shinmaruko-higashi 2-chome"
         },
         {
           "code": "14133302003",
-          "name_ja": "新丸子東3丁目"
+          "name_ja": "新丸子東3丁目",
+          "name_en": "Shinmaruko-higashi 3-chome",
+          "name_zh": "新丸子东3丁目",
+          "name_ko": "신마루코히가시 3초메",
+          "name_vi": "Shinmaruko-higashi 3-chome"
         },
         {
           "code": "14133311001",
-          "name_ja": "丸子通1丁目"
+          "name_ja": "丸子通1丁目",
+          "name_en": "Maruko-dori 1-chome",
+          "name_zh": "丸子通1丁目",
+          "name_ko": "마루코도리 1초메",
+          "name_vi": "Maruko-dori 1-chome"
         },
         {
           "code": "14133311002",
-          "name_ja": "丸子通2丁目"
+          "name_ja": "丸子通2丁目",
+          "name_en": "Maruko-dori 2-chome",
+          "name_zh": "丸子通2丁目",
+          "name_ko": "마루코도리 2초메",
+          "name_vi": "Maruko-dori 2-chome"
         },
         {
           "code": "141333100",
-          "name_ja": "上丸子天神町"
+          "name_ja": "上丸子天神町",
+          "name_en": "Kamimarukotenjin-cho",
+          "name_zh": "上丸子天神町",
+          "name_ko": "가미마루코텐진초",
+          "name_vi": "Kamimarukotenjin-cho"
         },
         {
           "code": "14133314001",
-          "name_ja": "上丸子山王町1丁目"
+          "name_ja": "上丸子山王町1丁目",
+          "name_en": "Kamimarukosanno-cho 1-chome",
+          "name_zh": "上丸子山王町1丁目",
+          "name_ko": "가미마루코산노초 1초메",
+          "name_vi": "Kamimarukosanno-cho 1-chome"
         },
         {
           "code": "14133314002",
-          "name_ja": "上丸子山王町2丁目"
+          "name_ja": "上丸子山王町2丁目",
+          "name_en": "Kamimarukosanno-cho 2-chome",
+          "name_zh": "上丸子山王町2丁目",
+          "name_ko": "가미마루코산노초 2초메",
+          "name_vi": "Kamimarukosanno-cho 2-chome"
         },
         {
           "code": "141333130",
-          "name_ja": "上丸子八幡町"
+          "name_ja": "上丸子八幡町",
+          "name_en": "Kamimarukohachiman-cho",
+          "name_zh": "上丸子八幡町",
+          "name_ko": "가미마루코하치만초",
+          "name_vi": "Kamimarukohachiman-cho"
         },
         {
           "code": "141333260",
-          "name_ja": "今井南町"
+          "name_ja": "今井南町",
+          "name_en": "Imaiminami-cho",
+          "name_zh": "今井南町",
+          "name_ko": "이마이미나미초",
+          "name_vi": "Imaiminami-cho"
         },
         {
           "code": "141333250",
-          "name_ja": "今井仲町"
+          "name_ja": "今井仲町",
+          "name_en": "Imainaka-machi",
+          "name_zh": "今井仲町",
+          "name_ko": "이마이나카마치",
+          "name_vi": "Imainaka-machi"
         },
         {
           "code": "141333270",
-          "name_ja": "今井上町"
+          "name_ja": "今井上町",
+          "name_en": "Imaikami-cho",
+          "name_zh": "今井上町",
+          "name_ko": "이마이카미초",
+          "name_vi": "Imaikami-cho"
         },
         {
           "code": "141333280",
-          "name_ja": "今井西町"
+          "name_ja": "今井西町",
+          "name_en": "Imainishi-machi",
+          "name_zh": "今井西町",
+          "name_ko": "이마이니시마치",
+          "name_vi": "Imainishi-machi"
         },
         {
           "code": "141333170",
-          "name_ja": "市ノ坪"
+          "name_ja": "市ノ坪",
+          "name_en": "Ichinotsubo",
+          "name_zh": "市之坪",
+          "name_ko": "이치노쓰보",
+          "name_vi": "Ichinotsubo"
         },
         {
           "code": "141333160",
-          "name_ja": "中丸子"
+          "name_ja": "中丸子",
+          "name_en": "Nakamaruko",
+          "name_zh": "中丸子",
+          "name_ko": "나카마루코",
+          "name_vi": "Nakamaruko"
         }
       ],
       "known_places": [
@@ -480,47 +572,91 @@
       "area_names": [
         {
           "code": "13113010001",
-          "name_ja": "渋谷1丁目"
+          "name_ja": "渋谷1丁目",
+          "name_en": "Shibuya 1-chome",
+          "name_zh": "涩谷1丁目",
+          "name_ko": "시부야 1초메",
+          "name_vi": "Shibuya 1-chome"
         },
         {
           "code": "13113010002",
-          "name_ja": "渋谷2丁目"
+          "name_ja": "渋谷2丁目",
+          "name_en": "Shibuya 2-chome",
+          "name_zh": "涩谷2丁目",
+          "name_ko": "시부야 2초메",
+          "name_vi": "Shibuya 2-chome"
         },
         {
           "code": "13113010003",
-          "name_ja": "渋谷3丁目"
+          "name_ja": "渋谷3丁目",
+          "name_en": "Shibuya 3-chome",
+          "name_zh": "涩谷3丁目",
+          "name_ko": "시부야 3초메",
+          "name_vi": "Shibuya 3-chome"
         },
         {
           "code": "13113010004",
-          "name_ja": "渋谷4丁目"
+          "name_ja": "渋谷4丁目",
+          "name_en": "Shibuya 4-chome",
+          "name_zh": "涩谷4丁目",
+          "name_ko": "시부야 4초메",
+          "name_vi": "Shibuya 4-chome"
         },
         {
           "code": "13113013001",
-          "name_ja": "道玄坂1丁目"
+          "name_ja": "道玄坂1丁目",
+          "name_en": "Dogenzaka 1-chome",
+          "name_zh": "道玄坂1丁目",
+          "name_ko": "도겐자카 1초메",
+          "name_vi": "Dogenzaka 1-chome"
         },
         {
           "code": "13113013002",
-          "name_ja": "道玄坂2丁目"
+          "name_ja": "道玄坂2丁目",
+          "name_en": "Dogenzaka 2-chome",
+          "name_zh": "道玄坂2丁目",
+          "name_ko": "도겐자카 2초메",
+          "name_vi": "Dogenzaka 2-chome"
         },
         {
           "code": "131130180",
-          "name_ja": "宇田川町"
+          "name_ja": "宇田川町",
+          "name_en": "Udagawa-cho",
+          "name_zh": "宇田川町",
+          "name_ko": "우다가와초",
+          "name_vi": "Udagawa-cho"
         },
         {
           "code": "131130110",
-          "name_ja": "桜丘町"
+          "name_ja": "桜丘町",
+          "name_en": "Sakuragaoka-cho",
+          "name_zh": "樱丘町",
+          "name_ko": "사쿠라가오카초",
+          "name_vi": "Sakuragaoka-cho"
         },
         {
           "code": "13113019001",
-          "name_ja": "神南1丁目"
+          "name_ja": "神南1丁目",
+          "name_en": "Jinnan 1-chome",
+          "name_zh": "神南1丁目",
+          "name_ko": "진난 1초메",
+          "name_vi": "Jinnan 1-chome"
         },
         {
           "code": "13113019002",
-          "name_ja": "神南2丁目"
+          "name_ja": "神南2丁目",
+          "name_en": "Jinnan 2-chome",
+          "name_zh": "神南2丁目",
+          "name_ko": "진난 2초메",
+          "name_vi": "Jinnan 2-chome"
         },
         {
           "code": "13113032006",
-          "name_ja": "神宮前6丁目"
+          "name_ja": "神宮前6丁目",
+          "name_en": "Jingumae 6-chome",
+          "name_zh": "神宫前6丁目",
+          "name_ko": "진구마에 6초메",
+          "name_vi": "Jingumae 6-chome"
         }
       ],
       "known_places": [
@@ -1029,59 +1165,115 @@
       "area_names": [
         {
           "code": "14134401101",
-          "name_ja": "溝口1丁目"
+          "name_ja": "溝口1丁目",
+          "name_en": "Mizonokuchi 1-chome",
+          "name_zh": "沟口1丁目",
+          "name_ko": "미조노쿠치 1초메",
+          "name_vi": "Mizonokuchi 1-chome"
         },
         {
           "code": "14134401102",
-          "name_ja": "溝口2丁目"
+          "name_ja": "溝口2丁目",
+          "name_en": "Mizonokuchi 2-chome",
+          "name_zh": "沟口2丁目",
+          "name_ko": "미조노쿠치 2초메",
+          "name_vi": "Mizonokuchi 2-chome"
         },
         {
           "code": "14134401103",
-          "name_ja": "溝口3丁目"
+          "name_ja": "溝口3丁目",
+          "name_en": "Mizonokuchi 3-chome",
+          "name_zh": "沟口3丁目",
+          "name_ko": "미조노쿠치 3초메",
+          "name_vi": "Mizonokuchi 3-chome"
         },
         {
           "code": "14134401104",
-          "name_ja": "溝口4丁目"
+          "name_ja": "溝口4丁目",
+          "name_en": "Mizonokuchi 4-chome",
+          "name_zh": "沟口4丁目",
+          "name_ko": "미조노쿠치 4초메",
+          "name_vi": "Mizonokuchi 4-chome"
         },
         {
           "code": "14134401105",
-          "name_ja": "溝口5丁目"
+          "name_ja": "溝口5丁目",
+          "name_en": "Mizonokuchi 5-chome",
+          "name_zh": "沟口5丁目",
+          "name_ko": "미조노쿠치 5초메",
+          "name_vi": "Mizonokuchi 5-chome"
         },
         {
           "code": "14134401106",
-          "name_ja": "溝口6丁目"
+          "name_ja": "溝口6丁目",
+          "name_en": "Mizonokuchi 6-chome",
+          "name_zh": "沟口6丁目",
+          "name_ko": "미조노쿠치 6초메",
+          "name_vi": "Mizonokuchi 6-chome"
         },
         {
           "code": "14134411001",
-          "name_ja": "久本1丁目"
+          "name_ja": "久本1丁目",
+          "name_en": "Hisamoto 1-chome",
+          "name_zh": "久本1丁目",
+          "name_ko": "히사모토 1초메",
+          "name_vi": "Hisamoto 1-chome"
         },
         {
           "code": "14134411002",
-          "name_ja": "久本2丁目"
+          "name_ja": "久本2丁目",
+          "name_en": "Hisamoto 2-chome",
+          "name_zh": "久本2丁目",
+          "name_ko": "히사모토 2초메",
+          "name_vi": "Hisamoto 2-chome"
         },
         {
           "code": "14134411003",
-          "name_ja": "久本3丁目"
+          "name_ja": "久本3丁目",
+          "name_en": "Hisamoto 3-chome",
+          "name_zh": "久本3丁目",
+          "name_ko": "히사모토 3초메",
+          "name_vi": "Hisamoto 3-chome"
         },
         {
           "code": "14134410001",
-          "name_ja": "坂戸1丁目"
+          "name_ja": "坂戸1丁目",
+          "name_en": "Sakado 1-chome",
+          "name_zh": "坂户1丁目",
+          "name_ko": "사카도 1초메",
+          "name_vi": "Sakado 1-chome"
         },
         {
           "code": "14134410002",
-          "name_ja": "坂戸2丁目"
+          "name_ja": "坂戸2丁目",
+          "name_en": "Sakado 2-chome",
+          "name_zh": "坂户2丁目",
+          "name_ko": "사카도 2초메",
+          "name_vi": "Sakado 2-chome"
         },
         {
           "code": "14134410003",
-          "name_ja": "坂戸3丁目"
+          "name_ja": "坂戸3丁目",
+          "name_en": "Sakado 3-chome",
+          "name_zh": "坂户3丁目",
+          "name_ko": "사카도 3초메",
+          "name_vi": "Sakado 3-chome"
         },
         {
           "code": "14134412101",
-          "name_ja": "下作延1丁目"
+          "name_ja": "下作延1丁目",
+          "name_en": "Shimosakunobe 1-chome",
+          "name_zh": "下作延1丁目",
+          "name_ko": "시모사쿠노베 1초메",
+          "name_vi": "Shimosakunobe 1-chome"
         },
         {
           "code": "14134412102",
-          "name_ja": "下作延2丁目"
+          "name_ja": "下作延2丁目",
+          "name_en": "Shimosakunobe 2-chome",
+          "name_zh": "下作延2丁目",
+          "name_ko": "시모사쿠노베 2초메",
+          "name_vi": "Shimosakunobe 2-chome"
         }
       ],
       "known_places": [
@@ -1664,71 +1856,139 @@
       "area_names": [
         {
           "code": "13106004001",
-          "name_ja": "上野1丁目"
+          "name_ja": "上野1丁目",
+          "name_en": "Ueno 1-chome",
+          "name_zh": "上野1丁目",
+          "name_ko": "우에노 1초메",
+          "name_vi": "Ueno 1-chome"
         },
         {
           "code": "13106004002",
-          "name_ja": "上野2丁目"
+          "name_ja": "上野2丁目",
+          "name_en": "Ueno 2-chome",
+          "name_zh": "上野2丁目",
+          "name_ko": "우에노 2초메",
+          "name_vi": "Ueno 2-chome"
         },
         {
           "code": "13106004003",
-          "name_ja": "上野3丁目"
+          "name_ja": "上野3丁目",
+          "name_en": "Ueno 3-chome",
+          "name_zh": "上野3丁目",
+          "name_ko": "우에노 3초메",
+          "name_vi": "Ueno 3-chome"
         },
         {
           "code": "13106004004",
-          "name_ja": "上野4丁目"
+          "name_ja": "上野4丁目",
+          "name_en": "Ueno 4-chome",
+          "name_zh": "上野4丁目",
+          "name_ko": "우에노 4초메",
+          "name_vi": "Ueno 4-chome"
         },
         {
           "code": "13106004005",
-          "name_ja": "上野5丁目"
+          "name_ja": "上野5丁目",
+          "name_en": "Ueno 5-chome",
+          "name_zh": "上野5丁目",
+          "name_ko": "우에노 5초메",
+          "name_vi": "Ueno 5-chome"
         },
         {
           "code": "13106004006",
-          "name_ja": "上野6丁目"
+          "name_ja": "上野6丁目",
+          "name_en": "Ueno 6-chome",
+          "name_zh": "上野6丁目",
+          "name_ko": "우에노 6초메",
+          "name_vi": "Ueno 6-chome"
         },
         {
           "code": "13106004007",
-          "name_ja": "上野7丁目"
+          "name_ja": "上野7丁目",
+          "name_en": "Ueno 7-chome",
+          "name_zh": "上野7丁目",
+          "name_ko": "우에노 7초메",
+          "name_vi": "Ueno 7-chome"
         },
         {
           "code": "13106003001",
-          "name_ja": "東上野1丁目"
+          "name_ja": "東上野1丁目",
+          "name_en": "Higashi-Ueno 1-chome",
+          "name_zh": "东上野1丁目",
+          "name_ko": "히가시우에노 1초메",
+          "name_vi": "Higashi-Ueno 1-chome"
         },
         {
           "code": "13106003002",
-          "name_ja": "東上野2丁目"
+          "name_ja": "東上野2丁目",
+          "name_en": "Higashi-Ueno 2-chome",
+          "name_zh": "东上野2丁目",
+          "name_ko": "히가시우에노 2초메",
+          "name_vi": "Higashi-Ueno 2-chome"
         },
         {
           "code": "13106003003",
-          "name_ja": "東上野3丁目"
+          "name_ja": "東上野3丁目",
+          "name_en": "Higashi-Ueno 3-chome",
+          "name_zh": "东上野3丁目",
+          "name_ko": "히가시우에노 3초메",
+          "name_vi": "Higashi-Ueno 3-chome"
         },
         {
           "code": "13106003004",
-          "name_ja": "東上野4丁目"
+          "name_ja": "東上野4丁目",
+          "name_en": "Higashi-Ueno 4-chome",
+          "name_zh": "东上野4丁目",
+          "name_ko": "히가시우에노 4초메",
+          "name_vi": "Higashi-Ueno 4-chome"
         },
         {
           "code": "13106003005",
-          "name_ja": "東上野5丁目"
+          "name_ja": "東上野5丁目",
+          "name_en": "Higashi-Ueno 5-chome",
+          "name_zh": "东上野5丁目",
+          "name_ko": "히가시우에노 5초메",
+          "name_vi": "Higashi-Ueno 5-chome"
         },
         {
           "code": "13106003006",
-          "name_ja": "東上野6丁目"
+          "name_ja": "東上野6丁目",
+          "name_en": "Higashi-Ueno 6-chome",
+          "name_zh": "东上野6丁目",
+          "name_ko": "히가시우에노 6초메",
+          "name_vi": "Higashi-Ueno 6-chome"
         },
         {
           "code": "131060060",
-          "name_ja": "上野公園"
+          "name_ja": "上野公園",
+          "name_en": "Ueno-koen",
+          "name_zh": "上野公园",
+          "name_ko": "우에노코엔",
+          "name_vi": "Ueno-koen"
         },
         {
           "code": "13106013001",
-          "name_ja": "上野桜木1丁目"
+          "name_ja": "上野桜木1丁目",
+          "name_en": "Uenosakuragi 1-chome",
+          "name_zh": "上野樱木1丁目",
+          "name_ko": "우에노사쿠라기 1초메",
+          "name_vi": "Uenosakuragi 1-chome"
         },
         {
           "code": "13106013002",
-          "name_ja": "上野桜木2丁目"
+          "name_ja": "上野桜木2丁目",
+          "name_en": "Uenosakuragi 2-chome",
+          "name_zh": "上野樱木2丁目",
+          "name_ko": "우에노사쿠라기 2초메",
+          "name_vi": "Uenosakuragi 2-chome"
         },
         {
           "code": "13106005001",
-          "name_ja": "池之端1丁目"
+          "name_ja": "池之端1丁目",
+          "name_en": "Ikenohata 1-chome",
+          "name_zh": "池之端1丁目",
+          "name_ko": "이케노하타 1초메",
+          "name_vi": "Ikenohata 1-chome"
         }
       ],
       "known_places": [
@@ -2216,183 +2476,363 @@
       "area_names": [
         {
           "code": "01101790501",
-          "name_ja": "北五条西1丁目"
+          "name_ja": "北五条西1丁目",
+          "name_en": "Kita 5-jo Nishi 1-chome",
+          "name_zh": "北五条西1丁目",
+          "name_ko": "기타5조니시 1초메",
+          "name_vi": "Kita 5-jo Nishi 1-chome"
         },
         {
           "code": "01101790502",
-          "name_ja": "北五条西2丁目"
+          "name_ja": "北五条西2丁目",
+          "name_en": "Kita 5-jo Nishi 2-chome",
+          "name_zh": "北五条西2丁目",
+          "name_ko": "기타5조니시 2초메",
+          "name_vi": "Kita 5-jo Nishi 2-chome"
         },
         {
           "code": "01101790503",
-          "name_ja": "北五条西3丁目"
+          "name_ja": "北五条西3丁目",
+          "name_en": "Kita 5-jo Nishi 3-chome",
+          "name_zh": "北五条西3丁目",
+          "name_ko": "기타5조니시 3초메",
+          "name_vi": "Kita 5-jo Nishi 3-chome"
         },
         {
           "code": "01101790504",
-          "name_ja": "北五条西4丁目"
+          "name_ja": "北五条西4丁目",
+          "name_en": "Kita 5-jo Nishi 4-chome",
+          "name_zh": "北五条西4丁目",
+          "name_ko": "기타5조니시 4초메",
+          "name_vi": "Kita 5-jo Nishi 4-chome"
         },
         {
           "code": "01101790505",
-          "name_ja": "北五条西5丁目"
+          "name_ja": "北五条西5丁目",
+          "name_en": "Kita 5-jo Nishi 5-chome",
+          "name_zh": "北五条西5丁目",
+          "name_ko": "기타5조니시 5초메",
+          "name_vi": "Kita 5-jo Nishi 5-chome"
         },
         {
           "code": "01101790401",
-          "name_ja": "北四条西1丁目"
+          "name_ja": "北四条西1丁目",
+          "name_en": "Kita 4-jo Nishi 1-chome",
+          "name_zh": "北四条西1丁目",
+          "name_ko": "기타4조니시 1초메",
+          "name_vi": "Kita 4-jo Nishi 1-chome"
         },
         {
           "code": "01101790402",
-          "name_ja": "北四条西2丁目"
+          "name_ja": "北四条西2丁目",
+          "name_en": "Kita 4-jo Nishi 2-chome",
+          "name_zh": "北四条西2丁目",
+          "name_ko": "기타4조니시 2초메",
+          "name_vi": "Kita 4-jo Nishi 2-chome"
         },
         {
           "code": "01101790403",
-          "name_ja": "北四条西3丁目"
+          "name_ja": "北四条西3丁目",
+          "name_en": "Kita 4-jo Nishi 3-chome",
+          "name_zh": "北四条西3丁目",
+          "name_ko": "기타4조니시 3초메",
+          "name_vi": "Kita 4-jo Nishi 3-chome"
         },
         {
           "code": "01101790404",
-          "name_ja": "北四条西4丁目"
+          "name_ja": "北四条西4丁目",
+          "name_en": "Kita 4-jo Nishi 4-chome",
+          "name_zh": "北四条西4丁目",
+          "name_ko": "기타4조니시 4초메",
+          "name_vi": "Kita 4-jo Nishi 4-chome"
         },
         {
           "code": "01101790405",
-          "name_ja": "北四条西5丁目"
+          "name_ja": "北四条西5丁目",
+          "name_en": "Kita 4-jo Nishi 5-chome",
+          "name_zh": "北四条西5丁目",
+          "name_ko": "기타4조니시 5초메",
+          "name_vi": "Kita 4-jo Nishi 5-chome"
         },
         {
           "code": "01101790301",
-          "name_ja": "北三条西1丁目"
+          "name_ja": "北三条西1丁目",
+          "name_en": "Kita 3-jo Nishi 1-chome",
+          "name_zh": "北三条西1丁目",
+          "name_ko": "기타3조니시 1초메",
+          "name_vi": "Kita 3-jo Nishi 1-chome"
         },
         {
           "code": "01101790302",
-          "name_ja": "北三条西2丁目"
+          "name_ja": "北三条西2丁目",
+          "name_en": "Kita 3-jo Nishi 2-chome",
+          "name_zh": "北三条西2丁目",
+          "name_ko": "기타3조니시 2초메",
+          "name_vi": "Kita 3-jo Nishi 2-chome"
         },
         {
           "code": "01101790303",
-          "name_ja": "北三条西3丁目"
+          "name_ja": "北三条西3丁目",
+          "name_en": "Kita 3-jo Nishi 3-chome",
+          "name_zh": "北三条西3丁目",
+          "name_ko": "기타3조니시 3초메",
+          "name_vi": "Kita 3-jo Nishi 3-chome"
         },
         {
           "code": "01101790304",
-          "name_ja": "北三条西4丁目"
+          "name_ja": "北三条西4丁目",
+          "name_en": "Kita 3-jo Nishi 4-chome",
+          "name_zh": "北三条西4丁目",
+          "name_ko": "기타3조니시 4초메",
+          "name_vi": "Kita 3-jo Nishi 4-chome"
         },
         {
           "code": "01101790305",
-          "name_ja": "北三条西5丁目"
+          "name_ja": "北三条西5丁目",
+          "name_en": "Kita 3-jo Nishi 5-chome",
+          "name_zh": "北三条西5丁目",
+          "name_ko": "기타3조니시 5초메",
+          "name_vi": "Kita 3-jo Nishi 5-chome"
         },
         {
           "code": "01101790201",
-          "name_ja": "北二条西1丁目"
+          "name_ja": "北二条西1丁目",
+          "name_en": "Kita 2-jo Nishi 1-chome",
+          "name_zh": "北二条西1丁目",
+          "name_ko": "기타2조니시 1초메",
+          "name_vi": "Kita 2-jo Nishi 1-chome"
         },
         {
           "code": "01101790202",
-          "name_ja": "北二条西2丁目"
+          "name_ja": "北二条西2丁目",
+          "name_en": "Kita 2-jo Nishi 2-chome",
+          "name_zh": "北二条西2丁目",
+          "name_ko": "기타2조니시 2초메",
+          "name_vi": "Kita 2-jo Nishi 2-chome"
         },
         {
           "code": "01101790203",
-          "name_ja": "北二条西3丁目"
+          "name_ja": "北二条西3丁目",
+          "name_en": "Kita 2-jo Nishi 3-chome",
+          "name_zh": "北二条西3丁目",
+          "name_ko": "기타2조니시 3초메",
+          "name_vi": "Kita 2-jo Nishi 3-chome"
         },
         {
           "code": "01101790204",
-          "name_ja": "北二条西4丁目"
+          "name_ja": "北二条西4丁目",
+          "name_en": "Kita 2-jo Nishi 4-chome",
+          "name_zh": "北二条西4丁目",
+          "name_ko": "기타2조니시 4초메",
+          "name_vi": "Kita 2-jo Nishi 4-chome"
         },
         {
           "code": "01101790205",
-          "name_ja": "北二条西5丁目"
+          "name_ja": "北二条西5丁目",
+          "name_en": "Kita 2-jo Nishi 5-chome",
+          "name_zh": "北二条西5丁目",
+          "name_ko": "기타2조니시 5초메",
+          "name_vi": "Kita 2-jo Nishi 5-chome"
         },
         {
           "code": "01101790101",
-          "name_ja": "北一条西1丁目"
+          "name_ja": "北一条西1丁目",
+          "name_en": "Kita 1-jo Nishi 1-chome",
+          "name_zh": "北一条西1丁目",
+          "name_ko": "기타1조니시 1초메",
+          "name_vi": "Kita 1-jo Nishi 1-chome"
         },
         {
           "code": "01101790102",
-          "name_ja": "北一条西2丁目"
+          "name_ja": "北一条西2丁目",
+          "name_en": "Kita 1-jo Nishi 2-chome",
+          "name_zh": "北一条西2丁目",
+          "name_ko": "기타1조니시 2초메",
+          "name_vi": "Kita 1-jo Nishi 2-chome"
         },
         {
           "code": "01101790103",
-          "name_ja": "北一条西3丁目"
+          "name_ja": "北一条西3丁目",
+          "name_en": "Kita 1-jo Nishi 3-chome",
+          "name_zh": "北一条西3丁目",
+          "name_ko": "기타1조니시 3초메",
+          "name_vi": "Kita 1-jo Nishi 3-chome"
         },
         {
           "code": "01101790104",
-          "name_ja": "北一条西4丁目"
+          "name_ja": "北一条西4丁目",
+          "name_en": "Kita 1-jo Nishi 4-chome",
+          "name_zh": "北一条西4丁目",
+          "name_ko": "기타1조니시 4초메",
+          "name_vi": "Kita 1-jo Nishi 4-chome"
         },
         {
           "code": "01101790105",
-          "name_ja": "北一条西5丁目"
+          "name_ja": "北一条西5丁目",
+          "name_en": "Kita 1-jo Nishi 5-chome",
+          "name_zh": "北一条西5丁目",
+          "name_ko": "기타1조니시 5초메",
+          "name_vi": "Kita 1-jo Nishi 5-chome"
         },
         {
           "code": "01101210001",
-          "name_ja": "大通西1丁目"
+          "name_ja": "大通西1丁目",
+          "name_en": "Odori Nishi 1-chome",
+          "name_zh": "大通西1丁目",
+          "name_ko": "오도리니시 1초메",
+          "name_vi": "Odori Nishi 1-chome"
         },
         {
           "code": "01101210002",
-          "name_ja": "大通西2丁目"
+          "name_ja": "大通西2丁目",
+          "name_en": "Odori Nishi 2-chome",
+          "name_zh": "大通西2丁目",
+          "name_ko": "오도리니시 2초메",
+          "name_vi": "Odori Nishi 2-chome"
         },
         {
           "code": "01101210003",
-          "name_ja": "大通西3丁目"
+          "name_ja": "大通西3丁目",
+          "name_en": "Odori Nishi 3-chome",
+          "name_zh": "大通西3丁目",
+          "name_ko": "오도리니시 3초메",
+          "name_vi": "Odori Nishi 3-chome"
         },
         {
           "code": "01101210004",
-          "name_ja": "大通西4丁目"
+          "name_ja": "大通西4丁目",
+          "name_en": "Odori Nishi 4-chome",
+          "name_zh": "大通西4丁目",
+          "name_ko": "오도리니시 4초메",
+          "name_vi": "Odori Nishi 4-chome"
         },
         {
           "code": "01101210005",
-          "name_ja": "大通西5丁目"
+          "name_ja": "大通西5丁目",
+          "name_en": "Odori Nishi 5-chome",
+          "name_zh": "大通西5丁目",
+          "name_ko": "오도리니시 5초메",
+          "name_vi": "Odori Nishi 5-chome"
         },
         {
           "code": "01101690101",
-          "name_ja": "南一条西1丁目"
+          "name_ja": "南一条西1丁目",
+          "name_en": "Minami 1-jo Nishi 1-chome",
+          "name_zh": "南一条西1丁目",
+          "name_ko": "미나미1조니시 1초메",
+          "name_vi": "Minami 1-jo Nishi 1-chome"
         },
         {
           "code": "01101690102",
-          "name_ja": "南一条西2丁目"
+          "name_ja": "南一条西2丁目",
+          "name_en": "Minami 1-jo Nishi 2-chome",
+          "name_zh": "南一条西2丁目",
+          "name_ko": "미나미1조니시 2초메",
+          "name_vi": "Minami 1-jo Nishi 2-chome"
         },
         {
           "code": "01101690103",
-          "name_ja": "南一条西3丁目"
+          "name_ja": "南一条西3丁目",
+          "name_en": "Minami 1-jo Nishi 3-chome",
+          "name_zh": "南一条西3丁目",
+          "name_ko": "미나미1조니시 3초메",
+          "name_vi": "Minami 1-jo Nishi 3-chome"
         },
         {
           "code": "01101690104",
-          "name_ja": "南一条西4丁目"
+          "name_ja": "南一条西4丁目",
+          "name_en": "Minami 1-jo Nishi 4-chome",
+          "name_zh": "南一条西4丁目",
+          "name_ko": "미나미1조니시 4초메",
+          "name_vi": "Minami 1-jo Nishi 4-chome"
         },
         {
           "code": "01101690105",
-          "name_ja": "南一条西5丁目"
+          "name_ja": "南一条西5丁目",
+          "name_en": "Minami 1-jo Nishi 5-chome",
+          "name_zh": "南一条西5丁目",
+          "name_ko": "미나미1조니시 5초메",
+          "name_vi": "Minami 1-jo Nishi 5-chome"
         },
         {
           "code": "01101690201",
-          "name_ja": "南二条西1丁目"
+          "name_ja": "南二条西1丁目",
+          "name_en": "Minami 2-jo Nishi 1-chome",
+          "name_zh": "南二条西1丁目",
+          "name_ko": "미나미2조니시 1초메",
+          "name_vi": "Minami 2-jo Nishi 1-chome"
         },
         {
           "code": "01101690202",
-          "name_ja": "南二条西2丁目"
+          "name_ja": "南二条西2丁目",
+          "name_en": "Minami 2-jo Nishi 2-chome",
+          "name_zh": "南二条西2丁目",
+          "name_ko": "미나미2조니시 2초메",
+          "name_vi": "Minami 2-jo Nishi 2-chome"
         },
         {
           "code": "01101690203",
-          "name_ja": "南二条西3丁目"
+          "name_ja": "南二条西3丁目",
+          "name_en": "Minami 2-jo Nishi 3-chome",
+          "name_zh": "南二条西3丁目",
+          "name_ko": "미나미2조니시 3초메",
+          "name_vi": "Minami 2-jo Nishi 3-chome"
         },
         {
           "code": "01101690204",
-          "name_ja": "南二条西4丁目"
+          "name_ja": "南二条西4丁目",
+          "name_en": "Minami 2-jo Nishi 4-chome",
+          "name_zh": "南二条西4丁目",
+          "name_ko": "미나미2조니시 4초메",
+          "name_vi": "Minami 2-jo Nishi 4-chome"
         },
         {
           "code": "01101690205",
-          "name_ja": "南二条西5丁目"
+          "name_ja": "南二条西5丁目",
+          "name_en": "Minami 2-jo Nishi 5-chome",
+          "name_zh": "南二条西5丁目",
+          "name_ko": "미나미2조니시 5초메",
+          "name_vi": "Minami 2-jo Nishi 5-chome"
         },
         {
           "code": "01101690301",
-          "name_ja": "南三条西1丁目"
+          "name_ja": "南三条西1丁目",
+          "name_en": "Minami 3-jo Nishi 1-chome",
+          "name_zh": "南三条西1丁目",
+          "name_ko": "미나미3조니시 1초메",
+          "name_vi": "Minami 3-jo Nishi 1-chome"
         },
         {
           "code": "01101690302",
-          "name_ja": "南三条西2丁目"
+          "name_ja": "南三条西2丁目",
+          "name_en": "Minami 3-jo Nishi 2-chome",
+          "name_zh": "南三条西2丁目",
+          "name_ko": "미나미3조니시 2초메",
+          "name_vi": "Minami 3-jo Nishi 2-chome"
         },
         {
           "code": "01101690303",
-          "name_ja": "南三条西3丁目"
+          "name_ja": "南三条西3丁目",
+          "name_en": "Minami 3-jo Nishi 3-chome",
+          "name_zh": "南三条西3丁目",
+          "name_ko": "미나미3조니시 3초메",
+          "name_vi": "Minami 3-jo Nishi 3-chome"
         },
         {
           "code": "01101690304",
-          "name_ja": "南三条西4丁目"
+          "name_ja": "南三条西4丁目",
+          "name_en": "Minami 3-jo Nishi 4-chome",
+          "name_zh": "南三条西4丁目",
+          "name_ko": "미나미3조니시 4초메",
+          "name_vi": "Minami 3-jo Nishi 4-chome"
         },
         {
           "code": "01101690305",
-          "name_ja": "南三条西5丁目"
+          "name_ja": "南三条西5丁目",
+          "name_en": "Minami 3-jo Nishi 5-chome",
+          "name_zh": "南三条西5丁目",
+          "name_ko": "미나미3조니시 5초메",
+          "name_vi": "Minami 3-jo Nishi 5-chome"
         }
       ],
       "known_places": [
@@ -2912,55 +3352,107 @@
       "area_names": [
         {
           "code": "40132001001",
-          "name_ja": "博多駅前1丁目"
+          "name_ja": "博多駅前1丁目",
+          "name_en": "Hakata-ekimae 1-chome",
+          "name_zh": "博多站前1丁目",
+          "name_ko": "하카타에키마에 1초메",
+          "name_vi": "Hakata-ekimae 1-chome"
         },
         {
           "code": "40132001002",
-          "name_ja": "博多駅前2丁目"
+          "name_ja": "博多駅前2丁目",
+          "name_en": "Hakata-ekimae 2-chome",
+          "name_zh": "博多站前2丁目",
+          "name_ko": "하카타에키마에 2초메",
+          "name_vi": "Hakata-ekimae 2-chome"
         },
         {
           "code": "40132001003",
-          "name_ja": "博多駅前3丁目"
+          "name_ja": "博多駅前3丁目",
+          "name_en": "Hakata-ekimae 3-chome",
+          "name_zh": "博多站前3丁目",
+          "name_ko": "하카타에키마에 3초메",
+          "name_vi": "Hakata-ekimae 3-chome"
         },
         {
           "code": "40132001004",
-          "name_ja": "博多駅前4丁目"
+          "name_ja": "博多駅前4丁目",
+          "name_en": "Hakata-ekimae 4-chome",
+          "name_zh": "博多站前4丁目",
+          "name_ko": "하카타에키마에 4초메",
+          "name_vi": "Hakata-ekimae 4-chome"
         },
         {
           "code": "401320020",
-          "name_ja": "博多駅中央街"
+          "name_ja": "博多駅中央街",
+          "name_en": "Hakata-ekichuogai",
+          "name_zh": "博多站中央街",
+          "name_ko": "하카타에키추오가이",
+          "name_vi": "Hakata-ekichuogai"
         },
         {
           "code": "40132003001",
-          "name_ja": "博多駅東1丁目"
+          "name_ja": "博多駅東1丁目",
+          "name_en": "Hakata-ekihigashi 1-chome",
+          "name_zh": "博多站东1丁目",
+          "name_ko": "하카타에키히가시 1초메",
+          "name_vi": "Hakata-ekihigashi 1-chome"
         },
         {
           "code": "40132003002",
-          "name_ja": "博多駅東2丁目"
+          "name_ja": "博多駅東2丁目",
+          "name_en": "Hakata-ekihigashi 2-chome",
+          "name_zh": "博多站东2丁目",
+          "name_ko": "하카타에키히가시 2초메",
+          "name_vi": "Hakata-ekihigashi 2-chome"
         },
         {
           "code": "40132003003",
-          "name_ja": "博多駅東3丁目"
+          "name_ja": "博多駅東3丁目",
+          "name_en": "Hakata-ekihigashi 3-chome",
+          "name_zh": "博多站东3丁目",
+          "name_ko": "하카타에키히가시 3초메",
+          "name_vi": "Hakata-ekihigashi 3-chome"
         },
         {
           "code": "40132004001",
-          "name_ja": "博多駅南1丁目"
+          "name_ja": "博多駅南1丁目",
+          "name_en": "Hakata-ekiminami 1-chome",
+          "name_zh": "博多站南1丁目",
+          "name_ko": "하카타에키미나미 1초메",
+          "name_vi": "Hakata-ekiminami 1-chome"
         },
         {
           "code": "40132004002",
-          "name_ja": "博多駅南2丁目"
+          "name_ja": "博多駅南2丁目",
+          "name_en": "Hakata-ekiminami 2-chome",
+          "name_zh": "博多站南2丁目",
+          "name_ko": "하카타에키미나미 2초메",
+          "name_vi": "Hakata-ekiminami 2-chome"
         },
         {
           "code": "40132008001",
-          "name_ja": "住吉1丁目"
+          "name_ja": "住吉1丁目",
+          "name_en": "Sumiyoshi 1-chome",
+          "name_zh": "住吉1丁目",
+          "name_ko": "스미요시 1초메",
+          "name_vi": "Sumiyoshi 1-chome"
         },
         {
           "code": "40132008002",
-          "name_ja": "住吉2丁目"
+          "name_ja": "住吉2丁目",
+          "name_en": "Sumiyoshi 2-chome",
+          "name_zh": "住吉2丁目",
+          "name_ko": "스미요시 2초메",
+          "name_vi": "Sumiyoshi 2-chome"
         },
         {
           "code": "40132008003",
-          "name_ja": "住吉3丁目"
+          "name_ja": "住吉3丁目",
+          "name_en": "Sumiyoshi 3-chome",
+          "name_zh": "住吉3丁目",
+          "name_ko": "스미요시 3초메",
+          "name_vi": "Sumiyoshi 3-chome"
         }
       ],
       "known_places": [

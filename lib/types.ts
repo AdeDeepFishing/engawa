@@ -89,12 +89,26 @@ export interface KnownPlace {
   area_name_ja?: string;
 }
 
+/**
+ * One 町丁目 of a board: its e-Stat code and its name in Japanese and, since
+ * 2026-11-05, in English, Chinese, Korean and Vietnamese (Vietnamese uses
+ * the English spelling). A row seeded before then has the Japanese only.
+ */
+export interface BoardAreaName {
+  code: string | null;
+  name_ja: string;
+  name_en?: string;
+  name_zh?: string;
+  name_ko?: string;
+  name_vi?: string;
+}
+
 export interface Board {
   id: string;
   slug: string;
   name: Record<Lang, string>;
   mode: BoardMode;
-  area_names: { code: string | null; name_ja: string }[];
+  area_names: BoardAreaName[];
   known_places: KnownPlace[];
 }
 
