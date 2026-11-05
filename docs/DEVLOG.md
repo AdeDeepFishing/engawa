@@ -1991,7 +1991,7 @@ The Japanese and English are the brief's masters. The other three use the board'
 - `home.mission` and `about.mission` in the five message files, the same text under both keys.
 - Home hero (`components/home/HomeView.tsx`): a paragraph between `home.lead` and the six-language tagline, in the lead's style (text-xl, 60ch). It takes the 120 ms entrance slot; the tagline, `home.for_whom`, the boards heading and plank, the map and the board cards each move one 60 ms slot later, so the order is unchanged.
 - About page (`components/about/AboutView.tsx`): a second paragraph right under `about.lead`. A separate key rather than appended to `about.lead`, because `about.lead` is also the page's meta description. The Maria, 佐藤さん and チェンさん paragraphs are unchanged.
-- `README.md` and `README.ja.md`: the sentence after the first one, which says what Engawa is.
+- `README.md` and `README.ja.md`: the sentence after the first one, which says what Engawa is, without its first half ("On ordinary days, a neighbourhood board.", ふだんはご近所の掲示板。), since the first sentence already says that (review on PR #45).
 - The home page meta description is built from `home.lead` alone and was left as it is.
 
 **On a phone** (375 by 812, dev server, the paragraph hidden and shown): the sentence is 3 lines in Japanese and Korean, 4 in Chinese and 5 in English and Vietnamese at text-xl, so the map heading moves down by 178 px in English (from 526 to 704 px). It is still on the first screen, but the map itself is now below it. That is more than the one extra line the brief allowed for; the text size the brief asked for was kept, and the reviewer decides.
