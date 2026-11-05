@@ -421,5 +421,6 @@
   "about.after_limits": "まだできていないこと：いまの運営者は縁側を作ったひとりだけで、ひとつの管理用リンクですべての掲示板の管理ページが開きます。次の段階は掲示板ごとに別の管理用リンクを出し、地域の管理者が運営者を通さずに自分の掲示板を見られるようにすることです。",
   "home.map_pin_one": "{names}: 掲示板 {n} 件",
   "home.map_pin_other": "{names}: 掲示板 {n} 件",
-  "home.map_names_sep": "・"
+  "home.map_names_sep": "・",
+  "home.area_sep": "、"
 }

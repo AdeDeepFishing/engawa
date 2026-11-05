@@ -6,13 +6,13 @@
  * board's polygons.
  */
 import { pointInArea, type AreaFeature } from "./pointInArea";
-import type { Board } from "@/lib/types";
+import type { Board, BoardAreaName } from "@/lib/types";
 
 export type { AreaFeature } from "./pointInArea";
 
-export interface BoardArea {
+/** A board area with its code, and its names as the board row has them. */
+export interface BoardArea extends Omit<BoardAreaName, "code"> {
   code: string;
-  name_ja: string;
 }
 
 type AreaSource = Pick<Board, "area_names">;
@@ -26,7 +26,7 @@ export function boardAreas(board: AreaSource): BoardArea[] {
   const out: BoardArea[] = [];
   for (const entry of board.area_names ?? []) {
     const code = entry.code;
-    if (code && !out.some((a) => a.code === code)) out.push({ code, name_ja: entry.name_ja });
+    if (code && !out.some((a) => a.code === code)) out.push({ ...entry, code });
   }
   return out;
 }
@@ -36,17 +36,17 @@ export function isBoardAreaCode(board: AreaSource, code: unknown): code is strin
   return typeof code === "string" && boardAreas(board).some((a) => a.code === code);
 }
 
-/** 町丁目 name for a code on this board, or null when the board does not list it. Names stay Japanese in every UI language. */
-export function areaName(board: AreaSource, code: string | null | undefined): string | null {
+/** The board's area for a code, with its names, or null when the board does not list it. `areaName` in lib/cards/display.ts picks the reader's language. */
+export function boardArea(board: AreaSource, code: string | null | undefined): BoardArea | null {
   if (!code) return null;
-  return boardAreas(board).find((a) => a.code === code)?.name_ja ?? null;
+  return boardAreas(board).find((a) => a.code === code) ?? null;
 }
 
 /** Browser side: the board area containing a position, or null when it is outside every polygon. The coordinates are used here and nowhere else. */
 export function resolveArea(board: AreaSource, polygons: AreaFeature[], lon: number, lat: number): BoardArea | null {
   const hit = pointInArea(lon, lat, polygons);
   if (!hit) return null;
-  return { code: hit.properties.area_code, name_ja: areaName(board, hit.properties.area_code) ?? hit.properties.name_ja };
+  return boardArea(board, hit.properties.area_code) ?? { code: hit.properties.area_code, name_ja: hit.properties.name_ja };
 }
 
 /**

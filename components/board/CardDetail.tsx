@@ -3,6 +3,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { CATEGORY_ICON, isExpired } from "@/lib/cards/categories";
 import {
+  areaParts,
   conflictStatements,
   formatDateTime,
   placeLabel,
@@ -14,10 +15,10 @@ import {
   timeRange,
 } from "@/lib/cards/display";
 import { CardShare } from "@/components/share/CardShare";
-import { areaName } from "@/lib/geo";
 import { CARD_LANGS, tCount, type Lang } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n/LangProvider";
 import type { Board, Card, CardTrace, ConflictStatement } from "@/lib/types";
+import { AreaName } from "./AreaName";
 import { CardReactions } from "./CardReactions";
 import { CardTraceView } from "./CardTrace";
 import { MapsLink } from "./MapsLink";
@@ -71,7 +72,7 @@ export function CardDetail({
   }, [card.id, card.source_count, card.updated_at, card.official_confirmed]);
 
   const place = placeLabel(card, board, lang);
-  const area = areaName(board, card.area_code);
+  const area = areaParts(card, board, lang);
   const expired = isExpired(card.valid_until, now);
   const conditions = card.facts.conditions ?? [];
   const conflicts = conflictStatements(card);
@@ -134,7 +135,9 @@ export function CardDetail({
         {area ? (
           <>
             <dt className="text-muted">{t("area.label")}</dt>
-            <dd>{area}</dd>
+            <dd>
+              <AreaName name={area} lang={lang} />
+            </dd>
           </>
         ) : null}
         {card.facts.status ? (

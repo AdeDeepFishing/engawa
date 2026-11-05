@@ -4,10 +4,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { MessageKey } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n/LangProvider";
 import { getDeviceId, hasConsented, setConsented } from "@/lib/device";
-import { resolveArea, type AreaFeature } from "@/lib/geo";
+import { areaName } from "@/lib/cards/display";
+import { resolveArea, type AreaFeature, type BoardArea } from "@/lib/geo";
 import { ImageTooLargeError, prepareImage } from "@/lib/image/browser";
 import { readSse } from "@/lib/sse";
 import type { Board } from "@/lib/types";
+import { WithAreaName } from "./AreaName";
 import { HeardInput } from "./HeardInput";
 
 export type PendingStatus = "uploading" | "processing" | "done" | "held" | "nothing" | "failed";
@@ -74,7 +76,7 @@ const SAMPLES: readonly Sample[] = [
 type AreaState =
   | { status: "idle" }
   | { status: "locating" }
-  | { status: "resolved"; code: string; name: string }
+  | { status: "resolved"; code: string; area: BoardArea }
   | { status: "outside" }
   | { status: "denied" }
   | { status: "failed" };
@@ -208,7 +210,7 @@ export function DropIn({
           // The coordinates exist only inside this callback: matched against the
           // board's polygons here, never stored, logged or sent.
           const hit = resolveArea(areaBoard, areaPolygons, pos.coords.longitude, pos.coords.latitude);
-          resolve(hit ? { status: "resolved", code: hit.code, name: hit.name_ja } : { status: "outside" });
+          resolve(hit ? { status: "resolved", code: hit.code, area: hit } : { status: "outside" });
         },
         (err) => resolve({ status: err.code === err.PERMISSION_DENIED ? "denied" : "failed" }),
         { enableHighAccuracy: true, timeout: LOCATE_TIMEOUT_MS, maximumAge: LOCATE_MAX_AGE_MS },
@@ -419,7 +421,7 @@ export function DropIn({
     area.status === "locating"
       ? t("area.locating")
       : area.status === "resolved"
-        ? t("area.resolved", { area: area.name })
+        ? <WithAreaName message="area.resolved" name={areaName(area.area, lang)} lang={lang} />
         : area.status === "outside"
           ? t("area.outside")
           : area.status === "denied"

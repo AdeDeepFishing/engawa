@@ -185,9 +185,12 @@ Session PRs were merged in pairs after review through the integration PRs #11, #
 ### 2026-11-05 (Thu): demo walk-through, README, remaining nice-to-haves
 - [ ] A read-only pass over the five message files and the about page for natural Korean and Vietnamese and consistent terms (at the 11/06 review; the human decided against outside native readers)
 - [ ] Human: try the heard input on a real phone next to a broadcast; watch the first real city mail become a card and confirm it on the admin page
-- [ ] Demo walk-through on the deployed URL with the disaster mode switch; decide the demo board content for 11/06
-- [ ] README final with the new domain, home page, two boards, the three ways into the inbox, disaster mode; README.ja.md; the about page's two-layer maintenance model
-- [ ] Planned, in this order as time allows: N22 Sapporo and Fukuoka, web push for official and danger cards (VAPID keys from the human), N12 make a board with per-board admin tokens; N23 after the video
+- [x] Demo walk-through on the deployed URL with the disaster mode switch: the seven steps pass in about two minutes on a throwaway copy of the pilot board. Demo board content decided: sample cards made by the pipeline from fictional inputs, stored in the seed for every board
+- [x] README final with the new domain, home page, six boards, the three ways into the inbox, disaster mode, alerts; README.ja.md; the about page's two-layer maintenance model
+- [x] N22 Sapporo and Fukuoka boards, and N23 溝の口 and 上野 brought forward: four boards added, all live on 11/05, each a pin on the home page map
+- [x] Web push for official and danger cards (migration 0010, VAPID keys from the human)
+- [ ] Area names in the reader's language on the home card, the drop-in panel and the card badge; sample cards for the five new boards (both in progress on 11/05)
+- [ ] N12 make a board with per-board admin tokens: not started; dropped unless time remains before the freeze
 
 ### 2026-11-06 (Fri): review, freeze, demo prep
 - [ ] Full run of the 7-step demo scenario on the deployed URL; fix what breaks

@@ -421,5 +421,6 @@
   "about.after_limits": "아직 안 되는 것: 지금 운영자는 엔가와를 만든 한 사람뿐이고, 관리자 링크 하나로 모든 게시판의 관리 페이지가 열립니다. 다음 단계는 게시판마다 따로 관리자 링크를 발급해서, 지역 관리자가 운영자를 거치지 않고 자기 게시판을 돌볼 수 있게 하는 것입니다.",
   "home.map_pin_one": "{names}: 게시판 {n}개",
   "home.map_pin_other": "{names}: 게시판 {n}개",
-  "home.map_names_sep": "·"
+  "home.map_names_sep": "·",
+  "home.area_sep": ", "
 }

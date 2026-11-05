@@ -2,6 +2,7 @@
 
 import { CATEGORY_ICON, isExpired } from "@/lib/cards/categories";
 import {
+  areaParts,
   conflictStatements,
   contentTime,
   placeParts,
@@ -12,10 +13,10 @@ import {
 } from "@/lib/cards/display";
 import { htmlLang, shownLang } from "@/lib/cards/langs";
 import { showsDoubtHint } from "@/lib/cards/reactions";
-import { areaName } from "@/lib/geo";
 import { tCount } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n/LangProvider";
 import type { Board, Card } from "@/lib/types";
+import { WithAreaName } from "./AreaName";
 
 export function CardItem({
   card,
@@ -41,7 +42,7 @@ export function CardItem({
   const textIn = shownLang(card, lang);
   const place = placeParts(card, board, lang);
   // Self-reported by the uploader's phone (G2); shown only when the board lists the code.
-  const area = areaName(board, card.area_code);
+  const area = areaParts(card, board, lang);
   const conflicts = conflictStatements(card);
   const previous = supersededStatements(card)[0];
   const current = { valid_from: card.valid_from, valid_until: card.valid_until, status: card.facts.status };
@@ -53,7 +54,7 @@ export function CardItem({
   // The button's accessible name replaces its content, so the warnings go into it too.
   const label = [
     card.title[lang],
-    area ? t("area.badge", { area }) : null,
+    area ? t("area.badge", { area: area.ja ? `${area.text} (${area.ja})` : area.text }) : null,
     conflicts.length ? t("conflict.label") : null,
     previous ? t("card.updated") : null,
     doubt ? t("react.hint") : null,
@@ -107,7 +108,9 @@ export function CardItem({
             {area ? (
               <span className="mt-2 inline-flex items-center gap-1 rounded-md bg-held-bg px-2 py-0.5 text-base text-muted">
                 <span aria-hidden="true">📍</span>
-                {t("area.badge", { area })}
+                <span>
+                  <WithAreaName message="area.badge" name={area} lang={lang} />
+                </span>
               </span>
             ) : null}
             {conflicts.length ? (
