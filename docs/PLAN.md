@@ -189,7 +189,7 @@ Session PRs were merged in pairs after review through the integration PRs #11, #
 - [x] README final with the new domain, home page, six boards, the three ways into the inbox, disaster mode, alerts; README.ja.md; the about page's two-layer maintenance model
 - [x] N22 Sapporo and Fukuoka boards, and N23 溝の口 and 上野 brought forward: four boards added, all live on 11/05, each a pin on the home page map
 - [x] Web push for official and danger cards (migration 0010, VAPID keys from the human)
-- [ ] Area names in the reader's language on the home card, the drop-in panel and the card badge; sample cards for the five new boards (both in progress on 11/05)
+- [x] Area names in the reader's language on the home card, the drop-in panel and the card badge (PR #42); sample cards for the five newer boards, made by the pipeline from fictional inputs (PR #43); both merged and seeded on the live boards on 11/05
 - [ ] N12 make a board with per-board admin tokens: not started; dropped unless time remains before the freeze
 
 ### 2026-11-06 (Fri): review, freeze, demo prep
@@ -197,6 +197,7 @@ Session PRs were merged in pairs after review through the integration PRs #11, #
 - [ ] Human: photograph a paper notice on a phone; the card appears in all languages on the deployed URL within 30 seconds
 - [ ] Fable review of the whole repo; fix findings; freeze at 20:00
 - [ ] Seed the demo board (fresh notices with the right date and time); record rough footage
+- [x] The mission in one sentence: ordinary days a neighbourhood board, in a disaster water, shelters and supplies in your own language; on the home hero, the about page and both READMEs, in all five message files (PR #45)
 - [x] Demo prep before the freeze: balanced home footer, a dated 断水 sample and a garbage-day sample on 武蔵小杉, fixture p13 for the conflict beat, drop-in consent wording that no longer promises full removal (PR #46)
 
 ### 2026-11-07 (Sat): video and submission

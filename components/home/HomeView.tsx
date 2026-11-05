@@ -60,7 +60,8 @@ function FooterLink({ href, external, children }: { href: string; external?: "me
 
 /**
  * The home page body (/). From 1024 px two columns, 7 to 5: the
- * hero (縁側 Engawa, what it is, the tagline in six languages, for whom),
+ * hero (縁側 Engawa, what it is, what it is for in a disaster, the tagline
+ * in six languages, for whom),
  * and the listed boards on the left; the map of Japan on the right, held in
  * view while the boards scroll. On a phone: hero, map, boards. Then the three steps in the words
  * the board itself uses, how to try it with a sample, and the footer. The
@@ -103,22 +104,25 @@ export function HomeView({ boards, pins, now }: { boards: HomeBoard[]; pins: Map
               <p className="home-rise mt-6 max-w-[60ch] text-xl leading-relaxed" style={rise(60)}>
                 {t("home.lead")}
               </p>
-              <div className="home-rise mt-4" style={rise(120)}>
+              <p className="home-rise mt-4 max-w-[60ch] text-xl leading-relaxed" style={rise(120)}>
+                {t("home.mission")}
+              </p>
+              <div className="home-rise mt-4" style={rise(180)}>
                 <Tagline className="text-lg font-semibold" />
               </div>
-              <p className={`home-rise mt-4 max-w-[60ch] text-muted ${BODY}`} style={rise(180)}>
+              <p className={`home-rise mt-4 max-w-[60ch] text-muted ${BODY}`} style={rise(240)}>
                 {t("home.for_whom")}
               </p>
             </section>
 
             <section aria-labelledby="home-boards" className="order-3 mt-12 lg:order-none lg:mt-16">
-              <h2 id="home-boards" className="home-rise text-xl font-bold" style={rise(240)}>
+              <h2 id="home-boards" className="home-rise text-xl font-bold" style={rise(300)}>
                 {t("index.title")}
               </h2>
               {boards.length ? (
                 <ul className="mt-5 grid gap-4 md:grid-cols-2">
                   {boards.map((b, i) => (
-                    <li key={b.slug} className="home-rise" style={rise(360 + i * 60)}>
+                    <li key={b.slug} className="home-rise" style={rise(420 + i * 60)}>
                       <BoardSummary board={b} now={now} />
                     </li>
                   ))}
@@ -129,7 +133,7 @@ export function HomeView({ boards, pins, now }: { boards: HomeBoard[]; pins: Map
             </section>
           </div>
 
-          <section aria-labelledby="home-map" className="home-rise order-2 mt-12 lg:sticky lg:top-24 lg:order-none lg:mt-0" style={rise(300)}>
+          <section aria-labelledby="home-map" className="home-rise order-2 mt-12 lg:sticky lg:top-24 lg:order-none lg:mt-0" style={rise(360)}>
             <h2 id="home-map" className="text-xl font-bold">
               {t("home.map_heading")}
             </h2>

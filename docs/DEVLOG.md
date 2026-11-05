@@ -1972,6 +1972,43 @@ Seen in passing: from a Chinese input, extract wrote the Japanese title as 東�
 
 **Review** (the reviewing session, `claude-fable-5-1`, with the read-only reviewer): merge, three of five findings fixed on the branch. The 落ち葉清掃 card (mz3) was set for 11月8日（日）, the morning after the submission deadline, so the judges would have met it as an outdated card; the input, the six titles and bodies and the table above now say 11月15日（日）. The 断水 card near 溝の口駅 (mz2) was pinned to the station, so the place view read as the station without water; it now carries no place, its text unchanged. `scripts/export-samples.ts` replaced entries by the throwaway board's name, so an export from a copy under another name would have doubled a board's samples; it now replaces the target board's earlier exported entries and leaves hand-written ones alone. Kept, with the 武蔵小杉 samples as the precedent: the loudspeaker card names no sender and the two building notices name no building. Decisions 1 to 3 stand.
 
+**Merged and seeded** (the reviewing session, 11/05 22:30 JST). #41, #42 and #43 in that order; #43 took a merge of `main` into its branch, since both it and #42 had appended an entry here. `pnpm db:seed` refreshed the six boards' area names on the live database, and `--reset-cards` put 3, 4, 3, 3 and 3 samples on 渋谷, 上野, 溝の口, 札幌 大通 and 博多, each empty until then; 武蔵小杉 was not touched. Seen on engawaboard.com afterwards: the home page in Korean lists 고스기마치, 고스기진야초, 고스기고텐초 외 12곳 and 하카타에키마에, 하카타에키추오가이, 하카타에키히가시 외 2곳, and each board page shows its cards with their source labels.
+
+## 2026-11-06 (Fri), the mission in one sentence
+
+**Model:** `claude-opus-5-5` in Claude Code, implementation role, in its own worktree (branch `day9-mission-copy`, cut from `main` at `9f626eb`), from a brief by the reviewing session (Fable) after a talk with the user. Copy only: no pipeline, prompt, schema or database change, no Claude calls.
+
+**Why.** The home page said what the board is (a neighbourhood board that turns notices into cards in six languages) but not why it exists: after an earthquake, the information about water, shelters, food and closed roads is scattered across LINE, WeChat, Facebook, paper notices and word of mouth, each community in its own language. Everyday use (garbage days, building notices, events) is how residents find the board before they need it, so that it is already in their hands when it matters. One sentence says both, with no redesign.
+
+**The sentence**, the same in every language, two short sentences each:
+- ja: ふだんはご近所の掲示板。災害のときは、水、避難所、配給の情報が、同じ場所に、自分の言葉で届きます。
+- en: On ordinary days, a neighbourhood board. In a disaster, the information about water, shelters and supplies reaches the same place, in your own language.
+- zh: 平时是社区公告板。发生灾害时，供水、避难所和物资发放的信息会集中到同一个地方，用你自己的语言送到你手里。
+- ko: 평소에는 동네 게시판입니다. 재해가 나면 물, 대피소, 물자 배급 정보가 한곳에 모여 자기 언어로 전해집니다.
+- vi: Ngày thường, đây là bảng tin khu phố. Khi có thiên tai, thông tin về nước, nơi lánh nạn và nhu yếu phẩm đến với bạn ở cùng một nơi, bằng ngôn ngữ của bạn.
+
+The Japanese and English are the brief's masters. The other three use the board's own category words (供水, 避难所, 物资; 물, 대피소, 물자; nước, nơi lánh nạn, nhu yếu phẩm); zh and ko follow the Japanese 配給 (物资发放, 물자 배급), vi follows the English "supplies".
+
+**What changed**
+- `home.mission` and `about.mission` in the five message files, the same text under both keys.
+- Home hero (`components/home/HomeView.tsx`): a paragraph between `home.lead` and the six-language tagline, in the lead's style (text-xl, 60ch). It takes the 120 ms entrance slot; the tagline, `home.for_whom`, the boards heading and plank, the map and the board cards each move one 60 ms slot later, so the order is unchanged.
+- About page (`components/about/AboutView.tsx`): a second paragraph right under `about.lead`. A separate key rather than appended to `about.lead`, because `about.lead` is also the page's meta description. The Maria, 佐藤さん and チェンさん paragraphs are unchanged.
+- `README.md` and `README.ja.md`: the sentence after the first one, which says what Engawa is, without its first half ("On ordinary days, a neighbourhood board.", ふだんはご近所の掲示板。), since the first sentence already says that (review on PR #45).
+- The home page meta description is built from `home.lead` alone and was left as it is.
+
+**On a phone** (375 by 812, dev server, the paragraph hidden and shown): the sentence is 3 lines in Japanese and Korean, 4 in Chinese and 5 in English and Vietnamese at text-xl, so the map heading moves down by 178 px in English (from 526 to 704 px). It is still on the first screen, but the map itself is now below it. That is more than the one extra line the brief allowed for; the text size the brief asked for was kept, and the reviewer decides.
+
+**Checks**
+
+| check | result |
+|---|---|
+| `pnpm lint` | clean |
+| `pnpm typecheck` | clean |
+| `pnpm guard --all` (no dashes, key parity across the five files) | clean |
+| home and about on the dev server | 200; the sentence rendered on the home page in English and Korean, all five measured at 375 px |
+
+There is no `pnpm test` script in `package.json`; the key parity check is `pnpm guard`.
+
 ## 2026-11-06 (Fri), footer, sample cards and a conflict fixture before the freeze
 
 **Model:** `claude-opus-5-5` in Claude Code, implementation role, in its own worktree (branch `day9-demo-prep`, cut from `main` at `9f626eb`), from a brief by the reviewing session after the video script pass. No pipeline, prompt, schema or database change, no Claude calls. Five small things the demo recordings need before the 20:00 freeze, and two home page details the reviewing session added afterwards (6 and 7).
