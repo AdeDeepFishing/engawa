@@ -25,14 +25,9 @@
   --shadow-rest: 0 1px 2px color-mix(in srgb, var(--foreground) 4%, transparent);
   --shadow-lift: 0 8px 24px color-mix(in srgb, var(--foreground) 8%, transparent);
   --shadow-press: 0 1px 2px color-mix(in srgb, var(--foreground) 6%, transparent);
-  /* Home page map: land a step darker than the paper, warm like it; the
-     prefectures with a board in a rose tint from the accent (35 % on white),
-     1.5:1 against the land so a small prefecture reads as highlighted as
-     clearly as a large one (the accent outline on it is 3.6:1); a step deeper
-     on hover and keyboard focus (half the accent, 2.0:1 on the land). */
+  /* Home page map: land a step darker than the paper, warm like it, the
+     same for every prefecture; the boards are pins on top. */
   --map-land: #ebe7de;
-  --map-active: #f5e6ec;
-  --map-active-hover: #ecd3dd;
 }
 
 @theme inline {

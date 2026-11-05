@@ -7,6 +7,7 @@ import type { MessageKey } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n/LangProvider";
 import { BoardSummary, boardAnchor, type HomeBoard } from "./BoardSummary";
 import { JapanMap } from "./JapanMap";
+import type { MapPin } from "./map-pins";
 import { Tagline } from "./Tagline";
 
 const STEPS: { title: MessageKey; body: MessageKey }[] = [
@@ -62,21 +63,19 @@ function FooterLink({ href, external, children }: { href: string; external?: "me
  * hero (縁側 Engawa, what it is, the tagline in six languages, for whom),
  * and the listed boards resting on the plank (two hairlines, the
  * veranda's edge) on the left; the map of Japan on the right, held in view while the boards
- * scroll. On a phone: hero, boards, map. Then the three steps in the words
+ * scroll. On a phone: hero, map, boards. Then the three steps in the words
  * the board itself uses, how to try it with a sample, and the footer. The
  * hero lines, the boards and the map rise in once, 60 ms apart (none of it
  * under reduced motion). Client component so the language switch in the
  * top bar applies at once, like the about page; the board facts and `now`
  * come from the server render, so both renders agree.
  */
-export function HomeView({ boards, now }: { boards: HomeBoard[]; now: string }) {
+export function HomeView({ boards, pins, now }: { boards: HomeBoard[]; pins: MapPin[]; now: string }) {
   const { t } = useLang();
-  const counts: Record<string, number> = {};
-  for (const b of boards) if (b.prefecture) counts[b.prefecture] = (counts[b.prefecture] ?? 0) + 1;
 
-  /** From the map: bring the prefecture's first board into view and move focus to it, so a screen reader follows. */
-  function goToPrefecture(code: string) {
-    const first = boards.find((b) => b.prefecture === code);
+  /** From the map: bring the pin's first board card into view and move focus to it, so a screen reader follows. */
+  function goToPin(pin: MapPin) {
+    const first = boards.find((b) => pin.slugs.includes(b.slug));
     const el = first ? document.getElementById(boardAnchor(first.slug)) : null;
     if (!el) return;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -138,7 +137,7 @@ export function HomeView({ boards, now }: { boards: HomeBoard[]; now: string }) 
               {t("home.map_heading")}
             </h2>
             <div className="mt-4 md:max-w-[30rem] lg:max-w-none">
-              <JapanMap counts={counts} onSelect={goToPrefecture} />
+              <JapanMap boards={boards} pins={pins} onSelect={goToPin} />
             </div>
             <p className={`mt-4 ${BODY}`}>{t("home.map_hint")}</p>
             {/* The CC BY 4.0 credit for the outlines is on the about page, one tap away. */}

@@ -12,8 +12,10 @@ export interface HomeBoard {
   slug: string;
   name: Board["name"];
   area_names: Board["area_names"];
-  /** JIS prefecture code ("14"), or null when the board has no area codes: it is then listed but not on the map. */
+  /** JIS prefecture code ("14"), or null when the board has no area codes. Pins group only within a prefecture. */
   prefecture: string | null;
+  /** The board's position on the home page map (map units), or null when it has no polygons: it is then listed but not on the map. */
+  pin: [number, number] | null;
   public_cards: number;
   newest_card_at: string | null;
 }

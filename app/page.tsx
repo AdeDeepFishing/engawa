@@ -7,7 +7,9 @@ import { BRAND_JA } from "@/components/brand/Mark";
 import { HomeView } from "@/components/home/HomeView";
 import type { HomeBoard } from "@/components/home/BoardSummary";
 import { prefectureOfBoard } from "@/components/home/prefectures";
+import { groupPins, projectToMap } from "@/components/home/map-pins";
 import { boardAreas } from "@/lib/geo";
+import { boardPolygons, centroidOf } from "@/lib/geo/polygons";
 
 /**
  * Title and description in the reader's language (cookie, else
@@ -34,22 +36,28 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /**
  * The home page: one query for every listed board with its live facts, and
- * each board's prefecture for the map, rendered by HomeView.
+ * for the map each board's position (the centroid of its polygons in map
+ * units) and the pins they group into, all worked out here so the server
+ * render and the browser agree; rendered by HomeView.
  */
 export default async function Home() {
-  const boards: HomeBoard[] = (await listBoardsWithStats()).map((b) => ({
-    slug: b.slug,
-    name: b.name,
-    area_names: b.area_names,
-    // boardAreas fills a code the row lacks from the bundled polygons (the pilot row predates them).
-    prefecture: prefectureOfBoard(boardAreas(b)),
-    public_cards: b.public_cards,
-    newest_card_at: b.newest_card_at,
-  }));
+  const boards: HomeBoard[] = (await listBoardsWithStats()).map((b) => {
+    const centre = centroidOf(boardPolygons(b));
+    return {
+      slug: b.slug,
+      name: b.name,
+      area_names: b.area_names,
+      // boardAreas fills a code the row lacks from the bundled polygons (the pilot row predates them).
+      prefecture: prefectureOfBoard(boardAreas(b)),
+      pin: centre ? projectToMap(centre[0], centre[1]) : null,
+      public_cards: b.public_cards,
+      newest_card_at: b.newest_card_at,
+    };
+  });
   return (
     <>
       <TopBar home />
-      <HomeView boards={boards} now={new Date().toISOString()} />
+      <HomeView boards={boards} pins={groupPins(boards)} now={new Date().toISOString()} />
     </>
   );
 }
