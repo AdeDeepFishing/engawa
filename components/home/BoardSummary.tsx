@@ -79,7 +79,10 @@ export function BoardSummary({ board, now }: { board: HomeBoard; now: string }) 
             {towns.slice(0, TOWNS_SHOWN).map((town, i) => (
               <Fragment key={town.text}>
                 {i > 0 ? t("home.area_sep") : null}
-                <span lang={town.lang === lang ? undefined : town.lang}>{town.text}</span>
+                {/* A town never breaks inside itself (Korean would break between any two syllables); the line breaks between towns. */}
+                <span lang={town.lang === lang ? undefined : town.lang} className="whitespace-nowrap">
+                  {town.text}
+                </span>
               </Fragment>
             ))}
             {more > 0 ? ` ${t("home.area_more", { n: more })}` : null}
