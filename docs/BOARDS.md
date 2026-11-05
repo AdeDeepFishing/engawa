@@ -345,3 +345,21 @@ The code is the same for every board. A board is a row in `boards` (seeded from 
 5. **Seed.** `pnpm db:seed --dry-run --board <slug>` shows the rows; the integrator runs `pnpm db:seed --board <slug> --token-file .env.admin-token.local` after review. The board is created listed; another board is never touched.
 6. **Inbox address.** Secret on the admin page, `bousai-<slug>@engawaboard.com` in Email Routing, the Worker pointed at the board.
 7. **Mail subscription.** Find the city's service that publishes the 防災行政無線 text (by mail, app, feed or phone), note how to subscribe and the sender, run the two Gmail steps above, and set the allowed sender from the first real mail. Say plainly in this file what could not be confirmed.
+
+## Sample cards
+
+What a board shows before any neighbour has posted. The cards are in `supabase/seed/sample_cards.json`, one entry per card with its board's `board_slug`. `pnpm db:seed` inserts them for a board it creates; `pnpm db:seed --board <slug> --reset-cards` replaces that one board's cards with them; `--dry-run` lists them, one line per card, without connecting to the database.
+
+- **武蔵小杉** keeps its two hand-written cards from day one (an entry without the keys below behaves as it always did: valid from its creation for `valid_hours`).
+- **渋谷, 上野, 溝の口, 札幌 大通 and 博多** have three or four cards each, made on 2026-11-05 by the real pipeline from fictional inputs: notices of fictional neighbourhood and management associations, a chat screenshot, pasted texts in Japanese, Chinese, Korean, Vietnamese and English, and a loudspeaker text, all peacetime events dated 11/08 to 11/21 on the board's real public places. The inputs and what each imitates are in `fixtures/demo/README.md`; the cards per board and the pipeline times are in the DEVLOG entry of 2026-11-05.
+
+**Making or remaking the samples of a board**, never on the live board:
+
+1. `pnpm board:throwaway create <slug>-demo --from <slug>`: an unlisted copy with the same areas and place ids.
+2. A dev server on a free port and the two drop-in routes, as in `.claude/skills/acceptance-run/SKILL.md`, oldest input first (the export dates the cards in that order). A loudspeaker text is a text submission with `heard=1`.
+3. Read every card in all six languages (`GET /api/b/<slug>-demo/cards`). A wrong category, place or time is fixed in the input, never in the card: remove that card from the throwaway board and drop the input in again.
+4. `pnpm export:samples --board <slug>-demo --as <slug>` (`scripts/export-samples.ts`; `--dry-run` prints the list and writes nothing).
+5. `pnpm board:throwaway delete <slug>-demo`, and stop the dev server.
+6. `pnpm db:seed --board <slug> --reset-cards --dry-run` lists the new cards. The integrator seeds the live board after review.
+
+**What the export writes.** Each public card of the throwaway board becomes an entry with `board_slug` <slug> and `exported_from` <slug>-demo; exporting again for the same board, from any throwaway, replaces its exported entries in place; hand-written entries and entries of other boards are never touched. `minutes_ago` runs from 4320 (3 days) for the oldest card down to 40 for the newest on a geometric scale, so a board looks posted to over a few days whenever it is seeded. `valid_from` and `valid_until` stay absolute when the source stated them, because the card text names those dates: a seeded card about a drill on 11/15 ends on 11/15 whichever day it is seeded, and shows as outdated when seeded after that. `valid_hours` counts from the relative creation time and is what the seed uses for an entry without an absolute end. `official_confirmed` is always false and `source_count` 1. No image travels: a sample card has no masked screenshot, and no `card_sources` row, so the "How this card was made" part of its sheet lists no step and names no model. The export refuses, and writes nothing, when a card still lacks a language, carries a risk flag, names a place the board does not know, or contains an em dash or an en dash.

@@ -3,6 +3,7 @@
 //   pnpm --dir fixtures/tools install --ignore-workspace   (once)
 //   pnpm --dir fixtures/tools render                       all fixtures
 //   pnpm --dir fixtures/tools render p02 p04               only these ids
+//   pnpm --dir fixtures/tools render --demo [ids]          the demo inputs of demo-specs.mjs
 //
 // Writes, relative to fixtures/:
 //   inputs/<file>.png    clean notice (A4 at 2x) or phone screenshot (1170 by 2532)
@@ -10,6 +11,11 @@
 //   masking/<id>.json    pixel boxes of every name, avatar, phone number,
 //                        room number and handle in a screenshot
 //   tools/out/contact-sheet.png   every output on one page (not committed)
+//
+// With --demo the specs come from demo-specs.mjs and each output lands in
+// demo/<board>/ (fixtures/demo/README.md). Demo inputs have no masking
+// ground truth and no expected files, so neither is written or checked, and
+// the contact sheet is skipped.
 //
 // Fonts come from the system (Hiragino Sans, PingFang SC on macOS), so pixel
 // output is stable on one machine but can shift on another. The masking boxes
@@ -21,7 +27,6 @@ import { existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "playwright";
-import { chats, notices } from "./specs.mjs";
 import { chatHtml } from "./templates/chat.mjs";
 import { PHONE } from "./templates/common.mjs";
 import { A4, noticeHtml } from "./templates/notice.mjs";
@@ -37,7 +42,11 @@ const dirs = {
   out: join(here, "out"),
 };
 
-const only = process.argv.slice(2);
+const demo = process.argv.includes("--demo");
+const { chats, notices } = demo ? await import("./demo-specs.mjs") : await import("./specs.mjs");
+const only = process.argv.slice(2).filter((a) => a !== "--demo");
+// Where a spec's image goes: inputs/ for the fixtures, demo/<board>/ for the demo inputs.
+const outDir = (spec) => (demo ? join(fixtures, "demo", spec.board) : dirs.inputs);
 const pick = (list) => (only.length ? list.filter((s) => only.includes(s.id)) : list);
 
 async function shoot(browser, { html, viewport, scale, type = "png", quality }) {
@@ -53,7 +62,7 @@ async function renderNotice(browser, spec) {
   const overflow = await clean.page.evaluate(() => document.querySelector(".sheet").scrollHeight - innerHeight);
   await clean.page.close();
   if (overflow > 0) throw new Error(`${spec.id}: notice content overflows the page by ${overflow}px, shorten it`);
-  await writeFile(join(dirs.inputs, `${spec.file}.png`), clean.buf);
+  await writeFile(join(outDir(spec), `${spec.file}.png`), clean.buf);
 
   const photo = await shoot(browser, {
     html: photoHtml(spec.photo, clean.buf.toString("base64")),
@@ -63,7 +72,7 @@ async function renderNotice(browser, spec) {
     quality: 84,
   });
   await photo.page.close();
-  await writeFile(join(dirs.inputs, `${spec.file}.jpg`), photo.buf);
+  await writeFile(join(outDir(spec), `${spec.file}.jpg`), photo.buf);
   console.log(`${spec.id}  ${spec.file}.png  ${spec.file}.jpg`);
 }
 
@@ -110,7 +119,11 @@ async function renderChat(browser, spec) {
     .sort((a, b) => a.y - b.y || a.x - b.x);
 
   const file = `${spec.file}.png`;
-  await writeFile(join(dirs.inputs, file), buf);
+  await writeFile(join(outDir(spec), file), buf);
+  if (demo) {
+    console.log(`${spec.id}  ${file}  ${boxes.length} personal details on screen (no masking file for demo inputs)`);
+    return { spec, file, width, height, boxes };
+  }
   const masking = {
     _note:
       "Ground truth for the screenshot masking eval. Boxes are in pixels of the input image (x, y from the top left, w, h), measured from the DOM at render time and rounded outward. kind is avatar, name, phone, room or handle; label is the visible text, or for an avatar the name of its owner. Everything here is fictional.",
@@ -167,11 +180,12 @@ async function renderSheet(browser) {
 }
 
 for (const d of Object.values(dirs)) await mkdir(d, { recursive: true });
+for (const spec of [...notices, ...chats]) await mkdir(outDir(spec), { recursive: true });
 const browser = await chromium.launch();
 try {
   for (const spec of pick(notices)) await renderNotice(browser, spec);
   for (const spec of pick(chats)) await renderChat(browser, spec);
-  await renderSheet(browser);
+  if (!demo) await renderSheet(browser);
 } finally {
   await browser.close();
 }

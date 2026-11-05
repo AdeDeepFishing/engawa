@@ -1884,3 +1884,90 @@ The prompt's examples were corrected the same way, so a run for a new board star
 
 **Review** (the reviewing session, `claude-fable-5-1`, with the read-only reviewer): merge, three edge cases for future boards fixed on the branch. Two Japanese towns that read the same in a language (仲町 and 中町 as Naka-machi) would have shared a React key on the home card and passed the fold check: `townsOf` now carries the Japanese town, the card keys on it, and `pnpm check:boards` fails a board where two towns fold to one name. The 丁目 pattern is one constant (`CHOME_JA` in `lib/cards/display.ts`, ASCII digits) shared by the display and the format rules, which now refuse a full-width digit in `name_ja`. `scripts/area-names.ts` asks for the boards one at a time, so the calls after the first read the cached system block.
 
+## 2026-11-05 (Thu), sample cards for the five newer boards
+
+**Model:** `claude-opus-5-5` in Claude Code, implementation role, in its own worktree (branch `day8-demo-content`, cut from `main` at `6601fe3`), from a brief by the reviewing session (Fable). Pipeline models unchanged: `claude-opus-5-5` for extract, mask, reconcile and translate; no prompt or schema change. Another session was editing `supabase/seed/boards.json` and the checklist in `docs/BOARDS.md` in its own worktree; `boards.json` was not touched and BOARDS only got the new last section.
+
+Why: 渋谷, 上野, 溝の口, 札幌 大通 and 博多 were live and empty. An empty board shows nothing of what the product does, and the demo is recorded on 11/07. The cards had to come from the real pipeline, not be written by hand, and land in the seed so that `pnpm db:seed --board <slug> --reset-cards` puts them on the live boards after review.
+
+**What was done**
+- Inputs, `fixtures/demo/<board>/` with `fixtures/demo/README.md` (one line each: what it imitates, which language): five notice photos rendered from `fixtures/tools/demo-specs.mjs`, one LINE-style chat screenshot with a planted name and phone number, and ten texts. Fictional associations (みずき町会, こもれび町会, ひばり町内会, すずらん町内会, なぎさ町内会, unnamed 商店会 and 管理組合), real public places from each board's known places, peacetime events from 11/08 to 11/21, local where it fits (夜回り in the 火災予防運動 week in 渋谷, 上野恩賜公園 and its 給水ステーション, 高津小学校 and 溝の口駅 北口, snow volunteers, winter shoes and the bicycle parking closure in 札幌, 東住吉公民館 and 藤田公園 in 博多).
+- `fixtures/tools/render.mjs --demo` reads the demo specs and writes into `fixtures/demo/<board>/`, without masking files, expected checks or the contact sheet. `stamp: false` on a notice spec drops the 訓練用・想定シナリオ stamp (decision 2 below).
+- `pnpm board:throwaway create <slug>-demo --from <slug>`: `--from` already existed, so `scripts/throwaway-board.ts` is unchanged.
+- `scripts/export-samples.ts` (`pnpm export:samples --board <throwaway> --as <slug> [--dry-run]`): public cards of the throwaway copy into `supabase/seed/sample_cards.json`, `minutes_ago` from 4320 for the oldest to 40 for the newest on a geometric scale, `exported_from` naming the throwaway board so a second export replaces the first in place (checked: the second export of `ueno-demo` replaced its 4 entries). It refuses a card with a missing language, a risk flag, an unknown place or a dash. It writes the file in the seed file's own style; re-serialising the old file gave it back byte for byte, and the diff of the export is insertions only.
+- Seed (`lib/db/local.ts`, `scripts/seed.ts`): an entry may carry absolute `valid_from` and `valid_until`, kept as they are (decision 1); `--dry-run` lists each board's sample cards. Entries without those keys (the two 武蔵小杉 cards) behave as before.
+- `docs/BOARDS.md`, new last section "Sample cards": what they are and the six steps to remake a board's samples.
+
+**The cards** (all `daily_notice`; oldest first as seeded)
+
+| board | input | kind, language | 日本語 title | place | source type |
+|---|---|---|---|---|---|
+| shibuya | sh1 | notice photo, ja | 神宮通公園入口集合、夜回り 11月9日から13日 毎日19:00から19:40 | `jingudori-park` | official |
+| shibuya | sh2 | pasted text, ja | 防災まち歩き、11月14日（土）13:30 渋谷区役所正面入口前集合 | `shibuya-city-office` | official |
+| shibuya | sh3 | LINE-style screenshot, ja | 道玄坂の歩道清掃、11月21日(土) 8時から9時、集合は渋谷駅(ハチ公前広場) | `shibuya-sta` | secondhand |
+| ueno | ue1 | notice photo, ja | 上野恩賜公園 給水ステーション前で給水訓練、11月15日（日）10:00から11:00 | `ueno-park-water` | official |
+| ueno | ue3 | pasted chat message, zh | 東上野区民館で防災講座、11月19日（木）14:00から15:30 | `higashiueno-kuminkan` | secondhand |
+| ueno | ue4 | pasted 回覧板 text, ja | 資源の集団回収、11月から朝8時30分までに。次回は11月18日（水） | none (各集積所) | official |
+| ueno | ue2 | heard (loudspeaker), ja | 上野恩賜公園 たけのだい広場で地域合同防災訓練、11月14日（土）10時から12時 | `ueno-park` | secondhand, platform loudspeaker |
+| mizonokuchi | mz1 | notice photo, ja | 高津小学校（川崎市立高津小学校）体育館で避難所開設訓練、11月21日（土）9:00〜11:30 | `takatsu-es` | official |
+| mizonokuchi | mz2 | pasted post, vi | 溝の口駅近くの建物、11月12日（木）9時から12時まで断水 | `mizonokuchi-sta` | secondhand |
+| mizonokuchi | mz3 | pasted text, ja | 溝の口駅北口の広場周辺で落ち葉清掃、11月15日（日）8時から9時 | `mizonokuchi-sta` | firsthand |
+| sapporo | sp1 | notice photo, ja | 資生館小学校 体育館で冬の避難所体験会、11月21日（土）10:00から12:00 | `shiseikan-es` | official |
+| sapporo | sp2 | pasted post, en | 大通公園（大通西6丁目側）で除雪ボランティア説明会とスコップ配布、11月14日10時から11時 | `odori-park` | unknown |
+| sapporo | sp3 | pasted text, ja | 駐輪場、11月20日（金）から冬期閉鎖 | none (駐輪場) | official |
+| hakata | hk1 | notice photo, ja | 建物全体で断水、11月17日（火）10:00から14:00 | none (建物全体) | official |
+| hakata | hk2 | pasted chat message, ko | 東住吉公民館で外国人住民向け防災教室、11月15日(日) 10:00から12:00 | `higashisumiyoshi-kominkan` | secondhand |
+| hakata | hk3 | pasted text, ja | 藤田公園、防災倉庫の点検と消火器体験、11月14日（土）10時から10時30分 | `fujita-park` | official |
+
+Every card was read in all six languages through `GET /api/b/<slug>-demo/cards`. Every place came out right on the first run, including たけのだい広場 resolved to 上野恩賜公園 and ハチ公前広場 to 渋谷駅. Two inputs were fixed and dropped in again after their first card was removed from the throwaway board: ue2 and hk3 stated no end time (hk3 said 30分ほど), so both cards took the `daily_notice` default of 30 days and would have stayed current until mid December; each input now states its end. None of the planted name or phone number of sh3 reached any field; the masking call drew 12 boxes, and the original screenshot was deleted at the end of processing as usual.
+
+**Pipeline timings** (local dev server on port 3171 against the shared project, curl-like Node driver on the two drop-in routes, one throwaway copy per board, 2026-11-05 afternoon; times in seconds; card is from the process request to the `cards` event, total to `done`; the final run of each input)
+
+| input | extract | reconcile | card | translate | total |
+|---|---|---|---|---|---|
+| sh1 photo | 9.7 | 0.8 | 12.4 | 10.6 | 23.0 |
+| sh2 text | 6.5 | 0.2 | 7.3 | 10.1 | 17.4 |
+| sh3 chat (mask 5.7 beside reconcile) | 7.3 | 0.2 | 16.2 | 8.8 | 25.0 |
+| ue1 photo | 8.7 | 0.2 | 9.9 | 10.9 | 20.9 |
+| ue2 heard | 6.4 | 2.7 | 9.5 | 9.2 | 18.7 |
+| ue3 zh | 6.8 | 0.2 | 7.7 | 7.0 | 14.7 |
+| ue4 text | 5.6 | 0.1 | 6.4 | 7.6 | 13.9 |
+| mz1 photo | 7.5 | 0.2 | 8.7 | 12.5 | 21.2 |
+| mz2 vi | 7.0 | 0.1 | 7.7 | 7.2 | 14.9 |
+| mz3 text | 5.7 | 3.0 | 9.1 | 7.8 | 17.0 |
+| sp1 photo | 7.9 | 0.1 | 9.1 | 11.3 | 20.4 |
+| sp2 en | 6.3 | 0.2 | 7.1 | 8.7 | 15.8 |
+| sp3 text | 5.3 | 0.1 | 5.9 | 8.1 | 14.1 |
+| hk1 photo | 7.9 | 0.2 | 9.3 | 10.6 | 19.9 |
+| hk2 ko | 7.0 | 15.9 | 23.4 | 9.0 | 32.4 |
+| hk3 text | 5.3 | 3.0 | 9.0 | 7.8 | 16.8 |
+
+Medians: extract 6.9 s, card 9.0 s, translate 8.9 s, total 18.0 s. Reconcile called Claude only where a candidate existed (a card of the same category with the same place or no place): five calls, all `create`, 2.4 to 3.1 s, except one for hk2 at 15.6 s with a cold cache write (6,460 tokens); an API outlier, not repeated. The 18 drop-ins made 42 Claude calls (18 extract, 18 translate, 5 reconcile, 1 mask); the shared daily counter went from 40 to 82 of 400.
+
+**Decisions, open for review**
+1. **Absolute event times in the seed.** With `valid_hours` alone, an export on 11/05 seeded on 11/06 or 11/07 would end every card a day or two after the date its own title names, and `valid_from` would show the posting time instead of the start. Exported entries therefore carry the card's `valid_from` and `valid_until`, and the seed keeps them; `created_at` stays relative. A board seeded after 11/21 shows these cards as outdated, which is true. Dropping the two keys from the entries gives back the purely relative behaviour.
+2. **No 訓練用 stamp on the demo notices.** The fixture stamp ends up in the card text (`docs/EVAL.md` noted "（訓練用）" in card bodies), which reads wrong on a 町会 notice about a real drill. The notices are of fictional associations, not shelter or official notices, and still have no crest, logo or phone number.
+3. **All 16 cards are `daily_notice`.** That is what the extract prompt says for drills, events and building notices in peacetime, and the category filter on these boards shows one category. Another category would need another kind of input (a flu shot clinic as `medical`, a supplies handout), which a real resident could act on more readily than a drill.
+4. **The loudspeaker card** is heard text, so it says it came from the 防災行政無線 of a real ward, about a fictional drill. The text has no opening formula (no こちらは…です) so it names no sender; the brief asked for it.
+5. **Real places, fictional events.** A real resident could walk to 神宮通公園 on 11/9 and find no patrol. The brief accepted this for peacetime events; nothing here asks anyone to bring money, give data or avoid a place. A "sample" label on seeded cards would remove the doubt and is not built.
+6. **Two building notices name no building** (hk1, mz2), as such notices often do; the hk1 card says so in its body. 町会 and 管理組合 notices come back `official` (the prompt's rule 7 counts building management among official bodies), sp2 `unknown`.
+7. Seeded cards carry no image and no `card_sources` row, so "How this card was made" lists no step and names no model, as for the two 武蔵小杉 samples.
+
+Seen in passing: from a Chinese input, extract wrote the Japanese title as 東上野区民館（東上野区民館）, the place name twice, and three Chinese texts had 道玄坂（道玄坂）; rule 4 of the extract prompt (keep the Japanese name in parentheses) was applied where the name was already Japanese. The four seed entries were corrected by hand before the merge; the prompt is unchanged.
+
+**Checks**
+
+| check | result |
+|---|---|
+| `pnpm typecheck` | clean |
+| `pnpm lint` | clean |
+| `pnpm guard --all` | clean, the new fixtures and JSON included (run after staging them) |
+| `pnpm check:boards` | 114 of 114 |
+| `pnpm db:seed --board <slug> --reset-cards --dry-run`, five boards | 3, 4, 3, 3, 3 sample cards listed with their times |
+| `pnpm db:seed --board musashikosugi --dry-run` | "cards unchanged", its two samples listed as before |
+| `pnpm build` | compiled, 12 static pages; `.next` removed afterwards |
+| live boards after the run | 渋谷, 上野, 溝の口, 札幌 大通, 博多 0 cards each, 武蔵小杉 7, as before |
+
+**Cleanup.** `pnpm board:throwaway delete` for the five copies: `shibuya-demo` 2 storage objects (the notice photo and the masked copy), 3 card_sources, 3 cards, 3 submissions, 1 device; `ueno-demo` 1, 4, 4, 5, 2; `mizonokuchi-demo` 1, 3, 3, 3, 1; `sapporo-demo` 1, 3, 3, 3, 1; `hakata-demo` 1, 3, 3, 4, 2 (the extra submission and device on 上野 and 博多 are the second runs of ue2 and hk3). The dev server on 3171 was stopped. No seed was run without `--dry-run`: the reviewing session seeds the five boards after the merge.
+
+**Review** (the reviewing session, `claude-fable-5-1`, with the read-only reviewer): merge, three of five findings fixed on the branch. The 落ち葉清掃 card (mz3) was set for 11月8日（日）, the morning after the submission deadline, so the judges would have met it as an outdated card; the input, the six titles and bodies and the table above now say 11月15日（日）. The 断水 card near 溝の口駅 (mz2) was pinned to the station, so the place view read as the station without water; it now carries no place, its text unchanged. `scripts/export-samples.ts` replaced entries by the throwaway board's name, so an export from a copy under another name would have doubled a board's samples; it now replaces the target board's earlier exported entries and leaves hand-written ones alone. Kept, with the 武蔵小杉 samples as the precedent: the loudspeaker card names no sender and the two building notices name no building. Decisions 1 to 3 stand.

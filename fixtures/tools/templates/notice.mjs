@@ -1,15 +1,17 @@
 // Paper notices on an A4 page (794 by 1123 CSS px, captured at 2x).
 // Two styles: "formal" for a building management company (記 ... 以上) and
 // "shelter" for a hand-made shelter notice. No crest, logo or phone number.
-// Every page carries the 訓練用・想定シナリオ stamp in the bottom left corner.
+// Every fixture page carries the 訓練用・想定シナリオ stamp in the bottom left
+// corner; a spec with `stamp: false` (the demo inputs in demo-specs.mjs) has none.
 // The footer row sits after the content; render.mjs fails if a page overflows.
 
 import { esc, JA_FONT } from "./common.mjs";
 
 export const A4 = { width: 794, height: 1123, scale: 2 };
 
-function foot(lines) {
-  return `<div class="foot"><div class="stamp"><span>訓練用・想定シナリオ</span></div>
+function foot(lines, stamp = true) {
+  const mark = stamp ? `<div class="stamp"><span>訓練用・想定シナリオ</span></div>` : "<div></div>";
+  return `<div class="foot">${mark}
     <div class="footer">${lines.map((l) => `<div>${esc(l)}</div>`).join("")}</div></div>`;
 }
 
@@ -39,7 +41,7 @@ function formal(spec) {
     <h2>${esc(spec.bulletsHeading)}</h2>
     ${bullets(spec.bullets)}
     <div class="ijo">以上</div>
-    ${foot(spec.footer)}
+    ${foot(spec.footer, spec.stamp !== false)}
   </div>`;
 }
 
@@ -61,7 +63,7 @@ function shelter(spec) {
     ${items}
     ${numbered}
     ${spec.bullets ? bullets(spec.bullets) : ""}
-    ${foot(spec.footer)}
+    ${foot(spec.footer, spec.stamp !== false)}
   </div>`;
 }
 
