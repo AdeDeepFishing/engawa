@@ -13,7 +13,10 @@ import { PREFECTURES } from "./prefectures";
  * The outlines are drawn in map units (the view box is 347 wide) and scale
  * with the map; the pins and their pills are HTML in CSS pixels on top, so
  * the pins keep one size and the 16 px text and 44 px targets hold at every
- * width. The inset's name is 16.5 units: 16 px or more on a map from 337 px
+ * width. The leaders are a second svg over the pins and under the pills, so
+ * a leader crosses its pin's halo and meets the white ring: drawn in the
+ * map's svg under the pins, the halo hid its last 7 px and the pill looked
+ * adrift. The inset's name is 16.5 units: 16 px or more on a map from 337 px
  * wide (a 369 px phone less its gutters), 15.6 px on a 360 px phone.
  */
 const INSET_NAME_FONT = 16.5;
@@ -25,6 +28,9 @@ const INSET_NAME_FONT = 16.5;
  * the pin to its pill, and the longest leader (120 px).
  */
 const SIZES_REM: CalloutSizes = { pin: 1.75, gap: 0.5, reach: 1.25, leader: 7.5 };
+
+/** From a pin's centre to the outside of its white ring, where its leader meets it: the 10 px dot's radius (in rem) and the 2 px ring. */
+const ringRadius = (rem: number) => 0.3125 * rem + 2;
 
 /** Widest a pill gets before its names wrap (max-w-48), in rem. */
 const PILL_MAX_REM = 12;
@@ -264,24 +270,6 @@ export function JapanMap({
             <title>{p.names[lang]}</title>
           </path>
         ))}
-        {callouts.map((c) => {
-          if (!c.side) return null;
-          const [x1, y1] = units(c.cx, c.cy);
-          const [x2, y2] = units(...leaderEnd(c));
-          return (
-            <line
-              key={c.key}
-              x1={x1}
-              y1={y1}
-              x2={x2}
-              y2={y2}
-              stroke="var(--line-strong)"
-              strokeWidth={1}
-              vectorEffect="non-scaling-stroke"
-              pointerEvents="none"
-            />
-          );
-        })}
       </svg>
 
       {callouts.map((c, i) => {
@@ -346,6 +334,20 @@ export function JapanMap({
           </Fragment>
         );
       })}
+
+      {/* The leaders: over the pins (later in the same layer) so each crosses its halo and meets the ring, under the pills (z-2). The box is the map's, so the view box maps as the pins' percentages do. */}
+      <svg viewBox={JAPAN_VIEWBOX} preserveAspectRatio="none" aria-hidden="true" className="pointer-events-none absolute inset-0 z-[1] h-full w-full">
+        {callouts.map((c) => {
+          if (!c.side) return null;
+          const [ex, ey] = leaderEnd(c);
+          const len = Math.hypot(ex - c.cx, ey - c.cy);
+          const ring = ringRadius(measure.rem);
+          if (len <= ring) return null;
+          const [x1, y1] = units(c.cx + ((ex - c.cx) * ring) / len, c.cy + ((ey - c.cy) * ring) / len);
+          const [x2, y2] = units(ex, ey);
+          return <line key={c.key} x1={x1} y1={y1} x2={x2} y2={y2} stroke="var(--line-strong)" strokeWidth={1} vectorEffect="non-scaling-stroke" />;
+        })}
+      </svg>
 
       {/* Every pill as it would be drawn, out of sight, so placement knows its size in this language and text size. */}
       <div ref={measureRef} aria-hidden="true" className="pointer-events-none invisible absolute top-0 left-0 flex w-full flex-col items-start">
