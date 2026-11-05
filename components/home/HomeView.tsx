@@ -88,9 +88,10 @@ export function HomeView({ boards, now }: { boards: HomeBoard[]; now: string }) 
   return (
     <>
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 pt-10 md:px-6 lg:pt-20">
-        <div className="lg:grid lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:items-start lg:gap-20">
-          <div>
-            <section aria-labelledby="home-title">
+        {/* Phones read hero, map, boards; from lg the hero and the boards share the left column and the map stays on the right. */}
+        <div className="flex flex-col lg:grid lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:items-start lg:gap-20">
+          <div className="contents lg:block">
+            <section aria-labelledby="home-title" className="order-1">
               <h1
                 id="home-title"
                 className="home-rise flex flex-wrap items-baseline gap-x-4 text-[clamp(2.5rem,1.75rem+3vw,3.5rem)] leading-[1.1] font-bold"
@@ -112,7 +113,7 @@ export function HomeView({ boards, now }: { boards: HomeBoard[]; now: string }) 
               </p>
             </section>
 
-            <section aria-labelledby="home-boards" className="mt-12 lg:mt-16">
+            <section aria-labelledby="home-boards" className="order-3 mt-12 lg:order-none lg:mt-16">
               <h2 id="home-boards" className="home-rise text-xl font-bold" style={rise(240)}>
                 {t("index.title")}
               </h2>
@@ -132,7 +133,7 @@ export function HomeView({ boards, now }: { boards: HomeBoard[]; now: string }) 
             </section>
           </div>
 
-          <section aria-labelledby="home-map" className="home-rise mt-12 lg:sticky lg:top-24 lg:mt-0" style={rise(300)}>
+          <section aria-labelledby="home-map" className="home-rise order-2 mt-12 lg:sticky lg:top-24 lg:order-none lg:mt-0" style={rise(300)}>
             <h2 id="home-map" className="text-xl font-bold">
               {t("home.map_heading")}
             </h2>
