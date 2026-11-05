@@ -3,7 +3,7 @@
 import { useId } from "react";
 import Link from "next/link";
 import { timeAgo } from "@/lib/cards/display";
-import { CARD_LANGS, t as translate, tCount } from "@/lib/i18n";
+import { tCount } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n/LangProvider";
 import type { Board } from "@/lib/types";
 
@@ -38,11 +38,12 @@ export function townsOf(areas: Board["area_names"]): string[] {
 
 /**
  * One board on the home page: its name in the reader's language with the
- * Japanese name, the area, the live facts (public cards, the newest one's
- * age, the six languages) and one link into the board, whose target covers
- * the whole card: the card lifts 2 px on hover and settles when pressed.
- * Japanese text inside another language carries lang="ja"; each language
- * name carries its own.
+ * Japanese name, the live facts (public cards, the newest one's age), the
+ * area and one link into the board, whose target covers the whole card:
+ * the card lifts 2 px on hover and settles when pressed. The six card
+ * languages are every board's default and the intro already names them, so
+ * the card leaves them out. Japanese text inside another language carries
+ * lang="ja".
  */
 export function BoardSummary({ board, now }: { board: HomeBoard; now: string }) {
   const { lang, t } = useLang();
@@ -56,13 +57,13 @@ export function BoardSummary({ board, now }: { board: HomeBoard; now: string }) 
       id={boardAnchor(board.slug)}
       tabIndex={-1}
       aria-labelledby={nameId}
-      className="relative scroll-mt-24 rounded-2xl border border-line bg-surface p-6 shadow-[var(--shadow-rest)] transition-[translate,box-shadow] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-[var(--shadow-lift)] focus:outline-[3px] focus:outline-offset-2 focus:outline-accent focus:outline-solid active:translate-y-0 active:shadow-[var(--shadow-press)]"
+      className="relative flex h-full scroll-mt-24 flex-col rounded-2xl border border-line bg-surface p-6 shadow-[var(--shadow-rest)] transition-[translate,box-shadow] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-[var(--shadow-lift)] focus:outline-[3px] focus:outline-offset-2 focus:outline-accent focus:outline-solid active:translate-y-0 active:shadow-[var(--shadow-press)]"
       data-home-board={board.slug}
     >
       <h3 id={nameId} className="text-2xl font-bold">
         {localName}
         {localName !== board.name.ja ? (
-          <span lang="ja" className="ml-2 text-lg font-normal text-muted">
+          <span lang="ja" className="ml-2 inline-block text-lg font-normal whitespace-nowrap text-muted">
             {board.name.ja}
           </span>
         ) : null}
@@ -77,38 +78,28 @@ export function BoardSummary({ board, now }: { board: HomeBoard; now: string }) 
         </p>
       ) : null}
 
-      <dl className="mt-4 flex flex-col gap-2 text-[1.0625rem]">
-        {towns.length ? (
-          <div className="flex flex-wrap gap-x-2">
-            <dt className="font-semibold">{t("home.area")}</dt>
-            <dd>
-              <span lang="ja">{towns.slice(0, TOWNS_SHOWN).join("、")}</span>
-              {more > 0 ? ` ${t("home.area_more", { n: more })}` : null}
-            </dd>
-          </div>
-        ) : null}
-        <div>
-          <dt className="font-semibold">{t("home.languages")}</dt>
-          <dd>
-            <ul className="mt-1 flex flex-wrap gap-2">
-              {CARD_LANGS.map((l) => (
-                <li key={l} lang={l === "easy_ja" ? "ja" : l} className="rounded-full bg-held-bg px-3 py-0.5">
-                  {translate(`lang.${l}`, l === "easy_ja" ? "ja" : l)}
-                </li>
-              ))}
-            </ul>
+      {towns.length ? (
+        // Inline, so the towns run on after the label instead of dropping under it in a narrow card.
+        <dl className="mt-3 text-[1.0625rem]">
+          <dt className="inline font-semibold">{t("home.area")}</dt>
+          <dd className="ml-2 inline">
+            <span lang="ja">{towns.slice(0, TOWNS_SHOWN).join("、")}</span>
+            {more > 0 ? ` ${t("home.area_more", { n: more })}` : null}
           </dd>
-        </div>
-      </dl>
+        </dl>
+      ) : null}
 
-      <Link
-        href={`/b/${board.slug}`}
-        aria-describedby={nameId}
-        className="tap mt-6 inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-6 text-lg font-semibold text-accent-ink after:absolute after:inset-0 after:rounded-2xl after:content-[''] hover:bg-accent-hover"
-      >
-        {t("home.open")}
-        <span aria-hidden="true">→</span>
-      </Link>
+      {/* Pinned to the bottom, so the buttons of two cards side by side line up. */}
+      <div className="mt-auto pt-5">
+        <Link
+          href={`/b/${board.slug}`}
+          aria-describedby={nameId}
+          className="tap inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-6 text-lg font-semibold text-accent-ink after:absolute after:inset-0 after:rounded-2xl after:content-[''] hover:bg-accent-hover"
+        >
+          {t("home.open")}
+          <span aria-hidden="true">→</span>
+        </Link>
+      </div>
     </article>
   );
 }

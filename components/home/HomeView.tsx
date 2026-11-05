@@ -119,7 +119,7 @@ export function HomeView({ boards, now }: { boards: HomeBoard[]; now: string }) 
               {/* The plank: two hairlines with the paper between, the edge of the veranda the boards rest on. */}
               <div aria-hidden="true" className="home-rise mt-3 h-2 border-y border-line" style={rise(240)} />
               {boards.length ? (
-                <ul className="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-1">
+                <ul className="mt-4 grid gap-4 md:grid-cols-2">
                   {boards.map((b, i) => (
                     <li key={b.slug} className="home-rise" style={rise(360 + i * 60)}>
                       <BoardSummary board={b} now={now} />
