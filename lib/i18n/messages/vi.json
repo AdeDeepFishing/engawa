@@ -206,7 +206,7 @@
   "dropin.text_placeholder": "Dán tin nhắn vào đây",
   "dropin.send": "Gửi",
   "dropin.cancel": "Hủy",
-  "dropin.purpose": "Dùng để chia sẻ thông tin về khu phố này trên bảng tin này. Tên và thông tin liên lạc trong ảnh chụp màn hình sẽ được tự động xóa.",
+  "dropin.purpose": "Dùng để chia sẻ thông tin về khu phố này trên bảng tin này. Claude phát hiện tên và thông tin liên lạc trong ảnh chụp màn hình và che những gì tìm thấy; có thể không phát hiện được hết.",
   "dropin.purpose_ok": "Đã hiểu",
   "dropin.placeholder_title": "Đang sắp xếp",
   "dropin.stage.received": "Đã nhận",

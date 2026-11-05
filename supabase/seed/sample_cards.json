@@ -1,5 +1,5 @@
 {
-  "_note": "Sample cards for the empty board on day one and for the demo seed (an older card that will show as expired). Korean and Vietnamese need a native check before the demo. Times are relative to seed time via minutes_ago. Entries with exported_from were made by the real pipeline from the fictional inputs in fixtures/demo and written by scripts/export-samples.ts; their valid_from and valid_until are absolute, since the card text names those dates (docs/BOARDS.md, Sample cards).",
+  "_note": "Sample cards for the empty board on day one and for the demo seed (an older card that will show as expired). Korean and Vietnamese need a native check before the demo. Times are relative to seed time via minutes_ago. Entries with exported_from were made by the real pipeline from the fictional inputs in fixtures/demo and written by scripts/export-samples.ts; their valid_from and valid_until are absolute, since the card text names those dates (docs/BOARDS.md, Sample cards). Hand-written entries that name a date carry them too.",
   "cards": [
     {
       "board_slug": "musashikosugi",
@@ -9,16 +9,18 @@
       "source_type": "official",
       "official_confirmed": false,
       "original_lang": "ja",
-      "original_text": "断水のお知らせ　11月〔X〕日（〔曜〕）10:00〜15:00　配管点検のため断水します。ご不便をおかけしますがご協力をお願いいたします。管理会社",
+      "original_text": "断水のお知らせ　11月16日（月）10:00〜15:00　配管点検のため断水します。ご不便をおかけしますがご協力をお願いいたします。管理会社",
       "minutes_ago": 60,
-      "valid_hours": 720,
+      "valid_hours": 235,
+      "valid_from": "2026-11-16T01:00:00+00:00",
+      "valid_until": "2026-11-16T06:00:00+00:00",
       "title": {
-        "ja": "断水のお知らせ：11月〔X〕日 10:00〜15:00",
-        "en": "Water outage: Nov X, 10:00 to 15:00",
-        "zh": "停水通知：11月X日 10:00至15:00",
-        "ko": "단수 안내: 11월 X일 10:00~15:00",
-        "vi": "Thông báo cắt nước: ngày X tháng 11, 10:00 đến 15:00",
-        "easy_ja": "11月〔X〕日の 10時から 15時まで、水が 出ません"
+        "ja": "断水のお知らせ：11月16日（月）10:00〜15:00",
+        "en": "Water outage: November 16 (Mon), 10:00 to 15:00",
+        "zh": "停水通知：11月16日（周一）10:00至15:00",
+        "ko": "단수 안내: 11월 16일(월) 10:00~15:00",
+        "vi": "Thông báo cắt nước: ngày 16/11 (Thứ Hai), 10:00 đến 15:00",
+        "easy_ja": "11月16日（月）の 10時から 15時まで、水が 出ません"
       },
       "body": {
         "ja": "配管点検のため断水します。管理会社からのお知らせです。",
@@ -28,7 +30,7 @@
         "vi": "Cắt nước để kiểm tra đường ống. Thông báo từ công ty quản lý tòa nhà.",
         "easy_ja": "水道の 管（くだ）を しらべるためです。マンションの 管理会社からの お知らせです。"
       },
-      "facts": { "status": "open", "conditions": [] }
+      "facts": { "status": "planned", "conditions": [], "valid_until_stated": true }
     },
     {
       "board_slug": "musashikosugi",
@@ -58,6 +60,45 @@
         "easy_ja": "WeChat の グループで 聞いた 話です。見た人は わかりません。"
       },
       "facts": { "status": "open", "conditions": [] }
+    },
+    {
+      "board_slug": "musashikosugi",
+      "category": "daily_notice",
+      "place_id": null,
+      "place_text_ja": "〇〇マンション 1階のごみ置き場",
+      "source_type": "official",
+      "official_confirmed": false,
+      "original_lang": "ja",
+      "original_text": "【管理会社より】資源ごみの収集日変更のお知らせ　11月25日（水）から、資源ごみ（びん・缶・ペットボトル）の収集日が、毎週火曜日から毎週水曜日に変わります。収集日の朝8時までに、1階のごみ置き場へ出してください。前日の夜には出さないでください。",
+      "minutes_ago": 90,
+      "valid_hours": 1156,
+      "valid_from": "2026-11-24T15:00:00+00:00",
+      "valid_until": "2026-12-24T15:00:00+00:00",
+      "title": {
+        "ja": "資源ごみの収集日、11月25日（水）から毎週水曜日に。これまでは火曜日",
+        "en": "Recyclables (資源ごみ) collected on Wednesdays from November 25 (Wed), previously Tuesdays",
+        "zh": "资源垃圾（資源ごみ）自11月25日（周三）起改为每周三收集，以前为周二",
+        "ko": "자원 쓰레기(資源ごみ), 11월 25일(수)부터 매주 수요일 수거. 지금까지는 화요일",
+        "vi": "Rác tài nguyên (資源ごみ) được thu gom vào thứ Tư hằng tuần từ ngày 25/11 (Thứ Tư), trước đây là thứ Ba",
+        "easy_ja": "11月25日（水）から、びん・缶（かん）・ペットボトルの ごみは 毎週（まいしゅう） 水曜日（すいようび）に 出して ください"
+      },
+      "body": {
+        "ja": "びん・缶・ペットボトルの収集日が、毎週火曜日から毎週水曜日に変わります。収集日の朝8時までに1階のごみ置き場へ出してください。前日の夜には出さないでください。管理会社からのお知らせです。",
+        "en": "Bottles, cans and PET bottles will be collected every Wednesday instead of every Tuesday. Put them out at the ground-floor garbage area by 8:00 on collection day, not the night before. Notice from the building management company.",
+        "zh": "瓶、罐和塑料瓶的收集日由每周二改为每周三。请在收集日早上8:00前放到1楼的垃圾放置处，不要在前一天晚上放出。来自管理公司的通知。",
+        "ko": "병, 캔, 페트병 수거일이 매주 화요일에서 매주 수요일로 바뀝니다. 수거일 아침 8시까지 1층 쓰레기장에 내놓아 주시고, 전날 밤에는 내놓지 마세요. 관리회사의 안내입니다.",
+        "vi": "Chai thủy tinh, lon và chai nhựa PET sẽ được thu gom vào thứ Tư hằng tuần thay vì thứ Ba. Vui lòng mang ra khu để rác ở tầng 1 trước 8:00 sáng ngày thu gom, không mang ra từ tối hôm trước. Đây là thông báo từ công ty quản lý tòa nhà.",
+        "easy_ja": "びん、缶（かん）、ペットボトルの ごみを 集める 日が かわります。前は 毎週（まいしゅう） 火曜日（かようび）でした。11月25日から 毎週 水曜日（すいようび）です。その日の 朝 8時までに 1階の ごみ置き場（おきば）に 出して ください。前の 日の 夜は 出さないで ください。マンションの 管理会社からの お知らせです。"
+      },
+      "facts": {
+        "status": "planned",
+        "conditions": [
+          "bottles, cans and PET bottles",
+          "put out by 8:00 on collection day, not the night before",
+          "changed from Tuesdays starting November 25"
+        ],
+        "valid_until_stated": false
+      }
     },
     {
       "board_slug": "shibuya",

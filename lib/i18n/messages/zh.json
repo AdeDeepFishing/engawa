@@ -206,7 +206,7 @@
   "dropin.text_placeholder": "把消息粘贴到这里",
   "dropin.send": "发送",
   "dropin.cancel": "取消",
-  "dropin.purpose": "用于在这个公告板上分享本社区的信息。截图中的姓名和联系方式会被自动删除。",
+  "dropin.purpose": "用于在这个公告板上分享本社区的信息。截图中的姓名和联系方式由 Claude 识别，识别到的部分会被遮盖。可能无法全部识别。",
   "dropin.purpose_ok": "知道了",
   "dropin.placeholder_title": "正在整理",
   "dropin.stage.received": "已收到",

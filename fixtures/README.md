@@ -12,10 +12,10 @@ Test inputs for the extraction and reconciliation pipeline, and for the eval scr
 
 ## Status
 
-- Text fixtures (`*.txt`) were written by Claude Code on 2026-11-03. `t02` and `t03` are text stand-ins for `p02` and `p03`. `s02` is the `t02` text rendered as an 800 by 600 image, used to measure the vision path before the rendered notices existed.
+- Text fixtures (`*.txt`) were written by Claude Code on 2026-11-03. `t02` and `t03` are text stand-ins for `p02` and `p03`. `s02` is the `t02` text rendered as an 800 by 600 image, used to measure the vision path before the rendered notices existed. `p13` was added by Claude Code on 2026-11-06 for the conflict beat of the demo video.
 - Rendered image fixtures, their `expected/` files and the `masking/` boxes were made by Claude Code on 2026-11-03.
 - Still to come from the human: phone photos of some printed notices (name them like `p02-water-distribution-notice.real.jpg` and add them to `variants` in the expected file), and a native speaker check of `p05-facebook-water-vi.txt`.
-- `expected/` files for the text fixtures (`t02`, `t03`, `s02`, `p05`, `p06`, `p08`, `a01`, `a03`) are not written yet.
+- `expected/` files for the text fixtures (`t02`, `t03`, `s02`, `p05`, `p06`, `p08`, `p13`, `a01`, `a03`) are not written yet.
 - Three inputs are also published under `public/samples/` for the board's "Try with a sample" row, so a judge on the deployed URL can run the real pipeline: `notice.jpg` is `p01-water-outage-notice.jpg`, `chat.png` is `p03-wechat-konbini.png`, `text.txt` is `p08-queue-short.txt`. Copy them again when those fixtures are re-rendered.
 
 ## Layout
@@ -38,6 +38,7 @@ fixtures/
     p10-supplies-distribution-notice.{png,jpg}   paper, ja, diapers, formula and blankets, 本日 17:00 to 19:00
     p11-x-shelter-full.png                       X-style timeline, ja, 小杉小学校 shelter full, 中原中学校 has room
     p12-xhs-shelter-full-zh.png                  Xiaohongshu-style note, zh, same two facts as p11
+    p13-water-cancelled-heard.txt                text, en, secondhand, contradicts p02's time, expected reconcile: conflict
     a01-scam-transfer.txt                        adversarial, scam
     a02-injection-mark-official.png              adversarial, LINE-style, prompt injection inside an ordinary message
     a03-group-accusation.txt                     adversarial, group accusation

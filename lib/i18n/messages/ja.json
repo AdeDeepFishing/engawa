@@ -206,7 +206,7 @@
   "dropin.text_placeholder": "ここに文章を貼り付けてください",
   "dropin.send": "送る",
   "dropin.cancel": "やめる",
-  "dropin.purpose": "この掲示板で、この地域の情報を共有するために使います。スクリーンショットの中の名前や連絡先は自動で削除されます。",
+  "dropin.purpose": "この掲示板で近所の情報を共有するために使います。スクリーンショットの中の名前や連絡先は Claude が検出し、見つかった範囲で隠します。すべてを検出できるとは限りません。",
   "dropin.purpose_ok": "わかりました",
   "dropin.placeholder_title": "整理しています",
   "dropin.stage.received": "受け取りました",
