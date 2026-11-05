@@ -55,8 +55,12 @@ export function resolveArea(board: AreaSource, polygons: AreaFeature[], lon: num
  * 川崎市中原区; 13 Tokyo, 113 渋谷区). One line per ward that has a board.
  */
 const MUNICIPALITY_JA: Record<string, string> = {
+  "14134": "川崎市高津区",
+  "13106": "東京都台東区",
   "14133": "川崎市中原区",
   "13113": "東京都渋谷区",
+  "01101": "札幌市中央区",
+  "40132": "福岡市博多区",
 };
 
 /**

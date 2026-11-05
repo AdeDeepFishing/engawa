@@ -1322,6 +1322,359 @@ Eval on the integration branch with the pilot's place notes in the context (`pnp
 **Review fixes for PR #31 (Fable, reviewing session, on the integration branch):** the run reads the KV state again under its lease before posting, so a run that finished meanwhile cannot make it post the same broadcast (KV propagation lag remains the one gap, worth one merged duplicate at most); only a coded answer from the pipeline counts toward the three attempts, an outage, a timeout or an uncoded 5xx never passes an evacuation order over; an empty `ENGAWA_INBOX_URL` or `PORTAL_SENDER` stops the run with `no_config` instead of burning attempts; the README says the repository commits the KV namespace id and that a broadcast the ward edits is posted again and merged by reconcile. The STATE namespace was created on the account and its id committed; 18 of 18 tests pass with the updated log expectation.
 The human picked the solid variant of mark 04 (2026-11-05 00:45 JST), which is the default; `MARK_VARIANT` stays `solid` and the committed `app/icon.svg` and `app/favicon.ico` already match it.
 
+## 2026-11-05 (Thu), two more boards: 溝の口 (高津区) and 上野 (台東区)
+
+**Model:** `claude-opus-5-5` in Claude Code, implementation role, in its own worktree (branch `day7-boards-kanto`, cut from `main` at `d89e1b3`), brief from the reviewing session (Fable), while another session built 札幌 and 福岡 in the same files (placement agreed: my boards at the end of `boards.json`, my lines at the top of `MUNICIPALITY_JA`, `BY_SLUG` and `EXPECT`, my sections right after Shibuya's). No Claude API call was added or changed. The database was neither read nor written. The session stopped once at the usage limit during research and resumed from its notes.
+
+**The boards.** Both follow `docs/BOARDS.md`, "Checklist for a new city", and its Shibuya section as the model; the area tables, the evacuation rule per district, every known place with its source, what was left out and the broadcast channels are in `docs/BOARDS.md`.
+- `mizonokuchi`: 溝の口, Mizonokuchi, 沟之口, 미조노쿠치, Mizonokuchi; mode `peace`. 14 町丁目 of 川崎市高津区 (`14134`): 溝口1丁目 to 6丁目, 久本1丁目 to 3丁目, 坂戸1丁目 to 3丁目, 下作延1丁目 and 2丁目. 20 known places: nine shelters, two water points, the station, the ward office, six 一時滞在施設 at the station, 緑ケ丘霊園.
+- `ueno`: 上野, Ueno, 上野, 우에노, Ueno; mode `peace`. 17 町丁目 of 台東区 (`13106`): 上野1丁目 to 7丁目, 東上野1丁目 to 6丁目, 上野公園, 上野桜木1丁目 and 2丁目, 池之端1丁目. 18 known places: eight shelters, the 上野恩賜公園 water station, 上野恩賜公園 and 谷中墓地 as 避難場所, the station, the ward office, five 一時滞在施設.
+
+**Sources, all read 2026-11-05**
+
+| source | as of | used for |
+|---|---|---|
+| 川崎市地域防災計画 資料編, https://www.city.kawasaki.jp/601/page/0000140630.html (page updated 2026-08-13): 2-06, 2-04, 2-18, 2-28, 2-10, 2-05, 2-07 | 令和7年4月1日 (2-06, 2-18), 令和7年5月1日 (2-28), 令和4年8月25日 (2-10) | 溝の口: shelters with 対象町丁, water points, 一時滞在施設, 広域避難場所 |
+| 台東区地域防災計画（令和6年度修正）資料編 (PDF from https://www.city.taito.lg.jp/bosai/houshin/bosaikaigi/chikibou_r6.html, page updated 2024-08-26): 資料第126, 127, 128, 129, 110 | 令和6年4月 (126), 令和6年7月 (127), 平成30年6月 (128), 令和5年4月 (110) | 上野: shelters per 町会, 避難場所 per 町丁目, 地区内残留地区, 一時滞在施設 |
+| 台東区 町会区域一覧表, https://www.city.taito.lg.jp/kurashi/kyodo/tyoukai/choukaikuikiichiran.html | 令和8年3月修正 (page 2026-03-09) | 町会 to 町丁目, hence each shelter's target areas |
+| 東京都水道局 災害時給水ステーション一覧, https://www.waterworks.metro.tokyo.lg.jp/kurashi/shinsai/ichiran | 令和7年11月1日 | 上野恩賜公園 給水 |
+| 台東区 震災時の避難, 帰宅困難者対策, 防災行政無線, 放送内容の確認, たいとう防災気象情報メール pages and the two mail archives | 2026-07-30, 2026-09-03, 2024-01-05, 2021-07-06, 2024-10-29; archives as of 2026-11-04 | evacuation rule, candidate facilities, broadcast channels |
+| 東急, JR East (武蔵溝ノ口 and 上野), Tokyo Metro and 京成 station pages, read in the browser pane | 2026-11-05 | stations, addresses, lines |
+
+The plans' tables have merged cells that the extracted text scrambles, so every table used was read from the PDF page rendered as an image (a PDFKit script outside the repository, as for Shibuya). The downloads went into scratch folders and were deleted.
+
+**Decisions, open for review**
+- 溝の口: "下作延 near the station" is 下作延1丁目 and 2丁目 (centres about 0.4 km from the station; 3丁目 to 7丁目 are 0.7 to 1.3 km away). 二子 stays out, as briefed. The station's `area_name_ja` is 溝口2丁目 (東急's address, 溝口2-1-1); the station point of the check falls in 溝口1丁目, as JR's side of the station does.
+- 溝の口: the ward office is kind `office` (the brief names it apart), with its 応急給水拠点 in `notes_ja`; the pilot board files 中原区役所 as `water_point`. The two 100 m3 tanks at 高津小学校 and 久本小学校 are notes on those shelters, not separate places. Six of the eleven 一時滞在施設 of the 武蔵溝ノ口駅 group are in, the ones at the station; the rest are listed in `docs/BOARDS.md`.
+- 上野: 台東区 assigns shelters per 町会. Target areas come from joining 資料第127 (町会 per shelter) with the 町会区域一覧表 (町丁目 and 番地 per 町会), with "の一部" where a 町丁目 is split. Two inconsistencies between 資料第126 and 127 are written down in `docs/BOARDS.md` (仲御徒町中町会, 長者町一丁目 and 上野南大門町).
+- 上野: no 一時集合場所 in the seed: the ward re-checked them with every 町会 for the 防災地図 of 2026-05, which was not read, so the 2024 list may be stale. 上野恩賜公園 is two places, the 避難場所 (park, no address) and the water station (上野公園8-51), with aliases that do not overlap. 京成上野 is an alias of 上野駅 as briefed, its own address in `notes_ja`.
+- `supabase/seed/boards.json`'s `_note` names the sources of the first two boards only; it is one line that both board sessions would edit, so it was left as it is and `docs/BOARDS.md` carries the sources.
+
+**Code**
+- `supabase/seed/boards.json`: the two boards appended at the end; nothing else in the file changed (the diff is insertions only).
+- `lib/geo/mizonokuchi.json` (14 features, 11,588 bytes) and `lib/geo/ueno.json` (17 features, 12,080 bytes) by `scripts/geo/build.ts --board <slug>` from the e-Stat 2020 Shapefiles `code=14134` (zip 70 KB, `r2ka14134.shp`, 75 small areas) and `code=13106` (zip 46 KB, `r2ka13106.shp`, 108 small areas); every name matched one record; 30% simplification. The Shapefiles were deleted.
+- `lib/geo/polygons.ts`: one import and one `BY_SLUG` line per board (checklist step 4; the brief's file list did not name this file, but the board has no polygons without it). `lib/geo/index.ts`: `14134` 川崎市高津区 and `13106` 東京都台東区 in `MUNICIPALITY_JA`.
+- `scripts/check-boards.ts`: expectations for both boards (溝の口駅 35.5996, 139.6106 in 溝口1丁目; 上野駅 35.7141, 139.7774 in 上野7丁目). The cross-board block compared only the first two boards; it now checks every pair for shared polygons and each board's landmark against every other board.
+- Found on the way, not fixed (outside this PR's files): `scripts/geo/build.ts --write-seed` replaces the one-line form `{ "code": null, "name_ja": <name> }`, but `boards.json` is now laid out one field per line, so it reported "0 area codes filled". The codes were filled from the generated polygon files instead (same codes, by name). A follow-up can make the script parse the JSON.
+
+## 2026-11-05 (Thu), boards: 札幌 大通 and 博多 (data, polygons, seed)
+
+**Model:** `claude-opus-5-5` in Claude Code, implementation role, in its own worktree (branch `day7-boards-west`, cut from `main` at `d89e1b3`) while another session built the 高津区 and 上野 boards in the same files. Two research subagents (same model), one per city, read the official pages and wrote their findings outside the repository; four of the key pages were then read again by hand (Sapporo's 中央区 shelter list and 一時滞在施設 list, Fukuoka's shelter list and 防災メール page) and matched. No Claude API call was added or changed. The database was neither read nor written: the integrator seeds after review. A usage limit stopped the session once midway; the work resumed from its local commit.
+
+**The boards**
+
+| slug | name (ja, en, zh, ko, vi) | areas | polygons | landmark |
+|---|---|---|---|---|
+| `sapporo` | 札幌 大通, Sapporo Odori, 札幌 大通, 삿포로 오도리, Sapporo Odori | 45 条丁目 of 札幌市中央区 (`01101`) | `lib/geo/sapporo.json`, 12,820 bytes | 大通駅 (43.0607, 141.3538): 大通西2丁目 |
+| `hakata` | 博多, Hakata, 博多, 하카타, Hakata | 13 町丁目 of 福岡市博多区 (`40132`) | `lib/geo/hakata.json`, 9,252 bytes | 博多駅 (33.5897, 130.4207): 博多駅中央街 |
+
+Both mode `peace`. Codes, the source of every place and what was left out are in `docs/BOARDS.md`.
+
+**Decisions, open for review**
+- **Sapporo has 45 areas, not 10 to 16.** The brief expected e-Stat to group blocks; it does not: every 条丁目 block is its own small area (990 in 中央区). The brief's list (北一条西 to 北五条西, 大通西, 南一条西 to 南三条西, each 1丁目 to 5丁目) is kept whole: 12.8 KB of polygons, and the board is 0.9 km by 1.4 km, smaller than 博多's 13 町丁目 (1.9 km by 1.9 km). The narrower choice would be 西2丁目 to 西4丁目 only (27 areas). Area names follow e-Stat with the last numeral as a digit (北一条西1丁目), which is what `scripts/geo/build.ts` matches; the home page folds them to 北一条西, 北二条西 and so on.
+- **Sapporo shelters.** The city's 中央区 list gives name and address only and assigns no area, and no 指定避難所 or 指定緊急避難場所 lies inside the 45 blocks. The seed carries the two nearest 基幹避難所 (資生館小学校 south west, 中央中学校 east of 創成川) without `target_areas_ja`, the 一時避難場所 赤レンガ庁舎前庭 next to the board, and 大通公園 with `verified: false` (the city designates "every park" and never names it). The winter rule is not a per-shelter closure: earthquake sites must be indoors because of "寒さ・積雪等の冬季条件", and the city tells people in a winter earthquake to go quickly to a designated 小中学校; that sentence is in the notes of both shelters and both parks.
+- **Sapporo water.** No 応急給水 point lies inside the board; the 藻岩第1緊急時給水管路 runs under 西6丁目, one block west, with an outlet at almost every block. Four outlets are seeded (北5条, 北1条, 大通, 南3条); the others are listed.
+- **Sapporo stations.** 札幌駅 is one place for JR and the subway's さっぽろ駅 (南北線 N06, 東豊線 H07), without an address and without JR line aliases: neither JR北海道 nor the 交通局 publishes either in text. The JR building is in 北区, so the one-ward rule keeps it off the board's polygons; the subway concourse (北4条西4丁目) and the station's south side are inside. The two concourses are also seeded as `commuter_shelter` places, since the city lists them as 一時滞在施設.
+- **Hakata target areas come from the school zones.** 福岡市 says it opens whichever shelters are safe and assigns none. `target_areas_ja` follows the 通学区域 list (令和8年4月1日現在): 堅粕小 for 博多駅前2丁目, 博多駅中央街, 博多駅東 and most of 博多駅前1丁目; 博多小 for the rest of 1丁目; 東住吉小 and 東住吉中 for 博多駅前3丁目, 4丁目 and 博多駅南; 住吉小・中 for 住吉. Each shelter's notes say the mapping is ours. The per-hazard notes are the city's own (堅粕小学校 浸水時は使用不可, 東住吉中学校 2階以上, and so on), and 東光中学校 is seeded because it is the nearest indoor site that stays usable in a flood for the 堅粕小 zone.
+- **Hakata water.** The 水道局 names no walk-up supply point; water comes at opened shelters (仮設水槽, 応急給水栓) or by truck. The one named facility near the station is the 給水基地 at the 水道局本庁舎 (博多駅前1丁目28-15), where trucks are filled; it is seeded as `water_point` with notes that say exactly that. Leaving it out is the alternative.
+- **Hakata station aliases** carry the bare line names 鹿児島本線, 山陽新幹線, 九州新幹線, 地下鉄空港線 and 地下鉄七隈線, as briefed: a notice about a line's suspension then lands on the station. JR line names come from maps, not from JR's pages (JR九州's page lists none, JR西日本's returned 404), as with 東急 and 京王 for 渋谷.
+- 福岡市役所 is in 中央区, so its `address_ja` is the full 福岡市中央区天神1丁目8番1号, which the map search uses as it is instead of putting 福岡市博多区 in front.
+
+**Sources, all read 2026-11-05**
+
+| city | source | as of | used for |
+|---|---|---|---|
+| 札幌 | 避難場所等（中央区） https://www.city.sapporo.jp/kikikanri/higoro/hinan/cyuuou.html | 更新日 2026-06-30 | shelters, types, hazard flags |
+| 札幌 | 一時滞在施設 https://www.city.sapporo.jp/kikikanri/torikumi/itizitaizaishisetsu.html | 更新日 2026-03-06, list 令和6年8月現在 | nine 一時滞在施設 |
+| 札幌 | 水道局 拠点給水施設 https://www.city.sapporo.jp/suido/riyosya/saigai/torikumi/oukyu/index.html | 更新日 2024-06-14 | 給水口 No.6, 8, 10, 13 |
+| 札幌 | 避難場所基本計画 (PDF) and 避難の心得 https://www.city.sapporo.jp/kikikanri/higoro/iza/kokorohe.html | 令和元年改定; 更新日 2024-02-13 | the winter rule |
+| 札幌 | 交通局 timetable pages; JR北海道 station CSV | 2026-08-01 and 2016-07-25; Last-Modified 2026-11-02 | station numbers and lines |
+| 札幌 | portal JSON, city RSS, LINE, そなえ, X pages | see `docs/BOARDS.md` | broadcast channels and feeds |
+| 福岡 | 指定緊急避難場所及び指定避難所一覧 https://www.city.fukuoka.lg.jp/bousai/shiteihinannbasyooyobishiteihinannjyoitirann.html and its 博多区 PDF | 更新日 2024-08-28; PDF R5.5.1現在 | shelters, parks, per-hazard notes |
+| 福岡 | 通学区域 https://www.city.fukuoka.lg.jp/kyoiku-iinkai/tsuugaku/ed/area/tsugaku.html | 更新日 2026-10-27, lists 令和8年4月1日現在 | target areas |
+| 福岡 | 帰宅困難者対策について https://www.city.fukuoka.lg.jp/bousai/bousaibooklist_2.html and the 一時滞在施設 agreements PDF | 更新日 2026-07-23; 令和8年3月末時点 | six 一時滞在施設 |
+| 福岡 | 水道局 災害時の対応 https://www.city.fukuoka.lg.jp/mizu/h_chosei/life/0043_2_2.html; 市議会 document 2024-03-14 | 更新日 2026-07-24 | the 給水基地 |
+| 福岡 | 地下鉄 博多駅 https://subway.city.fukuoka.lg.jp/eki/stations/hakata.php; 博多区役所 access page | none shown; 更新日 2026-09-01 | station, ward office |
+| 福岡 | 防災メール https://www.city.fukuoka.lg.jp/shimin/b_suishin/bousai/bousaimail.html, LINE, ツナガル+, 防災気象情報, 福岡県 防災行政無線 table | 更新日 2026-02-24 and others | broadcast channels and feed |
+
+The PDFs were downloaded into their own scratch folders, read there and deleted.
+
+**Code**
+- `lib/geo/polygons.ts`: one import and one `BY_SLUG` line per board, after `shibuya` (not in the brief's file list, but without it neither board has polygons and `check:boards` fails). `MUNICIPALITY_JA`: `01101` 札幌市中央区 and `40132` 福岡市博多区 at the bottom.
+- `scripts/check-boards.ts`: `EXPECT` entries for both boards at the end (prefectures `01` and `40`), and a per-board check that the landmark resolves to nothing on every other board. The 高津区 and 上野 session is replacing the bottom "first and second share no polygon" block with an all-pairs version plus the same landmark check, so whichever PR merges second can drop the in-loop one.
+- No new place kind and no new message key: the six kinds cover both boards.
+
+**Acceptance**
+
+| check | result |
+|---|---|
+| `pnpm typecheck` | clean |
+| `pnpm lint` | clean |
+| `pnpm guard --all` | clean |
+| `pnpm check:boards` | 58 of 58 (4 boards; 溝の口駅 resolves to `14134401101` 溝口1丁目 and 上野駅 to `13106004007` 上野7丁目, each in no other board; no two boards share a polygon) |
+| `pnpm check:places`, `check:mode`, `check:inbox`, `check:placeholders` | 28 of 28, 34 of 34, 23 of 23, 17 of 17 |
+| `pnpm build` | compiled in 3.5 s, 12 static pages; no area code of the new boards in `.next/static`, only in server chunks |
+| `lib/geo/mizonokuchi.json` | 14 features, 11,588 bytes |
+| `lib/geo/ueno.json` | 17 features, 12,080 bytes |
+| local `pnpm dev` | not run: the boards are not seeded and the production database must not be written |
+
+`pnpm db:seed --dry-run --board mizonokuchi`:
+
+| `pnpm check:boards` | 53 of 53 (four boards) |
+| `pnpm check:places`, `check:mode`, `check:inbox`, `check:placeholders` | pass |
+| `pnpm build` (once) | compiled in 3.3 s, 12 static pages; no area code of either board in `.next/static`, only in server chunks |
+| `lib/geo/sapporo.json` | 45 features, 12,820 bytes |
+| `lib/geo/hakata.json` | 13 features, 9,252 bytes |
+| 大通駅 (43.0607, 141.3538) through `resolveArea` | `01101210002` 大通西2丁目; no other board |
+| 博多駅 (33.5897, 130.4207) through `resolveArea` | `401320020` 博多駅中央街; no other board |
+| `pnpm db:seed --dry-run --board sapporo` and `--board hakata` | below |
+| local `pnpm dev` | not run: neither board is seeded and the production database must not be written |
+
+`pnpm db:seed --dry-run --board sapporo`:
+
+```
+dry run: nothing is written and the database is not read, so each board shows both outcomes.
+
+board mizonokuchi
+  if absent:  insert slug, name, mode peace, listed true, area_names, known_places, a new admin token; 0 sample cards
+  if present: update name, area_names, known_places; mode, listing, token and cards unchanged
+  name: 溝の口 / Mizonokuchi / 沟之口 / 미조노쿠치 / Mizonokuchi
+  area_names: 14, 14 with an e-Stat code
+    14134401101  溝口1丁目
+    14134401102  溝口2丁目
+    14134401103  溝口3丁目
+    14134401104  溝口4丁目
+    14134401105  溝口5丁目
+    14134401106  溝口6丁目
+    14134411001  久本1丁目
+    14134411002  久本2丁目
+    14134411003  久本3丁目
+    14134410001  坂戸1丁目
+    14134410002  坂戸2丁目
+    14134410003  坂戸3丁目
+    14134412101  下作延1丁目
+    14134412102  下作延2丁目
+  known_places: 20 (shelter 9, water_point 2, station 1, office 1, commuter_shelter 6, park 1), verified 20
+    takatsu-es  shelter  川崎市立高津小学校  溝口4-19-1
+    nishitakatsu-jhs  shelter  川崎市立西高津中学校  久地1-10-1
+    shimosakunobe-es  shelter  川崎市立下作延小学校  下作延5-19-1
+    takatsu-jhs  shelter  川崎市立高津中学校  久本3-11-2
+    hisamoto-es  shelter  川崎市立久本小学校  久本3-11-3
+    takatsu-hs  shelter  川崎市立高津高等学校  久本3-11-1
+    higashitakatsu-jhs  shelter  川崎市立東高津中学校  末長4-1-1
+    sakado-es  shelter  川崎市立坂戸小学校  坂戸1-18-1
+    nishikajigaya-es  shelter  川崎市立西梶ヶ谷小学校  梶ヶ谷2-14-1
+    mizonokuchi1-water  water_point  溝口1丁目 応急給水拠点  溝口1-6-7
+    mizonokuchi5-water  water_point  溝口5丁目 応急給水拠点  溝口5-24
+    mizonokuchi-sta  station  溝の口駅
+    takatsu-ward-office  office  高津区役所  下作延2-8-1
+    takatsu-shiminkan  commuter_shelter  川崎市高津市民館  溝口1-4-1
+    nocty1  commuter_shelter  ノクティ１ビル  溝口1-3-1
+    hotel-mets-mizonokuchi  commuter_shelter  ホテルメッツ溝ノ口  溝口1-1-5
+    tecno-kawasaki  commuter_shelter  川崎市生活文化会館（てくのかわさき）  溝口1-6-10
+    scrum21  commuter_shelter  川崎市男女共同参画センター（すくらむ２１）  溝口2-20-1
+    kawasaki-daiichi-hotel  commuter_shelter  川崎第一ホテル溝ノ口  溝口2-3-12
+    midorigaoka-cemetery  park  緑ケ丘霊園
+```
+
+`pnpm db:seed --dry-run --board ueno`:
+
+board sapporo
+  if absent:  insert slug, name, mode peace, listed true, area_names, known_places, a new admin token; 0 sample cards
+  if present: update name, area_names, known_places; mode, listing, token and cards unchanged
+  name: 札幌 大通 / Sapporo Odori / 札幌 大通 / 삿포로 오도리 / Sapporo Odori
+  area_names: 45, 45 with an e-Stat code
+    01101790501  北五条西1丁目
+    01101790502  北五条西2丁目
+    01101790503  北五条西3丁目
+    01101790504  北五条西4丁目
+    01101790505  北五条西5丁目
+    01101790401  北四条西1丁目
+    01101790402  北四条西2丁目
+    01101790403  北四条西3丁目
+    01101790404  北四条西4丁目
+    01101790405  北四条西5丁目
+    01101790301  北三条西1丁目
+    01101790302  北三条西2丁目
+    01101790303  北三条西3丁目
+    01101790304  北三条西4丁目
+    01101790305  北三条西5丁目
+    01101790201  北二条西1丁目
+    01101790202  北二条西2丁目
+    01101790203  北二条西3丁目
+    01101790204  北二条西4丁目
+    01101790205  北二条西5丁目
+    01101790101  北一条西1丁目
+    01101790102  北一条西2丁目
+    01101790103  北一条西3丁目
+    01101790104  北一条西4丁目
+    01101790105  北一条西5丁目
+    01101210001  大通西1丁目
+    01101210002  大通西2丁目
+    01101210003  大通西3丁目
+    01101210004  大通西4丁目
+    01101210005  大通西5丁目
+    01101690101  南一条西1丁目
+    01101690102  南一条西2丁目
+    01101690103  南一条西3丁目
+    01101690104  南一条西4丁目
+    01101690105  南一条西5丁目
+    01101690201  南二条西1丁目
+    01101690202  南二条西2丁目
+    01101690203  南二条西3丁目
+    01101690204  南二条西4丁目
+    01101690205  南二条西5丁目
+    01101690301  南三条西1丁目
+    01101690302  南三条西2丁目
+    01101690303  南三条西3丁目
+    01101690304  南三条西4丁目
+    01101690305  南三条西5丁目
+  known_places: 21 (shelter 2, park 2, water_point 4, station 2, office 2, commuter_shelter 9), verified 20
+    shiseikan-es  shelter  資生館小学校  南3条西7丁目1-1
+    chuo-jhs  shelter  中央中学校  北4条東3丁目
+    akarenga-garden  park  赤レンガ庁舎前庭  北3条西6丁目
+    odori-park  park (unverified)  大通公園  大通西1丁目～12丁目
+    water-n5w6  water_point  緊急時給水管路 給水口No.13  北5条西6丁目
+    water-n1w6  water_point  緊急時給水管路 給水口No.10  北1条西6丁目
+    water-odori-w6  water_point  緊急時給水管路 給水口No.8  大通西6丁目
+    water-s3w6  water_point  緊急時給水管路 給水口No.6  南3条西6丁目
+    odori-sta  station  大通駅
+    sapporo-sta  station  札幌駅
+    sapporo-city-hall  office  札幌市役所  北1条西2丁目
+    chuo-ward-office  office  中央区役所  南3条西11丁目
+    odori-concourse  commuter_shelter  地下鉄大通駅コンコース  大通西4丁目
+    sapporo-concourse  commuter_shelter  地下鉄さっぽろ駅コンコース  北4条西4丁目
+    chikaho  commuter_shelter  札幌駅前通地下歩行空間  北3条西3丁目～大通西3丁目
+    aurora-town  commuter_shelter  さっぽろ地下街オーロラタウン  大通西1丁目～3丁目
+    pole-town  commuter_shelter  さっぽろ地下街ポールタウン  南1条西3丁目～南4条西3丁目
+    apia  commuter_shelter  アピア  北5条西3丁目～4丁目
+    stellar-place  commuter_shelter  札幌ステラプレイス  北5条西2丁目
+    tv-tower  commuter_shelter  さっぽろテレビ塔  大通西1丁目
+    sapporo-community-plaza  commuter_shelter  札幌市民交流プラザ  北1条西1丁目
+```
+
+`pnpm db:seed --dry-run --board hakata`:
+
+```
+dry run: nothing is written and the database is not read, so each board shows both outcomes.
+
+board ueno
+  if absent:  insert slug, name, mode peace, listed true, area_names, known_places, a new admin token; 0 sample cards
+  if present: update name, area_names, known_places; mode, listing, token and cards unchanged
+  name: 上野 / Ueno / 上野 / 우에노 / Ueno
+  area_names: 17, 17 with an e-Stat code
+    13106004001  上野1丁目
+    13106004002  上野2丁目
+    13106004003  上野3丁目
+    13106004004  上野4丁目
+    13106004005  上野5丁目
+    13106004006  上野6丁目
+    13106004007  上野7丁目
+    13106003001  東上野1丁目
+    13106003002  東上野2丁目
+    13106003003  東上野3丁目
+    13106003004  東上野4丁目
+    13106003005  東上野5丁目
+    13106003006  東上野6丁目
+    131060060  上野公園
+    13106013001  上野桜木1丁目
+    13106013002  上野桜木2丁目
+    13106005001  池之端1丁目
+  known_places: 18 (shelter 8, water_point 1, park 2, station 1, office 1, commuter_shelter 5), verified 18
+    kuromon-es  shelter  黒門小学校  上野1-16-20
+    okachimachi-taito-jhs  shelter  御徒町台東中学校  台東4-13-16
+    ueno-es  shelter  上野小学校  東上野6-16-8
+    taito-rojin-center  shelter  老人福祉センター  東上野2-25-14
+    higashiueno-kuminkan  shelter  東上野区民館  東上野3-24-6
+    shinobugaoka-jhs  shelter  忍岡中学校  上野公園18-20
+    ueno-jhs  shelter  上野中学校  上野桜木1-14-55
+    shinobugaoka-es  shelter  忍岡小学校  池之端2-1-22
+    ueno-park-water  water_point  上野恩賜公園 災害時給水ステーション  上野公園8-51
+    ueno-park  park  上野恩賜公園
+    yanaka-cemetery  park  谷中墓地
+    ueno-sta  station  上野駅
+    taito-city-office  office  台東区役所  東上野4-5-6
+    tokyo-bunka-kaikan  commuter_shelter  東京文化会館  上野公園5-45
+    tobikan  commuter_shelter  東京都美術館  上野公園8-36
+    ueno-green-salon  commuter_shelter  上野グリーンサロン  上野公園7-47
+    ueno-hs  commuter_shelter  都立上野高等学校  上野公園10-14
+    ueno-chuo-parking  commuter_shelter  上野中央通り地下駐車場  上野2-13先
+```
+
+**For the integrator.** After the merge has deployed: `pnpm db:seed --board mizonokuchi --token-file .env.admin-token.local` and `pnpm db:seed --board ueno --token-file .env.admin-token.local` (each creates its board listed and writes its admin token to that file; no other board is touched). Then the inbox: the Email Worker `engawa-inbox` posts each Kawasaki mail to both 武蔵小杉 and 溝の口, and learns `bousai-ueno@engawaboard.com` for 上野 (`docs/BOARDS.md` has the steps and the human parts).
+
+**Needed a human**
+- Native read of the Chinese, Korean and Vietnamese place names of both boards.
+- 溝の口 inbox: generate the secret on `/b/mizonokuchi/admin` and set the allowed sender `kawasaki@sg-p.jp`; decide whether a mail about one ward may switch the other ward's board to disaster mode.
+- 上野 inbox: the two Gmail steps for たいとう防災気象情報メール, then the sender from the first mail.
+
+board hakata
+  if absent:  insert slug, name, mode peace, listed true, area_names, known_places, a new admin token; 0 sample cards
+  if present: update name, area_names, known_places; mode, listing, token and cards unchanged
+  name: 博多 / Hakata / 博多 / 하카타 / Hakata
+  area_names: 13, 13 with an e-Stat code
+    40132001001  博多駅前1丁目
+    40132001002  博多駅前2丁目
+    40132001003  博多駅前3丁目
+    40132001004  博多駅前4丁目
+    401320020  博多駅中央街
+    40132003001  博多駅東1丁目
+    40132003002  博多駅東2丁目
+    40132003003  博多駅東3丁目
+    40132004001  博多駅南1丁目
+    40132004002  博多駅南2丁目
+    40132008001  住吉1丁目
+    40132008002  住吉2丁目
+    40132008003  住吉3丁目
+  known_places: 26 (shelter 9, park 7, water_point 1, station 1, office 2, commuter_shelter 6), verified 26
+    katakasu-es  shelter  堅粕小学校  博多駅東1丁目8-1
+    katakasu-kominkan  shelter  堅粕公民館・老人いこいの家  博多駅東1丁目8-2
+    toko-jhs  shelter  東光中学校  東光2丁目15-1
+    higashisumiyoshi-es  shelter  東住吉小学校  博多駅南2丁目6-1
+    higashisumiyoshi-jhs  shelter  東住吉中学校  博多駅南2丁目5-1
+    higashisumiyoshi-kominkan  shelter  東住吉公民館・老人いこいの家  博多駅前4丁目11-12
+    sumiyoshi-school  shelter  住吉小学校・中学校  美野島3丁目22-7
+    sumiyoshi-kominkan  shelter  住吉公民館  住吉5丁目6-1
+    hakata-es  shelter  博多小学校  奈良屋町1-38
+    dekimachi-park  park  出来町公園  博多駅前1丁目
+    fujita-park  park  藤田公園  博多駅前2丁目
+    meiji-park  park  明治公園  博多駅前3丁目
+    toryo-park  park  東領公園  博多駅前4丁目
+    ninjin-park  park  人参公園  博多駅前4丁目
+    nakahie-park  park  中比恵公園  博多駅東2丁目
+    otowa-park  park  音羽公園  博多駅南1丁目
+    waterworks-hq  water_point  福岡市水道局本庁舎（給水基地）  博多駅前1丁目28-15
+    hakata-sta  station  博多駅  博多駅中央街
+    hakata-ward-office  office  博多区役所  博多駅前2丁目8-1
+    fukuoka-city-hall  office  福岡市役所  福岡市中央区天神1丁目8番1号
+    hakata-underground  commuter_shelter  博多駅地下街  博多駅中央街1-1
+    jrjp-hakata  commuter_shelter  JRJP博多ビル  博多駅中央街8-1
+    kitte-hakata  commuter_shelter  KITTE博多  博多駅中央街9-1
+    kamiyo-hakata-chuo  commuter_shelter  紙与博多中央ビル  博多駅中央街7-21
+    connect-square  commuter_shelter  コネクトスクエア博多  博多駅東1丁目17-1
+    hakata-east-terrace  commuter_shelter  博多イーストテラス  博多駅東1丁目18-33
+```
+
+**Broadcasts.** Neither city has 同報系 loudspeakers with published text (Sapporo's 防災行政無線 is a 260 MHz link between offices and shelters; 福岡県's table lists only a 移動系 system for 福岡市). `docs/BOARDS.md` has each city's channels:
+- **Hakata** has the easy route: 福岡市防災メール registers by empty mail to `t-fukuoka-city@sg-p.jp`, the same delivery service as Kawasaki's, so the Gmail and Worker steps of `docs/INBOX.md` apply as they are.
+- **Sapporo** has no mail service at all. Its portal runs on undocumented JSON lists (`emergency.json`, `evacorder.json` and others) whose shape is written down for a generalized poller: one list per file, a numeric id, a last-updated time.
+
+**For the integrator.** After the merge has deployed:
+
+    pnpm db:seed --board sapporo --token-file .env.admin-token.local
+    pnpm db:seed --board hakata --token-file .env.admin-token.local
+
+Each creates its board listed, with no sample cards, and writes its admin token to that file. No other board is touched.
+
+**Needed a human**
+- Whether Sapporo keeps all 45 blocks or narrows to 西2丁目 to 西4丁目.
+- Whether Hakata's school-zone `target_areas_ja` and the 水道局 給水基地 as a `water_point` stay.
+- Native read of the Korean and Vietnamese place names (Sapporo's water outlets read "Kita 5 Nishi 6" in Latin letters).
+- Hakata inbox: subscribe the Gmail to 福岡市防災メール with 緊急情報 only, forward to `bousai-hakata@engawaboard.com`, take the allowed sender from the first mail.
+- Sapporo inbox: whether to ask 札幌市危機管理局 about polling the portal's `emergency.json` and `evacorder.json`.
+
+**Review fixes for PRs #37 and #38 (Fable, reviewing session, on the boards integration branch):** `boards.json` was rebuilt from both branches since git interleaved the two appended board objects; the Ueno candidate facility that may not open says so in its `notes_ja`; the 溝の口 section marks the city mail's ward coverage and the unread 高津区 closure page as not confirmed; `docs/INBOX.md` says one forwarder address may fan a mail out to several boards of one city, each with its own secret; the Hakata 水道局本庁舎 is an `office`, not a water point, with the bare 水道局 aliases dropped so a 断水 notice is never pinned to the truck base; five Sapporo addresses give one 丁目 instead of a range; the duplicated in-loop landmark check is gone in favour of the all-pairs block (93 checks); undated footer sources say so; the seed note points at `docs/BOARDS.md`.
+
 ## 2026-11-05 (Thu) early morning, README final, README.ja, about maintenance model, review follow-ups
 
 **Model:** `claude-opus-5-5` in Claude Code, implementation role, in its own worktree (branch `day7-readme`, cut from `main` after PR #33), brief from the reviewing session (Fable). Another session worked on web push at the same time; none of its files (`public/sw.js`, `app/api/push/**`, `lib/push/**`, `components/board/PushOptIn.tsx`, migration 0010, `lib/db/cards.ts`, `lib/pipeline.ts`, `components/board/BoardView.tsx`) were touched. No prompt, schema or model changed. Claude calls spent: one text drop-in (extract and translate; reconcile had no candidates). The 42 questions of the ask check went to boards without cards, which the route answers in code.
