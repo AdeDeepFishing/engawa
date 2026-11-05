@@ -39,9 +39,17 @@ export function localCardsForBoard(board: Board): Card[] {
     .map((c, i) => seedCardToCard(c, board.id, `seed-${i + 1}`, startedAt));
 }
 
+/**
+ * A sample card as a card, created `minutes_ago` before `now` so it looks
+ * fresh whenever a board is seeded. Its validity runs `valid_hours` from
+ * then, unless the entry names absolute times: `valid_from` and
+ * `valid_until` (ISO, written by scripts/export-samples.ts) stand for the
+ * event the card text names by date, so they are kept as they are.
+ */
 export function seedCardToCard(c: SeedCard, boardId: string, id: string, now: Date): Card {
   const created = new Date(now.getTime() - c.minutes_ago * 60_000).toISOString();
-  const validUntil = addHours(created, c.valid_hours);
+  const fixed = c as SeedCard & { valid_from?: string | null; valid_until?: string | null };
+  const validUntil = fixed.valid_until ?? addHours(created, c.valid_hours);
   return {
     id,
     board_id: boardId,
@@ -60,7 +68,7 @@ export function seedCardToCard(c: SeedCard, boardId: string, id: string, now: Da
     risk_flags: [],
     visibility: "public",
     conflict: null,
-    valid_from: created,
+    valid_from: fixed.valid_from ?? created,
     valid_until: validUntil,
     pinned: false,
     created_at: created,

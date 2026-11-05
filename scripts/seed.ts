@@ -104,6 +104,11 @@ function printDryRun(boards: SeedBoard[]): void {
     console.log(`board ${b.slug}`);
     console.log(`  if absent:  insert slug, name, mode ${b.mode}, listed true, area_names, known_places, a new admin token; ${samples.length} sample cards`);
     console.log(`  if present: update ${Object.keys(refreshed(b)).join(", ")}; mode, listing, token${args.has("--rotate-token") ? " (rotated: --rotate-token)" : ""} and cards unchanged${args.has("--reset-cards") ? `; --reset-cards: delete this board's cards, insert ${samples.length} sample cards` : ""}`);
+    for (const c of samples) {
+      const fixed = c as typeof c & { valid_until?: string | null };
+      const until = fixed.valid_until ? `until ${fixed.valid_until}` : `valid ${c.valid_hours} h`;
+      console.log(`    sample  ${c.minutes_ago} min ago  ${c.category}  ${c.place_id ?? "(no place)"}  ${c.title.ja}  (${until})`);
+    }
     console.log(`  name: ${Object.values(b.name).join(" / ")}`);
     console.log(`  area_names: ${b.area_names.length}, ${coded} with an e-Stat code`);
     for (const a of b.area_names) console.log(`    ${a.code ?? "(no code)"}  ${a.name_ja}`);
