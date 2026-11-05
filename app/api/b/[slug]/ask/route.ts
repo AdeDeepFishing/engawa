@@ -22,13 +22,18 @@ export const maxDuration = 60;
  * Questions are never stored, so there is no table to count them in: two
  * in-memory windows (lib/rate-limit.ts) per device, or per client address
  * for a request without a device id. Six a minute stops a burst; twenty an
- * hour stops a client that keeps asking all day. The daily Claude call cap
- * is the real budget guard.
+ * hour stops a client that keeps asking all day. The device id is minted by
+ * the client, so a third window per client address always applies as well:
+ * sixty an hour, enough for a household or a classroom behind one address,
+ * and it stops one script with a fresh device id per request from spending
+ * the daily Claude call cap, which every board shares.
  */
 const ASKS_PER_MINUTE = 6;
 const ASKS_PER_HOUR = 20;
+const ASKS_PER_IP_PER_HOUR = 60;
 const asksPerMinute = slidingWindow(ASKS_PER_MINUTE, MINUTE_MS);
 const asksPerHour = slidingWindow(ASKS_PER_HOUR, HOUR_MS);
+const asksPerIp = slidingWindow(ASKS_PER_IP_PER_HOUR, HOUR_MS);
 
 /**
  * Earlier question and answer pairs from the client, kept only when well
@@ -56,7 +61,8 @@ function parseHistory(value: unknown): AskTurn[] {
  * Response 200: {answer: {segments: [{text, cardIds}], cardIds, noInfo}}.
  * Errors: 400 bad_request, 404 board_not_found, 429 rate_limited with
  * scope "device" (or "ip" without a device id) and limit_per_minute 6 or
- * limit_per_hour 20, Retry-After 60 or 3600, 503 busy (daily Claude cap),
+ * limit_per_hour 20, or scope "ip" and limit_per_hour 60 for the address
+ * window, Retry-After 60 or 3600, 503 busy (daily Claude cap),
  * 502 failed. The question is never stored or logged.
  */
 export async function POST(req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
@@ -78,12 +84,14 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
   if (!board) return NextResponse.json({ error: "board_not_found" }, { status: 404 });
 
   const deviceId = isUuid(body.device_id) ? body.device_id.toLowerCase() : null;
-  const key = deviceId ?? `ip:${clientIp(req) ?? "unknown"}`;
+  const ipKey = `ip:${clientIp(req) ?? "unknown"}`;
+  const key = deviceId ?? ipKey;
   const full = overAny([
     [asksPerMinute, key],
     [asksPerHour, key],
+    [asksPerIp, ipKey],
   ]);
-  if (full) return rateLimited(deviceId ? "device" : "ip", full);
+  if (full) return rateLimited(deviceId && full !== asksPerIp ? "device" : "ip", full);
 
   const cards = await listPublicCards(board);
   if (cards.length === 0) {

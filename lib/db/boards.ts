@@ -181,10 +181,23 @@ type PublicCardRow = Omit<Card, "has_masked_image"> & { masked_image_path?: stri
  * and the submission) and with `has_masked_image` instead, sources sorted,
  * and no language blank: a language the translate step has not written yet
  * carries English or Japanese, with `missing_langs` saying which ones.
+ * Columns only the server and the admin page use are removed too:
+ * `held_reason` (it can hold reconcile model text), `risk_flags`,
+ * `purge_after`, and the submission id on every conflict statement.
  */
 export function toPublicCard(row: PublicCardRow): Card {
-  const { masked_image_path, ...rest } = row;
-  return withLangFallback(withSortedSources({ ...rest, has_masked_image: Boolean(masked_image_path) }));
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { masked_image_path, held_reason, risk_flags, purge_after, ...rest } = row as PublicCardRow & {
+    purge_after?: string | null;
+  };
+  const conflict = rest.conflict
+    ? {
+        ...rest.conflict,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        statements: (rest.conflict.statements ?? []).map(({ submission_id, ...s }) => s),
+      }
+    : rest.conflict;
+  return withLangFallback(withSortedSources({ ...rest, conflict, has_masked_image: Boolean(masked_image_path) }));
 }
 
 export function sortCards(cards: Card[]): Card[] {

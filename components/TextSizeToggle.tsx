@@ -8,8 +8,10 @@ export function TextSizeToggle() {
   return (
     <button
       type="button"
+      // A fixed name: the pressed state alone says "large", so a screen
+      // reader never hears a state in the name and a second one after it.
       aria-pressed={large}
-      aria-label={`${t("nav.text_size")}: ${large ? t("text_size.large") : t("text_size.normal")}`}
+      aria-label={t("nav.text_size")}
       onClick={() => setTextSize(large ? "normal" : "large")}
       className="rounded-lg border border-line-strong bg-surface px-3 font-semibold hover:border-accent active:bg-held-bg aria-pressed:border-accent aria-pressed:text-accent"
     >

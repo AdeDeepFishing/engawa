@@ -121,7 +121,7 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 
 /** Risk flags or the reconcile reason, in the reader's language where we have one. */
 function heldReasons(card: AdminCard, t: (key: MessageKey) => string): string[] {
-  const raw = card.held_reason ?? card.risk_flags.join(",");
+  const raw = card.held_reason ?? (card.risk_flags ?? []).join(",");
   if (raw.startsWith("reconcile:")) return [`${t("admin.reason.reconcile")}: ${raw.slice("reconcile:".length).trim()}`];
   return raw
     .split(",")

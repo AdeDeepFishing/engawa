@@ -6,8 +6,13 @@ import type { ExtractFact, ExtractResult } from "@/lib/claude/extract";
 import type { ReconcileCandidate, ReconcileDecision } from "@/lib/claude/reconcile";
 import type { Board, Platform, ReconcileAction, Submission } from "@/lib/types";
 
-/** Submissions stuck in processing longer than this are marked failed on the next read. */
-export const STUCK_AFTER_MS = 120_000;
+/**
+ * Submissions stuck in processing longer than this are marked failed on the
+ * next read. It sits above the process route's 300 second maxDuration, so a
+ * run that is still going (a retry of an older submission, or one finishing
+ * after its uploader left) is never failed and claimed a second time.
+ */
+export const STUCK_AFTER_MS = 330_000;
 /** Until processing finishes, a submission and its image live at most this long. */
 const PENDING_RETENTION_HOURS = 24;
 const DEVICE_RETENTION_DAYS = 90;
@@ -137,7 +142,7 @@ export async function markFailed(id: string, message: string): Promise<void> {
   if (error) throw error;
 }
 
-/** Watchdog: anything processing for over two minutes is failed and can be retried. */
+/** Watchdog: anything processing for over 330 seconds is failed and can be retried. */
 export async function failStuckSubmissions(boardId: string): Promise<void> {
   const cutoff = new Date(Date.now() - STUCK_AFTER_MS).toISOString();
   const { error } = await db()

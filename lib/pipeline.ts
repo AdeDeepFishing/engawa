@@ -296,6 +296,12 @@ async function maskWithoutBlocking(
         (o.dropped ? `, ${o.dropped} dropped` : "") +
         (o.rescaledFrom ? `, rescaled from ${o.rescaledFrom.width}x${o.rescaledFrom.height}` : ""),
     );
+    // A box the model returned but code could not draw may be a name left
+    // uncovered. Fail closed: the card is published without the image.
+    if (o.dropped > 0) {
+      console.warn(`masking ${submissionId}: ${o.dropped} box(es) could not be drawn, the image is not kept`);
+      return null;
+    }
     return masked;
   } catch (err) {
     const kind =
