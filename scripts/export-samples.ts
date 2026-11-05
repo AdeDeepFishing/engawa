@@ -9,9 +9,9 @@
  * board (`pnpm board:throwaway create <slug>-demo --from <slug>`), which keeps
  * the seeded board's place ids, so `place_id` carries over as it is. The
  * entries get `board_slug` <seeded slug> and `exported_from` <throwaway
- * slug>; a second run for the same throwaway board replaces the entries of
- * the first in place instead of adding to them. Entries of other boards and
- * hand-written entries are never touched.
+ * slug>; a later run for the same board, from any throwaway, replaces its
+ * exported entries in place instead of adding to them. Entries of other
+ * boards and hand-written entries are never touched.
  *
  * Times: the oldest card gets `minutes_ago` 4320 (3 days), the newest 40,
  * the others spread between on a geometric scale, so the board looks like
@@ -176,8 +176,10 @@ async function main() {
   const entries = cards.map((c, i) => toEntry(c, as, from, minutesAgo(i, cards.length), now));
 
   const file = JSON.parse(readFileSync(SEED_PATH, "utf8")) as { _note?: string; cards: Entry[] };
-  const firstOld = file.cards.findIndex((e) => e.exported_from === from);
-  const kept = file.cards.filter((e) => e.exported_from !== from);
+  // Earlier exports for this board give way, whatever throwaway they came from; hand-written entries (no exported_from) stay.
+  const stale = (e: Entry) => e.board_slug === as && Boolean(e.exported_from);
+  const firstOld = file.cards.findIndex(stale);
+  const kept = file.cards.filter((e) => !stale(e));
   const at = firstOld >= 0 ? firstOld : kept.length;
   const replaced = file.cards.length - kept.length;
   file.cards = [...kept.slice(0, at), ...entries, ...kept.slice(at)];

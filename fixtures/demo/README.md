@@ -27,7 +27,7 @@ ueno/
 mizonokuchi/
   mz1-shelter-drill-notice.{png,jpg}     paper, ja, 町内会 notice: 避難所開設訓練 11/21, 高津小学校
   mz2-facebook-vi.txt                    pasted post, vi (Facebook group style), water outage for pipe work 11/12 in a building near 溝の口駅
-  mz3-leaves-cleanup-ja.txt              pasted text, ja, 町内会 and 商店会: leaf cleanup 11/8 at 溝の口駅 北口
+  mz3-leaves-cleanup-ja.txt              pasted text, ja, 町内会 and 商店会: leaf cleanup 11/15 at 溝の口駅 北口
 sapporo/
   sp1-winter-shelter-notice.{png,jpg}    paper, ja, 町内会 notice: winter shelter experience and snowy road walking 11/21, 資生館小学校
   sp2-snow-volunteers-en.txt             pasted post, en, snow shovel volunteers, kick-off 11/14 at 大通公園 西6丁目

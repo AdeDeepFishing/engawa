@@ -1877,7 +1877,7 @@ Why: 渋谷, 上野, 溝の口, 札幌 大通 and 博多 were live and empty. An
 | ueno | ue2 | heard (loudspeaker), ja | 上野恩賜公園 たけのだい広場で地域合同防災訓練、11月14日（土）10時から12時 | `ueno-park` | secondhand, platform loudspeaker |
 | mizonokuchi | mz1 | notice photo, ja | 高津小学校（川崎市立高津小学校）体育館で避難所開設訓練、11月21日（土）9:00〜11:30 | `takatsu-es` | official |
 | mizonokuchi | mz2 | pasted post, vi | 溝の口駅近くの建物、11月12日（木）9時から12時まで断水 | `mizonokuchi-sta` | secondhand |
-| mizonokuchi | mz3 | pasted text, ja | 溝の口駅北口の広場周辺で落ち葉清掃、11月8日（日）8時から9時 | `mizonokuchi-sta` | firsthand |
+| mizonokuchi | mz3 | pasted text, ja | 溝の口駅北口の広場周辺で落ち葉清掃、11月15日（日）8時から9時 | `mizonokuchi-sta` | firsthand |
 | sapporo | sp1 | notice photo, ja | 資生館小学校 体育館で冬の避難所体験会、11月21日（土）10:00から12:00 | `shiseikan-es` | official |
 | sapporo | sp2 | pasted post, en | 大通公園（大通西6丁目側）で除雪ボランティア説明会とスコップ配布、11月14日10時から11時 | `odori-park` | unknown |
 | sapporo | sp3 | pasted text, ja | 駐輪場、11月20日（金）から冬期閉鎖 | none (駐輪場) | official |
