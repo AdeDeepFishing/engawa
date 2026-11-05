@@ -2104,3 +2104,24 @@ The server log shows reconcile (create) and translate (zh, ko, vi, easy_ja in 65
 **Docs.** `docs/PLAN.md` (architecture, client-driven processing) and `CLAUDE.md` (architecture rules) said a disconnect leaves the submission in `processing` and the watchdog fires at 120 seconds; both now say the run finishes with `after()` and the watchdog fires at 330 seconds.
 
 **For the reviewing session.** The IP window counts every ask from one address, so a venue where many judges share one network could reach 60 an hour together; each sees the usual rate-limited message. After the merge, `pnpm db:seed --board <slug> --reset-cards` puts the corrected sample cards on the live boards; it deletes the cards there now, including any made during rehearsals.
+
+## 2026-11-06 (Fri), rehearsal fixes: noInfo flag and doubled place names in Japanese
+
+**Model:** `claude-opus-5-5` in Claude Code, implementation role, in its own worktree (branch `day9-rehearsal-fixes`, cut from `main` at `88519e3`, the merge of PR #47), from a brief by the reviewing session. The live rehearsal on a throwaway board found both issues. Two small fixes, one prompt sentence, no schema or database change.
+
+**1. `noInfo` on a Claude answer without citations** (`lib/claude/ask.ts`). Whenever Claude answered, the answer object hard-coded `noInfo: false`. An answer in which no segment cites a card found nothing on the board, so it is a no-information answer: `noInfo` is now `cited.length === 0`. Two things follow. `components/ask/useAsk.ts` already filters `noInfo` answers out of the follow-up history, so an uncited answer no longer goes back to Claude as context for the next question. And the API contract is the same for both no-information paths: the answer that code makes without Claude (`noInformationAnswer`) and an uncited Claude answer both say `noInfo: true`. The doc comments on `AskAnswer.noInfo` and on the route in `app/api/b/[slug]/ask/route.ts` now say so. `components/ask/AskPanel.tsx` is unchanged and renders such an answer exactly as before: it shows the drop-in button on `answer.noInfo || answer.cardIds.length === 0`, and an uncited answer already had empty `cardIds`.
+
+**2. Doubled place names in Japanese titles** (`lib/claude/prompts/extract.system.md`). An English drop-in that wrote "Kosugi Elementary (小杉小学校)" produced the Japanese title 小杉小学校（小杉小学校）、本日14時の給水は中止との情報（未確認）. The rule that keeps the Japanese name of a place in parentheses in every language was being applied to Japanese text too. One sentence next to it: in `ja` and `easy_ja` text the place is written once, in Japanese, never followed by its own name in parentheses; the parenthetical Japanese form is for the other languages. Nothing else in the prompt changed. A one-off extract call on the rehearsal sentence (not committed) now returns 小杉小学校、本日14時の給水は中止との情報 in Japanese and "Kosugi Elementary School (小杉小学校), ..." in English.
+
+**3. A stale line in `fixtures/README.md`.** It called any mention of the 「訓練用・想定シナリオ」 stamp in card text a finding. The extract prompt ("The category follows the content, never a stamp") deliberately keeps the drill marking visible in the body or in `conditions`. The README now says that the category must not follow the stamp, and that the marking staying visible is by design.
+
+**Checks**
+
+| check | result |
+|---|---|
+| `pnpm lint` | clean |
+| `pnpm typecheck` | clean |
+| `pnpm guard --all` | clean |
+| `pnpm eval --only p02,p03 --no-write` (04:02 JST) | 3 inputs: field accuracy 21/21, PII leaks 0, invented facts 0, six languages 3/3, errors 0 |
+
+The ja titles in that eval run (printed by a temporary log line that was removed before the commit) contain no doubled place name: 小杉小学校 体育館前で給水 14:00〜16:00 for both p02 images and 武蔵小杉駅前のコンビニ、営業中、水あり for p03. `docs/EVAL.md` was not touched.
