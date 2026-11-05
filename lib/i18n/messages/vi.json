@@ -421,5 +421,6 @@
   "about.after_limits": "Những gì chưa có: hiện chỉ có một người vận hành, chính là người làm ra Engawa, và một liên kết quản trị mở được trang quản trị của mọi bảng tin. Bước tiếp theo là cấp liên kết quản trị riêng cho từng bảng tin, để người quản lý tại chỗ có thể tự lo bảng tin của mình mà không cần qua người vận hành.",
   "home.map_pin_one": "{names}: {n} bảng tin",
   "home.map_pin_other": "{names}: {n} bảng tin",
-  "home.map_names_sep": " · "
+  "home.map_names_sep": " · ",
+  "home.area_sep": ", "
 }

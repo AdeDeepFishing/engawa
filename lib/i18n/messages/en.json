@@ -421,5 +421,6 @@
   "about.after_limits": "What is not there yet: today there is one operator, the person who built Engawa, and one admin link opens the admin page of every board. A separate admin link for each board is the next step, so that a local owner can look after their own board without the operator.",
   "home.map_pin_one": "{names}: {n} board",
   "home.map_pin_other": "{names}: {n} boards",
-  "home.map_names_sep": " · "
+  "home.map_names_sep": " · ",
+  "home.area_sep": ", "
 }

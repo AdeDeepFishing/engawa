@@ -1,5 +1,6 @@
+import { boardArea } from "@/lib/geo";
 import { INTL_LOCALE, t, type Lang } from "@/lib/i18n";
-import type { Board, Card, CardStatus, ConflictStatement, KnownPlace, Platform, SourceType } from "@/lib/types";
+import type { Board, BoardAreaName, Card, CardStatus, ConflictStatement, KnownPlace, Platform, SourceType } from "@/lib/types";
 
 /** The board's known place a card points at, or null when it has none or the board no longer lists it. */
 export function knownPlaceOf(card: Pick<Card, "place_id">, board: Pick<Board, "known_places">): KnownPlace | null {
@@ -39,6 +40,61 @@ export function placeLabel(card: Pick<Card, "place_id" | "place_text_ja">, board
   const parts = placeParts(card, board, lang);
   if (!parts) return null;
   return parts.ja ? `${parts.text} (${parts.ja})` : parts.text;
+}
+
+type AreaNames = Omit<BoardAreaName, "code">;
+
+/**
+ * A 町丁目 name in parts, as `knownPlaceName` gives a place: the name in the
+ * reader's language and the Japanese name to mark with lang="ja", which is
+ * what the street signs say. `ja` is null when `text` is already the
+ * Japanese name (a Japanese reader, or a row seeded before the names).
+ */
+export function areaName(area: AreaNames, lang: Lang): { text: string; ja: string | null } {
+  if (lang === "ja") return { text: area.name_ja, ja: null };
+  const localized = area[`name_${lang}` as const]?.trim();
+  return localized ? { text: localized, ja: area.name_ja } : { text: area.name_ja, ja: null };
+}
+
+/** The card's self-reported area (G2) in parts, or null when it has none or the board does not list its code. */
+export function areaParts(
+  card: Pick<Card, "area_code">,
+  board: Pick<Board, "area_names">,
+  lang: Lang,
+): { text: string; ja: string | null } | null {
+  const area = boardArea(board, card.area_code);
+  return area ? areaName(area, lang) : null;
+}
+
+/** The 丁目 at the end of an area name in each language: "1丁目", " 1-chome", " 1초메". */
+const CHOME: Record<Lang, RegExp> = {
+  ja: /[0-9０-９]+丁目$/u,
+  zh: /[0-9０-９]+丁目$/u,
+  en: / [0-9]+-chome$/,
+  vi: / [0-9]+-chome$/,
+  ko: / [0-9]+초메$/u,
+};
+
+/** An area's town, the name without its 丁目, in the reader's language or in Japanese when that language has no name. */
+export function townName(area: AreaNames, lang: Lang): { text: string; lang: Lang } {
+  const name = areaName(area, lang);
+  return name.ja === null ? { text: name.text.replace(CHOME.ja, ""), lang: "ja" } : { text: name.text.replace(CHOME[lang], ""), lang };
+}
+
+/**
+ * A board's towns in area order, folded on the Japanese name: 小杉町1丁目
+ * to 3丁目 are one 小杉町, shown as "Kosugi-cho" to an English reader. Each
+ * town says which language it is in, so a Japanese fallback can carry
+ * lang="ja". `pnpm check:boards` checks that every 丁目 of a town folds to
+ * the same name in every language.
+ */
+export function townsOf(areas: AreaNames[], lang: Lang): { text: string; lang: Lang }[] {
+  const towns = new Map<string, { text: string; lang: Lang }>();
+  for (const a of areas) {
+    const ja = a.name_ja.replace(CHOME.ja, "");
+    if (!towns.has(ja)) towns.set(ja, townName(a, lang));
+  }
+  return [...towns.values()];
 }
 
 export function timeAgo(iso: string, now: Date, lang: Lang): string {

@@ -421,5 +421,6 @@
   "about.after_limits": "目前还没有做到的：现在只有一位运营者，就是做出缘侧的人，而且同一个管理链接可以打开所有公告板的管理页面。下一步是为每块公告板发放单独的管理链接，让本地管理员不经过运营者也能照看自己的公告板。",
   "home.map_pin_one": "{names}：{n} 个公告板",
   "home.map_pin_other": "{names}：{n} 个公告板",
-  "home.map_names_sep": "·"
+  "home.map_names_sep": "·",
+  "home.area_sep": "、"
 }

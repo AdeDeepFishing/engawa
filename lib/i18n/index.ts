@@ -38,6 +38,17 @@ export function t(
   );
 }
 
+/**
+ * A UI string split around one placeholder, for a value rendered as markup
+ * rather than text (a name with its Japanese marked lang="ja"):
+ * "Self-reported area: {area}" gives ["Self-reported area: ", ""].
+ */
+export function tAround(key: MessageKey, lang: Lang, name: string): [string, string] {
+  const raw = messages[lang]?.[key] ?? messages.ja[key] ?? key;
+  const at = raw.indexOf(`{${name}}`);
+  return at < 0 ? [raw, ""] : [raw.slice(0, at), raw.slice(at + name.length + 2)];
+}
+
 /** Count-aware helper for keys that have `_one` and `_other` variants. */
 export function tCount(base: string, lang: Lang, n: number): string {
   const key = (n === 1 ? `${base}_one` : `${base}_other`) as MessageKey;
