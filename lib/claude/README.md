@@ -66,6 +66,12 @@ Before writing or changing a call, read the `claude-api` skill for the exact SDK
 - In the pipeline (`app/api/process/[id]/route.ts`) the call runs beside reconcile for images whose `source_platform` is a chat or social platform (`CHAT_PLATFORMS` in `lib/types.ts`), through `withUsage()`. Any failure is logged by kind and the card continues without a masked copy: nothing is stored. The masked copy goes to the `submissions` bucket under `masked/<board>/<submission>` and its path onto `cards.masked_image_path`; the original is deleted as before. `MASKING_ENABLED=0` turns the stage off.
 - Eval: `pnpm eval:mask` scores coverage of the ground truth boxes in `fixtures/masking` (a box counts as covered at 95 percent of its area under the padded predictions) and writes the table to `docs/EVAL.md`. The ship rule is 100 percent on every sidecar.
 
+### area names (`scripts/area-names.ts`, a seed tool)
+
+- Purpose: the names of each board's 町丁目 in English, simplified Chinese and Korean for `supabase/seed/boards.json` (`name_en`, `name_zh`, `name_ko`; `name_vi` is the English spelling, copied in code). Run by hand when a board is added (`docs/BOARDS.md`, checklist step 3), never by the app, so it does not go through `withUsage()`.
+- Model: `claude-opus-5-5`, effort high, streaming, max output 32000 tokens, one call per board. System: `prompts/area-names.system.md`, marked for caching. User content: the board's name in five languages, its city and ward, and its `name_ja` list in order. Output format: `schemas/area-names.schema.json` (the English rule used, then one entry per area).
+- Code validates: the same number of entries, each `name_ja` equal to the input at the same position, then the format rules in `scripts/area-name-rules.ts` (the ones `pnpm check:boards` repeats). Nothing is written without `--write`. A refusal or a cut-off answer stops the run. Readings are not trusted: every name is read by a person against the postcode kana before it is committed.
+
 ## Budget guard
 
 Every call goes through `withUsage()` which checks `usage_daily` for today against `DAILY_CLAUDE_CALL_CAP` before calling and increments after. Over the cap, the caller returns a "busy" status and the UI shows the message in the user's language.
