@@ -44,6 +44,7 @@ fixtures/
   expected/<id>.json                             expected key fields for each rendered input
   masking/<id>.json                              pixel boxes of names, avatars, phone numbers, room numbers and handles per screenshot
   tools/                                         renderer: specs.mjs (all content), templates/, render.mjs
+  demo/<board>/                                  inputs of the five newer boards' sample cards (demo-specs.mjs, render --demo), see demo/README.md
 ```
 
 For each paper notice the `.png` is the clean A4 page (1588 by 2246, printable) and the `.jpg` is a photo-like version: the print taped to a plain wall, rotated 1 to 2 degrees with a slight keystone, soft shadow, paper texture, uneven light and vignette (1512 by 2016). Screenshots are iPhone size, 1170 by 2532.
