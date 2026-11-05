@@ -4,7 +4,7 @@
 
 A neighbourhood board for Japan that everyone can read in their own language. In a 武蔵小杉 apartment block the notice about the water outage is taped up in Japanese only, the rest of the news lives in closed LINE and WeChat groups, and after an earthquake the 防災行政無線 loudspeaker announces where to get water in Japanese that is hard to make out outdoors. The resident who reads no Japanese, and the one who cannot hear the loudspeaker, are in none of those places. On Engawa anyone drops in what they already have (a photo of the paper notice, a chat screenshot, a few lines of text, what they heard the loudspeaker say) and the city's own broadcast text comes in by itself. Claude reads it, removes personal information, merges the same fact from different sources into one card and writes every card in Japanese, English, Chinese, Korean, Vietnamese and やさしい日本語. Readers ask questions in their language and get answers that cite the cards, or "no information yet".
 
-**Live:** https://engawaboard.com, with two boards: [武蔵小杉](https://engawaboard.com/b/musashikosugi) (川崎市中原区, 23 町丁目, 14 known places from the city's shelter and water point lists) and [渋谷](https://engawaboard.com/b/shibuya) (渋谷区, 11 町丁目, 19 known places from the ward's lists). Built by Claude Code during Built with Claude: Japan 2026 (Nov 2 to 8, 2026); everything in this repository was written during the event.
+**Live:** https://engawaboard.com, six boards on a map of Japan, each a set of 町丁目 with the city's shelters, water points and landmarks as known places: [武蔵小杉](https://engawaboard.com/b/musashikosugi) (川崎市中原区, 23 areas, 14 places, the pilot), [溝の口](https://engawaboard.com/b/mizonokuchi) (川崎市高津区, 14 areas, 20 places), [渋谷](https://engawaboard.com/b/shibuya) (渋谷区, 11 areas, 19 places), [上野](https://engawaboard.com/b/ueno) (台東区, 17 areas, 18 places), [札幌 大通](https://engawaboard.com/b/sapporo) (札幌市中央区, 45 areas, 21 places) and [博多](https://engawaboard.com/b/hakata) (福岡市博多区, 13 areas, 26 places). Built by Claude Code during Built with Claude: Japan 2026 (Nov 2 to 8, 2026); everything in this repository was written during the event.
 
 ## Try it in two minutes
 
@@ -14,6 +14,7 @@ A neighbourhood board for Japan that everyone can read in their own language. In
 4. Open a card and **Share this card**: **Copy link** or **Copy as text**. The link carries your language (`?lang=`), so the preview in LINE or WeChat shows the card in the sharer's language, not the recipient's default.
 5. Switch **List** to **Places**: cards grouped by known place, with the address, the latest shelter status and **Open in maps**.
 6. From the same share panel, **Print as a notice (six languages)**: an A4 notice with the board's QR code, made to be taped up next to the Japanese original. The whole board has a poster too: [/b/musashikosugi/poster](https://engawaboard.com/b/musashikosugi/poster).
+7. **Get alerts** at the top of the board: the browser asks once, and from then on an official card about danger, a notice, a shelter or water, and the switch to disaster mode, arrive as a notification in your language, with the site closed.
 
 ## The demo, in two paragraphs
 
@@ -35,11 +36,15 @@ What code checks, every time: each output against its JSON schema (`lib/claude/s
 
 **The city's broadcasts, three ways in.** The 防災行政無線 is Japanese only and hard to hear outdoors, but cities publish its text. All three ways end at `POST /api/b/<slug>/inbox` with the board's bearer secret and an allowlist of senders ([docs/INBOX.md](docs/INBOX.md)); code labels every fact from there `official` on platform `city_mail`, still unconfirmed until the admin confirms it.
 
-- **Mail relay** (Kawasaki, live since 11/04): メールニュースかわさき, subscribed to 防災行政無線 and 緊急情報, reaches a Gmail that forwards it to a Cloudflare Email Routing address, and an Email Worker posts it to the board.
-- **Portal poller** (Shibuya): `workers/shibuya-portal/`, a Cloudflare cron Worker, reads the ward portal's broadcast feed every 5 minutes and posts each new broadcast to the board, oldest first (18 tests). The ward's consent to the polling comes first ([docs/BOARDS.md](docs/BOARDS.md)).
+- **Mail relay** (Kawasaki since 11/04, Fukuoka since 11/05): メールニュースかわさき, subscribed to 防災行政無線 and 緊急情報, and 福岡市防災メール (緊急情報) reach a Gmail that forwards them to a Cloudflare Email Routing address; an Email Worker posts each mail to the boards of its city with that board's own secret (one Kawasaki mail reaches 武蔵小杉 and 溝の口, a Fukuoka mail reaches 博多).
+- **Portal poller** (Shibuya since 11/05): `workers/shibuya-portal/`, a Cloudflare cron Worker, reads the ward portal's broadcast feed every 5 minutes and posts each new broadcast to the board, oldest first (18 tests). The ward's consent to the polling comes first ([docs/BOARDS.md](docs/BOARDS.md)).
 - **Direct POST** from any system that has the text: JSON `{from, subject, text, received_at}`.
 
+上野 (the ward's mail list) and 札幌 (open JSON feeds; the city has no loudspeaker text) are worked out in [docs/BOARDS.md](docs/BOARDS.md) and not wired yet.
+
 A neighbour can also tap **I heard the loudspeaker** and send what the browser's speech recognition wrote down, after correcting it; that is always `secondhand`, and when the city's text arrives reconcile merges it and the card takes the city's wording.
+
+**Alerts** (migration 0010, `lib/push/`, `pnpm check:push`): Web Push with VAPID keys. A reader who taps **Get alerts** gets a notification, in the reader's language, for a public official card in danger, official notice, shelter or water, for a danger card that came through the loudspeaker input or the inbox, and when disaster mode switches on. The server sends after it has answered the uploader, within a 60 second budget; the push service carries an encrypted payload, and the board stores only the subscription ([docs/PRIVACY.md](docs/PRIVACY.md)).
 
 **Disaster mode** is a board state (migration 0009, `lib/cards/mode.ts`, `pnpm check:mode`). The admin can switch it with the reason recorded. The inbox switches a board in peace mode on when an official city mail lands on a public card in category danger, official notice or shelter and names an emergency (避難指示, 避難命令, 緊急安全確保, 警戒レベル4 or 5, 津波警報, 特別警報, 震度5弱 or stronger), but never when it lifts an order (解除) or announces a drill or a scenario (訓練放送, 想定した訓練). A neighbour's text never switches it. An automatic switch returns to peace after 7 days without a new official emergency card; a switch the admin made stays until the admin changes it.
 
@@ -49,9 +54,9 @@ The architecture and the reasons behind it are in [docs/PLAN.md](docs/PLAN.md).
 
 Claude Code wrote every line in this repository. [docs/DEVLOG.md](docs/DEVLOG.md) has one entry per session with its model, what it did, the measurements and what needed a human; this is the short version.
 
-**Who did what.** One planning and reviewing session on `claude-fable-5-1` wrote `CLAUDE.md`, `docs/PLAN.md`, the prompts and the JSON schemas on the kickoff evening, and since then has written the brief for every implementation session, reviewed every pull request, fixed what the review found on an integration branch and merged after the human approved. Implementation ran on `claude-opus-5-5` in the two sessions of the small hours of 11/03 (reconcile and admin; ask, share and eval), in the second half of day 1 after a `/model` switch, and in every session from 11/04 10:00 JST on (offline snapshot, reader confirmations, laptop layout, loudspeaker broadcasts, places and maps, home page, disaster mode, the Shibuya board, the portal poller, the mark, this README). In between, the first half of day 1, the G items and the 11/04 morning features ran on `claude-fable-5-1` while the weekly budget allowed. Each DEVLOG entry names its model.
+**Who did what.** One planning and reviewing session on `claude-fable-5-1` wrote `CLAUDE.md`, `docs/PLAN.md`, the prompts and the JSON schemas on the kickoff evening, and since then has written the brief for every implementation session, reviewed every pull request, fixed what the review found on an integration branch and merged after the human approved. Implementation ran on `claude-opus-5-5` in the two sessions of the small hours of 11/03 (reconcile and admin; ask, share and eval), in the second half of day 1 after a `/model` switch, and in every session from 11/04 10:00 JST on (offline snapshot, reader confirmations, laptop layout, loudspeaker broadcasts, places and maps, home page, disaster mode, the Shibuya board, the portal poller, the mark, the four boards added on 11/05 (溝の口, 上野, 札幌 大通, 博多), web push, the home page map with a pin per board, this README). In between, the first half of day 1, the G items and the 11/04 morning features ran on `claude-fable-5-1` while the weekly budget allowed. Each DEVLOG entry names its model.
 
-**Parallel sessions, integrated through review.** Implementation ran as two or three sessions at the same time, each in its own git worktree and branch, with disjoint file lists written into the brief, so branches merged without conflicts and each pull request could be reviewed on its own. Every pull request was reviewed before `main` by the reviewing session with a read-only review subagent, whose checklist became `.claude/agents/reviewer.md` on 11/04; the review fixes landed on integration branches (PRs 3, 7, 11, 15, 18, 21, 26, 27, 30 and 33). 33 pull requests before this one in four days, 32 merged and one superseded.
+**Parallel sessions, integrated through review.** Implementation ran as two or three sessions at the same time, each in its own git worktree and branch, with disjoint file lists written into the brief, so branches merged without conflicts and each pull request could be reviewed on its own. Every pull request was reviewed before `main` by the reviewing session with a read-only review subagent, whose checklist became `.claude/agents/reviewer.md` on 11/04; the review fixes landed on integration branches (PRs 3, 7, 11, 15, 18, 21, 26, 27, 30, 33 and 40). 40 pull requests in the first four days, 39 merged and one superseded.
 
 **Which model does what at runtime, and the measurement behind it** (fixture eval in [docs/EVAL.md](docs/EVAL.md); details in the DEVLOG):
 
@@ -73,7 +78,7 @@ Every call caches the system prompt and the board context (known places with the
 - `.claude/agents/reviewer.md`: the read-only review subagent run before every merge, privacy first (what a route exposes, Claude output treated as data, every string through `t()`, 16 px text and 44 px targets), with ranked findings by file and line and a verdict.
 - Visual checks ran in the Claude desktop app's built-in browser and in headless Chromium through Playwright, at 390 px and 1280 px, with the contrast and size measurements in the DEVLOG.
 
-**What needed a human.** Accounts and secrets (Anthropic, Supabase, Vercel), buying engawaboard.com and its DNS records, the Gmail relay and the city's mail subscription, applying most migrations, the product decisions on the kickoff evening (name, hosting, pilot board, no alert features, reconcile as one call instead of an agent loop), the accent colour and the mark, and the approval before every merge. The human talked to the sessions in Chinese.
+**What needed a human.** Accounts and secrets (Anthropic, Supabase, Vercel), buying engawaboard.com and its DNS records, the Gmail relay and the cities' mail subscriptions (Kawasaki, Fukuoka), the VAPID keys, applying most migrations, the product decisions on the kickoff evening (name, hosting, pilot board, no alerts at first, reconcile as one call instead of an agent loop) and later (the five boards added, pins rather than marked prefectures on the map, alerts for official cards and the disaster switch only), the accent colour and the mark, and the approval before every merge. The human talked to the sessions in Chinese.
 
 ## Privacy and safety
 
@@ -92,13 +97,14 @@ Requirements: Node.js 20 or later, pnpm 10, a Supabase project, an Anthropic API
 pnpm install
 cp .env.example .env.local      # fill in the keys; the comments say what each is for
 pnpm db:migrate                 # applies every file in supabase/migrations through the session pooler
-pnpm db:seed --token-file .env.admin-token.local   # both boards, their known places, sample cards
+pnpm db:seed --token-file .env.admin-token.local   # six boards, their known places, sample cards
 pnpm dev                        # http://localhost:3000/b/musashikosugi
 ```
 
 - `pnpm db:seed --board shibuya` seeds one board; `--dry-run` prints what would be written without connecting. Boards come from `supabase/seed/boards.json`, polygons from `lib/geo/<slug>.json`.
 - Admin: set `ADMIN_TOKEN` (`openssl rand -hex 16`), open `/api/b/<slug>/admin/enter?token=<ADMIN_TOKEN>` once, and the browser keeps a 12 hour HttpOnly cookie for that board's admin page. Without it there is no admin at all.
 - Without `SUPABASE_URL` the board renders read-only from the seed files, enough to work on the UI.
+- Alerts need `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` and `VAPID_SUBJECT` (`npx web-push generate-vapid-keys`; the subject is a `mailto:` or `https:` contact). Without them the board shows no **Get alerts** button and the admin page says alerts are off.
 - A throwaway copy of the pilot board for tests: `pnpm board:throwaway create <slug>`, then `pnpm board:throwaway delete <slug>`. It refuses the seeded slugs.
 - Checks: `pnpm typecheck`, `pnpm lint`, `pnpm guard --all`, `pnpm check:mode`, `check:places`, `check:inbox`, `check:boards`, `check:placeholders` (no API), and `pnpm eval`, `pnpm eval --reconcile --now 2026-11-03T10:00:00+09:00`, `pnpm eval:mask` (API).
 - Inbox by hand: the curl in [docs/INBOX.md](docs/INBOX.md).
