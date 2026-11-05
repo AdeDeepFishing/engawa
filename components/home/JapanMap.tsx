@@ -211,11 +211,12 @@ export function JapanMap({
           <path
             key={p.code}
             d={PREFECTURE_SHAPES[p.id].d}
-            stroke="var(--accent)"
-            strokeWidth={1.5}
+            stroke="var(--line)"
+            strokeWidth={1}
             strokeLinejoin="round"
             vectorEffect="non-scaling-stroke"
-            style={{ fill: hot(p.code) ? "var(--map-active-hover)" : "var(--map-active)" }}
+            // At rest a prefecture with boards looks like every other one: the badge or the pill is the mark. Hover and focus tint it.
+            style={{ fill: hot(p.code) ? "var(--map-active-hover)" : "var(--map-land)" }}
             className="cursor-pointer transition-[fill] duration-150 ease-out"
             onClick={() => select(p.code)}
             onPointerEnter={pointerIn(p.code)}
