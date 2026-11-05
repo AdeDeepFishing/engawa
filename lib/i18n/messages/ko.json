@@ -206,7 +206,7 @@
   "dropin.text_placeholder": "여기에 메시지를 붙여넣으세요",
   "dropin.send": "보내기",
   "dropin.cancel": "취소",
-  "dropin.purpose": "이 게시판에서 이 동네의 정보를 공유하기 위해 사용됩니다. 스크린샷 속 이름과 연락처는 자동으로 삭제됩니다.",
+  "dropin.purpose": "이 게시판에서 이 동네의 정보를 공유하기 위해 사용됩니다. 스크린샷 속 이름과 연락처는 Claude가 감지하여 찾은 부분을 가립니다. 모두 감지하지 못할 수도 있습니다.",
   "dropin.purpose_ok": "알겠습니다",
   "dropin.placeholder_title": "정리 중",
   "dropin.stage.received": "받았습니다",

@@ -197,6 +197,7 @@ Session PRs were merged in pairs after review through the integration PRs #11, #
 - [ ] Human: photograph a paper notice on a phone; the card appears in all languages on the deployed URL within 30 seconds
 - [ ] Fable review of the whole repo; fix findings; freeze at 20:00
 - [ ] Seed the demo board (fresh notices with the right date and time); record rough footage
+- [x] Demo prep before the freeze: balanced home footer, a dated 断水 sample and a garbage-day sample on 武蔵小杉, fixture p13 for the conflict beat, drop-in consent wording that no longer promises full removal (PR #46)
 
 ### 2026-11-07 (Sat): video and submission
 - [ ] Record screen (one screen, three browser windows side by side) and phone inserts

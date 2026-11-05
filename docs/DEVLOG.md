@@ -1971,3 +1971,36 @@ Seen in passing: from a Chinese input, extract wrote the Japanese title as 東�
 **Cleanup.** `pnpm board:throwaway delete` for the five copies: `shibuya-demo` 2 storage objects (the notice photo and the masked copy), 3 card_sources, 3 cards, 3 submissions, 1 device; `ueno-demo` 1, 4, 4, 5, 2; `mizonokuchi-demo` 1, 3, 3, 3, 1; `sapporo-demo` 1, 3, 3, 3, 1; `hakata-demo` 1, 3, 3, 4, 2 (the extra submission and device on 上野 and 博多 are the second runs of ue2 and hk3). The dev server on 3171 was stopped. No seed was run without `--dry-run`: the reviewing session seeds the five boards after the merge.
 
 **Review** (the reviewing session, `claude-fable-5-1`, with the read-only reviewer): merge, three of five findings fixed on the branch. The 落ち葉清掃 card (mz3) was set for 11月8日（日）, the morning after the submission deadline, so the judges would have met it as an outdated card; the input, the six titles and bodies and the table above now say 11月15日（日）. The 断水 card near 溝の口駅 (mz2) was pinned to the station, so the place view read as the station without water; it now carries no place, its text unchanged. `scripts/export-samples.ts` replaced entries by the throwaway board's name, so an export from a copy under another name would have doubled a board's samples; it now replaces the target board's earlier exported entries and leaves hand-written ones alone. Kept, with the 武蔵小杉 samples as the precedent: the loudspeaker card names no sender and the two building notices name no building. Decisions 1 to 3 stand.
+
+## 2026-11-06 (Fri), footer, sample cards and a conflict fixture before the freeze
+
+**Model:** `claude-opus-5-5` in Claude Code, implementation role, in its own worktree (branch `day9-demo-prep`, cut from `main` at `9f626eb`), from a brief by the reviewing session after the video script pass. No pipeline, prompt, schema or database change, no Claude calls. Five small things the demo recordings need before the 20:00 freeze.
+
+**1. Home footer** (`components/home/HomeView.tsx`). The five links sat in one left-aligned row, which looked unbalanced under the map. From 1024 px the footer is now a two-column grid in the same `max-w-6xl` width as the sections above (the plank and the steps both run from 88 to 1192 px at 1280): the four product links (Source on GitHub, Built with Claude Code, About Engawa, Privacy and retention) on the left with the event line under them in muted text, Made by Yanwen alone on the right. Below 1024 px the links stack in one column (two from 640 px), then Made by Yanwen, then the event line. `FooterLink`, the `rel="me"` on the maker link, the keys and the new-tab text for screen readers are unchanged; the maker link left the list and stands in its own paragraph, so the list now has four items.
+
+**2. The 断水 sample on 武蔵小杉** (`supabase/seed/sample_cards.json`). It still printed 11月〔X〕日 and Nov X. It now names 11月16日（月）10:00〜15:00 in the original text and in all six titles (November 16 (Mon), 11月16日（周一）, 11월 16일(월), ngày 16/11 (Thứ Hai)), with `valid_from` 2026-11-16T01:00Z and `valid_until` 2026-11-16T06:00Z, so it is an upcoming card through the judging. Its status moved from `open` to `planned`, like the other dated notices, and `valid_until_stated` is true. `check-placeholders` keeps its own copy of the 〔X〕 strings and is unaffected.
+
+**3. A garbage-day sample on 武蔵小杉**, the peacetime card the board lacked: a fictional management-company notice that 資源ごみ (bottles, cans, PET bottles) moves from Tuesdays to Wednesdays from 11月25日（水）, out by 8:00 on the day, not the night before. `daily_notice`, `official`, not confirmed, no place id (`place_text_ja` 〇〇マンション 1階のごみ置き場, as the 断水 notice names no building), six languages, easy Japanese spaced like the 断水 card. Valid from 11/25 00:00 JST for a month (`valid_until_stated` false). No phone number, no real building. The seed note now says that hand-written entries naming a date carry absolute times too. `pnpm db:seed --board musashikosugi --reset-cards --dry-run` lists three samples.
+
+**4. Fixture p13** (`fixtures/inputs/p13-water-cancelled-heard.txt`): an English chat message that a neighbour said the 14:00 water distribution at 小杉小学校 today was cancelled, secondhand and unseen, for the conflict beat of the video against p02. Listed in `fixtures/README.md`; no expected file, like the other text fixtures; `docs/EVAL.md` untouched.
+
+**5. Drop-in consent wording** (`dropin.purpose`). "Removed automatically" promised more than detection can. Now:
+- ja: この掲示板で近所の情報を共有するために使います。スクリーンショットの中の名前や連絡先は Claude が検出し、見つかった範囲で隠します。すべてを検出できるとは限りません。
+- en: This is used to share information about this neighbourhood on this board. Claude detects names and contact details in screenshots and masks what it finds; not everything may be caught.
+- zh: 用于在这个公告板上分享本社区的信息。截图中的姓名和联系方式由 Claude 识别，识别到的部分会被遮盖。可能无法全部识别。
+- ko: 이 게시판에서 이 동네의 정보를 공유하기 위해 사용됩니다. 스크린샷 속 이름과 연락처는 Claude가 감지하여 찾은 부분을 가립니다. 모두 감지하지 못할 수도 있습니다.
+- vi: Dùng để chia sẻ thông tin về khu phố này trên bảng tin này. Claude phát hiện tên và thông tin liên lạc trong ảnh chụp màn hình và che những gì tìm thấy; có thể không phát hiện được hết.
+
+**Checked in a browser** (dev server on 3191, stopped afterwards). The footer in five languages at 1280, 1024, 768, 375 and 320 px: nothing past the viewport, every link 44 px tall, the footer's edges equal to the steps section's. At 1024 px in Vietnamese the fourth link wraps to a second line of the left group, which is fine. The consent sheet on the pilot board (read-only, with the main checkout's `.env.local`, removed afterwards; the sheet was closed without consenting, nothing sent) at 375 by 812 and 320 by 640: 261 to 285 px tall in the five languages, no scroll inside it.
+
+**Checks**
+
+| check | result |
+|---|---|
+| `pnpm lint` | clean |
+| `pnpm typecheck` | clean |
+| `pnpm guard --all` (no dashes, key parity across the five files) | clean |
+| `pnpm check:boards`, `check:places`, `check:placeholders`, `check:mode`, `check:inbox`, `check:push` | 143, 31, 17, 49, 23 and 52 checks, all pass |
+| `pnpm db:seed --board musashikosugi --reset-cards --dry-run` | three samples with their times |
+
+**For the reviewing session.** Merges together with #44 and #45, which also append to this file. After the merge, `pnpm db:seed --board musashikosugi --reset-cards` puts the two cards on the live pilot board; it deletes the cards there now, including any made during rehearsals.

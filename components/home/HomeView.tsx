@@ -181,13 +181,13 @@ export function HomeView({ boards, pins, now }: { boards: HomeBoard[]; pins: Map
       <footer className="mx-auto w-full max-w-6xl px-4 pt-14 pb-10 md:px-6 lg:pt-24">
         {/* The same plank closes the page. */}
         <div aria-hidden="true" className="h-2 border-y border-line" />
-        <div className="pt-4">
-          <ul className="flex flex-wrap gap-x-6">
-            <li>
-              <FooterLink href="https://www.yanwensworld.com/" external="me">
-                {t("home.made_by")}
-              </FooterLink>
-            </li>
+        {/*
+          From lg one row: the product links on the left with the event line
+          under them, the maker alone on the right. Narrower, the links stack
+          (two columns from sm), then the maker, then the event line.
+        */}
+        <div className="grid pt-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-x-10">
+          <ul className="grid gap-x-6 sm:grid-cols-2 lg:flex lg:flex-wrap">
             <li>
               <FooterLink href="https://github.com/AdeDeepFishing/engawa" external="source">
                 {t("home.source")}
@@ -205,7 +205,12 @@ export function HomeView({ boards, pins, now }: { boards: HomeBoard[]; pins: Map
               <FooterLink href="/about#about-data">{t("footer.privacy")}</FooterLink>
             </li>
           </ul>
-          <p className="mt-4 text-base text-muted">{t("footer.made_for")}</p>
+          <p className="lg:col-start-2 lg:row-start-1">
+            <FooterLink href="https://www.yanwensworld.com/" external="me">
+              {t("home.made_by")}
+            </FooterLink>
+          </p>
+          <p className="mt-4 text-base text-muted lg:col-start-1">{t("footer.made_for")}</p>
         </div>
       </footer>
     </>

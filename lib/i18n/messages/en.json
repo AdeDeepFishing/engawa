@@ -206,7 +206,7 @@
   "dropin.text_placeholder": "Paste the message here",
   "dropin.send": "Send",
   "dropin.cancel": "Cancel",
-  "dropin.purpose": "This is used to share information about this neighbourhood on this board. Names and contact details inside screenshots are removed automatically.",
+  "dropin.purpose": "This is used to share information about this neighbourhood on this board. Claude detects names and contact details in screenshots and masks what it finds; not everything may be caught.",
   "dropin.purpose_ok": "Got it",
   "dropin.placeholder_title": "Organizing",
   "dropin.stage.received": "Received",
