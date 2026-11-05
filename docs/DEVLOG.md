@@ -1974,7 +1974,7 @@ Seen in passing: from a Chinese input, extract wrote the Japanese title as 東�
 
 ## 2026-11-06 (Fri), footer, sample cards and a conflict fixture before the freeze
 
-**Model:** `claude-opus-5-5` in Claude Code, implementation role, in its own worktree (branch `day9-demo-prep`, cut from `main` at `9f626eb`), from a brief by the reviewing session after the video script pass. No pipeline, prompt, schema or database change, no Claude calls. Five small things the demo recordings need before the 20:00 freeze.
+**Model:** `claude-opus-5-5` in Claude Code, implementation role, in its own worktree (branch `day9-demo-prep`, cut from `main` at `9f626eb`), from a brief by the reviewing session after the video script pass. No pipeline, prompt, schema or database change, no Claude calls. Five small things the demo recordings need before the 20:00 freeze, and two home page details the reviewing session added afterwards (6 and 7).
 
 **1. Home footer** (`components/home/HomeView.tsx`). The five links sat in one left-aligned row, which looked unbalanced under the map. From 1024 px the footer is now a two-column grid in the same `max-w-6xl` width as the sections above (the plank and the steps both run from 88 to 1192 px at 1280): the four product links (Source on GitHub, Built with Claude Code, About Engawa, Privacy and retention) on the left with the event line under them in muted text, Made by Yanwen alone on the right. Below 1024 px the links stack in one column (two from 640 px), then Made by Yanwen, then the event line. `FooterLink`, the `rel="me"` on the maker link, the keys and the new-tab text for screen readers are unchanged; the maker link left the list and stands in its own paragraph, so the list now has four items.
 
@@ -1990,6 +1990,10 @@ Seen in passing: from a Chinese input, extract wrote the Japanese title as 東�
 - zh: 用于在这个公告板上分享本社区的信息。截图中的姓名和联系方式由 Claude 识别，识别到的部分会被遮盖。可能无法全部识别。
 - ko: 이 게시판에서 이 동네의 정보를 공유하기 위해 사용됩니다. 스크린샷 속 이름과 연락처는 Claude가 감지하여 찾은 부분을 가립니다. 모두 감지하지 못할 수도 있습니다.
 - vi: Dùng để chia sẻ thông tin về khu phố này trên bảng tin này. Claude phát hiện tên và thông tin liên lạc trong ảnh chụp màn hình và che những gì tìm thấy; có thể không phát hiện được hết.
+
+**6. No plank under the Boards heading.** The two hairlines between the heading and the board cards are gone; the card grid sits 20 px under the heading (`mt-5`, was `mt-4` below the plank).
+
+**7. The footer rule.** The footer's plank became one hairline across the footer's width, broken in the middle by the mark (`Mark` from `components/brand/Mark`, the configured `solid` variant, 20 px, `aria-hidden`) in `--line-strong` (#87837a), so it reads as part of the rule. `Mark` already draws in `currentColor`, so `Mark.tsx` is unchanged. The mark's own inset is 1.25 px at 20 px, so the 16 px gap reads as about 17 px either side, close to the mark's drawn width of 17.5 px; measured symmetric at 1280, 375 and 320 px. The site has no dark theme, so there is nothing more to check.
 
 **Checked in a browser** (dev server on 3191, stopped afterwards). The footer in five languages at 1280, 1024, 768, 375 and 320 px: nothing past the viewport, every link 44 px tall, the footer's edges equal to the steps section's. At 1024 px in Vietnamese the fourth link wraps to a second line of the left group, which is fine. The consent sheet on the pilot board (read-only, with the main checkout's `.env.local`, removed afterwards; the sheet was closed without consenting, nothing sent) at 375 by 812 and 320 by 640: 261 to 285 px tall in the five languages, no scroll inside it.
 

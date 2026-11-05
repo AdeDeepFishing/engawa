@@ -2,7 +2,7 @@
 
 import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
-import { BRAND_JA } from "@/components/brand/Mark";
+import { BRAND_JA, Mark } from "@/components/brand/Mark";
 import type { MessageKey } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n/LangProvider";
 import { BoardSummary, boardAnchor, type HomeBoard } from "./BoardSummary";
@@ -61,9 +61,8 @@ function FooterLink({ href, external, children }: { href: string; external?: "me
 /**
  * The home page body (/). From 1024 px two columns, 7 to 5: the
  * hero (縁側 Engawa, what it is, the tagline in six languages, for whom),
- * and the listed boards resting on the plank (two hairlines, the
- * veranda's edge) on the left; the map of Japan on the right, held in view while the boards
- * scroll. On a phone: hero, map, boards. Then the three steps in the words
+ * and the listed boards on the left; the map of Japan on the right, held in
+ * view while the boards scroll. On a phone: hero, map, boards. Then the three steps in the words
  * the board itself uses, how to try it with a sample, and the footer. The
  * hero lines, the boards and the map rise in once, 60 ms apart (none of it
  * under reduced motion). Client component so the language switch in the
@@ -116,10 +115,8 @@ export function HomeView({ boards, pins, now }: { boards: HomeBoard[]; pins: Map
               <h2 id="home-boards" className="home-rise text-xl font-bold" style={rise(240)}>
                 {t("index.title")}
               </h2>
-              {/* The plank: two hairlines with the paper between, the edge of the veranda the boards rest on. */}
-              <div aria-hidden="true" className="home-rise mt-3 h-2 border-y border-line" style={rise(240)} />
               {boards.length ? (
-                <ul className="mt-4 grid gap-4 md:grid-cols-2">
+                <ul className="mt-5 grid gap-4 md:grid-cols-2">
                   {boards.map((b, i) => (
                     <li key={b.slug} className="home-rise" style={rise(360 + i * 60)}>
                       <BoardSummary board={b} now={now} />
@@ -127,7 +124,7 @@ export function HomeView({ boards, pins, now }: { boards: HomeBoard[]; pins: Map
                   ))}
                 </ul>
               ) : (
-                <p className={`mt-4 text-muted ${BODY}`}>{t("home.no_boards")}</p>
+                <p className={`mt-5 text-muted ${BODY}`}>{t("home.no_boards")}</p>
               )}
             </section>
           </div>
@@ -179,8 +176,16 @@ export function HomeView({ boards, pins, now }: { boards: HomeBoard[]; pins: Map
       </main>
 
       <footer className="mx-auto w-full max-w-6xl px-4 pt-14 pb-10 md:px-6 lg:pt-24">
-        {/* The same plank closes the page. */}
-        <div aria-hidden="true" className="h-2 border-y border-line" />
+        {/*
+          One hairline closes the page, broken by the mark in the rule's own
+          colour. The mark is 20 px with 1.25 px of its own inset on each
+          side, so the 16 px gap reads as about one mark width either side.
+        */}
+        <div aria-hidden="true" className="flex items-center gap-4">
+          <span className="flex-1 border-t border-line" />
+          <Mark className="size-5 shrink-0 text-line-strong" />
+          <span className="flex-1 border-t border-line" />
+        </div>
         {/*
           From lg one row: the product links on the left with the event line
           under them, the maker alone on the right. Narrower, the links stack
