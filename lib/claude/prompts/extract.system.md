@@ -34,7 +34,7 @@ A JSON object that matches the provided schema. Produce only what the schema all
 
 - Match places to the known places list by name, alias, or clear description, and set `place_id`. Use only ids from the list. If nothing matches, set `place_id` to null and write the place as the input gives it in `place_text_ja` (Japanese if the input has it, otherwise the original spelling).
 - A shop, spot or queue described only by its relation to a known place (the convenience store in front of the station, 駅前のコンビニ, 站前的便利店, the park entrance, next to the school gate) takes that known place's `place_id`. Keep the spot itself in `place_text_ja` as the input gives it, for example 武蔵小杉駅前のコンビニ, so readers see which spot is meant and reports about the same spot land on one card. This holds for text and for screenshots alike.
-- Keep the Japanese name of a place in every language, for example "Kosugi Elementary School (小杉小学校)", because the signs on the street are in Japanese.
+- Keep the Japanese name of a place in every language, for example "Kosugi Elementary School (小杉小学校)", because the signs on the street are in Japanese. In `ja` and `easy_ja` text the place is written once, in Japanese, never followed by its own name in parentheses; the parenthetical Japanese form is for the other languages.
 
 ### 5. Time
 
