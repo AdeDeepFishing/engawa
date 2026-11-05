@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { parseBoardView, type BoardViewMode } from "@/lib/cards/places";
+import { parseBoardView, VIEW_COOKIE, type BoardViewMode } from "@/lib/cards/places";
 
 const PARAM = "view";
 const LS_VIEW = "engawa.view";
@@ -24,21 +24,34 @@ function readStored(): BoardViewMode | null {
   }
 }
 
+/** The cookie the board page reads, so the next plain URL renders this view on the server. */
+function writeCookie(view: BoardViewMode) {
+  document.cookie = `${VIEW_COOKIE}=${view}; path=/; max-age=31536000; SameSite=Lax`;
+}
+
+function readCookie(): BoardViewMode | null {
+  const pair = document.cookie.split("; ").find((c) => c.startsWith(`${VIEW_COOKIE}=`));
+  return parseBoardView(pair?.slice(VIEW_COOKIE.length + 1));
+}
+
 function writeStored(view: BoardViewMode) {
+  writeCookie(view);
   try {
     window.localStorage.setItem(LS_VIEW, view);
   } catch {
-    // Private mode or blocked storage: the URL still carries the choice.
+    // Private mode or blocked storage: the URL and the cookie still carry the choice.
   }
 }
 
 /**
- * The board's view. The server renders `initial` (from `?view=` on the
- * request). Right after hydration the URL wins, so a shared link opens the
- * view it names, even from an offline copy rendered for another URL; a URL
- * without one takes the reader's last choice from localStorage, as the
- * language does, and the address bar is updated to match. Choosing a view
- * writes both.
+ * The board's view. The server renders `initial` (`?view=` on the request,
+ * else the cookie that mirrors the reader's last choice). Right after
+ * hydration the URL wins, so a shared link opens the view it names, even
+ * from an offline copy rendered for another URL; a URL without one takes
+ * the reader's last choice from localStorage, as the language does, and the
+ * address bar is updated to match. Choosing a view writes localStorage and
+ * the cookie. A choice stored before the cookie existed is copied into it
+ * here, so the next plain URL renders it without a switch after hydration.
  */
 export function useBoardView(initial: BoardViewMode): [BoardViewMode, (view: BoardViewMode) => void] {
   const [view, setViewState] = useState<BoardViewMode>(initial);
@@ -48,7 +61,9 @@ export function useBoardView(initial: BoardViewMode): [BoardViewMode, (view: Boa
     // the offline check, which asks about the page by the URL it loaded.
     const id = window.setTimeout(() => {
       const fromUrl = parseBoardView(new URLSearchParams(window.location.search).get(PARAM));
-      const next = fromUrl ?? readStored();
+      const stored = readStored();
+      if (stored && readCookie() !== stored) writeCookie(stored);
+      const next = fromUrl ?? stored ?? readCookie();
       if (!next) return;
       setViewState(next);
       if (!fromUrl) writeUrl(next);

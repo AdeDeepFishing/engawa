@@ -15,8 +15,12 @@
  * Bump VERSION by hand when these rules change: activate deletes every older
  * Engawa cache. skipWaiting and clients.claim let a deploy take over open
  * pages on their next load.
+ *
+ * The same worker shows web push alerts (day 7, lib/push/send.ts): a
+ * notification per official or danger card, or for a board switching to
+ * disaster mode, and a tap opens that card or board on this site.
  */
-const VERSION = 1;
+const VERSION = 2;
 const PAGES = `engawa-pages-v${VERSION}`;
 const STATIC = `engawa-static-v${VERSION}`;
 const STORED_AT = "x-engawa-stored-at";
@@ -171,3 +175,57 @@ async function warm(urls) {
     }
   }
 }
+
+/**
+ * Web push. The payload is JSON {title, body, url, tag, icon, lang} from
+ * lib/push/rules.ts. Every push must show a notification (the browser shows
+ * a generic one of its own otherwise), so an unreadable payload still shows
+ * the site's name. The tag is one per card (or per board's mode): an update
+ * replaces the earlier notification and, with renotify, alerts again.
+ */
+self.addEventListener("push", (event) => {
+  let data = {};
+  try {
+    data = event.data ? event.data.json() : {};
+  } catch {
+    data = {};
+  }
+  const text = (value, max) => (typeof value === "string" ? value.slice(0, max) : "");
+  const title = text(data.title, 200) || "Engawa";
+  const tag = text(data.tag, 80);
+  const options = {
+    body: text(data.body, 400),
+    icon: text(data.icon, 200) || "/icons/192",
+    lang: text(data.lang, 16) || undefined,
+    data: { url: text(data.url, 500) || "/" },
+  };
+  if (tag) {
+    options.tag = tag;
+    options.renotify = true;
+  }
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+/** A tap opens the card or board the notification names, on this site only, in an open tab when there is one. */
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  let url;
+  try {
+    url = new URL(event.notification.data?.url ?? "/", self.location.origin);
+  } catch {
+    url = new URL("/", self.location.origin);
+  }
+  if (url.origin !== self.location.origin) url = new URL("/", self.location.origin);
+  event.waitUntil(
+    (async () => {
+      const windows = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
+      const open = windows.find((client) => new URL(client.url).pathname === url.pathname);
+      if (open) {
+        await open.focus();
+        if ("navigate" in open) await open.navigate(url.href).catch(() => undefined);
+        return;
+      }
+      await self.clients.openWindow(url.href);
+    })(),
+  );
+});

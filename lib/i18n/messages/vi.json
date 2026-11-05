@@ -1,4 +1,15 @@
 {
+  "push.get_alerts": "Nhận thông báo",
+  "push.explain_off": "Nhận thông báo trên thiết bị này về thông tin chính thức, nguy hiểm, nước và nơi lánh nạn của bảng tin này.",
+  "push.explain_on": "Thiết bị này nhận thông báo về thông tin chính thức, nguy hiểm, nước và nơi lánh nạn của bảng tin này. Nhấn lần nữa để tắt.",
+  "push.denied": "Trình duyệt đang chặn thông báo của trang này. Hãy cho phép trong cài đặt trình duyệt để nhận thông báo.",
+  "push.failed": "Không thay đổi được thông báo. Hãy thử lại.",
+  "push.mode_title": "{board} đã chuyển sang chế độ thiên tai",
+  "push.mode_body": "Bảng tin đang hiện thông tin chính thức trước. Nhấn để mở.",
+  "admin.push_heading": "Thông báo",
+  "admin.push_count_one": "Số thiết bị nhận thông báo từ bảng tin này: {n}",
+  "admin.push_count_other": "Số thiết bị nhận thông báo từ bảng tin này: {n}",
+  "admin.push_off": "Thông báo đang tắt: thiếu khóa VAPID hoặc migration 0010.",
   "places.kind.commuter_shelter": "Nơi tạm trú cho người không thể về nhà",
   "mode.strip_since": "Chế độ thiên tai từ {time} ({ago})",
   "mode.reason_inbox": "Được bật theo thư phát thanh của thành phố.",
@@ -314,7 +325,7 @@
   "about.data_3": "Mọi thứ đều có hạn. Một thẻ bị xóa 30 ngày sau khi hết thời gian hiệu lực, ảnh thông báo bị xóa cùng thẻ của nó, và mã nhận dạng trình duyệt bị xóa 90 ngày sau lần dùng cuối. Câu hỏi gõ vào ô hỏi không được lưu.",
   "about.data_4": "Không có tài khoản và bảng tin không được các công cụ tìm kiếm lập chỉ mục. Bảng thời hạn lưu trữ đầy đủ được công bố cùng mã nguồn của dự án (docs/PRIVACY.md).",
   "about.after_heading": "Sau sự kiện",
-  "about.after_body": "Engawa được làm trong một tuần cho Built with Claude: Japan 2026, với bảng tin Musashi-Kosugi là thí điểm đầu tiên. Ý định là để chính những người đang giữ các thông báo vận hành bảng tin: ban quản lý chung cư, hội tự quản khu phố (自治会), đội vận hành nơi sơ tán sau thiên tai, hay trung tâm giao lưu quốc tế hỗ trợ cư dân bằng nhiều ngôn ngữ. Mỗi bên sẽ có bảng tin riêng với danh sách địa điểm quen thuộc và liên kết quản trị, theo cùng những quy tắc về thông tin cá nhân và thời hạn.",
+  "about.after_body": "Engawa được làm trong một tuần cho Built with Claude: Japan 2026, và hiện có hai bảng tin: Musashi-Kosugi ở thành phố Kawasaki và Shibuya ở Tokyo. Sau sự kiện, dự định là vận hành theo hai tầng: một người vận hành nền tảng cho mọi bảng tin, và một người quản lý tại chỗ cho từng bảng tin.",
   "about.back_board": "Quay lại bảng tin",
   "about.back_home": "Tất cả các bảng tin",
   "board.footer_about": "Về bảng tin này và dữ liệu của bạn",
@@ -405,5 +416,10 @@
   "about.credits_map": "Đường viền các tỉnh trên bản đồ ở trang chủ lấy từ svg-maps của Victor Cazanave, dựa trên bản đồ Nhật Bản của MapSVG, và đã được giản lược cho Engawa (bỏ các đảo nhỏ, làm tròn tọa độ). Được sử dụng theo giấy phép Creative Commons Ghi công 4.0 Quốc tế (CC BY 4.0).",
   "home.source": "Mã nguồn trên GitHub",
   "home.tagline_easy_ja": "きんじょの じょうほうを、みんなの ことばで。",
-  "places.kind.office": "Văn phòng quận hoặc thành phố"
+  "places.kind.office": "Văn phòng quận hoặc thành phố",
+  "limit.ask_hour": "Bạn đã hỏi quá nhiều câu trong một giờ qua. Hãy thử lại sau. Bạn vẫn có thể đọc mọi thẻ.",
+  "about.after_operator": "Người vận hành nền tảng tạo các bảng tin, kết nối một lần nội dung phát trên loa phòng chống thiên tai của mỗi thành phố vào bảng tin của nó (qua chuyển tiếp email, hoặc đọc nội dung phát thanh mà thành phố công bố) và chạy các bản cập nhật cơ sở dữ liệu. Người vận hành cũng giữ những quy tắc chung cho mọi bảng tin: xóa thông tin cá nhân, chỉ giữ vị trí ở mức khu vực, xóa mọi thứ khi hết hạn.",
+  "about.after_owner": "Mỗi bảng tin có một người quản lý tại chỗ, là người vốn đã dán các thông báo: hội tự quản khu phố (自治会), người quản lý tòa nhà, hoặc một quầy ở văn phòng quận. Người quản lý giữ liên kết quản trị của bảng tin đó và dùng nó để xác nhận các thẻ chính thức, ẩn những gì không nên có trên bảng tin, và chuyển bảng tin sang chế độ thiên tai rồi chuyển lại.",
+  "about.after_new_city": "Một thành phố mới cần dữ liệu chứ không cần mã mới: các nơi sơ tán và những khu phố (町丁目) mà mỗi nơi phụ trách, các điểm cấp nước và nhà ga, ranh giới khu phố từ thống kê quốc gia (e-Stat), và nơi thành phố công bố nội dung phát trên loa phòng chống thiên tai. Với khu vực quanh một nhà ga, việc này mất vài giờ. Danh sách các bước được công bố cùng mã nguồn (docs/BOARDS.md).",
+  "about.after_limits": "Những gì chưa có: hiện chỉ có một người vận hành, chính là người làm ra Engawa, và một liên kết quản trị mở được trang quản trị của mọi bảng tin. Bước tiếp theo là cấp liên kết quản trị riêng cho từng bảng tin, để người quản lý tại chỗ có thể tự lo bảng tin của mình mà không cần qua người vận hành."
 }
