@@ -1,8 +1,8 @@
 "use client";
 
-import { useId } from "react";
+import { Fragment, useId } from "react";
 import Link from "next/link";
-import { timeAgo } from "@/lib/cards/display";
+import { timeAgo, townsOf } from "@/lib/cards/display";
 import { tCount } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n/LangProvider";
 import type { Board } from "@/lib/types";
@@ -28,16 +28,6 @@ export function boardAnchor(slug: string): string {
 /** Towns shown before "and N more"; the pilot board has 23 districts in 15 towns. */
 const TOWNS_SHOWN = 3;
 
-/** District names folded to their town: 小杉町1丁目, 小杉町2丁目 and 小杉町3丁目 are one 小杉町. */
-export function townsOf(areas: Board["area_names"]): string[] {
-  const towns: string[] = [];
-  for (const a of areas) {
-    const town = a.name_ja.replace(/[0-9０-９]+丁目$/u, "");
-    if (!towns.includes(town)) towns.push(town);
-  }
-  return towns;
-}
-
 /**
  * One board on the home page: its name in the reader's language with the
  * Japanese name, the live facts (public cards, the newest one's age), the
@@ -51,7 +41,8 @@ export function BoardSummary({ board, now }: { board: HomeBoard; now: string }) 
   const { lang, t } = useLang();
   const nameId = useId();
   const localName = board.name[lang] || board.name.ja;
-  const towns = townsOf(board.area_names);
+  // In the reader's language alone: the card is compact and its title already carries the Japanese name.
+  const towns = townsOf(board.area_names, lang);
   const more = towns.length - TOWNS_SHOWN;
 
   return (
@@ -85,7 +76,15 @@ export function BoardSummary({ board, now }: { board: HomeBoard; now: string }) 
         <dl className="mt-3 text-[1.0625rem]">
           <dt className="inline font-semibold">{t("home.area")}</dt>
           <dd className="ml-2 inline">
-            <span lang="ja">{towns.slice(0, TOWNS_SHOWN).join("、")}</span>
+            {towns.slice(0, TOWNS_SHOWN).map((town, i) => (
+              <Fragment key={town.ja}>
+                {i > 0 ? t("home.area_sep") : null}
+                {/* A town never breaks inside itself (Korean would break between any two syllables); the line breaks between towns. */}
+                <span lang={town.lang === lang ? undefined : town.lang} className="whitespace-nowrap">
+                  {town.text}
+                </span>
+              </Fragment>
+            ))}
             {more > 0 ? ` ${t("home.area_more", { n: more })}` : null}
           </dd>
         </dl>

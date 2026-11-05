@@ -7,19 +7,28 @@
  * its codes back on read. On the home page map, each board's pin (the
  * centroid of its polygons, projected) lands on its own prefecture and next
  * to its landmark, and the projection still meets the nine capes it was
- * fitted to. Run it after adding a board (docs/BOARDS.md).
+ * fitted to. Every area has its name in English, Chinese, Korean and
+ * Vietnamese in the right form, the home card folds them into towns the
+ * same way in every language, and the badge and drop-in line render them
+ * with the Japanese after. Run it after adding a board (docs/BOARDS.md).
  *
  *   node --import=tsx scripts/check-boards.ts
  *
  * Exits 1 when a check fails.
  */
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 import seed from "../supabase/seed/boards.json";
+import { WithAreaName } from "../components/board/AreaName";
+import { areaName, areaParts, townName, townsOf } from "../lib/cards/display";
 import { boardAreas, boardMunicipality, resolveArea } from "../lib/geo";
+import { LANGS, type Lang } from "../lib/i18n";
+import { areaNameProblems } from "./area-name-rules";
 import { boardPolygons, centroidOf, withAreaCodes } from "../lib/geo/polygons";
 import { PREFECTURES, prefectureOfBoard } from "../components/home/prefectures";
 import { PREFECTURE_SHAPES } from "../components/home/japan-map-paths";
 import { pointInPrefecture, projectToMap, ringsOf } from "../components/home/map-pins";
-import type { Board } from "../lib/types";
+import type { Board, BoardAreaName } from "../lib/types";
 
 let passed = 0;
 const failed: string[] = [];
@@ -113,10 +122,36 @@ for (const raw of seed.boards) {
 
   const ids = board.known_places.map((p) => p.id);
   check(`${board.slug}: known place ids are unique`, new Set(ids).size === ids.length);
+
+  // Localized area names (scripts/area-names.ts): four per area, each in its
+  // own script, and on the home card every 丁目 of a town folds to one town.
+  const nameProblems = board.area_names.flatMap((a) => areaNameProblems(a).map((p) => `${a.name_ja} ${p}`));
+  check(`${board.slug}: every area has en, zh, ko and vi in their form`, nameProblems.length === 0, nameProblems.slice(0, 3).join("; "));
+  const split: string[] = [];
+  const joined: string[] = [];
+  for (const lang of LANGS) {
+    const seen = new Map<string, string>();
+    const owner = new Map<string, string>();
+    for (const a of board.area_names) {
+      const ja = townName(a, "ja").text;
+      const town = townName(a, lang).text;
+      if ((seen.get(ja) ?? town) !== town || /chome|초메|丁目/u.test(town)) split.push(`${ja} in ${lang}: ${town}`);
+      if (!seen.has(ja)) seen.set(ja, town);
+      // Two Japanese towns that read the same (仲町 and 中町) would show as one name twice on the home card.
+      if ((owner.get(town) ?? ja) !== ja) joined.push(`${owner.get(town)} and ${ja} both ${town} in ${lang}`);
+      if (!owner.has(town)) owner.set(town, ja);
+    }
+  }
+  check(`${board.slug}: every 丁目 of a town folds to one town name in five languages`, split.length === 0, split.slice(0, 3).join("; "));
+  check(`${board.slug}: no two towns fold to one name in any language`, joined.length === 0, joined.slice(0, 3).join("; "));
+  const resolved = hit ? areaName(hit, "ko") : null;
+  check(
+    `${board.slug}: the landmark's area reads in Korean with the Japanese after it`,
+    Boolean(resolved && resolved.ja === area && resolved.text !== area),
+    resolved ? `${resolved.text} (${resolved.ja})` : "outside",
+  );
 }
 
-// Boards never overlap: a board must never carry another board's polygons to
-// the browser, and each board's landmark falls in no other board.
 console.log("\n# across boards");
 const all = seed.boards.map((b) => ({ ...b, id: `local-${b.slug}` }) as unknown as Board);
 const codes = (b: Board) => new Set(boardPolygons(b).map((p) => p.properties.area_code));
@@ -131,6 +166,34 @@ for (const [i, board] of all.entries()) {
   check(`${board.slug}: ${point.label} falls in no other board`, elsewhere.length === 0, elsewhere.map((b) => b.slug).join(", "));
 }
 
+// The two renderers of an area name, on the server: the card badge in
+// Vietnamese and the drop-in line in Korean, Japanese in parentheses with
+// lang="ja"; a Japanese reader gets the Japanese alone; a row seeded before
+// the names falls back to the Japanese, marked as such.
+console.log("\n# area names as rendered");
+{
+  const pilot = all.find((b) => b.slug === "musashikosugi") as Board;
+  const kosugi = pilot.area_names.find((a) => a.name_ja === "小杉町2丁目") as BoardAreaName;
+  const card = { area_code: kosugi.code };
+  const render = (lang: Lang, message: "area.badge" | "area.resolved", area = areaParts(card, pilot, lang)) =>
+    area ? renderToStaticMarkup(createElement(WithAreaName, { message, name: area, lang })) : "";
+  const badgeVi = render("vi", "area.badge");
+  console.log(`  card badge, vi:     ${badgeVi}`);
+  check("card badge in Vietnamese", badgeVi === 'Khu vực tự khai: <span>Kosugi-machi 2-chome</span> <span lang="ja">(小杉町2丁目)</span>');
+  const dropKo = render("ko", "area.resolved");
+  console.log(`  drop-in line, ko:   ${dropKo}`);
+  check("drop-in line in Korean", dropKo === '내 구역: <span>고스기마치 2초메</span> <span lang="ja">(小杉町2丁目)</span>');
+  const badgeJa = render("ja", "area.badge");
+  check("card badge in Japanese has the Japanese alone", badgeJa === "自己申告のエリア：<span>小杉町2丁目</span>", badgeJa);
+  const legacy = render("en", "area.badge", areaName({ name_ja: kosugi.name_ja }, "en"));
+  check("a row without names shows the Japanese, marked", legacy === 'Self-reported area: <span lang="ja">小杉町2丁目</span>', legacy);
+  const homeKo = townsOf(all.find((b) => b.slug === "ueno")?.area_names ?? [], "ko").map((t) => t.text);
+  console.log(`  home card towns, ueno, ko: ${homeKo.join(", ")}`);
+  check("home card towns in Korean, folded", homeKo.slice(0, 3).join(",") === "우에노,히가시우에노,우에노코엔" && homeKo.length === 5);
+}
+
+// Boards never overlap: a board must never carry another board's polygons to
+// the browser, and each board's landmark falls in no other board.
 // The projection (components/home/map-pins.ts) against the capes it was
 // fitted to: each cape must land on the matching extreme point of its
 // prefecture's main island in the outline file.

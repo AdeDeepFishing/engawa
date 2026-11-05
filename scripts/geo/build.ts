@@ -9,6 +9,7 @@
  *   --board <slug>     board in supabase/seed/boards.json (default musashikosugi)
  *   --simplify <pct>   mapshaper simplification, default 30%
  *   --write-seed       also fill area_names[].code in supabase/seed/boards.json
+ *   --dry-run          match and simplify, print what would be written, write nothing
  *
  * Needs npx (mapshaper is fetched on demand). Output: one Feature per area
  * with properties {area_code, name_ja}, name_ja spelled as in the seed.
@@ -31,9 +32,10 @@ const option = (name: string, fallback: string) => {
 const slug = option("--board", "musashikosugi");
 const simplify = option("--simplify", "30%");
 const writeSeed = argv.includes("--write-seed");
+const dryRun = argv.includes("--dry-run");
 
 if (!shpPath) {
-  console.error("usage: node --import=tsx scripts/geo/build.ts <path to r2ka<city code>.shp> [--board slug] [--simplify 30%] [--write-seed]");
+  console.error("usage: node --import=tsx scripts/geo/build.ts <path to r2ka<city code>.shp> [--board slug] [--simplify 30%] [--write-seed] [--dry-run]");
   process.exit(1);
 }
 
@@ -121,25 +123,27 @@ function main() {
       `simplified ${simplify} with mapshaper (keep-shapes, precision ${PRECISION}) by scripts/geo/build.ts`;
     const out = `{"type":"FeatureCollection","note":${JSON.stringify(note)},"features":[\n${lines.join(",\n")}\n]}\n`;
     const outPath = resolve(__dirname, "../../lib/geo", `${slug}.json`);
-    writeFileSync(outPath, out);
-    console.log(`wrote ${outPath}: ${lines.length} features, ${Buffer.byteLength(out)} bytes`);
+    if (!dryRun) writeFileSync(outPath, out);
+    console.log(`${dryRun ? "would write" : "wrote"} ${outPath}: ${lines.length} features, ${Buffer.byteLength(out)} bytes`);
     for (const m of matched) console.log(`  ${m.code}  ${m.name_ja}`);
 
-    // 4. Optionally put the codes into the seed, one targeted replacement per area so the file keeps its layout.
+    // 4. Optionally put the codes into the seed. It is read and written as
+    // JSON (two-space indent, as the file is kept), so the area entries may
+    // carry their localized names on lines of their own.
     if (writeSeed) {
       const seedPath = resolve(__dirname, "../../supabase/seed/boards.json");
-      let text = readFileSync(seedPath, "utf8");
+      const seed = JSON.parse(readFileSync(seedPath, "utf8")) as { boards: { slug: string; area_names: { code: string | null; name_ja: string }[] }[] };
+      const target = seed.boards.find((b) => b.slug === slug);
       let changed = 0;
-      for (const { name_ja, code } of matched) {
-        const before = `{ "code": null, "name_ja": ${JSON.stringify(name_ja)} }`;
-        const after = `{ "code": ${JSON.stringify(code)}, "name_ja": ${JSON.stringify(name_ja)} }`;
-        if (text.includes(before)) {
-          text = text.replace(before, after);
+      for (const area of target?.area_names ?? []) {
+        const code = matched.find((m) => m.name_ja === area.name_ja)?.code;
+        if (area.code === null && code) {
+          area.code = code;
           changed++;
         }
       }
-      writeFileSync(seedPath, text);
-      console.log(`seed: ${changed} area codes filled in ${seedPath}`);
+      if (!dryRun) writeFileSync(seedPath, `${JSON.stringify(seed, null, 2)}\n`);
+      console.log(`seed: ${changed} area codes ${dryRun ? "would be " : ""}filled in ${seedPath}`);
     }
   } finally {
     rmSync(work, { recursive: true, force: true });

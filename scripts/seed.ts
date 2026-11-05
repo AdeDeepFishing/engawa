@@ -26,6 +26,7 @@ import boardsSeed from "../supabase/seed/boards.json";
 import cardsSeed from "../supabase/seed/sample_cards.json";
 import { db, hasDb } from "../lib/db/client";
 import { seedCardToCard, seedPurgeAfter } from "../lib/db/local";
+import type { BoardAreaName } from "../lib/types";
 
 type SeedBoard = (typeof boardsSeed.boards)[number];
 
@@ -105,8 +106,12 @@ function printDryRun(boards: SeedBoard[]): void {
     console.log(`  if absent:  insert slug, name, mode ${b.mode}, listed true, area_names, known_places, a new admin token; ${samples.length} sample cards`);
     console.log(`  if present: update ${Object.keys(refreshed(b)).join(", ")}; mode, listing, token${args.has("--rotate-token") ? " (rotated: --rotate-token)" : ""} and cards unchanged${args.has("--reset-cards") ? `; --reset-cards: delete this board's cards, insert ${samples.length} sample cards` : ""}`);
     console.log(`  name: ${Object.values(b.name).join(" / ")}`);
-    console.log(`  area_names: ${b.area_names.length}, ${coded} with an e-Stat code`);
-    for (const a of b.area_names) console.log(`    ${a.code ?? "(no code)"}  ${a.name_ja}`);
+    const named = b.area_names.filter((a: BoardAreaName) => a.name_en && a.name_zh && a.name_ko && a.name_vi).length;
+    console.log(`  area_names: ${b.area_names.length}, ${coded} with an e-Stat code, ${named} with names in en, zh, ko and vi`);
+    for (const a of b.area_names as BoardAreaName[]) {
+      const names = a.name_en ? `  ${a.name_en} / ${a.name_zh} / ${a.name_ko}` : "";
+      console.log(`    ${a.code ?? "(no code)"}  ${a.name_ja}${names}`);
+    }
     console.log(`  known_places: ${b.known_places.length} (${[...kinds].map(([k, n]) => `${k} ${n}`).join(", ")}), verified ${verified}`);
     for (const p of b.known_places) {
       const address = "address_ja" in p && p.address_ja ? `  ${p.address_ja}` : "";

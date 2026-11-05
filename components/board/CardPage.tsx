@@ -6,6 +6,7 @@ import { TopBar } from "@/components/TopBar";
 import { CardShare } from "@/components/share/CardShare";
 import { CATEGORY_ICON, isExpired } from "@/lib/cards/categories";
 import {
+  areaParts,
   conflictStatements,
   formatDateTime,
   placeLabel,
@@ -14,11 +15,11 @@ import {
   supersededStatements,
   timeAgo,
 } from "@/lib/cards/display";
-import { areaName } from "@/lib/geo";
 import { tCount } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n/LangProvider";
 import type { Board, Card, CardTrace } from "@/lib/types";
 import { Statement } from "./CardDetail";
+import { AreaName } from "./AreaName";
 import { CardReactions } from "./CardReactions";
 import { MapsLink } from "./MapsLink";
 import { CardTraceView } from "./CardTrace";
@@ -46,7 +47,7 @@ export function CardPage({
   const router = useRouter();
   const now = new Date(serverNow);
   const place = placeLabel(card, board, lang);
-  const area = areaName(board, card.area_code);
+  const area = areaParts(card, board, lang);
   const expired = isExpired(card.valid_until, now);
   const conditions = card.facts.conditions ?? [];
   const conflicts = conflictStatements(card);
@@ -114,7 +115,9 @@ export function CardPage({
             {area ? (
               <>
                 <dt className="text-muted">{t("area.label")}</dt>
-                <dd>{area}</dd>
+                <dd>
+                  <AreaName name={area} lang={lang} />
+                </dd>
               </>
             ) : null}
             {card.facts.status ? (
