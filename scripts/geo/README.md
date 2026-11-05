@@ -28,9 +28,9 @@ The script:
 2. matches each name to an e-Stat record after turning kanji numerals into digits (小杉町三丁目 is 小杉町3丁目), and reports names it cannot find,
 3. keeps only those records and simplifies them with `npx mapshaper` (`-simplify 30% keep-shapes`, coordinates rounded to 0.00001 degrees, about one metre),
 4. writes `lib/geo/<slug>.json` as a GeoJSON FeatureCollection, one Feature per area with `area_code` and `name_ja` spelled as in the seed, in seed order,
-5. with `--write-seed`, fills the `code` of each area in `supabase/seed/boards.json`. Run `pnpm db:seed` afterwards to copy the codes into the board row (the seed only updates the board; cards are untouched).
+5. with `--write-seed`, fills the `code` of each area that has none in `supabase/seed/boards.json`, reading and writing the file as JSON (so the localized names next to `name_ja` stay as they are). Run `pnpm db:seed` afterwards to copy the codes into the board row (the seed only updates the board; cards are untouched).
 
-Options: `--board <slug>` (default `musashikosugi`), `--simplify <pct>` (default `30%`; 20% gives about 13 KB, 30% about 16 KB, the unsimplified subset is 42 KB).
+Options: `--board <slug>` (default `musashikosugi`), `--simplify <pct>` (default `30%`; 20% gives about 13 KB, 30% about 16 KB, the unsimplified subset is 42 KB), `--dry-run` (match and simplify, print what would be written, write nothing).
 
 Last built 2026-11-03 for `musashikosugi`: 23 areas, all 23 names matched one record each.
 
