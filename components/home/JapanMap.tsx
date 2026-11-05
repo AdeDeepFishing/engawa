@@ -155,7 +155,14 @@ export function JapanMap({
   };
   const pointerOut = (code: string) => () => setHovered((h) => (h === code ? null : h));
   const focusIn = (code: string) => (e: FocusEvent<HTMLElement>) => {
-    if (e.currentTarget.matches(":focus-visible")) setFocused(code);
+    // Older Safari throws on the selector; a thrown handler is worse than a tint, so fall back to focused.
+    let visible = true;
+    try {
+      visible = e.currentTarget.matches(":focus-visible");
+    } catch {
+      visible = true;
+    }
+    if (visible) setFocused(code);
   };
   const focusOut = (code: string) => () => setFocused((f) => (f === code ? null : f));
   function select(code: string) {

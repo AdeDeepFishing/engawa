@@ -57,6 +57,14 @@ export function LanguageSwitch() {
     menu.querySelector<HTMLElement>('[aria-checked="true"]')?.focus();
   }, [open]);
 
+  // A resize or a rotation while the menu is open: the placement no longer holds, so it closes.
+  useEffect(() => {
+    if (!open) return;
+    const close = () => setOpen(false);
+    window.addEventListener("resize", close);
+    return () => window.removeEventListener("resize", close);
+  }, [open]);
+
   // A press anywhere outside closes the menu.
   useEffect(() => {
     if (!open) return;
@@ -96,10 +104,6 @@ export function LanguageSwitch() {
       case "Escape":
         close(true);
         break;
-      case "Tab":
-        // Tab leaves the menu where focus goes next; it only closes.
-        setOpen(false);
-        return;
       default:
         return;
     }
