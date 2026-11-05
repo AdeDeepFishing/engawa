@@ -83,7 +83,7 @@ export function townName(area: AreaNames, lang: Lang): { text: string; lang: Lan
 
 /**
  * A board's towns in area order, folded on the Japanese name: 小杉町1丁目
- * to 3丁目 are one 小杉町, shown as "Kosugi-cho" to an English reader. Each
+ * to 3丁目 are one 小杉町, shown as "Kosugi-machi" to an English reader. Each
  * town says which language it is in, so a Japanese fallback can carry
  * lang="ja". `pnpm check:boards` checks that every 丁目 of a town folds to
  * the same name in every language.
