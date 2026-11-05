@@ -1321,3 +1321,114 @@ Eval on the integration branch with the pilot's place notes in the context (`pnp
 
 **Review fixes for PR #31 (Fable, reviewing session, on the integration branch):** the run reads the KV state again under its lease before posting, so a run that finished meanwhile cannot make it post the same broadcast (KV propagation lag remains the one gap, worth one merged duplicate at most); only a coded answer from the pipeline counts toward the three attempts, an outage, a timeout or an uncoded 5xx never passes an evacuation order over; an empty `ENGAWA_INBOX_URL` or `PORTAL_SENDER` stops the run with `no_config` instead of burning attempts; the README says the repository commits the KV namespace id and that a broadcast the ward edits is posted again and merged by reconcile. The STATE namespace was created on the account and its id committed; 18 of 18 tests pass with the updated log expectation.
 The human picked the solid variant of mark 04 (2026-11-05 00:45 JST), which is the default; `MARK_VARIANT` stays `solid` and the committed `app/icon.svg` and `app/favicon.ico` already match it.
+
+## 2026-11-05 (Thu) early morning, README final, README.ja, about maintenance model, review follow-ups
+
+**Model:** `claude-opus-5-5` in Claude Code, implementation role, in its own worktree (branch `day7-readme`, cut from `main` after PR #33), brief from the reviewing session (Fable). Another session worked on web push at the same time; none of its files (`public/sw.js`, `app/api/push/**`, `lib/push/**`, `components/board/PushOptIn.tsx`, migration 0010, `lib/db/cards.ts`, `lib/pipeline.ts`, `components/board/BoardView.tsx`) were touched. No prompt, schema or model changed. Claude calls spent: one text drop-in (extract and translate; reconcile had no candidates). The 42 questions of the ask check went to boards without cards, which the route answers in code.
+
+**Done**
+- `README.md` rewritten against the live site: who it is for, the two boards, a two minute walk through the live board, the demo with disaster mode and the places view, the pipeline and what code validates, the three ways the city's broadcasts come in, disaster mode, which model did what with the measurement behind each choice (from this log and `docs/EVAL.md`), the Claude Code setup, the latest eval, what needed a human, privacy in six lines, local setup (migrations 0001 to 0009, the seed per board, the throwaway board script), documents, test material, and the two-layer model after the event. 124 lines.
+- `README.ja.md`: the same for a Japanese judge, written in Japanese rather than translated line by line, with the UI's own Japanese labels (お知らせを入れる, サンプルで試す, 一覧 and 場所別, 6言語のお知らせを印刷, 情報源 3件). Ranges use から, as the UI does, not the wave dash. Each README links to the other at the top.
+- About page, "After the event": five paragraphs in five languages instead of one. The two layers (a platform operator who creates boards, wires each city's broadcasts once, runs the migrations and keeps the shared rules; a local owner per board, such as a 自治会, a building manager or a ward office desk, holding that board's admin link to confirm, hide and switch the mode), what a new city costs (data, not code; `docs/BOARDS.md`), and what is not there yet (one operator, one admin token for every board, per-board admin links next). `about.after_body` rewritten in place, four keys appended at the end of the five message files.
+- Follow-up (a), view cookie: `useBoardView` mirrors the List or Places choice in the `engawa_view` cookie next to localStorage, and copies a choice stored before the cookie existed. The board page renders `?view=` first, then the cookie, then the list (`boardViewFor` in `lib/cards/places.ts`, three checks in `pnpm check:places`, 31 of 31).
+- Follow-up (b), proxy: `proxy.ts` runs on every page request (API routes, `_next/` and paths with a file extension excepted), so a client-sent `x-engawa-link-lang` is always dropped and only a valid `?lang=` sets it. No API route reads the header (grep of `getRequestLang` and `getLinkLang`).
+- Follow-up (c), one limiter: `lib/rate-limit.ts` (`slidingWindow`, `overAny`, `clientIp`, `rateLimited`) replaces the two copies in the ask and reaction routes. Reactions keep 30 taps a device and 60 an address per hour. Ask keeps 6 a minute and adds 20 an hour, keyed by the device id (now `isUuid` and lower case) or by the address without one; a refused question uses up neither window. Every in-memory 429 is `{error: "rate_limited", scope, limit_per_minute | limit_per_hour}` with `Retry-After` set to the window. `useAsk` shows `limit.ask_hour` (appended to the five files) for the hourly one. `docs/PRIVACY.md` says which counters exist.
+- Follow-up (d), mode rule: `emergencyTerm` tests the Japanese body and the source excerpt for 訓練 and 想定 as well as the title, except where a real order uses them: 訓練ではありません, 洪水浸水想定区域, 浸水が想定される, 想定最大規模, 想定を超える. 解除 stays a title word, since an order can say 解除されるまで. Seven checks in `pnpm check:mode`, 41 of 41; `docs/INBOX.md` updated.
+
+**Acceptance** (dev server on port 3741 against the shared Supabase project; throwaway boards `readme-acceptance` and `readme-view`, both deleted afterwards: 1 card, 1 card_sources, 1 submission, 1 device, 0 storage objects in all; the live boards were only read)
+
+| check | result |
+|---|---|
+| README links | 18 relative links and 18 backticked paths in each README resolve in the repository; the four engawaboard.com URLs answer 200; read back in full |
+| README.ja.md | read back; UI labels checked against `ja.json` (thirteen corrected from the first draft, such as 文章としてコピー and 情報源 3件) |
+| about page, 390 px and 1280 px, ja and en | five paragraphs at 16 px, no text under 16 px on the page, no sideways scroll (scroll width 390 and 1280), a 640 px column at 1280; zh, ko and vi server HTML carry the five paragraphs |
+| view cookie | built-in browser on `readme-view` (one `t02` card, create in 17 s): Places tapped, `document.cookie` holds `engawa_view=places`, localStorage `places`, URL `?view=places`. Fresh curl of the plain URL with that cookie: `aria-pressed="true"` on Places, `false` on List, the place group in the server HTML; without the cookie List is pressed; `?view=list` with the cookie renders List |
+| proxy | no `?lang=`, `x-engawa-link-lang: vi`, Accept-Language en: `<html lang="en">` (before this change the header won); `?lang=zh` with the header vi: zh; `?lang=fr`: en; the home page drops the header too; `/icon.svg` 200 untouched |
+| ask, 21 questions from one device | sent 10.5 s apart so the minute window never filled: 20 answered 200, the 21st 429 `{"error":"rate_limited","scope":"device","limit_per_hour":20}` with `Retry-After: 3600`; another device right after: 200 |
+| ask, the board's message | the browser's own device id given 20 questions by curl, then a suggested question tapped on the board: "You have asked many questions in the last hour. Please try again later. You can still read every card." |
+| reactions after the refactor | one device, 31 taps alternating POST and DELETE: 30 times 200, the 31st 429 `{"error":"rate_limited","scope":"device","limit_per_hour":30}` with `Retry-After: 3600` and `Cache-Control: no-store`; a malformed card id 404 |
+| `pnpm check:mode`, `check:places` | 41 of 41, 31 of 31 |
+| `pnpm typecheck`, `lint`, `guard --all`, `build` | clean (build once at the end) |
+
+**Decisions taken in this session, open for review**
+- `VIEW_COOKIE` sits in `lib/cards/places.ts` beside `parseBoardView`, which the server page and the client hook already share, rather than in `lib/i18n/server.ts`: the client writes it, and it is not about language. The page reads it with `cookies()`. A reader whose choice is only in localStorage still sees one switch after hydration on the first visit after the deploy; the cookie is written then.
+- Ask has no per-address limit beyond the fallback key: phones on a carrier's shared address would block each other, and the browser always sends a device id. A script that rotates device ids still meets the daily Claude call cap.
+- The ask minute 429 now carries `scope` and `limit_per_minute` where it carried `error` only; the client reads the status and `limit_per_hour`.
+- The mode exceptions: without them, a real Kawasaki evacuation order naming 多摩川の洪水浸水想定区域 would never switch the board.
+- README: the Shibuya poller is described as built and tested with the ward's consent first, not as live; the guard hook is described by what it does. This session started outside the worktree, so Claude Code did not load the worktree's hook settings; `pnpm guard` ran by hand on every file written.
+- The about page heading stays "After the event".
+
+**Needed a human**
+- Review and merge (Fable). Nothing new in Vercel or the database.
+- `docs/PLAN.md` line "README final ... README.ja.md; the about page's two-layer maintenance model" under 11/05 is for the reviewing session to tick.
+- The Korean and Vietnamese `about.after_*` and `limit.ask_hour` strings are mine, for the 11/06 read.
+
+## 2026-11-05 (Thu), web push for official and danger cards
+
+Model: `claude-opus-5-5` in Claude Code, implementation role, in its own worktree (`day7-push`, cut from `main` after PR #33), brief from the reviewing session (Fable). Pipeline models unchanged. Another session worked at the same time on the READMEs, `components/about/**`, `proxy.ts`, `lib/rate-limit.ts`, the ask route, `useBoardView.ts` and `lib/cards/mode.ts`; none of those were touched.
+
+Why: a board only helps a reader who opens it. After a quake or an evacuation order the reader should not have to keep reloading: the city's notices and danger reports should reach the phone, in the reader's language, the moment they are on the board.
+
+**What was done**
+- Table: migration `0010_push_subscriptions.sql`, one row per board and browser (`board_id`, `device_id`, `endpoint`, `p256dh`, `auth`, `lang`, `created_at`, `last_used_at`, `purge_after` 90 days after the last use), RLS on with no policies, cascade with the board. The only index is the unique `(board_id, endpoint)`, which serves every query. `lib/db/push.ts` reads and writes it; without the table every call answers "missing" and nothing throws (`42P01`, `PGRST205`). A count with `head: true` on a missing table answers 204 with no error at all, so nothing there counts with `head`. The purge job deletes rows past `purge_after` and treats a missing table as nothing to purge. The human applied 0010 to the shared database during this session.
+- Rules (`lib/push/rules.ts`, pure): a card alerts when it is public and either `official` in `danger`, `official_notice`, `shelter` or `water`, or `danger` from the loudspeaker input or the official inbox (platform `loudspeaker` or `city_mail`). It alerts on a new version only: a create, an update, or a merge that raised the card's source (a neighbour's card the city now confirms, a loudspeaker transcript replaced by the city's text, flagged by `mergeIntoCard` as `raised`). A plain merge, a conflict or a hold sends nothing, so a second photo of the same notice never alerts twice. The payload is the title in the subscriber's language with the board's fallback (English, then Japanese, while translate is still running), the first line of the body cut at 160 characters, `/b/<slug>/c/<id>?lang=<lang>`, tag `card-<id>`, the 192 icon and a BCP 47 `lang` so Chinese and Japanese get their own glyphs. The route accepts endpoints of the four browser push services only (FCM, Mozilla, Apple, WNS; https, no port, no credentials), because the server posts to every stored endpoint; and only a 65 byte P-256 point and a 16 byte secret as keys. `pnpm check:push`: 52 checks.
+- Sending (`lib/push/send.ts`, `web-push` 3.6.7): VAPID from `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` (`lib/push/config.ts`; all three present and well formed, or push is off and nothing is sent or stored). Ten messages in flight at a time, a 10 second timeout, TTL 12 hours, urgency high, a Topic header per card so the push service replaces an undelivered earlier version. 404 and 410 delete the row; a delivery moves `last_used_at` and `purge_after`. One log line per send with counts only.
+- Pipeline: the send starts right after reconcile, before the masked copy, the finish and translate, and runs beside them; `runPipeline` waits for it in its `finally`, after the last event, so the function stays alive until the push services answered without moving `done`. Cards written before a later step fails still alert.
+- Mode: `lib/db/mode.ts` sends "Disaster mode on <board>" (`push.mode_title`, `push.mode_body`, tag `mode-<board id>`, link to the board with `?lang=`) when the admin or the inbox switches a board to disaster, from the request that won the conditional update, through `after()` with the promise already running. The return to peace sends nothing.
+- Routes: `POST /api/b/[slug]/push` `{device_id, lang, subscription}` and `DELETE` `{device_id, endpoint}`, rate limited like the react route (30 an hour per address, 20 per device, in memory; the window limiter is copied from the react route because `lib/rate-limit.ts` belongs to the other session), at most 5000 subscriptions per board (409 `board_full`), 404 `not_configured` when keys or the table are missing. `GET /api/b/[slug]/push/key` gives the public key or 404 `not_configured`, so no build bundles it.
+- Board: `components/board/PushOptIn.tsx` under the cards heading of the list column: one 44 px "Get alerts" toggle with `aria-pressed` and a one line note (what it sends, how to turn it off, or "blocked in the browser's settings"). It renders nothing unless the browser has a service worker, `PushManager` and `Notification`, the page is online and the key route answers. A tap asks permission inside the gesture, subscribes through the offline worker and posts; a second tap deletes this board's row and drops the browser's subscription only when no other board in this browser still uses it (one subscription per site, one row per board). While on, it posts again when the reader's language changes and at most once a day, which keeps the row from expiring for a reader who visits. `public/sw.js` (VERSION 2) gains `push` (always shows a notification, `renotify` with the tag) and `notificationclick` (same origin only; focuses an open tab on that page or opens one).
+- Admin page: an "Alerts" section with the count of devices per board, or "Alerts are off" when push is not configured. Nothing else about subscriptions leaves the server.
+- 11 i18n keys at the top of the five message files (`push.*`, `admin.push_*`). `docs/PRIVACY.md`: an "Alerts (web push)" section and the retention row.
+
+**Acceptance** (throwaway board `push-acceptance`, dev server on port 3127, a throwaway VAPID pair in the worktree's `.env.local`, removed after the run; Google Chrome 156 in a throwaway profile driven over the DevTools protocol; the built-in pane is Electron and has no push service)
+
+| step | what | result |
+|---|---|---|
+| 1 | key route with keys set | 200 `{key}`; unknown board 404 `board_not_found` |
+| 2 | tap in headless Chrome | headless denies the permission prompt by itself: the note says notifications are blocked, no subscription, no row |
+| 3 | tap in headful Chrome (profile preferences allow notifications; the DevTools grant had no effect in this version) | subscription on fcm.googleapis.com, POST 200, one row, `purge_after` = `last_used_at` + 90 days, toggle pressed |
+| 4 | reader switches to Japanese (`?lang=ja`) | one more POST, the same row now `ja`, no second row |
+| 5 | the sample paper notice (`public/samples/notice.jpg`) | created an `official` `daily_notice` card (a planned building water stoppage): not an alert category, no send, no notification |
+| 6 | `p02` water distribution notice | created `official` `water`; push started at reconcile, 1 delivered in 269 ms during the 9.0 s translate. Notification in Chrome: title 小杉小学校 体育館前（校庭側）で給水、本日14:00から16:00, body the card's first line, url `/b/push-acceptance/c/<id>?lang=ja`, tag `card-<id>`, lang `ja-JP`, icon `/icons/192`; `last_used_at` moved |
+| 7 | `t03` secondhand WeChat text about a konbini | `secondhand` `shops` card: no send, no notification |
+| 8 | admin route, disaster | the admin answer came first, then 1 delivered in 653 ms; notification 武蔵小杉（テスト push-acceptance）が災害時モードになりました, url `/b/push-acceptance?lang=ja`, tag `mode-<board id>` |
+| 9 | admin route, back to peace | no send, no notification |
+| 10 | admin page | "1 device gets alerts from this board." and nothing else about subscriptions |
+| 11 | second tap | DELETE 200, row gone, browser subscription removed, toggle off |
+| 12 | `p09` shelter rules notice | `official` `shelter` card, no subscription left: no send, no notification |
+| 13 | gone endpoints: a local HTTPS mock push service answering 410 (row inserted directly, since the route refuses any host but the four push services) and the FCM endpoint unsubscribed in step 11 | admin switch to disaster: 2 subscriptions, 0 delivered, 2 gone in 234 ms, both rows deleted. The mock received TTL 43200, Urgency high, a 32 character Topic, `aes128gcm`, a VAPID authorization, 357 bytes |
+| 14 | VAPID variables removed, server restarted | key route and POST 404 `not_configured`; the board page renders no control |
+| 15 | board deleted | 4 storage objects, 5 card_sources, 5 cards, 5 submissions, 5 devices; 0 rows left in `push_subscriptions` |
+
+Pipeline time with and without push (ms, from the process POST; "outside Claude" is the total minus extract, reconcile and translate):
+
+| run | keys | subscriptions | total | extract | reconcile | translate | outside Claude | done to stream close |
+|---|---|---|---|---|---|---|---|---|
+| 5 `notice.jpg` | set | 1 (not an alert) | 21416 | 10490 | 167 | 8807 | 1952 | 0 |
+| 6 `p02` | set | 1, sent | 19168 | 8442 | 273 | 9009 | 1444 | 0 |
+| 7 `t03` text | set | 1 (not an alert) | 16272 | 9147 | 156 | 6564 | 405 | 1 |
+| 12 `p09` | set | 0 | 23275 | 9265 | 151 | 12883 | 976 | 1 |
+| 14 `p10` | unset | n/a | 20373 | 7070 | 146 | 11122 | 2035 | 0 |
+
+The two runs right after a server start (5 and 14) carry about 2 s of route compiling in their stripping stage, with keys set and unset alike; the rest of the spread is Claude's own. The send never sat on the path to `done`: it ran during translate, and `done` to stream close stayed at 0 or 1 ms. 5 drop-ins, 10 Claude calls (no reconcile call: every card had no candidates).
+
+Not exercised: tapping a notification (it is system UI; the handler is same origin only and was read, not driven), the inbox path of the mode notification (same `after()` call as the admin path, one line in `switchOnFromInbox`), and the Mozilla, Apple and Microsoft push services.
+
+`pnpm check:push` 52 of 52, `pnpm typecheck`, `pnpm lint`, `pnpm guard --all` and `pnpm build` clean.
+
+**Decisions taken in this session, open for review**
+- Unique per `(board_id, endpoint)`, not `endpoint` alone as the brief said: a browser has one push subscription for the whole site, so with `endpoint` unique, turning alerts on for Shibuya would silently take them off Musashi-Kosugi.
+- The endpoint allowlist: without it the server would POST to any URL a script registers, every time an official card lands.
+- A merge that raised the card's source counts as a new version and alerts; a plain merge does not.
+- Under the cards heading rather than inside the drop-in, which is a floating button on a phone and a drawer on a laptop; the control takes no space where push is off.
+- The page refreshes an alert that is on once a day, so `purge_after` follows the reader's visits as well as deliveries; a reader who neither visits nor gets an alert for 90 days loses the row.
+- `renotify` with the tag: an update to an alerted card alerts again rather than replacing the old one silently.
+- The sample paper notice does not alert (step 5). Planned building water stoppages are `daily_notice`, and the brief's categories leave them out; worth a human look if the demo should show an alert from the sample.
+
+**Needed a human**
+- Migration 0010 (applied during this session).
+- Before the merge: `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` and `VAPID_SUBJECT` (for example `mailto:` and a contact address) in the Vercel project, from `npx web-push generate-vapid-keys`. Without them the deploy behaves as today.
+
+**Review fixes for PR #35 (Fable, reviewing session, on the integration branch):** the push send no longer holds the process stream or the inbox answer open: the pipeline hands it to `after()` and it runs on past the response within a 60 second budget, after which the remaining jobs are logged as not sent instead of crossing the function limit; `DELETE` removes a subscription by board, endpoint and the caller's device id, as the brief said; the board page passes a server-side `pushConfigured` flag so the alerts control asks for the public key only where the server holds VAPID keys (no extra request on every board load otherwise); the DEVLOG key count reads 11. Left as follow-ups: rows of other boards after a key rotation, one shared limiter for the push route, a comment on the count-then-upsert cap.
+
+**Review fixes for PR #34 (Fable, reviewing session, on the integration branch):** the body rule for drills now matches the phrases that announce a drill or a scenario (訓練放送, 訓練です, 訓練を実施, 訓練のお知らせ, を想定し, 想定した訓練, 【訓練】) instead of a bare 訓練 or 想定 minus exceptions, which had turned real orders off (訓練ではございません, 訓練放送ではありません, 浸水が想定されている地域, 想定以上の降雨, a cancelled drill mentioned in passing); eight such cases are in `pnpm check:mode`, 49 of 49; the README's share sentence says the preview follows the sharer's language; the emergency word list in both READMEs names 避難命令; the migrations line no longer names a last number; the view preference falls back to the cookie when localStorage is unavailable so the URL still gets `?view=places`. Left as follow-ups: a hard cap on the limiter's key count, rows of other boards after a push key rotation.

@@ -28,6 +28,19 @@ const WHO: MessageKey[] = ["about.who_maria", "about.who_sato", "about.who_chen"
 const DATA: MessageKey[] = ["about.data_1", "about.data_2", "about.data_3", "about.data_4"];
 
 /**
+ * After the event, the two-layer model: one platform operator for every
+ * board, a local owner per board, what a new city costs (docs/BOARDS.md),
+ * and what is not there yet (one operator, one admin token for every board).
+ */
+const AFTER: MessageKey[] = [
+  "about.after_body",
+  "about.after_operator",
+  "about.after_owner",
+  "about.after_new_city",
+  "about.after_limits",
+];
+
+/**
  * Sources of the home page map's prefecture outlines (CC BY 4.0, see
  * components/home/japan-map-paths.ts), named in about.credits_map. The labels
  * are names and stay the same in every language.
@@ -40,8 +53,8 @@ const MAP_CREDIT_LINKS = [
 
 /**
  * The about page body: who the board is for, the wall it removes, who lives
- * here (with the figures above), what happens to the data, who could run it
- * after the event, and the credits (#credits, linked from under the home
+ * here (with the figures above), what happens to the data, who runs it after
+ * the event (operator and local owners), and the credits (#credits, linked from under the home
  * page map). Client component so the language switch applies at once.
  */
 export function AboutView({ backHref }: { backHref: string | null }) {
@@ -98,7 +111,11 @@ export function AboutView({ backHref }: { backHref: string | null }) {
         <h2 id="about-after" className="mt-8 text-xl font-bold">
           {t("about.after_heading")}
         </h2>
-        <p className="mt-3 text-base leading-relaxed">{t("about.after_body")}</p>
+        {AFTER.map((key) => (
+          <p key={key} className="mt-3 text-base leading-relaxed">
+            {t(key)}
+          </p>
+        ))}
       </section>
 
       {/* scroll-mt keeps the heading clear of the sticky top bar when reached by its anchor. */}

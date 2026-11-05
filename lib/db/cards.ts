@@ -75,6 +75,8 @@ export interface AppliedCard {
   purge_after: string;
   action: ReconcileAction;
   reason: string;
+  /** A merge that raised the card's source to a stronger one (web push alerts on it, lib/push/rules.ts). */
+  raised?: boolean;
 }
 
 // --- candidates -------------------------------------------------------------
@@ -227,6 +229,7 @@ async function mergeIntoCard(
   await insertSource(ctx, card.id, fact, "confirmed", traceOf(decision));
   const { error: rpcErr } = await db().rpc("bump_card_source", { p_card: card.id });
   if (rpcErr) throw rpcErr;
+  const raised = trustRank(fact.source_type) > trustRank(card.source_type);
 
   const patch: Record<string, unknown> = {};
   const facts: CardFacts = { ...card.facts };
@@ -236,7 +239,7 @@ async function mergeIntoCard(
   // The card's platform names where its label comes from, so it moves with
   // the label: a loudspeaker card that the city's mail confirms reads
   // "from the city's broadcast mail", not "official, heard from the radio".
-  if (trustRank(fact.source_type) > trustRank(card.source_type)) {
+  if (raised) {
     patch.source_type = fact.source_type;
     if (facts.platform !== ctx.platform) {
       facts.platform = ctx.platform;
@@ -292,7 +295,7 @@ async function mergeIntoCard(
     if (error) throw error;
     purgeAfter = (data as { purge_after: string }).purge_after;
   }
-  return { id: card.id, visibility: "public", purge_after: purgeAfter, action: "merge", reason: decision.reason };
+  return { id: card.id, visibility: "public", purge_after: purgeAfter, action: "merge", reason: decision.reason, raised };
 }
 
 /**

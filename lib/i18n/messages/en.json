@@ -1,4 +1,15 @@
 {
+  "push.get_alerts": "Get alerts",
+  "push.explain_off": "Official notices, danger, water and shelter on this board, as a notification on this device.",
+  "push.explain_on": "This device gets a notification for official notices, danger, water and shelter on this board. Tap again to turn it off.",
+  "push.denied": "Notifications are blocked for this site. Allow them in the browser's settings to get alerts.",
+  "push.failed": "Alerts could not be changed. Try again.",
+  "push.mode_title": "Disaster mode on {board}",
+  "push.mode_body": "Official notices come first on the board now. Tap to open it.",
+  "admin.push_heading": "Alerts",
+  "admin.push_count_one": "1 device gets alerts from this board.",
+  "admin.push_count_other": "{n} devices get alerts from this board.",
+  "admin.push_off": "Alerts are off: the VAPID keys or migration 0010 are missing.",
   "places.kind.commuter_shelter": "Shelter for stranded commuters",
   "mode.strip_since": "Disaster mode since {time} ({ago})",
   "mode.reason_inbox": "Switched on by the city's broadcast mail.",
@@ -314,7 +325,7 @@
   "about.data_3": "Everything has an expiry. A card is deleted 30 days after the time it was valid for, a photo of a notice with its card, and the browser identifier 90 days after its last use. Questions typed into the ask box are not stored.",
   "about.data_4": "There are no accounts, and the board is not indexed by search engines. The full retention table is published with the project's source code (docs/PRIVACY.md).",
   "about.after_heading": "After the event",
-  "about.after_body": "Engawa was built in one week for Built with Claude: Japan 2026, with the 武蔵小杉 board as the first pilot. The intent is that a board is run by the people who already hold the notices: a building management association, a 自治会 (neighbourhood association), a shelter team after a disaster, or an international exchange centre that supports residents in several languages. Each would have its own board with its own known places and admin link, under the same rules about personal information and expiry.",
+  "about.after_body": "Engawa was built in one week for Built with Claude: Japan 2026. It has two boards today, Musashi-Kosugi in Kawasaki and Shibuya in Tokyo. After the event it is meant to run in two layers: one platform operator for every board, and a local owner for each board.",
   "about.back_board": "Back to the board",
   "about.back_home": "All boards",
   "board.footer_about": "About this board and what happens to your data",
@@ -405,5 +416,10 @@
   "about.credits_map": "The prefecture outlines on the home page map are from svg-maps by Victor Cazanave, based on the MapSVG map of Japan, simplified for Engawa (small islands dropped, coordinates rounded). They are used under the Creative Commons Attribution 4.0 International licence (CC BY 4.0).",
   "home.source": "Source on GitHub",
   "home.tagline_easy_ja": "きんじょの じょうほうを、みんなの ことばで。",
-  "places.kind.office": "City or ward office"
+  "places.kind.office": "City or ward office",
+  "limit.ask_hour": "You have asked many questions in the last hour. Please try again later. You can still read every card.",
+  "about.after_operator": "The platform operator creates the boards, connects each city's disaster radio broadcasts to its board once (a mail forwarder, or a reader for the broadcast text the city publishes) and runs the database updates. The operator also keeps the rules every board shares: personal information removed, locations kept coarse, everything deleted when it expires.",
+  "about.after_owner": "Each board has a local owner who already puts up the notices: a neighbourhood association (自治会), a building manager, or a desk at the ward office. The owner holds that board's admin link and uses it to confirm official cards, hide what should not be on the board, and switch the board to disaster mode and back.",
+  "about.after_new_city": "A new city needs data, not new code: its shelters and the districts each one serves, its water points and stations, the district boundaries from the national statistics (e-Stat), and where the city publishes the text of its disaster radio. For the area around one station that is a few hours of work. The checklist is published with the source code (docs/BOARDS.md).",
+  "about.after_limits": "What is not there yet: today there is one operator, the person who built Engawa, and one admin link opens the admin page of every board. A separate admin link for each board is the next step, so that a local owner can look after their own board without the operator."
 }

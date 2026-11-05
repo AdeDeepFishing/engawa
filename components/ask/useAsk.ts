@@ -23,9 +23,13 @@ export type AskController = {
   clear: () => void;
 };
 
-function errorKey(status: number): MessageKey {
-  if (status === 429) return "limit.ask_rate";
-  if (status === 503) return "limit.ask_busy";
+/** The message for a refused question; a 429 says which window was full (`limit_per_hour` or `limit_per_minute`). */
+async function errorKey(res: Response): Promise<MessageKey> {
+  if (res.status === 429) {
+    const body = (await res.json().catch(() => null)) as { limit_per_hour?: unknown } | null;
+    return body && typeof body.limit_per_hour === "number" ? "limit.ask_hour" : "limit.ask_rate";
+  }
+  if (res.status === 503) return "limit.ask_busy";
   return "ask.error";
 }
 
@@ -67,7 +71,8 @@ export function useAsk(boardSlug: string): AskController {
         });
         if (id !== requestId.current) return;
         if (!res.ok) {
-          settle({ id, question: q, kind: "error", key: errorKey(res.status) });
+          const key = await errorKey(res);
+          if (id === requestId.current) settle({ id, question: q, kind: "error", key });
           return;
         }
         const data = (await res.json()) as { answer: AskAnswer };
