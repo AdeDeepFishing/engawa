@@ -5,11 +5,11 @@
  * in lib/claude/prompts/area-names.system.md; these are the parts code can
  * check.
  */
+import { CHOME_JA } from "../lib/cards/display";
 import type { BoardAreaName } from "../lib/types";
 
 export const AREA_NAME_LANGS = ["en", "zh", "ko", "vi"] as const;
 
-const CHOME_JA = /([0-9]+)丁目$/u;
 const PATTERN: Record<(typeof AREA_NAME_LANGS)[number], RegExp> = {
   // ASCII letters, digits, spaces and the hyphen: no other dash, no accent.
   en: /^[A-Za-z0-9 -]+$/,
@@ -30,6 +30,8 @@ const CHOME_END: Record<(typeof AREA_NAME_LANGS)[number], (n: string) => string>
 /** What is wrong with one area's localized names; empty when nothing is. */
 export function areaNameProblems(area: BoardAreaName): string[] {
   const problems: string[] = [];
+  // The seed writes ASCII digits (scripts/geo/build.ts); a full-width one would pass as "no 丁目" here and fold as one on the home card.
+  if (/[０-９]/u.test(area.name_ja)) problems.push("name_ja has a full-width digit");
   const chome = CHOME_JA.exec(area.name_ja)?.[1] ?? null;
   for (const lang of AREA_NAME_LANGS) {
     const name = area[`name_${lang}`];

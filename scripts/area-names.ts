@@ -87,7 +87,9 @@ async function main(): Promise<void> {
     return;
   }
 
-  const results = await Promise.all(work.map((w) => namesFor(w.board, w.areas)));
+  // One board at a time, so every call after the first reads the cached system block instead of racing it.
+  const results: Awaited<ReturnType<typeof namesFor>>[] = [];
+  for (const w of work) results.push(await namesFor(w.board, w.areas));
   let problems = 0;
   for (const [i, { board }] of work.entries()) {
     const { rule, named, tokens } = results[i];

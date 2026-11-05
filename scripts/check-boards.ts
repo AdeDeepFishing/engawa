@@ -128,16 +128,22 @@ for (const raw of seed.boards) {
   const nameProblems = board.area_names.flatMap((a) => areaNameProblems(a).map((p) => `${a.name_ja} ${p}`));
   check(`${board.slug}: every area has en, zh, ko and vi in their form`, nameProblems.length === 0, nameProblems.slice(0, 3).join("; "));
   const split: string[] = [];
+  const joined: string[] = [];
   for (const lang of LANGS) {
     const seen = new Map<string, string>();
+    const owner = new Map<string, string>();
     for (const a of board.area_names) {
       const ja = townName(a, "ja").text;
       const town = townName(a, lang).text;
       if ((seen.get(ja) ?? town) !== town || /chome|초메|丁目/u.test(town)) split.push(`${ja} in ${lang}: ${town}`);
       if (!seen.has(ja)) seen.set(ja, town);
+      // Two Japanese towns that read the same (仲町 and 中町) would show as one name twice on the home card.
+      if ((owner.get(town) ?? ja) !== ja) joined.push(`${owner.get(town)} and ${ja} both ${town} in ${lang}`);
+      if (!owner.has(town)) owner.set(town, ja);
     }
   }
   check(`${board.slug}: every 丁目 of a town folds to one town name in five languages`, split.length === 0, split.slice(0, 3).join("; "));
+  check(`${board.slug}: no two towns fold to one name in any language`, joined.length === 0, joined.slice(0, 3).join("; "));
   const resolved = hit ? areaName(hit, "ko") : null;
   check(
     `${board.slug}: the landmark's area reads in Korean with the Japanese after it`,

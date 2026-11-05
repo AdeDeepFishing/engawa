@@ -77,7 +77,7 @@ export function BoardSummary({ board, now }: { board: HomeBoard; now: string }) 
           <dt className="inline font-semibold">{t("home.area")}</dt>
           <dd className="ml-2 inline">
             {towns.slice(0, TOWNS_SHOWN).map((town, i) => (
-              <Fragment key={town.text}>
+              <Fragment key={town.ja}>
                 {i > 0 ? t("home.area_sep") : null}
                 {/* A town never breaks inside itself (Korean would break between any two syllables); the line breaks between towns. */}
                 <span lang={town.lang === lang ? undefined : town.lang} className="whitespace-nowrap">

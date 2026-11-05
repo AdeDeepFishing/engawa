@@ -66,10 +66,18 @@ export function areaParts(
   return area ? areaName(area, lang) : null;
 }
 
+/**
+ * The 丁目 at the end of a Japanese area name, with its number captured:
+ * 小杉町1丁目 gives "1". ASCII digits only, as scripts/geo/build.ts writes
+ * them; scripts/area-name-rules.ts shares this pattern and refuses a
+ * full-width digit, so the seed and the display agree on what a 丁目 is.
+ */
+export const CHOME_JA = /([0-9]+)丁目$/u;
+
 /** The 丁目 at the end of an area name in each language: "1丁目", " 1-chome", " 1초메". */
 const CHOME: Record<Lang, RegExp> = {
-  ja: /[0-9０-９]+丁目$/u,
-  zh: /[0-9０-９]+丁目$/u,
+  ja: CHOME_JA,
+  zh: /[0-9]+丁目$/u,
   en: / [0-9]+-chome$/,
   vi: / [0-9]+-chome$/,
   ko: / [0-9]+초메$/u,
@@ -85,14 +93,16 @@ export function townName(area: AreaNames, lang: Lang): { text: string; lang: Lan
  * A board's towns in area order, folded on the Japanese name: 小杉町1丁目
  * to 3丁目 are one 小杉町, shown as "Kosugi-machi" to an English reader. Each
  * town says which language it is in, so a Japanese fallback can carry
- * lang="ja". `pnpm check:boards` checks that every 丁目 of a town folds to
- * the same name in every language.
+ * lang="ja", and carries its Japanese name, which is what tells two towns
+ * apart (仲町 and 中町 would both read Naka-machi). `pnpm check:boards`
+ * checks that every 丁目 of a town folds to the same name in every language
+ * and that no two towns fold to one name.
  */
-export function townsOf(areas: AreaNames[], lang: Lang): { text: string; lang: Lang }[] {
-  const towns = new Map<string, { text: string; lang: Lang }>();
+export function townsOf(areas: AreaNames[], lang: Lang): { text: string; lang: Lang; ja: string }[] {
+  const towns = new Map<string, { text: string; lang: Lang; ja: string }>();
   for (const a of areas) {
     const ja = a.name_ja.replace(CHOME.ja, "");
-    if (!towns.has(ja)) towns.set(ja, townName(a, lang));
+    if (!towns.has(ja)) towns.set(ja, { ...townName(a, lang), ja });
   }
   return [...towns.values()];
 }
