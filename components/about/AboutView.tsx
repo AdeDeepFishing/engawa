@@ -68,6 +68,7 @@ export function AboutView({ backHref }: { backHref: string | null }) {
     <main className="mx-auto w-full max-w-2xl flex-1 px-4 py-6">
       <h1 className="text-2xl font-bold">{t("about.title")}</h1>
       <p className="mt-3 text-base leading-relaxed">{t("about.lead")}</p>
+      <p className="mt-3 text-base leading-relaxed">{t("about.mission")}</p>
 
       <section aria-labelledby="about-who">
         <h2 id="about-who" className="mt-8 text-xl font-bold">

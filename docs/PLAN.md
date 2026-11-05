@@ -197,6 +197,7 @@ Session PRs were merged in pairs after review through the integration PRs #11, #
 - [ ] Human: photograph a paper notice on a phone; the card appears in all languages on the deployed URL within 30 seconds
 - [ ] Fable review of the whole repo; fix findings; freeze at 20:00
 - [ ] Seed the demo board (fresh notices with the right date and time); record rough footage
+- [x] The mission in one sentence: ordinary days a neighbourhood board, in a disaster water, shelters and supplies in your own language; on the home hero, the about page and both READMEs, in all five message files (PR #45)
 
 ### 2026-11-07 (Sat): video and submission
 - [ ] Record screen (one screen, three browser windows side by side) and phone inserts
