@@ -2125,3 +2125,9 @@ The server log shows reconcile (create) and translate (zh, ko, vi, easy_ja in 65
 | `pnpm eval --only p02,p03 --no-write` (04:02 JST) | 3 inputs: field accuracy 21/21, PII leaks 0, invented facts 0, six languages 3/3, errors 0 |
 
 The ja titles in that eval run (printed by a temporary log line that was removed before the commit) contain no doubled place name: 小杉小学校 体育館前で給水 14:00〜16:00 for both p02 images and 武蔵小杉駅前のコンビニ、営業中、水あり for p03. `docs/EVAL.md` was not touched.
+
+## 2026-11-06 (Fri), evening: demo film, licence, submission texts
+
+The demo film is final (v7: 2:54.8, 1080p, Japanese narration with Japanese and English subtitles, a sound layer, English glosses under every Japanese-only caption, いらすとや figures, a real QR code to engawaboard.com on the scene 3 poster). It was recorded on the live pilot board, which was reset to its sample cards before and after each take, and its only scannable QR code is the poster's.
+
+`LICENSE.md` added: all rights reserved, source published for the hackathon review. READMEs now say 49 pull requests, 48 merged and one superseded (counting this one), with the freeze tag `v1.0-hackathon`. PLAN ticked for the 11/06 and 11/07 rows that are done; the per-board admin token (N12) and the phone test beside a real broadcast are recorded as not done.
