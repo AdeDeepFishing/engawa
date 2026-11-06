@@ -183,29 +183,29 @@ Session PRs were merged in pairs after review through the integration PRs #11, #
 - [x] Shibuya broadcasts: a Cloudflare cron Worker polls the ward portal's feed and posts new broadcasts to the board inbox (PR #31); the human generated the board's inbox secret, the portal sender is on the allowlist
 
 ### 2026-11-05 (Thu): demo walk-through, README, remaining nice-to-haves
-- [ ] A read-only pass over the five message files and the about page for natural Korean and Vietnamese and consistent terms (at the 11/06 review; the human decided against outside native readers)
-- [ ] Human: try the heard input on a real phone next to a broadcast; watch the first real city mail become a card and confirm it on the admin page
+- [x] A read-only pass over the five message files and the about page for natural Korean and Vietnamese and consistent terms (done at the 11/06 review, fixes in PR #47; the human decided against outside native readers)
+- [ ] Human: try the heard input on a real phone next to a broadcast; watch the first real city mail become a card and confirm it on the admin page (not done during the event; no city mail arrived in the window)
 - [x] Demo walk-through on the deployed URL with the disaster mode switch: the seven steps pass in about two minutes on a throwaway copy of the pilot board. Demo board content decided: sample cards made by the pipeline from fictional inputs, stored in the seed for every board
 - [x] README final with the new domain, home page, six boards, the three ways into the inbox, disaster mode, alerts; README.ja.md; the about page's two-layer maintenance model
 - [x] N22 Sapporo and Fukuoka boards, and N23 溝の口 and 上野 brought forward: four boards added, all live on 11/05, each a pin on the home page map
 - [x] Web push for official and danger cards (migration 0010, VAPID keys from the human)
 - [x] Area names in the reader's language on the home card, the drop-in panel and the card badge (PR #42); sample cards for the five newer boards, made by the pipeline from fictional inputs (PR #43); both merged and seeded on the live boards on 11/05
-- [ ] N12 make a board with per-board admin tokens: not started; dropped unless time remains before the freeze
+- [ ] N12 make a board with per-board admin tokens: dropped at the freeze (time)
 
 ### 2026-11-06 (Fri): review, freeze, demo prep
-- [ ] Full run of the 7-step demo scenario on the deployed URL; fix what breaks
-- [ ] Human: photograph a paper notice on a phone; the card appears in all languages on the deployed URL within 30 seconds
-- [ ] Fable review of the whole repo; fix findings; freeze at 20:00
-- [ ] Seed the demo board (fresh notices with the right date and time); record rough footage
+- [x] Full run of the 7-step demo scenario on the deployed URL; fix what breaks (rehearsal on a throwaway board 11/06, fixes in PR #48)
+- [x] Human: photograph a paper notice on a phone; the card appears in all languages on the deployed URL within 30 seconds (first card about 20 seconds in the recorded takes)
+- [x] Fable review of the whole repo; fix findings; freeze (PRs #47 and #48, tag v1.0-hackathon)
+- [x] Seed the demo board (fresh notices with the right date and time); record rough footage
 - [x] The mission in one sentence: ordinary days a neighbourhood board, in a disaster water, shelters and supplies in your own language; on the home hero, the about page and both READMEs, in all five message files (PR #45)
 - [x] Demo prep before the freeze: balanced home footer, a dated 断水 sample and a garbage-day sample on 武蔵小杉, fixture p13 for the conflict beat, drop-in consent wording that no longer promises full removal (PR #46)
 - [x] Freeze review fixes from three read-only passes (code, ko/zh/vi language, easy Japanese against Kawasaki's booklet): a drop-in survives the uploader leaving, a wider phone check that also covers conditions, an IP window on ask, five small code fixes, one easy_ja sentence for disaster terms, and the ko, zh and vi corrections (PR #47)
 - [x] Rehearsal fixes from the live run on a throwaway board: an ask answer that cites no card is flagged `noInfo` and stays out of follow-ups, Japanese titles no longer repeat the place name in parentheses, and the fixtures README no longer calls the visible drill marking a finding (PR #48)
 
 ### 2026-11-07 (Sat): video and submission
-- [ ] Record screen (one screen, three browser windows side by side) and phone inserts
-- [ ] Japanese narration, edit, subtitles, native proofreading
-- [ ] README.md final, README.ja.md, Japanese project summary, Claude usage answers from DEVLOG
+- [x] Record screen and phone inserts (recorded on the live pilot board, reset before and after)
+- [x] Japanese narration, edit, subtitles (native proofreading not done)
+- [x] README.md final, README.ja.md, Japanese project summary, Claude usage answers from DEVLOG
 - [ ] Submit by 21:00 JST
 
 ## 6. Cut order if 2026-11-05 21:00 is not green
