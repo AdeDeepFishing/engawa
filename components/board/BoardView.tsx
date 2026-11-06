@@ -350,6 +350,10 @@ export function BoardView({
             <h2 className="text-base font-semibold text-muted">{t("board.cards_heading")}</h2>
             {cards.length ? <ViewToggle view={view} onChange={setView} /> : null}
           </div>
+          {/* Hackathon demo: the seeded cards are fictional. Remove this line and board.demo_note after the event. */}
+          <p className="mt-1 text-base text-muted" data-board-demo-note>
+            {t("board.demo_note")}
+          </p>
           {/* "Get alerts": renders nothing unless this browser can do push and the server has push on. */}
           <PushOptIn boardSlug={board.slug} offline={offline} configured={pushConfigured} />
           {cards.length === 0 && pending.length === 0 ? (

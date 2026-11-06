@@ -34,6 +34,7 @@ const DATA: MessageKey[] = ["about.data_1", "about.data_2", "about.data_3", "abo
  */
 const AFTER: MessageKey[] = [
   "about.after_body",
+  "board.demo_note",
   "about.after_operator",
   "about.after_owner",
   "about.after_new_city",

@@ -154,6 +154,7 @@
   "index.title": "게시판",
   "board.empty": "아직 카드가 없습니다.",
   "board.cards_heading": "안내",
+  "board.demo_note": "처음부터 올라와 있는 카드는 데모용 가상 샘플이며, 실제 재해 정보가 아닙니다.",
   "card.just_now": "방금",
   "card.minutes_ago": "{n}분 전",
   "card.hours_ago": "{n}시간 전",

@@ -154,6 +154,7 @@
   "index.title": "公告板",
   "board.empty": "还没有卡片。",
   "board.cards_heading": "通知",
+  "board.demo_note": "公告板上预先放置的卡片是演示用的虚构示例，不是真实的灾害信息。",
   "card.just_now": "刚刚",
   "card.minutes_ago": "{n}分钟前",
   "card.hours_ago": "{n}小时前",
