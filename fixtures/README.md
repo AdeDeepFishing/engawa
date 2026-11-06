@@ -120,7 +120,7 @@ Boxes are in pixels of the input image, measured with `getClientRects` at render
 
 ## Things to know when running the eval
 
-- The 「訓練用・想定シナリオ」 stamp is part of every paper notice. If the extractor treats a stamped notice as a drill (`daily_notice`) or mentions the stamp in card text, that is a real finding: fix it in the prompt, not by removing the stamp.
+- The 「訓練用・想定シナリオ」 stamp is part of every paper notice. The category must not follow the stamp: if the extractor treats a stamped notice as a drill (`daily_notice`) because of it, that is a real finding, fix it in the prompt, not by removing the stamp. The marking itself staying visible in the card body or conditions is by design, since the extract prompt keeps it there so readers can see it.
 - `p09` answers "can I bring my cat to the shelter". Keep it off the board before demo step 5, which expects "no information yet".
 - `p10` and the water card share a place but not a category. They must stay separate cards.
 

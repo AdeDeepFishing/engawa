@@ -59,6 +59,9 @@ function parseHistory(value: unknown): AskTurn[] {
  * Answers a question from the board's public cards.
  * Body: JSON {question, lang, device_id?, history?: [{question, answer}]}.
  * Response 200: {answer: {segments: [{text, cardIds}], cardIds, noInfo}}.
+ * noInfo is true when the answer cites no card (nothing on the board), both
+ * for the "no information yet" answer made without Claude and for a Claude
+ * answer without citations; the client keeps those out of follow-ups.
  * Errors: 400 bad_request, 404 board_not_found, 429 rate_limited with
  * scope "device" (or "ip" without a device id) and limit_per_minute 6 or
  * limit_per_hour 20, or scope "ip" and limit_per_hour 60 for the address

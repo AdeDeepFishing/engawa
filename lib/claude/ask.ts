@@ -46,7 +46,11 @@ export interface AskAnswer {
   segments: AskSegment[];
   /** Every cited card once, in order of first citation. */
   cardIds: string[];
-  /** True when code answered "no information yet" without calling Claude. */
+  /**
+   * True when the answer has no information from the board: code answered
+   * "no information yet" without calling Claude, or Claude answered without
+   * citing any card. Such answers stay out of the follow-up history.
+   */
   noInfo: boolean;
 }
 
@@ -249,7 +253,9 @@ export async function ask(
   if (!segments.some((s) => s.text.trim())) throw new AskError("empty", "no text in the answer");
 
   return {
-    answer: { segments, cardIds: cited, noInfo: false },
+    // An answer that cites no card found nothing on the board, so it carries
+    // the same flag as noInformationAnswer and stays out of follow-ups.
+    answer: { segments, cardIds: cited, noInfo: cited.length === 0 },
     model,
     latencyMs,
     usage,
