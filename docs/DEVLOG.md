@@ -2138,4 +2138,4 @@ A judge opening a board during the hackathon could take the seeded sample cards 
 
 ## 2026-11-06 (Fri), night: submitted
 
-Submitted at about 22:30 JST, two days before the deadline. Team and project name 縁側 (Engawa); theme 本来、誰にでも届くべきものを; demo video https://youtu.be/IYskkSfmo2s (unlisted, 2:55); repository public since about 22:05. The README now opens with the demo cover linking to the video. Nothing changes on `main` after this except documentation unless a judge-facing bug turns up.
+Submitted at about 22:30 JST, two days before the deadline. Team and project name 縁側 (Engawa); theme 本来、誰にでも届くべきものを; demo video https://youtu.be/lYskkSfmo2s (unlisted, 2:55); repository public since about 22:05. The README now opens with the demo cover linking to the video. Nothing changes on `main` after this except documentation unless a judge-facing bug turns up.

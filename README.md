@@ -2,9 +2,9 @@
 
 [日本語の README はこちら](README.ja.md)
 
-[![Engawa demo video, 2 min 55 s](docs/brand/demo-cover.png)](https://youtu.be/IYskkSfmo2s)
+[![Engawa demo video, 2 min 55 s](docs/brand/demo-cover.png)](https://youtu.be/lYskkSfmo2s)
 
-**Demo video (2:55, Japanese narration with Japanese and English subtitles):** https://youtu.be/IYskkSfmo2s
+**Demo video (2:55, Japanese narration with Japanese and English subtitles):** https://youtu.be/lYskkSfmo2s
 
 A neighbourhood board for Japan that everyone can read in their own language. In a disaster, the information about water, shelters and supplies reaches the same place, in your own language. In a 武蔵小杉 apartment block the notice about the water outage is taped up in Japanese only, the rest of the news lives in closed LINE and WeChat groups, and after an earthquake the 防災行政無線 loudspeaker announces where to get water in Japanese that is hard to make out outdoors. The resident who reads no Japanese, and the one who cannot hear the loudspeaker, are in none of those places. On Engawa anyone drops in what they already have (a photo of the paper notice, a chat screenshot, a few lines of text, what they heard the loudspeaker say) and the city's own broadcast text comes in by itself. Claude reads it, removes personal information, merges the same fact from different sources into one card and writes every card in Japanese, English, Chinese, Korean, Vietnamese and やさしい日本語. Readers ask questions in their language and get answers that cite the cards, or "no information yet".
 
