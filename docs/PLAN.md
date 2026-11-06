@@ -202,15 +202,14 @@ Session PRs were merged in pairs after review through the integration PRs #11, #
 - [x] Freeze review fixes from three read-only passes (code, ko/zh/vi language, easy Japanese against Kawasaki's booklet): a drop-in survives the uploader leaving, a wider phone check that also covers conditions, an IP window on ask, five small code fixes, one easy_ja sentence for disaster terms, and the ko, zh and vi corrections (PR #47)
 - [x] Rehearsal fixes from the live run on a throwaway board: an ask answer that cites no card is flagged `noInfo` and stays out of follow-ups, Japanese titles no longer repeat the place name in parentheses, and the fixtures README no longer calls the visible drill marking a finding (PR #48)
 
-### 2026-11-07 (Sat): video and submission
+### 2026-11-06 (Fri), evening: video and submission (a day early)
 - [x] Record screen and phone inserts (recorded on the live pilot board, reset before and after)
 - [x] Japanese narration, edit, subtitles (native proofreading not done)
 - [x] README.md final, README.ja.md, Japanese project summary, Claude usage answers from DEVLOG
-- [ ] Submit by 21:00 JST
 
 ## 6. Cut order if 2026-11-05 21:00 is not green
 
-Not needed: the must list was green on 2026-11-03. Kept for the record.
+Not needed: the must list was green on 2026-11-03, and in the end nothing on this list was cut. All G items, S7 share, streaming and chip navigation in S6, conflicts shown in the UI for S4, and UI strings in all five languages shipped. Kept for the record.
 
 1. All G items
 2. S7: keep QR and copy link only
