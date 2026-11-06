@@ -28,6 +28,71 @@
   /* Home page map: land a step darker than the paper, warm like it, the
      same for every prefecture; the boards are pins on top. */
   --map-land: #ebe7de;
+  /* No choice made: native controls and scrollbars follow the system, like the tokens below. */
+  color-scheme: light dark;
+}
+
+/*
+ * Dark theme (2026-11-07). It applies when the system asks for dark and the
+ * reader made no choice (no data-theme on <html>), and always under
+ * data-theme="dark"; data-theme="light" keeps the light values above. The
+ * root layout sets the attribute from the engawa_theme cookie on the server,
+ * so the first paint is right. The two blocks hold the same values: change
+ * them together. A page with a print sheet (the poster, the printable
+ * notice) stays light in every theme, see the end of this section.
+ * Contrast, all WCAG AA: ink on the page 16:1, muted on the page 8.3:1, on
+ * the surface 7.6:1, on the top bar band 7.2:1; the accent as text on the
+ * page 6.4:1, on the surface 5.9:1, on the band 5.6:1, on the beige 5.2:1,
+ * on the warning tint 4.6:1; the accent fill takes dark ink (6.4:1; white on
+ * it would be 2.9:1); control borders 3:1 or more on every fill; warning ink
+ * on its tint 9.3:1. The danger strip keeps its orange-red and white (5.9:1).
+ */
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme]):not(:has([data-print-sheet])) {
+    --background: #151413;
+    --surface: #1f1d1b;
+    --foreground: #f1efe9;
+    --muted: #b3aea4;
+    --line: #3a3733;
+    --line-strong: #7d776e;
+    --accent: #ee6d9e;
+    --accent-hover: #f48bb3;
+    --accent-ink: #151413;
+    --accent-soft: #331a26;
+    --warn-bg: #3a2e12;
+    --warn-ink: #f5d48a;
+    --held-bg: #2b2723;
+    --shadow-rest: 0 1px 2px rgb(0 0 0 / 30%);
+    --shadow-lift: 0 8px 24px rgb(0 0 0 / 45%);
+    --shadow-press: 0 1px 2px rgb(0 0 0 / 35%);
+    --map-land: #2c2925;
+  }
+}
+
+html[data-theme="dark"]:not(:has([data-print-sheet])) {
+  --background: #151413;
+  --surface: #1f1d1b;
+  --foreground: #f1efe9;
+  --muted: #b3aea4;
+  --line: #3a3733;
+  --line-strong: #7d776e;
+  --accent: #ee6d9e;
+  --accent-hover: #f48bb3;
+  --accent-ink: #151413;
+  --accent-soft: #331a26;
+  --warn-bg: #3a2e12;
+  --warn-ink: #f5d48a;
+  --held-bg: #2b2723;
+  --shadow-rest: 0 1px 2px rgb(0 0 0 / 30%);
+  --shadow-lift: 0 8px 24px rgb(0 0 0 / 45%);
+  --shadow-press: 0 1px 2px rgb(0 0 0 / 35%);
+  --map-land: #2c2925;
+  color-scheme: dark;
+}
+
+html[data-theme="light"],
+html:has([data-print-sheet]) {
+  color-scheme: light;
 }
 
 @theme inline {

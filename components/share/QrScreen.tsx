@@ -29,11 +29,12 @@ export function QrScreen({ url, boardName, onClose }: { url: string; boardName: 
   }, [onClose]);
 
   return createPortal(
+    // Black on white in every theme, so a scanner reads it; the focus ring keeps the light accent (6.6:1 on white).
     <section
       role="dialog"
       aria-modal="false"
       aria-labelledby="qr-title"
-      className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-4 overflow-y-auto bg-white p-6 text-center text-black"
+      className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-4 overflow-y-auto bg-white p-6 text-center text-black [--accent:#ad235d] [color-scheme:light]"
     >
       <h2 id="qr-title" className="text-2xl font-bold">
         {boardName}

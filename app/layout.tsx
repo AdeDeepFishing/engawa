@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { LangProvider } from "@/lib/i18n/LangProvider";
 import { OfflineSupport } from "@/components/offline/OfflineSupport";
-import { getRequestLang, getRequestTextSize } from "@/lib/i18n/server";
+import { getRequestLang, getRequestTextSize, getRequestTheme } from "@/lib/i18n/server";
 import { appBase } from "@/lib/app-url";
 import { BRAND, BRAND_JA } from "@/components/brand/Mark";
 
@@ -37,11 +37,13 @@ export const viewport: Viewport = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const [lang, textSize] = await Promise.all([getRequestLang(), getRequestTextSize()]);
+  const [lang, textSize, theme] = await Promise.all([getRequestLang(), getRequestTextSize(), getRequestTheme()]);
+  // The theme is set on the server, so the first paint is already right;
+  // with no choice made, no attribute, and the CSS follows the system.
   return (
-    <html lang={lang} data-text-size={textSize} className="h-full">
+    <html lang={lang} data-text-size={textSize} data-theme={theme === "auto" ? undefined : theme} className="h-full">
       <body className="min-h-full flex flex-col">
-        <LangProvider initialLang={lang} initialTextSize={textSize}>
+        <LangProvider initialLang={lang} initialTextSize={textSize} initialTheme={theme}>
           <OfflineSupport />
           {children}
         </LangProvider>

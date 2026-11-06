@@ -168,7 +168,8 @@ export default async function NoticePage({ params }: Props) {
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
-      <main className={compact ? "notice notice-compact" : "notice"} data-notice={card.id} data-print-lines={lines}>
+      {/* data-print-sheet keeps the page light in every theme (app/globals.css): it is printed. */}
+      <main className={compact ? "notice notice-compact" : "notice"} data-notice={card.id} data-print-lines={lines} data-print-sheet>
         <div className="notice-screen">
           <p className="notice-hint">{t("notice.hint", lang)}</p>
           <PrintButton />
