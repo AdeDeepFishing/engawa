@@ -33,7 +33,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export const viewport: Viewport = {
-  themeColor: BRAND.accent,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: BRAND.accent },
+    { media: "(prefers-color-scheme: dark)", color: "#331a26" },
+  ],
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

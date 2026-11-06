@@ -2142,6 +2142,8 @@ Submitted at about 22:30 JST, two days before the deadline. Team and project nam
 
 ## 2026-11-07 (Sat), dark mode
 
+The entry was submitted on 11/06 night; the development window runs until 11/08 20:00 JST, and the human chose to spend part of the remaining day on two reader-facing additions that touch no pipeline, prompt or data code: the demo link and this theme. The 11/06 statement that `main` changes only for documentation is superseded by that decision.
+
 **Model:** `claude-opus-5-5` in Claude Code, implementation role, in its own worktree, from a brief by the reviewing session. Two stacked pull requests: a link to the demo video on the home page (branch `day10-home-demo-link`), then dark mode (branch `day10-dark-mode`, cut from the first).
 
 **Mechanism.** Every colour was already a CSS variable in `app/globals.css`, so dark mode is a second set of values for the same tokens and no component class changed. The values apply under `prefers-color-scheme: dark` when `<html>` has no `data-theme`, and always under `data-theme="dark"`; `data-theme="light"` keeps the light values. The root layout reads the `engawa_theme` cookie (`auto`, `light`, `dark`) on the server and sets the attribute, so the first paint is already in the reader's theme; with no cookie, or `auto`, there is no attribute and the CSS follows the system. `color-scheme` follows the same choice, so scrollbars, checkboxes and text fields match. The choice lives in `LangProvider` next to the text size: cookie plus a localStorage mirror, applied to `<html>` at once without a reload, and the mirror corrects a page the offline worker served from its cache.

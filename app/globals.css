@@ -90,7 +90,11 @@ html[data-theme="dark"]:not(:has([data-print-sheet])) {
   color-scheme: dark;
 }
 
-html[data-theme="light"],
+html[data-theme="light"] {
+  color-scheme: light;
+}
+
+/* Separate rule: a browser without :has() drops the whole selector list otherwise. */
 html:has([data-print-sheet]) {
   color-scheme: light;
 }
