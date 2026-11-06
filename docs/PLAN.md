@@ -201,8 +201,6 @@ Session PRs were merged in pairs after review through the integration PRs #11, #
 - [x] Demo prep before the freeze: balanced home footer, a dated 断水 sample and a garbage-day sample on 武蔵小杉, fixture p13 for the conflict beat, drop-in consent wording that no longer promises full removal (PR #46)
 - [x] Freeze review fixes from three read-only passes (code, ko/zh/vi language, easy Japanese against Kawasaki's booklet): a drop-in survives the uploader leaving, a wider phone check that also covers conditions, an IP window on ask, five small code fixes, one easy_ja sentence for disaster terms, and the ko, zh and vi corrections (PR #47)
 - [x] Rehearsal fixes from the live run on a throwaway board: an ask answer that cites no card is flagged `noInfo` and stays out of follow-ups, Japanese titles no longer repeat the place name in parentheses, and the fixtures README no longer calls the visible drill marking a finding (PR #48)
-
-### 2026-11-06 (Fri), evening: video and submission (a day early)
 - [x] Record screen and phone inserts (recorded on the live pilot board, reset before and after)
 - [x] Japanese narration, edit, subtitles (native proofreading not done)
 - [x] README.md final, README.ja.md, Japanese project summary, Claude usage answers from DEVLOG
