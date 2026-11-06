@@ -154,6 +154,7 @@
   "index.title": "掲示板",
   "board.empty": "まだカードはありません。",
   "board.cards_heading": "お知らせ",
+  "board.demo_note": "最初から並んでいるカードは、デモ用の架空のサンプルです。実際の災害情報ではありません。",
   "card.just_now": "たった今",
   "card.minutes_ago": "{n}分前",
   "card.hours_ago": "{n}時間前",

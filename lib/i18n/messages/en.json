@@ -154,6 +154,7 @@
   "index.title": "Boards",
   "board.empty": "No cards yet.",
   "board.cards_heading": "Notices",
+  "board.demo_note": "The cards this board starts with are fictional demo samples, not real disaster information.",
   "card.just_now": "Just now",
   "card.minutes_ago": "{n} min ago",
   "card.hours_ago": "{n} h ago",

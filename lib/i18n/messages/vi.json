@@ -154,6 +154,7 @@
   "index.title": "Bảng tin",
   "board.empty": "Chưa có thẻ nào.",
   "board.cards_heading": "Thông báo",
+  "board.demo_note": "Các thẻ có sẵn trên bảng này là mẫu hư cấu để trình diễn, không phải thông tin thiên tai thực tế.",
   "card.just_now": "Vừa xong",
   "card.minutes_ago": "{n} phút trước",
   "card.hours_ago": "{n} giờ trước",
