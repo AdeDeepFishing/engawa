@@ -204,6 +204,7 @@ Session PRs were merged in pairs after review through the integration PRs #11, #
 - [x] Record screen and phone inserts (recorded on the live pilot board, reset before and after)
 - [x] Japanese narration, edit, subtitles (native proofreading not done)
 - [x] README.md final, README.ja.md, Japanese project summary, Claude usage answers from DEVLOG
+- [x] Submitted on 2026-11-06 at about 22:30 JST, two days before the deadline (demo video https://youtu.be/IYskkSfmo2s, repo public)
 
 ## 6. Cut order if 2026-11-05 21:00 is not green
 

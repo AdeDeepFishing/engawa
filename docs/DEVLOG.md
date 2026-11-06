@@ -2135,3 +2135,7 @@ The demo film is final (v7: 2:54.8, 1080p, Japanese narration with Japanese and 
 ## 2026-11-06 (Fri), night: demo sample notice on board pages
 
 A judge opening a board during the hackathon could take the seeded sample cards for real disaster information; the drop-in dialog (`sample.note`) and the home page (`home.try`) said the samples are fictional, but the board page itself did not. One muted line, `board.demo_note` in all five languages, now sits under the お知らせ heading row in `components/board/BoardView.tsx`, above the first card, in both normal and disaster mode, and the same key is one paragraph in the about page's "After the event" section next to the sentence naming the two boards. To remove it after the event, delete the `<p data-board-demo-note>` line, the `board.demo_note` entry in `AFTER` in `components/about/AboutView.tsx`, and the key in the five message files.
+
+## 2026-11-06 (Fri), night: submitted
+
+Submitted at about 22:30 JST, two days before the deadline. Team and project name 縁側 (Engawa); theme 本来、誰にでも届くべきものを; demo video https://youtu.be/IYskkSfmo2s (unlisted, 2:55); repository public since about 22:05. The README now opens with the demo cover linking to the video. Nothing changes on `main` after this except documentation unless a judge-facing bug turns up.
