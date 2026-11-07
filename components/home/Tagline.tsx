@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { CARD_LANGS, t as translate, type CardLang } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n/LangProvider";
 
@@ -13,7 +13,7 @@ function taglineIn(l: CardLang): string {
 }
 
 /**
- * The tagline under the home page description, shown once in each of the
+ * The tagline, the home page headline under the wordmark, shown once in each of the
  * six card languages: it starts in the reader's language, fades through the
  * other five, 4 seconds each, and comes back to the reader's language and
  * stays (nothing on the page loops). All six sit in one grid cell, so the
@@ -24,7 +24,7 @@ function taglineIn(l: CardLang): string {
  * as soon as the reader does anything (a tap, a scroll, a key): WCAG 2.2.2
  * asks for a way to pause or stop content that updates by itself.
  */
-export function Tagline({ className = "" }: { className?: string }) {
+export function Tagline({ className = "", style }: { className?: string; style?: CSSProperties }) {
   const { lang } = useLang();
   // The step of the pass for the language it started in; a language switch starts a new pass.
   const [step, setStep] = useState<{ from: CardLang; at: CardLang } | null>(null);
@@ -61,6 +61,7 @@ export function Tagline({ className = "" }: { className?: string }) {
   return (
     <p
       className={`grid ${className}`}
+      style={style}
       onPointerEnter={() => (paused.current = true)}
       onPointerLeave={() => (paused.current = false)}
     >
