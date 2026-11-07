@@ -6,6 +6,7 @@ import { useLang } from "@/lib/i18n/LangProvider";
 import { Mark } from "@/components/brand/Mark";
 import { LanguageSwitch } from "@/components/LanguageSwitch";
 import { TextSizeToggle } from "@/components/TextSizeToggle";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 /**
  * `wide` lets the bar span the board's workspace from 768 px up and keeps it
@@ -43,10 +44,12 @@ export function TopBar({
         </Link>
         {title ? <span className="min-w-0 truncate text-lg font-semibold">{title}</span> : null}
         {badge}
-        <div className="ml-auto flex shrink-0 items-center gap-2">
+        {/* Never wider than the bar: on a narrow phone with large text the controls wrap to a second row instead of scrolling the page sideways. */}
+        <div className="ml-auto flex max-w-full shrink-0 flex-wrap items-center justify-end gap-2">
           {primary}
           {actions}
           <TextSizeToggle />
+          <ThemeToggle />
           <LanguageSwitch />
         </div>
       </div>

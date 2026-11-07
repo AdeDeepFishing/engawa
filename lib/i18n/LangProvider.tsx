@@ -12,11 +12,14 @@ import {
 import {
   LANG_COOKIE,
   TEXT_SIZE_COOKIE,
+  THEME_COOKIE,
+  isTheme,
   t as translate,
   type Lang,
   type MessageKey,
   LANGS,
   type TextSize,
+  type Theme,
 } from "./index";
 import { isLang, LANG_PARAM, withoutLangParam } from "./langs";
 
@@ -25,6 +28,8 @@ type Ctx = {
   setLang: (lang: Lang) => void;
   textSize: TextSize;
   setTextSize: (size: TextSize) => void;
+  theme: Theme;
+  setTheme: (theme: Theme) => void;
   t: (key: MessageKey, vars?: Record<string, string | number>) => string;
 };
 
@@ -32,6 +37,7 @@ const LangContext = createContext<Ctx | null>(null);
 
 const LS_LANG = "engawa.lang";
 const LS_TEXT = "engawa.textSize";
+const LS_THEME = "engawa.theme";
 
 function writeCookie(name: string, value: string) {
   document.cookie = `${name}=${value}; path=/; max-age=31536000; SameSite=Lax`;
@@ -54,14 +60,17 @@ function writeLocal(key: string, value: string) {
 export function LangProvider({
   initialLang,
   initialTextSize,
+  initialTheme,
   children,
 }: {
   initialLang: Lang;
   initialTextSize: TextSize;
+  initialTheme: Theme;
   children: ReactNode;
 }) {
   const [lang, setLangState] = useState<Lang>(initialLang);
   const [textSize, setTextSizeState] = useState<TextSize>(initialTextSize);
+  const [theme, setThemeState] = useState<Theme>(initialTheme);
 
   // The HTML may come from the service worker's cache, rendered with an older
   // choice than the reader's current one; the localStorage mirrors are newer.
@@ -87,14 +96,16 @@ export function LangProvider({
       try {
         const l = window.localStorage.getItem(LS_LANG);
         const s = window.localStorage.getItem(LS_TEXT);
+        const th = window.localStorage.getItem(LS_THEME);
         if (!fromLink && l && (LANGS as readonly string[]).includes(l) && l !== initialLang) setLangState(l as Lang);
         if ((s === "normal" || s === "large") && s !== initialTextSize) setTextSizeState(s);
+        if (isTheme(th) && th !== initialTheme) setThemeState(th);
       } catch {
         // Blocked storage: the cookie's choice stands.
       }
     }, 0);
     return () => window.clearTimeout(id);
-  }, [initialLang, initialTextSize]);
+  }, [initialLang, initialTextSize, initialTheme]);
 
   useEffect(() => {
     document.documentElement.lang = lang;
@@ -103,6 +114,13 @@ export function LangProvider({
   useEffect(() => {
     document.documentElement.dataset.textSize = textSize;
   }, [textSize]);
+
+  // "auto" carries no attribute, so app/globals.css follows prefers-color-scheme.
+  useEffect(() => {
+    const root = document.documentElement;
+    if (theme === "auto") delete root.dataset.theme;
+    else root.dataset.theme = theme;
+  }, [theme]);
 
   const setLang = useCallback((next: Lang) => {
     setLangState(next);
@@ -116,15 +134,23 @@ export function LangProvider({
     writeCookie(TEXT_SIZE_COOKIE, next);
   }, []);
 
+  const setTheme = useCallback((next: Theme) => {
+    setThemeState(next);
+    writeLocal(LS_THEME, next);
+    writeCookie(THEME_COOKIE, next);
+  }, []);
+
   const value = useMemo<Ctx>(
     () => ({
       lang,
       setLang,
       textSize,
       setTextSize,
+      theme,
+      setTheme,
       t: (key, vars) => translate(key, lang, vars),
     }),
-    [lang, setLang, textSize, setTextSize],
+    [lang, setLang, textSize, setTextSize, theme, setTheme],
   );
 
   return <LangContext.Provider value={value}>{children}</LangContext.Provider>;

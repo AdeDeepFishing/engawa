@@ -82,7 +82,8 @@ export default async function PosterPage({ params }: Props) {
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
-      <main className="poster">
+      {/* data-print-sheet keeps the page light in every theme (app/globals.css): it is printed. */}
+      <main className="poster" data-print-sheet>
         <div className="poster-screen">
           <p className="poster-hint">{t("poster.print_hint", lang)}</p>
           <PrintButton />

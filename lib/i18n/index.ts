@@ -94,3 +94,10 @@ export const INTL_LOCALE: Record<Lang, string> = {
 export const LANG_COOKIE = "engawa_lang";
 export const TEXT_SIZE_COOKIE = "engawa_text";
 export type TextSize = "normal" | "large";
+export const THEME_COOKIE = "engawa_theme";
+/** Reader's colour theme: "auto" follows the system (prefers-color-scheme). */
+export type Theme = "auto" | "light" | "dark";
+export const THEMES: readonly Theme[] = ["auto", "light", "dark"];
+export function isTheme(value: unknown): value is Theme {
+  return value === "auto" || value === "light" || value === "dark";
+}

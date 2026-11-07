@@ -3,10 +3,13 @@ import {
   DEFAULT_LANG,
   LANG_COOKIE,
   TEXT_SIZE_COOKIE,
+  THEME_COOKIE,
+  isTheme,
   isLang,
   langFromAcceptLanguage,
   type Lang,
   type TextSize,
+  type Theme,
 } from "./index";
 import { LINK_LANG_HEADER } from "./langs";
 
@@ -40,4 +43,10 @@ export async function getRequestLang(): Promise<Lang> {
 export async function getRequestTextSize(): Promise<TextSize> {
   const jar = await cookies();
   return jar.get(TEXT_SIZE_COOKIE)?.value === "large" ? "large" : "normal";
+}
+
+/** The theme the reader picked; "auto" (no cookie) leaves it to prefers-color-scheme. */
+export async function getRequestTheme(): Promise<Theme> {
+  const value = (await cookies()).get(THEME_COOKIE)?.value;
+  return isTheme(value) ? value : "auto";
 }
