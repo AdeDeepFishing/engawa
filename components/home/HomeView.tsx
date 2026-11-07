@@ -148,7 +148,7 @@ export function HomeView({ boards, pins, now }: { boards: HomeBoard[]; pins: Map
             </section>
 
             <section aria-labelledby={BOARDS_HEADING} className="order-3 mt-12 lg:order-none lg:mt-16">
-              <div className="home-rise" style={rise(360)}>
+              <div className="home-rise" style={rise(240)}>
                 {/* Focusable so the call to action above can move focus here; scroll-mt clears the sticky top bar. */}
                 <h2 id={BOARDS_HEADING} tabIndex={-1} className="scroll-mt-28 text-xl font-bold">
                   {t("home.boards_heading")}
@@ -158,7 +158,7 @@ export function HomeView({ boards, pins, now }: { boards: HomeBoard[]; pins: Map
               {boards.length ? (
                 <ul className="mt-5 grid gap-4 md:grid-cols-2">
                   {boards.map((b, i) => (
-                    <li key={b.slug} className="home-rise" style={rise(480 + i * 60)}>
+                    <li key={b.slug} className="home-rise" style={rise(360 + i * 60)}>
                       <BoardSummary board={b} now={now} />
                     </li>
                   ))}
@@ -169,7 +169,7 @@ export function HomeView({ boards, pins, now }: { boards: HomeBoard[]; pins: Map
             </section>
           </div>
 
-          <section aria-labelledby="home-map" className="home-rise order-2 mt-12 lg:sticky lg:top-24 lg:order-none lg:mt-0" style={rise(420)}>
+          <section aria-labelledby="home-map" className="home-rise order-2 mt-12 lg:sticky lg:top-24 lg:order-none lg:mt-0" style={rise(300)}>
             <h2 id="home-map" className="text-xl font-bold">
               {t("home.map_heading")}
             </h2>
