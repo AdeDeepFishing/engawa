@@ -6,6 +6,8 @@ import { useLang } from "@/lib/i18n/LangProvider";
 
 /** Space kept between the open menu and the edges of the viewport, px. */
 const EDGE = 8;
+/** Room the left-aligned menu must leave on the right, px, or it aligns right instead. */
+const FLIP_EDGE = 16;
 
 /**
  * The language menu in the top bar: a button with the current language and
@@ -14,9 +16,10 @@ const EDGE = 8;
  * the current one checked. Opening moves focus to the current language;
  * arrow keys, Home and End move, Enter or Space picks, Escape closes, and
  * both return focus to the button. A click outside or Tab away closes it.
- * The menu is moved back inside the viewport when it would cross an edge,
- * and scrolls when the viewport is too short for it. The choice goes
- * through `setLang`, which writes the cookie.
+ * The menu's left edge lines up with the button's, or its right edge when
+ * there is no room on the right; it is moved back inside the viewport when
+ * it would still cross an edge, and scrolls when the viewport is too short
+ * for it. The choice goes through `setLang`, which writes the cookie.
  */
 export function LanguageSwitch() {
   const { lang, setLang, t } = useLang();
@@ -43,12 +46,20 @@ export function LanguageSwitch() {
     close(true);
   }
 
-  // Once open: keep the menu inside the viewport, then focus the current language.
+  // Once open: hang the menu from the button's left edge, or from its right
+  // edge when that would run past the screen (a narrow phone); keep it inside
+  // the viewport either way, then focus the current language.
   useLayoutEffect(() => {
     const menu = menuRef.current;
     if (!open || !menu) return;
     menu.style.translate = "";
     menu.style.maxHeight = "";
+    menu.style.left = "";
+    menu.style.right = "";
+    if (menu.getBoundingClientRect().right > window.innerWidth - FLIP_EDGE) {
+      menu.style.left = "auto";
+      menu.style.right = "0";
+    }
     const r = menu.getBoundingClientRect();
     const vw = document.documentElement.clientWidth;
     const dx = r.left < EDGE ? EDGE - r.left : r.right > vw - EDGE ? vw - EDGE - r.right : 0;
@@ -146,7 +157,7 @@ export function LanguageSwitch() {
           role="menu"
           aria-labelledby={buttonId}
           onKeyDown={onMenuKey}
-          className="lang-menu-in absolute top-full right-0 z-30 mt-2 w-max min-w-full overflow-y-auto rounded-lg border border-line-strong bg-surface py-1 shadow-[var(--shadow-lift)]"
+          className="lang-menu-in absolute top-full left-0 z-30 mt-2 w-max min-w-full overflow-y-auto rounded-lg border border-line-strong bg-surface py-1 shadow-[var(--shadow-lift)]"
         >
           {LANGS.map((l, i) => {
             const current = l === lang;
