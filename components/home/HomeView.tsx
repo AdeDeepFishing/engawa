@@ -75,8 +75,6 @@ function FooterLink({ href, external, children }: { href: string; external?: "me
  */
 export function HomeView({ boards, pins, now }: { boards: HomeBoard[]; pins: MapPin[]; now: string }) {
   const { t } = useLang();
-  /** The Why section rises in after the last board card (480 ms plus 60 ms per board). */
-  const whyRise = 480 + boards.length * 60;
 
   /** From the map: bring the pin's first board card into view and move focus to it, so a screen reader follows. */
   function goToPin(pin: MapPin) {
@@ -192,16 +190,16 @@ export function HomeView({ boards, pins, now }: { boards: HomeBoard[]; pins: Map
         </section>
 
         <section aria-labelledby="home-why" className="mt-14 lg:mt-24">
-          <h2 id="home-why" className="home-rise text-xl font-bold" style={rise(whyRise)}>
+          <h2 id="home-why" className="text-xl font-bold">
             {t("home.why_heading")}
           </h2>
-          <p className={`home-rise mt-4 max-w-[60ch] ${BODY}`} style={rise(whyRise + 60)}>
+          <p className={`mt-4 max-w-[60ch] ${BODY}`}>
             {t("home.why_1")}
           </p>
-          <p className={`home-rise mt-2 max-w-[60ch] ${BODY}`} style={rise(whyRise + 120)}>
+          <p className={`mt-2 max-w-[60ch] ${BODY}`}>
             {t("home.why_2")}
           </p>
-          <p className={`home-rise mt-2 max-w-[60ch] font-semibold text-accent ${BODY}`} style={rise(whyRise + 180)}>
+          <p className={`mt-2 max-w-[60ch] font-semibold text-accent ${BODY}`}>
             {t("home.why_3")}
           </p>
         </section>
