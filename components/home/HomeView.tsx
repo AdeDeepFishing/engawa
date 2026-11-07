@@ -16,6 +16,9 @@ const STEPS: { title: MessageKey; body: MessageKey }[] = [
   { title: "home.step3_title", body: "home.step3_body" },
 ];
 
+/** The three-minute demo video, linked under the mission line. */
+const DEMO_VIDEO = "https://youtu.be/lYskkSfmo2s";
+
 /** Body text on the home page: 17 px at the default size, in rem so the text size toggle scales it. */
 const BODY = "text-[1.0625rem] leading-relaxed";
 
@@ -107,22 +110,33 @@ export function HomeView({ boards, pins, now }: { boards: HomeBoard[]; pins: Map
               <p className="home-rise mt-4 max-w-[60ch] text-xl leading-relaxed" style={rise(120)}>
                 {t("home.mission")}
               </p>
-              <div className="home-rise mt-4" style={rise(180)}>
+              <p className="home-rise mt-2" style={rise(180)}>
+                <a
+                  href={DEMO_VIDEO}
+                  target="_blank"
+                  rel="noopener"
+                  className="tap inline-flex items-center text-lg font-semibold text-accent underline underline-offset-4 hover:text-accent-hover"
+                >
+                  {t("home.demo_video")}
+                  <span className="sr-only"> {t("maps.new_tab")}</span>
+                </a>
+              </p>
+              <div className="home-rise mt-4" style={rise(240)}>
                 <Tagline className="text-lg font-semibold" />
               </div>
-              <p className={`home-rise mt-4 max-w-[60ch] text-muted ${BODY}`} style={rise(240)}>
+              <p className={`home-rise mt-4 max-w-[60ch] text-muted ${BODY}`} style={rise(300)}>
                 {t("home.for_whom")}
               </p>
             </section>
 
             <section aria-labelledby="home-boards" className="order-3 mt-12 lg:order-none lg:mt-16">
-              <h2 id="home-boards" className="home-rise text-xl font-bold" style={rise(300)}>
+              <h2 id="home-boards" className="home-rise text-xl font-bold" style={rise(360)}>
                 {t("index.title")}
               </h2>
               {boards.length ? (
                 <ul className="mt-5 grid gap-4 md:grid-cols-2">
                   {boards.map((b, i) => (
-                    <li key={b.slug} className="home-rise" style={rise(420 + i * 60)}>
+                    <li key={b.slug} className="home-rise" style={rise(480 + i * 60)}>
                       <BoardSummary board={b} now={now} />
                     </li>
                   ))}
@@ -133,7 +147,7 @@ export function HomeView({ boards, pins, now }: { boards: HomeBoard[]; pins: Map
             </section>
           </div>
 
-          <section aria-labelledby="home-map" className="home-rise order-2 mt-12 lg:sticky lg:top-24 lg:order-none lg:mt-0" style={rise(360)}>
+          <section aria-labelledby="home-map" className="home-rise order-2 mt-12 lg:sticky lg:top-24 lg:order-none lg:mt-0" style={rise(420)}>
             <h2 id="home-map" className="text-xl font-bold">
               {t("home.map_heading")}
             </h2>
