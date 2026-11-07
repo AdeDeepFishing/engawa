@@ -67,7 +67,7 @@ function FooterLink({ href, external, children }: { href: string; external?: "me
  * in six languages, for whom),
  * and the listed boards on the left; the map of Japan on the right, held in
  * view while the boards scroll. On a phone: hero, map, boards. Then the three steps in the words
- * the board itself uses, how to try it with a sample, and the footer. The
+ * the board itself uses, why Engawa, how to try it with a sample, and the footer. The
  * hero lines, the boards and the map rise in once, 60 ms apart (none of it
  * under reduced motion). Client component so the language switch in the
  * top bar applies at once, like the about page; the board facts and `now`
@@ -187,10 +187,26 @@ export function HomeView({ boards, pins, now }: { boards: HomeBoard[]; pins: Map
               </li>
             ))}
           </ol>
-          <p className={`mt-6 rounded-xl bg-held-bg px-6 py-4 ${BODY}`} data-home-try>
-            {t("home.try", { button: t("dropin.button"), samples: t("sample.heading") })}
+        </section>
+
+        <section aria-labelledby="home-why" className="mt-14 lg:mt-24">
+          <h2 id="home-why" className="text-xl font-bold">
+            {t("home.why_heading")}
+          </h2>
+          <p className={`mt-4 max-w-[60ch] ${BODY}`}>
+            {t("home.why_1")}
+          </p>
+          <p className={`mt-2 max-w-[60ch] ${BODY}`}>
+            {t("home.why_2")}
+          </p>
+          <p className={`mt-2 max-w-[60ch] font-semibold text-accent ${BODY}`}>
+            {t("home.why_3")}
           </p>
         </section>
+
+        <p className={`mt-6 rounded-xl bg-held-bg px-6 py-4 ${BODY}`} data-home-try>
+          {t("home.try", { button: t("dropin.button"), samples: t("sample.heading") })}
+        </p>
       </main>
 
       <footer className="mx-auto w-full max-w-6xl px-4 pt-14 pb-10 md:px-6 lg:pt-24">
