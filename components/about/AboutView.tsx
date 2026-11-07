@@ -25,21 +25,44 @@ export const FOREIGN_RESIDENTS = {
 } as const;
 
 const WHO: MessageKey[] = ["about.who_maria", "about.who_sato", "about.who_chen"];
-const DATA: MessageKey[] = ["about.data_1", "about.data_2", "about.data_3", "about.data_4"];
+
+/** The three layers of the pipeline, each named and then described. */
+const LAYERS: { title: MessageKey; body: MessageKey }[] = [
+  { title: "about.layer_claude_title", body: "about.layer_claude_body" },
+  { title: "about.layer_code_title", body: "about.layer_code_body" },
+  { title: "about.layer_people_title", body: "about.layer_people_body" },
+];
+
+/** What a reader can rely on (trust), then what happens to the data (docs/PRIVACY.md). */
+const DATA: MessageKey[] = [
+  "about.trust_1",
+  "about.trust_2",
+  "about.trust_3",
+  "about.data_1",
+  "about.data_2",
+  "about.data_3",
+  "about.data_4",
+];
 
 /**
- * After the event, the two-layer model: one platform operator for every
- * board, a local owner per board, what a new city costs (docs/BOARDS.md),
- * and what is not there yet (one operator, one admin token for every board).
+ * Where it stands: the six boards and the demo samples on them, what works
+ * today and which boards have a city source; then the two-layer model meant
+ * for after the event (docs/BOARDS.md for a new city), and what is not there
+ * yet (one operator, one admin token for every board).
  */
 const AFTER: MessageKey[] = [
-  "about.after_body",
+  "about.status_body",
   "board.demo_note",
+  "about.status_working",
+  "about.after_body",
   "about.after_operator",
   "about.after_owner",
   "about.after_new_city",
   "about.after_limits",
 ];
+
+/** Where a group that wants a board for its area can write. */
+const ISSUES_URL = "https://github.com/AdeDeepFishing/engawa/issues";
 
 /**
  * Sources of the home page map's prefecture outlines (CC BY 4.0, see
@@ -53,10 +76,13 @@ const MAP_CREDIT_LINKS = [
 ] as const;
 
 /**
- * The about page body: who the board is for, the wall it removes, who lives
- * here (with the figures above), what happens to the data, who runs it after
- * the event (operator and local owners), and the credits (#credits, linked from under the home
- * page map). Client component so the language switch applies at once.
+ * The about page body, deeper than the home page: what Engawa is and the
+ * fragmentation it answers, why it exists (with the figures above), how it
+ * works in three layers (Claude, code, people) and what that does not
+ * promise, who it is for, every day and in a disaster, privacy and trust
+ * (#about-data, linked from the home footer), how to take part, where it
+ * stands and what is next, and the credits (#credits, linked from under the
+ * home page map). Client component so the language switch applies at once.
  */
 export function AboutView({ backHref }: { backHref: string | null }) {
   const { lang, t } = useLang();
@@ -69,7 +95,33 @@ export function AboutView({ backHref }: { backHref: string | null }) {
     <main className="mx-auto w-full max-w-2xl flex-1 px-4 py-6">
       <h1 className="text-2xl font-bold">{t("about.title")}</h1>
       <p className="mt-3 text-base leading-relaxed">{t("about.lead")}</p>
-      <p className="mt-3 text-base leading-relaxed">{t("about.mission")}</p>
+      <p className="mt-3 text-base leading-relaxed">{t("about.what_body")}</p>
+
+      <section aria-labelledby="about-why">
+        <h2 id="about-why" className="mt-8 text-xl font-bold">
+          {t("about.why_heading")}
+        </h2>
+        <p className="mt-3 text-base leading-relaxed">{t("about.why_body")}</p>
+        <p className="mt-3 text-base leading-relaxed">{t("about.numbers_body", numbers)}</p>
+      </section>
+
+      <section aria-labelledby="about-how">
+        <h2 id="about-how" className="mt-8 text-xl font-bold">
+          {t("about.how_heading")}
+        </h2>
+        <p className="mt-3 text-base leading-relaxed">{t("about.how_body")}</p>
+        <p className="mt-3 text-base leading-relaxed">{t("about.how_ask")}</p>
+        <p className="mt-3 text-base leading-relaxed">{t("about.how_layers")}</p>
+        <ul className="mt-3 flex flex-col gap-3">
+          {LAYERS.map((layer) => (
+            <li key={layer.title} className="rounded-xl border border-line bg-surface px-4 py-3">
+              <h3 className="text-base font-bold">{t(layer.title)}</h3>
+              <p className="mt-1 text-base leading-relaxed">{t(layer.body)}</p>
+            </li>
+          ))}
+        </ul>
+        <p className="mt-3 text-base leading-relaxed">{t("about.how_limits")}</p>
+      </section>
 
       <section aria-labelledby="about-who">
         <h2 id="about-who" className="mt-8 text-xl font-bold">
@@ -82,24 +134,20 @@ export function AboutView({ backHref }: { backHref: string | null }) {
             </li>
           ))}
         </ul>
+        <p className="mt-3 text-base leading-relaxed">{t("about.who_groups")}</p>
       </section>
 
-      <section aria-labelledby="about-wall">
-        <h2 id="about-wall" className="mt-8 text-xl font-bold">
-          {t("about.wall_heading")}
+      <section aria-labelledby="about-everyday">
+        <h2 id="about-everyday" className="mt-8 text-xl font-bold">
+          {t("about.everyday_heading")}
         </h2>
-        <p className="mt-3 text-base leading-relaxed">{t("about.wall_body")}</p>
-      </section>
-
-      <section aria-labelledby="about-numbers">
-        <h2 id="about-numbers" className="mt-8 text-xl font-bold">
-          {t("about.numbers_heading")}
-        </h2>
-        <p className="mt-3 text-base leading-relaxed">{t("about.numbers_body", numbers)}</p>
+        <p className="mt-3 text-base leading-relaxed">{t("about.everyday_body")}</p>
+        <p className="mt-3 text-base leading-relaxed">{t("about.everyday_disaster")}</p>
       </section>
 
       <section aria-labelledby="about-data">
-        <h2 id="about-data" className="mt-8 text-xl font-bold">
+        {/* scroll-mt keeps the heading clear of the sticky top bar when reached from the home footer. */}
+        <h2 id="about-data" className="mt-8 scroll-mt-32 text-xl font-bold">
           {t("about.data_heading")}
         </h2>
         <ul className="mt-3 flex list-disc flex-col gap-3 pl-5 text-base leading-relaxed">
@@ -107,6 +155,26 @@ export function AboutView({ backHref }: { backHref: string | null }) {
             <li key={key}>{t(key)}</li>
           ))}
         </ul>
+      </section>
+
+      <section aria-labelledby="about-join">
+        <h2 id="about-join" className="mt-8 text-xl font-bold">
+          {t("about.join_heading")}
+        </h2>
+        <p className="mt-3 text-base leading-relaxed">{t("about.join_1", { button: t("dropin.button") })}</p>
+        <p className="mt-3 text-base leading-relaxed">{t("about.join_2")}</p>
+        <p className="mt-3 text-base leading-relaxed">{t("about.join_3")}</p>
+        <p className="mt-1">
+          <a
+            href={ISSUES_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="tap inline-flex items-center text-base font-semibold text-accent underline underline-offset-4 hover:text-accent-hover"
+          >
+            {t("about.join_link")}
+            <span className="sr-only"> {t("maps.new_tab")}</span>
+          </a>
+        </p>
       </section>
 
       <section aria-labelledby="about-after">
@@ -119,7 +187,6 @@ export function AboutView({ backHref }: { backHref: string | null }) {
           </p>
         ))}
       </section>
-
       {/* scroll-mt keeps the heading clear of the sticky top bar when reached by its anchor. */}
       <section id="credits" aria-labelledby="about-credits" className="scroll-mt-32">
         <h2 id="about-credits" className="mt-8 text-xl font-bold">
